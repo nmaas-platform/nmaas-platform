@@ -120,9 +120,10 @@ public interface NmServiceDeploymentProvider {
      * @param deploymentId            unique identifier of service deployment
      * @param serviceComponentName    name of service component from which logs should be retrieved
      * @param serviceSubComponentName name of service subcomponent (added if required)
+     * @param limit                   number of log lines to be returned (optional)
      * @return {@link AppComponentLogs} object containing application logs
      */
-    AppComponentLogs serviceComponentLogs(Identifier deploymentId, String serviceComponentName, String serviceSubComponentName);
+    AppComponentLogs serviceComponentLogs(Identifier deploymentId, String serviceComponentName, String serviceSubComponentName, int limit);
 
     /**
      * @param deploymentId unique identifier of service deployment

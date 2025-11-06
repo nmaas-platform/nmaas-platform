@@ -1,26 +1,26 @@
 package net.geant.nmaas.portal.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.kubernetes.KubernetesApiClientService;
 import net.geant.nmaas.kubernetes.KubernetesClusterDeploymentManager;
 import net.geant.nmaas.kubernetes.remote.entities.KCluster;
 import net.geant.nmaas.kubernetes.remote.repositories.KClusterRepository;
 import net.geant.nmaas.orchestration.Identifier;
-import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
-import net.geant.nmaas.portal.api.domain.RejectionReason;
-import net.geant.nmaas.portal.api.domain.ResourcesLimitDto;
-import net.geant.nmaas.portal.api.domain.ResourcesLimitUpdateDto;
+import net.geant.nmaas.portal.domain.RejectionReason;
+import net.geant.nmaas.portal.domain.ResourcesLimitDto;
+import net.geant.nmaas.portal.domain.ResourcesLimitUpdateDto;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
-import net.geant.nmaas.portal.persistent.entity.AppInstance;
-import net.geant.nmaas.portal.persistent.entity.Domain;
-import net.geant.nmaas.portal.persistent.entity.ResourcesLimit;
-import net.geant.nmaas.portal.persistent.entity.ResourcesLimitType;
-import net.geant.nmaas.portal.persistent.repositories.AppInstanceRepository;
-import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
-import net.geant.nmaas.portal.persistent.repositories.ResourcesLimitRepository;
+import net.geant.nmaas.portal.persistence.entity.AppInstance;
+import net.geant.nmaas.portal.persistence.entity.Domain;
+import net.geant.nmaas.portal.persistence.entity.ResourcesLimit;
+import net.geant.nmaas.portal.persistence.entity.ResourcesLimitType;
+import net.geant.nmaas.portal.persistence.repositories.AppInstanceRepository;
+import net.geant.nmaas.portal.persistence.repositories.DomainRepository;
+import net.geant.nmaas.portal.persistence.repositories.ResourcesLimitRepository;
 import net.geant.nmaas.portal.service.ResourcesLimitService;
-import net.geant.nmaas.portal.api.domain.ResourcesLimitValidationResult;
+import net.geant.nmaas.portal.domain.ResourcesLimitValidationResult;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +29,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ResourcesLimitServiceImpl implements ResourcesLimitService {
 
     private static final String GLOBAL_UNIQUE_RESOURCES_LIMIT = "You can define only one global resources limit";
@@ -44,6 +45,36 @@ public class ResourcesLimitServiceImpl implements ResourcesLimitService {
     private final DomainRepository domainRepository;
     private final KClusterRepository kClusterRepository;
     private final ModelMapper modelMapper;
+
+    @Override
+    public void setGlobalResourcesLimit(ResourcesLimitDto dto) {
+        List<ResourcesLimit> limits = resourcesLimitRepository.findByLimitType(ResourcesLimitType.GLOBAL);
+        if (limits.size() == 1) {
+            log.info("Updating existing global limit");
+            ResourcesLimit limitFromDb = limits.getFirst();
+            limitFromDb.setCpu(dto.getCpu());
+            limitFromDb.setMemory(dto.getMemory());
+            limitFromDb.setContainersNo(dto.getContainersNo());
+            limitFromDb.setInstancesNo(dto.getInstancesNo());
+            resourcesLimitRepository.save(limitFromDb);
+            return;
+        }
+        if (limits.isEmpty()) {
+            log.info("Adding new global limit");
+            ResourcesLimit entity = modelMapper.map(dto, ResourcesLimit.class);
+            resourcesLimitRepository.save(entity);
+        }
+    }
+
+    @Override
+    public ResourcesLimitDto getGlobalResourcesLimit() {
+        List<ResourcesLimit> limits = resourcesLimitRepository.findByLimitType(ResourcesLimitType.GLOBAL);
+        if (limits.size() == 1) {
+            return modelMapper.map(limits.getFirst(), ResourcesLimitDto.class);
+        } else {
+            throw new MissingElementException("Global Resources Limit not found or found too many");
+        }
+    }
 
     @Override
     public ResourcesLimitDto create(ResourcesLimitDto dto) {
@@ -81,13 +112,11 @@ public class ResourcesLimitServiceImpl implements ResourcesLimitService {
     @Override
     public void update(ResourcesLimitUpdateDto dto) {
         ResourcesLimit entity = resourcesLimitRepository.findById(dto.getId()).orElseThrow(() -> new MissingElementException("Resources Limit not found"));
-
         entity.setCpu(dto.getCpu());
         entity.setMemory(dto.getMemory());
         entity.setContainersNo(dto.getContainersNo());
         entity.setInstancesNo(dto.getInstancesNo());
         resourcesLimitRepository.save(entity);
-
     }
 
     public void delete(Long id) {
@@ -117,9 +146,9 @@ public class ResourcesLimitServiceImpl implements ResourcesLimitService {
         if (limit != null) {
             return validateAgainst(false, limit, groupsLimits, domainCodename, requestedInstances, deploymentSpec);
         } else {
-            limit = resourcesLimitRepository.findByLimitType(ResourcesLimitType.GLOBAL);
-            if (limit != null) {
-                return validateAgainst(true, limit, groupsLimits, domainCodename, requestedInstances, deploymentSpec);
+            List<ResourcesLimit> globalLimits = resourcesLimitRepository.findByLimitType(ResourcesLimitType.GLOBAL);
+            if (!globalLimits.isEmpty()) {
+                return validateAgainst(true, globalLimits.get(0), groupsLimits, domainCodename, requestedInstances, deploymentSpec);
             }
         }
         ResourcesLimitValidationResult validationResult =  new ResourcesLimitValidationResult();

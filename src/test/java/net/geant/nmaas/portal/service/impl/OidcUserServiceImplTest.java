@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.service.impl;
 
-import net.geant.nmaas.portal.persistent.entity.User;
-import net.geant.nmaas.portal.persistent.repositories.UserRepository;
+import net.geant.nmaas.portal.persistence.entity.User;
+import net.geant.nmaas.portal.persistence.repositories.UserRepository;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;

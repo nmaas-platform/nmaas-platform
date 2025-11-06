@@ -3,9 +3,9 @@ package net.geant.nmaas.metrics;
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
-import net.geant.nmaas.portal.persistent.repositories.AppInstanceRepository;
-import net.geant.nmaas.portal.persistent.repositories.ApplicationBaseRepository;
-import net.geant.nmaas.portal.persistent.repositories.ApplicationSubscriptionRepository;
+import net.geant.nmaas.portal.persistence.repositories.AppInstanceRepository;
+import net.geant.nmaas.portal.persistence.repositories.ApplicationBaseRepository;
+import net.geant.nmaas.portal.persistence.repositories.ApplicationSubscriptionRepository;
 import org.springframework.stereotype.Component;
 
 @Component

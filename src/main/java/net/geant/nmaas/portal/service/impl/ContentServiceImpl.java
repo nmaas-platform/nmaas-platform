@@ -3,8 +3,8 @@ package net.geant.nmaas.portal.service.impl;
 import lombok.RequiredArgsConstructor;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
-import net.geant.nmaas.portal.persistent.entity.Content;
-import net.geant.nmaas.portal.persistent.repositories.ContentRepository;
+import net.geant.nmaas.portal.persistence.entity.Content;
+import net.geant.nmaas.portal.persistence.repositories.ContentRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;

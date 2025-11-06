@@ -1,8 +1,8 @@
 package net.geant.nmaas.portal.service;
 
-import net.geant.nmaas.portal.api.domain.ApplicationBaseViewS;
-import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
-import net.geant.nmaas.portal.persistent.entity.ApplicationState;
+import net.geant.nmaas.portal.domain.ApplicationBaseViewS;
+import net.geant.nmaas.portal.persistence.entity.ApplicationBase;
+import net.geant.nmaas.portal.persistence.entity.ApplicationState;
 
 import java.util.List;
 

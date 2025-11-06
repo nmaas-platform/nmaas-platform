@@ -26,9 +26,9 @@ import net.geant.nmaas.orchestration.AppUpgradeMode;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
-import net.geant.nmaas.portal.api.domain.RejectionReason;
+import net.geant.nmaas.portal.domain.RejectionReason;
 import net.geant.nmaas.portal.service.ResourcesLimitService;
-import net.geant.nmaas.portal.api.domain.ResourcesLimitValidationResult;
+import net.geant.nmaas.portal.domain.ResourcesLimitValidationResult;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.beans.factory.annotation.Value;
@@ -184,9 +184,9 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
     }
 
     @Override
-    public AppComponentLogs serviceComponentLogs(Identifier deploymentId, String serviceComponentName, String serviceSubComponentName) {
+    public AppComponentLogs serviceComponentLogs(Identifier deploymentId, String serviceComponentName, String serviceSubComponentName, int limit) {
         try {
-            return orchestrator.serviceComponentLogs(deploymentId, serviceComponentName, serviceSubComponentName);
+            return orchestrator.serviceComponentLogs(deploymentId, serviceComponentName, serviceSubComponentName, limit);
         } catch (ContainerOrchestratorInternalErrorException e) {
             throw new CouldNotRetrieveServiceComponentLogsException("Exception thrown during component logs retrieval -> " + e.getMessage());
         }

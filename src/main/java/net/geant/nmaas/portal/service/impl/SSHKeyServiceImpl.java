@@ -2,11 +2,11 @@ package net.geant.nmaas.portal.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.nmservice.configuration.gitlab.events.UserSshKeysUpdatedGitlabEvent;
-import net.geant.nmaas.portal.api.domain.SSHKeyRequest;
-import net.geant.nmaas.portal.api.domain.SSHKeyView;
-import net.geant.nmaas.portal.persistent.entity.SSHKeyEntity;
-import net.geant.nmaas.portal.persistent.entity.User;
-import net.geant.nmaas.portal.persistent.repositories.SSHKeyRepository;
+import net.geant.nmaas.portal.domain.SSHKeyRequest;
+import net.geant.nmaas.portal.domain.SSHKeyView;
+import net.geant.nmaas.portal.persistence.entity.SSHKeyEntity;
+import net.geant.nmaas.portal.persistence.entity.User;
+import net.geant.nmaas.portal.persistence.repositories.SSHKeyRepository;
 import net.geant.nmaas.portal.service.SSHKeyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;

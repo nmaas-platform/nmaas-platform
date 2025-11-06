@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.api.exceptions;
 
-public class MissingElementException extends MarketException {
+public class MissingElementException extends PortalException {
 
 	public MissingElementException() {
 		super();

@@ -1,7 +1,7 @@
 package net.geant.nmaas.kubernetes;
 
 import net.geant.nmaas.kubernetes.api.KubernetesClusterController;
-import net.geant.nmaas.portal.api.market.ApiExceptionHandler;
+import net.geant.nmaas.portal.api.ApiExceptionHandler;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;

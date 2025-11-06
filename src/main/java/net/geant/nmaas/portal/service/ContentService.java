@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.service;
 
-import net.geant.nmaas.portal.persistent.entity.Content;
+import net.geant.nmaas.portal.persistence.entity.Content;
 
 import java.util.Optional;
 

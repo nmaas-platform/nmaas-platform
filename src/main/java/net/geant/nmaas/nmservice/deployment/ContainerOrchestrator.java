@@ -113,10 +113,11 @@ public interface ContainerOrchestrator {
      * @param deploymentId            unique identifier of service deployment
      * @param serviceComponentName    name of service component from which logs should be retrieved
      * @param serviceSubComponentName name of service subcomponent (added if required)
+     * @param limit                   number of log lines to be returned
      * @return service component logs
      * @throws ContainerOrchestratorInternalErrorException if access details are not available for any reason
      */
-    AppComponentLogs serviceComponentLogs(Identifier deploymentId, String serviceComponentName, String serviceSubComponentName);
+    AppComponentLogs serviceComponentLogs(Identifier deploymentId, String serviceComponentName, String serviceSubComponentName, int limit);
 
     /**
      * Triggers all the required actions to remove given NM service from the system.

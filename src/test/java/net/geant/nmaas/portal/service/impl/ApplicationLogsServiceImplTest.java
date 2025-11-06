@@ -7,8 +7,8 @@ import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.portal.api.logs.PodInfo;
 import net.geant.nmaas.portal.api.logs.PodLogs;
-import net.geant.nmaas.portal.persistent.entity.AppInstance;
-import net.geant.nmaas.portal.persistent.entity.Application;
+import net.geant.nmaas.portal.persistence.entity.AppInstance;
+import net.geant.nmaas.portal.persistence.entity.Application;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import net.geant.nmaas.portal.service.ApplicationLogsService;
 import org.junit.jupiter.api.BeforeEach;
@@ -64,9 +64,9 @@ class ApplicationLogsServiceImplTest {
     @Test
     void shouldGetPodLogs() {
         when(applicationInstanceService.find(APP_INSTANCE_ID)).thenReturn(Optional.of(appInstance));
-        when(appDeploymentMonitor.appComponentLogs(DEPLOYMENT_ID, POD_NAME, CONTAINER_NAME)).thenReturn(
+        when(appDeploymentMonitor.appComponentLogs(DEPLOYMENT_ID, POD_NAME, CONTAINER_NAME, 10)).thenReturn(
                 new AppComponentLogs(POD_NAME, List.of("l1", "l2", "l3")));
-        PodLogs podLogs = applicationLogsService.getPodLogs(APP_INSTANCE_ID, POD_NAME, CONTAINER_NAME);
+        PodLogs podLogs = applicationLogsService.getPodLogs(APP_INSTANCE_ID, POD_NAME, CONTAINER_NAME, 10);
         assertThat(podLogs.getName()).isEqualTo(POD_NAME);
         assertThat(podLogs.getLines()).containsAll(List.of("l1", "l2", "l3"));
     }

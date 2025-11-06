@@ -3,9 +3,9 @@ package net.geant.nmaas.portal.service;
 import java.util.List;
 import java.util.Optional;
 
-import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
-import net.geant.nmaas.portal.persistent.entity.ApplicationSubscription;
-import net.geant.nmaas.portal.persistent.entity.Domain;
+import net.geant.nmaas.portal.persistence.entity.ApplicationBase;
+import net.geant.nmaas.portal.persistence.entity.ApplicationSubscription;
+import net.geant.nmaas.portal.persistence.entity.Domain;
 
 public interface ApplicationSubscriptionService {
 	

@@ -1,9 +1,9 @@
 package net.geant.nmaas.portal.api.info;
 
-import net.geant.nmaas.portal.api.domain.ContentView;
+import net.geant.nmaas.portal.domain.ContentView;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
-import net.geant.nmaas.portal.persistent.entity.Content;
-import net.geant.nmaas.portal.persistent.repositories.ContentRepository;
+import net.geant.nmaas.portal.persistence.entity.Content;
+import net.geant.nmaas.portal.persistence.repositories.ContentRepository;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 

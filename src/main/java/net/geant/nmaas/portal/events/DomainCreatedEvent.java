@@ -2,8 +2,8 @@ package net.geant.nmaas.portal.events;
 
 import lombok.Getter;
 import lombok.ToString;
-import net.geant.nmaas.portal.api.domain.KeyValueView;
-import net.geant.nmaas.portal.persistent.entity.Domain;
+import net.geant.nmaas.portal.domain.KeyValueView;
+import net.geant.nmaas.portal.persistence.entity.Domain;
 import org.springframework.context.ApplicationEvent;
 
 import java.util.List;

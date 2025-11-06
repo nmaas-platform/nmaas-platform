@@ -8,10 +8,9 @@ import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
-import net.geant.nmaas.portal.persistent.entity.Application;
-import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
+import net.geant.nmaas.portal.persistence.entity.Application;
+import net.geant.nmaas.portal.persistence.repositories.ApplicationRepository;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 

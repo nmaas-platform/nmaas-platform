@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.events;
 
 import lombok.Getter;
-import net.geant.nmaas.portal.api.domain.KeyValueView;
+import net.geant.nmaas.portal.domain.KeyValueView;
 import org.springframework.context.ApplicationEvent;
 
 import java.util.List;

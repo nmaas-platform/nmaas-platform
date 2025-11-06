@@ -3,8 +3,8 @@ package net.geant.nmaas.metrics;
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
-import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
-import net.geant.nmaas.portal.persistent.repositories.UserRepository;
+import net.geant.nmaas.portal.persistence.repositories.DomainRepository;
+import net.geant.nmaas.portal.persistence.repositories.UserRepository;
 import org.springframework.stereotype.Component;
 
 @Component

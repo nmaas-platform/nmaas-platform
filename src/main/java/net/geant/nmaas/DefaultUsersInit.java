@@ -1,14 +1,15 @@
 package net.geant.nmaas;
 
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.portal.persistent.entity.Domain;
-import net.geant.nmaas.portal.persistent.entity.Role;
-import net.geant.nmaas.portal.persistent.entity.User;
-import net.geant.nmaas.portal.persistent.repositories.UserRepository;
+import net.geant.nmaas.portal.persistence.entity.Domain;
+import net.geant.nmaas.portal.persistence.entity.Role;
+import net.geant.nmaas.portal.persistence.entity.User;
+import net.geant.nmaas.portal.persistence.repositories.UserRepository;
 import net.geant.nmaas.portal.service.DomainService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 @Component
+@DependsOn("portalConfiguration")
 @Slf4j
 public class DefaultUsersInit implements InitializingBean {
 

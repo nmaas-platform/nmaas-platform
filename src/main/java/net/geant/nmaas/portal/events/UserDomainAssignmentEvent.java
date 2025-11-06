@@ -8,10 +8,10 @@ import org.springframework.context.ApplicationEvent;
 @ToString
 public class UserDomainAssignmentEvent extends ApplicationEvent {
 
-    private Long domainId;
-    private Long userId;
-    private String role;
-    private String action;
+    private final Long domainId;
+    private final Long userId;
+    private final String role;
+    private final String action;
 
     public UserDomainAssignmentEvent(Object source, Long domainId, Long userId, String role, String action) {
         super(source);

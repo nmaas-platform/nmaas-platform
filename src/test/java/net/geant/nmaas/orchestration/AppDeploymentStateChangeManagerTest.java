@@ -16,10 +16,17 @@ import net.geant.nmaas.orchestration.events.app.AppUpgradeCompleteEvent;
 import net.geant.nmaas.orchestration.events.app.AppUpgradeFailedEvent;
 import net.geant.nmaas.orchestration.events.app.AppVerifyConfigurationActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppVerifyServiceActionEvent;
-import net.geant.nmaas.portal.events.AppDeploymentEvent;
+import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
+import net.geant.nmaas.portal.events.ApplicationDeployedEvent;
+import net.geant.nmaas.portal.events.ApplicationRemovedEvent;
+import net.geant.nmaas.portal.persistence.entity.WebhookEventType;
+import net.geant.nmaas.portal.persistence.repositories.WebhookEventRepository;
+import net.geant.nmaas.scheduling.ScheduleManager;
+import net.geant.nmaas.webhooks.WebhooksEventListener;
+import net.geant.nmaas.webhooks.jobs.AppDeploymentJob;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.quartz.SchedulerException;
+import org.modelmapper.ModelMapper;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 
@@ -33,6 +40,7 @@ import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICAT
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_DEPLOYED;
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS;
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFIED;
+import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_REMOVAL_IN_PROGRESS;
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_REMOVED;
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_RESTARTED;
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_UPGRADED;
@@ -45,6 +53,9 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -55,16 +66,22 @@ class AppDeploymentStateChangeManagerTest {
 
     private final Identifier deploymentId = Identifier.newInstance("deploymentId");
     private final NmServiceDeploymentStateChangeEvent event = mock(NmServiceDeploymentStateChangeEvent.class);
-
     private final DefaultAppDeploymentRepositoryManager deployments = mock(DefaultAppDeploymentRepositoryManager.class);
     private final AppDeploymentMonitor monitor = mock(AppDeploymentMonitor.class);
     private final ApplicationEventPublisher publisher = mock(ApplicationEventPublisher.class);
+    private final WebhookEventRepository webhookEventRepository = mock(WebhookEventRepository.class);
+    private final AppDeploymentRepository appDeploymentRepository = mock(AppDeploymentRepository.class);
+    private final ModelMapper modelMapper = new ModelMapper();
+    private final ScheduleManager scheduleManager = mock(ScheduleManager.class);
+
     private AppDeploymentStateChangeManager manager;
+    private WebhooksEventListener listener;
 
     @BeforeEach
     void setup() {
         when(event.getDeploymentId()).thenReturn(deploymentId);
         manager = new AppDeploymentStateChangeManager(deployments, monitor, publisher);
+        listener = new WebhooksEventListener(webhookEventRepository, appDeploymentRepository, scheduleManager, modelMapper);
     }
 
     @Test
@@ -91,7 +108,7 @@ class AppDeploymentStateChangeManagerTest {
     }
 
     @Test
-    void shouldTriggerNewEventInDeployedVerifiedState() throws SchedulerException {
+    void shouldTriggerNewEventInDeployedVerifiedState() {
         when(deployments.loadState(deploymentId)).thenReturn(APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS);
         when(deployments.load(deploymentId)).thenReturn(stubAppDeployment());
         when(deployments.isFirstTimeDeployment(deploymentId)).thenReturn(true);
@@ -110,8 +127,37 @@ class AppDeploymentStateChangeManagerTest {
 
         assertThat(newEvent, is(nullValue()));
         verify(publisher, times(1)).publishEvent(any(NotificationEvent.class));
-        verify(publisher, times(1)).publishEvent(any(AppDeploymentEvent.class));
+        verify(publisher, times(1)).publishEvent(any(ApplicationDeployedEvent.class));
+    }
 
+    @Test
+    void shouldTriggerAppDeploymentJobWhenWebhookMatchesDomain() {
+        when(appDeploymentRepository.findByDeploymentId(deploymentId)).thenReturn(Optional.ofNullable(stubAppDeployment()));
+        ApplicationDeployedEvent appDeployedEvent = new ApplicationDeployedEvent(this, deploymentId.value());
+        when(webhookEventRepository.findIdByEventTypeAndDomain(WebhookEventType.APPLICATION_DEPLOYMENT, "domain"))
+                .thenReturn(java.util.List.of(1L));
+
+        listener.trigger(appDeployedEvent);
+        verify(scheduleManager, times(1)).createOneTimeJob(
+                eq(AppDeploymentJob.class),
+                anyString(),
+                anyMap()
+        );
+    }
+
+    @Test
+    void shouldNotTriggerAppDeploymentJobWhenWebhookForDifferentDomain() {
+        when(appDeploymentRepository.findByDeploymentId(deploymentId)).thenReturn(Optional.ofNullable(stubAppDeployment()));
+        ApplicationDeployedEvent appDeployedEvent = new ApplicationDeployedEvent(this, deploymentId.value());
+        when(webhookEventRepository.findIdByEventTypeAndDomain(WebhookEventType.APPLICATION_DEPLOYMENT, "domain1"))
+                .thenReturn(java.util.List.of());
+
+        listener.trigger(appDeployedEvent);
+        verify(scheduleManager, never()).createOneTimeJob(
+                eq(AppDeploymentJob.class),
+                anyString(),
+                anyMap()
+        );
     }
 
     @Test
@@ -239,4 +285,15 @@ class AppDeploymentStateChangeManagerTest {
         verify(publisher, never()).publishEvent(any(NotificationEvent.class));
     }
 
+    @Test
+    void shouldTriggerNewEventInRemovedState() {
+        when(deployments.loadState(deploymentId)).thenReturn(APPLICATION_REMOVAL_IN_PROGRESS);
+        when(deployments.load(deploymentId)).thenReturn(stubAppDeployment());
+        when(deployments.isFirstTimeDeployment(deploymentId)).thenReturn(true);
+        when(event.getState()).thenReturn(ServiceDeploymentState.REMOVED);
+
+        manager.notifyStateChange(event);
+
+        verify(publisher, times(1)).publishEvent(any(ApplicationRemovedEvent.class));
+    }
 }

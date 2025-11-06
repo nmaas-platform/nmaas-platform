@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.service.impl.security;
 
-import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.persistence.entity.User;
 import net.geant.nmaas.portal.service.AclService;
 import net.geant.nmaas.portal.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;

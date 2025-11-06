@@ -2,12 +2,12 @@ package net.geant.nmaas.portal.service;
 
 import net.geant.nmaas.portal.api.auth.Registration;
 import net.geant.nmaas.portal.api.bulk.CsvDomain;
-import net.geant.nmaas.portal.api.domain.UserListEntry;
-import net.geant.nmaas.portal.api.domain.UserView;
-import net.geant.nmaas.portal.persistent.entity.Domain;
-import net.geant.nmaas.portal.persistent.entity.Role;
-import net.geant.nmaas.portal.persistent.entity.User;
-import net.geant.nmaas.portal.persistent.entity.UserRole;
+import net.geant.nmaas.portal.domain.UserListEntry;
+import net.geant.nmaas.portal.domain.UserView;
+import net.geant.nmaas.portal.persistence.entity.Domain;
+import net.geant.nmaas.portal.persistence.entity.Role;
+import net.geant.nmaas.portal.persistence.entity.User;
+import net.geant.nmaas.portal.persistence.entity.UserRole;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

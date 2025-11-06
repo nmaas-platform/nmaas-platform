@@ -141,13 +141,16 @@ public class KubernetesApiClientService {
         }
     }
 
-    public String getLogs(KCluster kCluster, String namespace, String podName, String containerName) {
+    public String getLogs(KCluster kCluster, String namespace, String podName, String containerName, int limit) {
         try (KubernetesClient client = initClient(kCluster)) {
-            return client.pods()
+            var containerResource = client.pods()
                     .inNamespace(namespace)
                     .withName(podName)
-                    .inContainer(containerName)
-                    .getLog(true);
+                    .inContainer(containerName);
+            if (limit > 0) {
+                return containerResource.tailingLines(limit).getLog(true);
+            }
+            return containerResource.getLog(true);
         }
     }
 

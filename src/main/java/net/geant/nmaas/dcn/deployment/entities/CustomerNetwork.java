@@ -9,7 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import net.geant.nmaas.portal.api.domain.CustomerNetworkView;
+import net.geant.nmaas.portal.domain.CustomerNetworkView;
 import org.apache.commons.lang3.Validate;
 
 import java.io.Serializable;

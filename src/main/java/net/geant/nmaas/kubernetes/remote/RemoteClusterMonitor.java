@@ -49,7 +49,7 @@ public class RemoteClusterMonitor implements RemoteClusterMonitoringService {
         kClusters.forEach(cluster -> {
             try {
                 final String version = kubernetesApiClientService.getKubernetesVersion(cluster);
-                log.debug("Received version information for cluster {} -> {}", cluster.getCodename(), version);
+                log.trace("Received version information for cluster {} -> {}", cluster.getCodename(), version);
                 updateStateIfNeeded(cluster, KClusterState.UP);
             } catch (KubernetesClientSetupException e) {
                 log.error("Error while setting up client for cluster {} (message: {})", cluster.getCodename(), e.getMessage());

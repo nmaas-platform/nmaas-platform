@@ -1,12 +1,12 @@
 package net.geant.nmaas.portal.service.impl;
 
-import net.geant.nmaas.portal.persistent.entity.Application;
-import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
-import net.geant.nmaas.portal.persistent.entity.ApplicationStatePerDomain;
-import net.geant.nmaas.portal.persistent.entity.Domain;
-import net.geant.nmaas.portal.persistent.repositories.ApplicationBaseRepository;
-import net.geant.nmaas.portal.persistent.repositories.DomainGroupRepository;
-import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
+import net.geant.nmaas.portal.persistence.entity.Application;
+import net.geant.nmaas.portal.persistence.entity.ApplicationBase;
+import net.geant.nmaas.portal.persistence.entity.ApplicationStatePerDomain;
+import net.geant.nmaas.portal.persistence.entity.Domain;
+import net.geant.nmaas.portal.persistence.repositories.ApplicationBaseRepository;
+import net.geant.nmaas.portal.persistence.repositories.DomainGroupRepository;
+import net.geant.nmaas.portal.persistence.repositories.DomainRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

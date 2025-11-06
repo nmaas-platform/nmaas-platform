@@ -4,9 +4,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.portal.api.domain.SSHKeyRequest;
-import net.geant.nmaas.portal.api.domain.SSHKeyView;
-import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.domain.SSHKeyRequest;
+import net.geant.nmaas.portal.domain.SSHKeyView;
+import net.geant.nmaas.portal.persistence.entity.User;
 import net.geant.nmaas.portal.service.SSHKeyService;
 import net.geant.nmaas.portal.service.UserService;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.security.Principal;
 import java.util.List;
 
-import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_SYSTEM_ADMIN;
+import static net.geant.nmaas.portal.persistence.entity.Role.ROLE_SYSTEM_ADMIN;
 
 @RestController
 @RequestMapping("/api")

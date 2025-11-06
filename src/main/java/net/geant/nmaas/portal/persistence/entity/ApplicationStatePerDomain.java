@@ -1,0 +1,64 @@
+package net.geant.nmaas.portal.persistence.entity;
+
+import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import net.geant.nmaas.portal.domain.ApplicationStatePerDomainView;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ManyToOne;
+import java.io.Serializable;
+
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
+@Setter
+@Embeddable
+@EqualsAndHashCode
+public class ApplicationStatePerDomain implements Serializable {
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @Setter(AccessLevel.PROTECTED)
+    private ApplicationBase applicationBase;
+
+
+    /*
+    in future this can be replaced with custom state object
+    it should simplify managing domain related application state issues
+     */
+    @EqualsAndHashCode.Exclude
+    private boolean enabled;
+
+    @EqualsAndHashCode.Exclude
+    private long pvStorageSizeLimit;
+
+    public ApplicationStatePerDomain(ApplicationBase applicationBase) {
+        super();
+        this.applicationBase = applicationBase;
+        this.enabled = true;
+    }
+
+    public ApplicationStatePerDomain(ApplicationBase applicationBase, boolean enabled) {
+        super();
+        this.applicationBase = applicationBase;
+        this.enabled = enabled;
+    }
+
+    public ApplicationStatePerDomain(ApplicationBase applicationBase, boolean enabled, long pvStorageSizeLimit) {
+        super();
+        this.applicationBase = applicationBase;
+        this.enabled = enabled;
+        this.pvStorageSizeLimit = pvStorageSizeLimit;
+    }
+
+    public void applyChangedState(ApplicationStatePerDomainView appStateView){
+        this.enabled = appStateView.isEnabled();
+        this.pvStorageSizeLimit = appStateView.getPvStorageSizeLimit();
+    }
+
+}

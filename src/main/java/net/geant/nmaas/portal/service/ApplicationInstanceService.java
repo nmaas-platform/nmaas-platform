@@ -2,11 +2,11 @@ package net.geant.nmaas.portal.service;
 
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
-import net.geant.nmaas.portal.api.domain.AppInstanceView;
-import net.geant.nmaas.portal.persistent.entity.AppInstance;
-import net.geant.nmaas.portal.persistent.entity.Application;
-import net.geant.nmaas.portal.persistent.entity.Domain;
-import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.domain.AppInstanceView;
+import net.geant.nmaas.portal.persistence.entity.AppInstance;
+import net.geant.nmaas.portal.persistence.entity.Application;
+import net.geant.nmaas.portal.persistence.entity.Domain;
+import net.geant.nmaas.portal.persistence.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

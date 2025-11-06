@@ -17,4 +17,5 @@ public class AppDeploymentView {
     private String state;
     private String owner;
     private String appName;
+
 }

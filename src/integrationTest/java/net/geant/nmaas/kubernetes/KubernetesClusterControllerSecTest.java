@@ -1,7 +1,7 @@
 package net.geant.nmaas.kubernetes;
 
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
-import net.geant.nmaas.portal.persistent.entity.Role;
+import net.geant.nmaas.portal.persistence.entity.Role;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

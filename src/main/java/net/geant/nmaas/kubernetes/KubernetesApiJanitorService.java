@@ -11,7 +11,7 @@ import net.geant.nmaas.kubernetes.remote.entities.KCluster;
 import net.geant.nmaas.nmservice.configuration.ConfigFile;
 import net.geant.nmaas.orchestration.AppComponentDetails;
 import net.geant.nmaas.orchestration.Identifier;
-import net.geant.nmaas.portal.api.domain.KeyValueView;
+import net.geant.nmaas.portal.domain.KeyValueView;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -106,9 +106,11 @@ public class KubernetesApiJanitorService {
                 .toList();
     }
 
-    public List<String> getPodLogs(KCluster kCluster, String podName, String containerName, String domain) {
+    public List<String> getPodLogs(KCluster kCluster, String podName, String containerName, String domain, int limit) {
         final String namespace = namespaceService.namespace(domain);
-        return Collections.singletonList(kubernetesApiClientService.getLogs(kCluster, namespace, podName, containerName));
+        return Collections.singletonList(
+                kubernetesApiClientService.getLogs(kCluster, namespace, podName, containerName, limit)
+        );
     }
 
     public void createOrReplaceConfigMaps(KCluster kCluster, Identifier deploymentId, String domain, List<ConfigFile> configFiles) {

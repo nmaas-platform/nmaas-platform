@@ -3,7 +3,7 @@ package net.geant.nmaas.portal.api.kubernetes;
 import net.geant.nmaas.kubernetes.shell.KubernetesConnectorHelper;
 import net.geant.nmaas.kubernetes.shell.PodSessionsStorage;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
-import net.geant.nmaas.portal.persistent.entity.UsersHelper;
+import net.geant.nmaas.portal.persistence.entity.UsersHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -2,11 +2,11 @@ package net.geant.nmaas.portal.service.impl;
 
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.portal.persistent.entity.User;
-import net.geant.nmaas.portal.persistent.entity.UserLoginRegister;
-import net.geant.nmaas.portal.persistent.entity.UserLoginRegisterType;
-import net.geant.nmaas.portal.persistent.repositories.UserLoginRegisterRepository;
-import net.geant.nmaas.portal.persistent.results.UserLoginDate;
+import net.geant.nmaas.portal.persistence.entity.User;
+import net.geant.nmaas.portal.persistence.entity.UserLoginRegister;
+import net.geant.nmaas.portal.persistence.entity.UserLoginRegisterType;
+import net.geant.nmaas.portal.persistence.repositories.UserLoginRegisterRepository;
+import net.geant.nmaas.portal.persistence.results.UserLoginDate;
 import net.geant.nmaas.portal.service.UserLoginRegisterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

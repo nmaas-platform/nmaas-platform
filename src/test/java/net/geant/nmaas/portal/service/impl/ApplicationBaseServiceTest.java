@@ -2,12 +2,12 @@ package net.geant.nmaas.portal.service.impl;
 
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.events.ApplicationActivatedEvent;
-import net.geant.nmaas.portal.persistent.entity.AppDescription;
-import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
-import net.geant.nmaas.portal.persistent.entity.ApplicationState;
-import net.geant.nmaas.portal.persistent.entity.ApplicationVersion;
-import net.geant.nmaas.portal.persistent.repositories.ApplicationBaseRepository;
-import net.geant.nmaas.portal.persistent.repositories.TagRepository;
+import net.geant.nmaas.portal.persistence.entity.AppDescription;
+import net.geant.nmaas.portal.persistence.entity.ApplicationBase;
+import net.geant.nmaas.portal.persistence.entity.ApplicationState;
+import net.geant.nmaas.portal.persistence.entity.ApplicationVersion;
+import net.geant.nmaas.portal.persistence.repositories.ApplicationBaseRepository;
+import net.geant.nmaas.portal.persistence.repositories.TagRepository;
 import net.geant.nmaas.portal.service.ApplicationBaseService;
 import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
 import net.geant.nmaas.portal.service.DomainService;

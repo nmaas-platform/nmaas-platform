@@ -1,0 +1,22 @@
+package net.geant.nmaas.portal.domain;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import jakarta.validation.constraints.NotNull;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public abstract class DomainAware {
+
+	@NotNull
+	Long domainId;
+
+	@NotNull
+	String domainName;
+	
+}

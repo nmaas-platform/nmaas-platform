@@ -2,12 +2,12 @@ package net.geant.nmaas.portal.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.portal.api.domain.UserApiTokenView;
+import net.geant.nmaas.portal.domain.UserApiTokenView;
 import net.geant.nmaas.portal.exceptions.DataConflictException;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
-import net.geant.nmaas.portal.persistent.entity.User;
-import net.geant.nmaas.portal.persistent.entity.UserApiToken;
-import net.geant.nmaas.portal.persistent.repositories.UserApiTokenRepository;
+import net.geant.nmaas.portal.persistence.entity.User;
+import net.geant.nmaas.portal.persistence.entity.UserApiToken;
+import net.geant.nmaas.portal.persistence.repositories.UserApiTokenRepository;
 import net.geant.nmaas.portal.service.CustomAccessTokenService;
 import net.geant.nmaas.portal.service.impl.security.SecretPasswordService;
 import org.springframework.stereotype.Service;

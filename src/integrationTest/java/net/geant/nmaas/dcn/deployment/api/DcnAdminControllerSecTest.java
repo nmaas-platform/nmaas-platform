@@ -6,7 +6,7 @@ import net.geant.nmaas.dcn.deployment.DcnRepositoryManager;
 import net.geant.nmaas.dcn.deployment.api.model.DcnView;
 import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
-import net.geant.nmaas.portal.persistent.entity.Role;
+import net.geant.nmaas.portal.persistence.entity.Role;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

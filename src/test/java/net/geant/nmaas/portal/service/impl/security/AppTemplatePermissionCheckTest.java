@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.service.impl.security;
 
-import net.geant.nmaas.portal.persistent.entity.UsersHelper;
-import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
+import net.geant.nmaas.portal.persistence.entity.UsersHelper;
+import net.geant.nmaas.portal.persistence.repositories.ApplicationRepository;
 import net.geant.nmaas.portal.service.AclService.Permissions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

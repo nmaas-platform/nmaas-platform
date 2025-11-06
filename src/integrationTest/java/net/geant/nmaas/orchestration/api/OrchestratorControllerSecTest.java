@@ -3,7 +3,7 @@ package net.geant.nmaas.orchestration.api;
 import net.geant.nmaas.orchestration.DefaultAppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
-import net.geant.nmaas.portal.persistent.entity.Role;
+import net.geant.nmaas.portal.persistence.entity.Role;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

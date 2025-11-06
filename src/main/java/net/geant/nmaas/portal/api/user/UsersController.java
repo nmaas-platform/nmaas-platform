@@ -7,25 +7,25 @@ import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
 import net.geant.nmaas.notifications.templates.MailType;
-import net.geant.nmaas.portal.api.domain.PasswordChange;
-import net.geant.nmaas.portal.api.domain.PasswordReset;
-import net.geant.nmaas.portal.api.domain.UserBase;
-import net.geant.nmaas.portal.api.domain.UserListEntry;
-import net.geant.nmaas.portal.api.domain.UserRequest;
-import net.geant.nmaas.portal.api.domain.UserRoleView;
-import net.geant.nmaas.portal.api.domain.UserView;
-import net.geant.nmaas.portal.api.domain.UserViewMinimal;
+import net.geant.nmaas.portal.domain.PasswordChange;
+import net.geant.nmaas.portal.domain.PasswordReset;
+import net.geant.nmaas.portal.domain.UserBase;
+import net.geant.nmaas.portal.domain.UserListEntry;
+import net.geant.nmaas.portal.domain.UserRequest;
+import net.geant.nmaas.portal.domain.UserRoleView;
+import net.geant.nmaas.portal.domain.UserView;
+import net.geant.nmaas.portal.domain.UserViewMinimal;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
 import net.geant.nmaas.portal.events.UserDomainAssignmentEvent;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
-import net.geant.nmaas.portal.persistent.entity.Domain;
-import net.geant.nmaas.portal.persistent.entity.Role;
-import net.geant.nmaas.portal.persistent.entity.User;
-import net.geant.nmaas.portal.persistent.entity.UserRole;
-import net.geant.nmaas.portal.persistent.repositories.UserEntryListRepository;
-import net.geant.nmaas.portal.persistent.results.UserLoginDate;
+import net.geant.nmaas.portal.persistence.entity.Domain;
+import net.geant.nmaas.portal.persistence.entity.Role;
+import net.geant.nmaas.portal.persistence.entity.User;
+import net.geant.nmaas.portal.persistence.entity.UserRole;
+import net.geant.nmaas.portal.persistence.repositories.UserEntryListRepository;
+import net.geant.nmaas.portal.persistence.results.UserLoginDate;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserLoginRegisterService;
@@ -68,14 +68,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_DOMAIN_ADMIN;
-import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_GROUP_DOMAIN_ADMIN;
-import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_GROUP_MANAGER;
-import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_GUEST;
-import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_OPERATOR;
-import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_SYSTEM_ADMIN;
-import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_TOOL_MANAGER;
-import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_USER;
+import static net.geant.nmaas.portal.persistence.entity.Role.ROLE_DOMAIN_ADMIN;
+import static net.geant.nmaas.portal.persistence.entity.Role.ROLE_GROUP_DOMAIN_ADMIN;
+import static net.geant.nmaas.portal.persistence.entity.Role.ROLE_GROUP_MANAGER;
+import static net.geant.nmaas.portal.persistence.entity.Role.ROLE_GUEST;
+import static net.geant.nmaas.portal.persistence.entity.Role.ROLE_OPERATOR;
+import static net.geant.nmaas.portal.persistence.entity.Role.ROLE_SYSTEM_ADMIN;
+import static net.geant.nmaas.portal.persistence.entity.Role.ROLE_TOOL_MANAGER;
+import static net.geant.nmaas.portal.persistence.entity.Role.ROLE_USER;
 
 @RestController
 @RequestMapping("/api")
@@ -180,7 +180,7 @@ public class UsersController {
     public Page<UserListEntry> getUsersListDomain(@PageableDefault(page = 0, size = 15, sort = "id") Pageable pageable,
                                                   @RequestParam(required = false) String searchValue,
                                                   @PathVariable Long domainId) {
-        return userService.findAllInDomainListEntry(domainId, pageable, searchValue);
+        return userEntryListRepository.findAllByDomainId(domainId, searchValue, pageable);
     }
 
     @GetMapping(value = "/users/{userId}")

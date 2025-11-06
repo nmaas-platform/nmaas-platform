@@ -5,19 +5,19 @@ import net.geant.nmaas.kubernetes.KubernetesClusterDeploymentManager;
 import net.geant.nmaas.kubernetes.remote.repositories.KClusterRepository;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
-import net.geant.nmaas.portal.api.domain.DomainBase;
-import net.geant.nmaas.portal.api.domain.RejectionReason;
-import net.geant.nmaas.portal.api.domain.ResourcesLimitDto;
-import net.geant.nmaas.portal.api.domain.ResourcesLimitUpdateDto;
-import net.geant.nmaas.portal.api.domain.ResourcesLimitValidationResult;
-import net.geant.nmaas.portal.persistent.entity.AppInstance;
-import net.geant.nmaas.portal.persistent.entity.Application;
-import net.geant.nmaas.portal.persistent.entity.Domain;
-import net.geant.nmaas.portal.persistent.entity.ResourcesLimit;
-import net.geant.nmaas.portal.persistent.entity.ResourcesLimitType;
-import net.geant.nmaas.portal.persistent.repositories.AppInstanceRepository;
-import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
-import net.geant.nmaas.portal.persistent.repositories.ResourcesLimitRepository;
+import net.geant.nmaas.portal.domain.DomainBase;
+import net.geant.nmaas.portal.domain.RejectionReason;
+import net.geant.nmaas.portal.domain.ResourcesLimitDto;
+import net.geant.nmaas.portal.domain.ResourcesLimitUpdateDto;
+import net.geant.nmaas.portal.domain.ResourcesLimitValidationResult;
+import net.geant.nmaas.portal.persistence.entity.AppInstance;
+import net.geant.nmaas.portal.persistence.entity.Application;
+import net.geant.nmaas.portal.persistence.entity.Domain;
+import net.geant.nmaas.portal.persistence.entity.ResourcesLimit;
+import net.geant.nmaas.portal.persistence.entity.ResourcesLimitType;
+import net.geant.nmaas.portal.persistence.repositories.AppInstanceRepository;
+import net.geant.nmaas.portal.persistence.repositories.DomainRepository;
+import net.geant.nmaas.portal.persistence.repositories.ResourcesLimitRepository;
 import net.geant.nmaas.utils.Utils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -175,7 +175,7 @@ public class ResourcesLimitTest {
         Identifier applicationId = Mockito.mock(Identifier.class);
 
         ResourcesLimit globalLimit = ResourcesLimit.builder().instancesNo(10).containersNo(20).memory(1024).cpu(500).build();
-        when(resourcesLimitRepository.findByLimitType(ResourcesLimitType.GLOBAL)).thenReturn(globalLimit);
+        when(resourcesLimitRepository.findByLimitType(ResourcesLimitType.GLOBAL)).thenReturn(Stream.of(globalLimit).toList());
 
         when(resourcesLimitRepository.findByDomain_Codename(domainCodename)).thenReturn(null);
 
@@ -209,7 +209,7 @@ public class ResourcesLimitTest {
         Identifier applicationId = Mockito.mock(Identifier.class);
 
         ResourcesLimit globalLimit = ResourcesLimit.builder().instancesNo(1).containersNo(5).memory(128).cpu(300).build();
-        when(resourcesLimitRepository.findByLimitType(ResourcesLimitType.GLOBAL)).thenReturn(globalLimit);
+        when(resourcesLimitRepository.findByLimitType(ResourcesLimitType.GLOBAL)).thenReturn(Stream.of(globalLimit).toList());
 
         when(resourcesLimitRepository.findByDomain_Codename(domainCodename)).thenReturn(null);
 

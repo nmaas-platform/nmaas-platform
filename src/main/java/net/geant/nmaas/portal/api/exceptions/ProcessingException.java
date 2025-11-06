@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.api.exceptions;
 
-public class ProcessingException extends MarketException {
+public class ProcessingException extends PortalException {
 
 	public ProcessingException() { super();
 	}

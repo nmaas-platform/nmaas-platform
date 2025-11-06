@@ -15,7 +15,7 @@ import net.geant.nmaas.kubernetes.remote.entities.KClusterState;
 import net.geant.nmaas.kubernetes.remote.repositories.KClusterRepository;
 import net.geant.nmaas.notifications.templates.MailType;
 import net.geant.nmaas.portal.events.RemoteClusterNamespaceEvent;
-import net.geant.nmaas.portal.persistent.entity.Domain;
+import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 import org.modelmapper.ModelMapper;

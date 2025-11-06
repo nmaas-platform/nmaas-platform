@@ -2,8 +2,8 @@ package net.geant.nmaas.portal.api;
 
 import jakarta.servlet.Filter;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
-import net.geant.nmaas.portal.persistent.entity.Role;
-import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.persistence.entity.Role;
+import net.geant.nmaas.portal.persistence.entity.User;
 import net.geant.nmaas.portal.service.DomainService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

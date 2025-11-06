@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.api.security;
 
 import lombok.RequiredArgsConstructor;
-import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.persistence.entity.User;
 import net.geant.nmaas.portal.service.AclService;
 import net.geant.nmaas.portal.service.AclService.Permissions;
 import net.geant.nmaas.portal.service.UserService;

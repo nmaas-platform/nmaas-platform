@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.kubernetes.KubernetesApiClientFactory;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
-import net.geant.nmaas.portal.persistent.entity.AppInstance;
+import net.geant.nmaas.portal.persistence.entity.AppInstance;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import org.springframework.stereotype.Component;
 

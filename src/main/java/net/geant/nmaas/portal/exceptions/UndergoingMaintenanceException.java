@@ -1,8 +1,8 @@
 package net.geant.nmaas.portal.exceptions;
 
-import net.geant.nmaas.portal.api.exceptions.MarketException;
+import net.geant.nmaas.portal.api.exceptions.PortalException;
 
-public class UndergoingMaintenanceException extends MarketException {
+public class UndergoingMaintenanceException extends PortalException {
     public UndergoingMaintenanceException() {
         super();
     }

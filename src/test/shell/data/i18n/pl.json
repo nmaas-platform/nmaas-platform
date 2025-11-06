@@ -269,6 +269,14 @@
     "DELETE_BUTTON": "Usuń",
     "ITEMS_PER_PAGE" : "Liczba domen na liście",
     "NOTACTIVE": "Pokaż nieaktywne domeny",
+    "GLOBAL_SETTINGS": {
+      "HEADER": "Limity zasobów domeny",
+      "DESCRIPTION": "Zestaw limitów stosowanych do każdej domeny",
+      "INSTANCES": "Liczba instancji",
+      "MEMORY": "Ilość pamięci (w MB)",
+      "CPU": "Liczba vCPU",
+      "CONTAINERS": "Liczba kontenerów"
+    },
     "LIST" : {
       "GROUPS" : "Grupy domen",
       "GROUP" : "Grupa domen",
@@ -294,9 +302,9 @@
       "DELETE_MYSELF" : "Usuń mój dostęp"
     },
     "ANNOTATIONS" : {
-      "HEADER" : "Adnotacje domeny",
+      "HEADER" : "Adnotacje przestrzeni domeny",
       "SUBHEADER" : "Globalne ustawienie adnotacji domeny. Poniższy zestaw adnotacji zostanie dodany do obiektów Kubernetes tworzonych dla każdej nowej domeny.",
-      "CREATION" : "Adnotację przestrzeni domeny",
+      "CREATION" : "Zestaw adnotacji, które mają zostać dodane do przestrzeni nazw Kubernetes, tworzony dla każdej nowej domeny",
       "ADD" : "Dodaj adnotację",
       "KEY" : "Klucz",
       "VALUE" : "Wartość",
@@ -309,6 +317,7 @@
     "NAME": "Nazwa",
     "DOMAIN": "Domena",
     "OWNER": "Właściciel",
+    "CLUSTER": "Klaster",
     "DEPLOYED_AT": "Czas uruchomienia",
     "APPLICATION": "Aplikacja",
     "VERSION": "Wersja",
@@ -441,6 +450,8 @@
     "APP_NAME": "Nazwa aplikacji",
     "APP_ENABLED": "Dostępna",
     "PV_STORAGE_SIZE_LIMIT": "Storage size limit",
+    "RESOURCE_LIMIT": "Limit zasobów",
+    "DISABLE_BUTTON": "Usuń limity",
     "MODAL": {
       "HEADER": "Domain removal confirmation",
       "DESCRIPTION": "Do you want to completely remove this domain?\nNote that all running application instances within this domain will be deactivated and all domain users will have their roles removed as well.",
@@ -606,7 +617,10 @@
       "REFRESH": "Odśwież",
       "DOWNLOAD": "Pobierz",
       "NO_LOGS": "Logi nie są dostępne dla tej aplikacji",
-      "WAITING": "Oczekiwanie na logi..."
+      "WAITING": "Oczekiwanie na logi...",
+      "LIMIT": "Limit",
+      "PLACEHOLDER_LIMIT": "Limit logów",
+      "NO_LIMIT": "Bez limitu"
     },
     "UPDATE_CONFIG_BUTTON": "Konfiguracja",
     "ENABLE_AUTO_UPGRADES_BUTTON": "Włącz automatyczne aktualizacje",
@@ -927,6 +941,12 @@
     "APP_OPTIONAL_DESCRIPTIONS_HEADER": "Opcjonalne opisy aplikacji",
     "OPTIONAL_LANGS_LABEL": "Wybierz język opcjonalny",
     "OPTIONAL_LANGS_TOOLTIP": "Możesz podać dodatkowe opisy aplikacji w różnych, opcjonalych językach.",
+    "CONSUMED_PODS": "Liczba zużywanych podów",
+    "CONSUMED_PODS_TOOLTIP": "Liczba podów uruchamianych przez pojedynczą instancję aplikacji",
+    "CONSUMED_CPU":"Zużycie CPU (w miliCPU)",
+    "CONSUMED_CPU_TOOLTIP": "Ilość zasobów procesora używana przez pojedynczą instancję aplikacji",
+    "CONSUMED_MEMORY": "Zużycie pamięci (w MB)",
+    "CONSUMED_MEMORY_TOOLTIP": "Ilość pamięci używana przez pojedynczą instancję aplikacji",
     "FIRST_PAGE_HEADER": "Informacje",
     "BASIC_APP_INFO_STEP_INFO": "Basic set of information about the application. Application can be filtered by tag. Select an existing tag or create a new one if none is suitable.",
     "LOGO_AND_SCREENSHOTS_STEP_INFO": "Application logo is displayed in various views in the application. A set of screenshots should give a nice overview of the application's UI.",
@@ -1376,6 +1396,7 @@
     "DOMAIN_ACTION" : "Domain action",
     "DOMAIN_GROUP_ACTION" : "Domain group action",
     "APPLICATION_DEPLOYMENT" : "Application deployment",
+    "APPLICATION_REMOVAL": "Application removal",
     "USER_ASSIGNMENT" : "User assignment",
     "NEW" : "Add",
     "DETAILS" : "Webhooks details",

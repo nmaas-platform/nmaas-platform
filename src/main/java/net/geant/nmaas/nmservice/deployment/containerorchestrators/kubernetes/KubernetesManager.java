@@ -503,12 +503,12 @@ public class KubernetesManager implements ContainerOrchestrator {
     }
 
     @Override
-    public AppComponentLogs serviceComponentLogs(Identifier deploymentId, String serviceComponentName, String serviceSubComponentName) {
+    public AppComponentLogs serviceComponentLogs(Identifier deploymentId, String serviceComponentName, String serviceSubComponentName, int limit) {
         try {
             KubernetesNmServiceInfo service = repositoryManager.loadService(deploymentId);
             return new AppComponentLogs(
                     serviceComponentName,
-                    kubernetesApiJanitorService.getPodLogs(service.getRemoteCluster(), serviceComponentName, serviceSubComponentName, service.getDomain())
+                    kubernetesApiJanitorService.getPodLogs(service.getRemoteCluster(), serviceComponentName, serviceSubComponentName, service.getDomain(), limit)
             );
         } catch (InvalidDeploymentIdException idie) {
             throw new ContainerOrchestratorInternalErrorException(serviceNotFoundMessage(idie.getMessage()));

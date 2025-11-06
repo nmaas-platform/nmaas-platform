@@ -3,10 +3,10 @@ package net.geant.nmaas.portal.api.webhooks;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import net.geant.nmaas.portal.api.domain.Id;
-import net.geant.nmaas.portal.api.domain.WebhookEventDto;
+import net.geant.nmaas.portal.domain.Id;
+import net.geant.nmaas.portal.domain.WebhookEventDto;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
-import net.geant.nmaas.portal.persistent.entity.WebhookEvent;
+import net.geant.nmaas.portal.persistence.entity.WebhookEvent;
 import net.geant.nmaas.portal.service.impl.WebhookEventService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.security.GeneralSecurityException;
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -48,13 +49,13 @@ public class WebhookEventController {
 
     @PutMapping("/{id}")
     @Transactional
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
-    public ResponseEntity<WebhookEventDto> updateWebhook(@PathVariable Long id, @RequestBody @Valid WebhookEventDto webhook) {
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_DOMAIN_ADMIN')")
+    public ResponseEntity<WebhookEventDto> updateWebhook(@PathVariable Long id, @RequestBody @Valid WebhookEventDto webhook, Principal principal) {
         if (!id.equals(webhook.getId())) {
             throw new ProcessingException(UNABLE_TO_CHANGE_WEBHOOK_EVENT);
         }
         try {
-            return ResponseEntity.ok(webhookEventService.update(webhook));
+            return ResponseEntity.ok(webhookEventService.update(webhook, principal.getName()));
         } catch (GeneralSecurityException e) {
             throw new RuntimeException(e);
         }
@@ -62,16 +63,16 @@ public class WebhookEventController {
 
     @DeleteMapping("/{id}")
     @Transactional
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
-    public void deleteWebhook(@PathVariable Long id) {
-        webhookEventService.remove(id);
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_DOMAIN_ADMIN')")
+    public void deleteWebhook(@PathVariable Long id, Principal principal) {
+        webhookEventService.remove(id, principal.getName());
     }
 
     @GetMapping("/{id}")
     @Transactional
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
-    public ResponseEntity<WebhookEventDto> getWebhook(@PathVariable Long id) throws GeneralSecurityException {
-        return ResponseEntity.ok(webhookEventService.getById(id));
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_DOMAIN_ADMIN')")
+    public ResponseEntity<WebhookEventDto> getWebhook(@PathVariable Long id, Principal principal) throws GeneralSecurityException {
+        return ResponseEntity.ok(webhookEventService.getById(id, principal.getName()));
     }
 
     @GetMapping

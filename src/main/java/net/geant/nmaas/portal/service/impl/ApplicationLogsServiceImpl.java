@@ -5,7 +5,7 @@ import net.geant.nmaas.orchestration.AppComponentLogs;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.portal.api.logs.PodInfo;
 import net.geant.nmaas.portal.api.logs.PodLogs;
-import net.geant.nmaas.portal.persistent.entity.AppInstance;
+import net.geant.nmaas.portal.persistence.entity.AppInstance;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import net.geant.nmaas.portal.service.ApplicationLogsService;
 import org.springframework.stereotype.Service;
@@ -41,10 +41,10 @@ public class ApplicationLogsServiceImpl implements ApplicationLogsService {
     }
 
     @Override
-    public PodLogs getPodLogs(Long appInstanceId, String podName, String containerName) {
+    public PodLogs getPodLogs(Long appInstanceId, String podName, String containerName, int limit) {
         AppInstance appInstance = applicationInstanceService.find(appInstanceId)
                 .orElseThrow(IllegalArgumentException::new);
-        AppComponentLogs appComponentLogs = appDeploymentMonitor.appComponentLogs(appInstance.getInternalId(), podName, containerName);
+        AppComponentLogs appComponentLogs = appDeploymentMonitor.appComponentLogs(appInstance.getInternalId(), podName, containerName, limit);
         return new PodLogs(appComponentLogs.getName(), processLogs(appComponentLogs.getLines()));
     }
 
