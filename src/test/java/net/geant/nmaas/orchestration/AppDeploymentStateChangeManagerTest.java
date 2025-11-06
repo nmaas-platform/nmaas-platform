@@ -16,6 +16,7 @@ import net.geant.nmaas.orchestration.events.app.AppUpgradeCompleteEvent;
 import net.geant.nmaas.orchestration.events.app.AppUpgradeFailedEvent;
 import net.geant.nmaas.orchestration.events.app.AppVerifyConfigurationActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppVerifyServiceActionEvent;
+import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
 import net.geant.nmaas.portal.events.ApplicationDeployedEvent;
 import net.geant.nmaas.portal.events.ApplicationRemovedEvent;
 import net.geant.nmaas.portal.persistence.entity.WebhookEventType;
@@ -69,6 +70,7 @@ class AppDeploymentStateChangeManagerTest {
     private final AppDeploymentMonitor monitor = mock(AppDeploymentMonitor.class);
     private final ApplicationEventPublisher publisher = mock(ApplicationEventPublisher.class);
     private final WebhookEventRepository webhookEventRepository = mock(WebhookEventRepository.class);
+    private final AppDeploymentRepository appDeploymentRepository = mock(AppDeploymentRepository.class);
     private final ModelMapper modelMapper = new ModelMapper();
     private final ScheduleManager scheduleManager = mock(ScheduleManager.class);
 
@@ -79,7 +81,7 @@ class AppDeploymentStateChangeManagerTest {
     void setup() {
         when(event.getDeploymentId()).thenReturn(deploymentId);
         manager = new AppDeploymentStateChangeManager(deployments, monitor, publisher);
-        listener = new WebhooksEventListener(webhookEventRepository, scheduleManager, modelMapper);
+        listener = new WebhooksEventListener(webhookEventRepository, appDeploymentRepository, scheduleManager, modelMapper);
     }
 
     @Test
@@ -130,8 +132,9 @@ class AppDeploymentStateChangeManagerTest {
 
     @Test
     void shouldTriggerAppDeploymentJobWhenWebhookMatchesDomain() {
+        when(appDeploymentRepository.findByDeploymentId(deploymentId)).thenReturn(Optional.ofNullable(stubAppDeployment()));
         ApplicationDeployedEvent appDeployedEvent = new ApplicationDeployedEvent(this, deploymentId.value());
-        when(webhookEventRepository.findIdByEventTypeAndDeployment(net.geant.nmaas.portal.persistence.entity.WebhookEventType.APPLICATION_DEPLOYMENT, Identifier.newInstance(deploymentId.value())))
+        when(webhookEventRepository.findIdByEventTypeAndDomain(WebhookEventType.APPLICATION_DEPLOYMENT, "domain"))
                 .thenReturn(java.util.List.of(1L));
 
         listener.trigger(appDeployedEvent);
@@ -144,8 +147,9 @@ class AppDeploymentStateChangeManagerTest {
 
     @Test
     void shouldNotTriggerAppDeploymentJobWhenWebhookForDifferentDomain() {
+        when(appDeploymentRepository.findByDeploymentId(deploymentId)).thenReturn(Optional.ofNullable(stubAppDeployment()));
         ApplicationDeployedEvent appDeployedEvent = new ApplicationDeployedEvent(this, deploymentId.value());
-        when(webhookEventRepository.findIdByEventTypeAndDeployment(WebhookEventType.APPLICATION_DEPLOYMENT, Identifier.newInstance(deploymentId.value())))
+        when(webhookEventRepository.findIdByEventTypeAndDomain(WebhookEventType.APPLICATION_DEPLOYMENT, "domain1"))
                 .thenReturn(java.util.List.of());
 
         listener.trigger(appDeployedEvent);

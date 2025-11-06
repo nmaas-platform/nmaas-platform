@@ -3,6 +3,8 @@ package net.geant.nmaas.webhooks;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.orchestration.Identifier;
+import net.geant.nmaas.orchestration.entities.AppDeployment;
+import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
 import net.geant.nmaas.webhooks.jobs.AppDeploymentJob;
 import net.geant.nmaas.webhooks.jobs.AppRemovalJob;
 import net.geant.nmaas.webhooks.jobs.DomainActionJob;
@@ -36,6 +38,7 @@ import java.util.Map;
 public class WebhooksEventListener {
 
     private final WebhookEventRepository webhookEventRepository;
+    private final AppDeploymentRepository appDeploymentRepository;
     private final ScheduleManager scheduleManager;
     private final ModelMapper modelMapper;
 
@@ -104,7 +107,10 @@ public class WebhooksEventListener {
     @EventListener
     @Loggable(LogLevel.INFO)
     public void trigger(ApplicationDeployedEvent event) {
-        webhookEventRepository.findIdByEventTypeAndDeployment(WebhookEventType.APPLICATION_DEPLOYMENT, Identifier.newInstance(event.getDeploymentId()))
+        final String domainCodename = appDeploymentRepository.findByDeploymentId(Identifier.newInstance(event.getDeploymentId()))
+                .map(AppDeployment::getDomain)
+                .orElse("");
+        webhookEventRepository.findIdByEventTypeAndDomain(WebhookEventType.APPLICATION_DEPLOYMENT, domainCodename)
                 .forEach(id ->
                         scheduleManager.createOneTimeJob(
                                 AppDeploymentJob.class,
@@ -117,7 +123,10 @@ public class WebhooksEventListener {
     @EventListener
     @Loggable(LogLevel.INFO)
     public void trigger(ApplicationRemovedEvent event) {
-        webhookEventRepository.findIdByEventTypeAndDeployment(WebhookEventType.APPLICATION_REMOVAL, Identifier.newInstance(event.getDeploymentId()))
+        final String domainCodename = appDeploymentRepository.findByDeploymentId(Identifier.newInstance(event.getDeploymentId()))
+                .map(AppDeployment::getDomain)
+                .orElse("");
+        webhookEventRepository.findIdByEventTypeAndDomain(WebhookEventType.APPLICATION_REMOVAL, domainCodename)
                 .forEach(id ->
                         scheduleManager.createOneTimeJob(
                                 AppRemovalJob.class,
