@@ -21,6 +21,8 @@ import org.springframework.web.client.RestClient;
 
 import java.security.GeneralSecurityException;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 
 @Slf4j
 @Component
@@ -46,11 +48,11 @@ public class AppRemovalJob extends WebhookJob {
                 log.warn("Webhook's event type with id {} has been updated. AppRemovalJob is abandoned", webhookId);
                 return;
             }
-
             AppDeployment appDeployment = appDeploymentRepositoryManager.load(Identifier.newInstance(deploymentId));
             AppDeploymentWebhookDto.AppDeploymentView appDeploymentView = modelMapper.map(appDeployment, AppDeploymentWebhookDto.AppDeploymentView.class);
-            appDeploymentView.setLogicalDate(LocalDateTime.now().toString());
-            callWebhook(webhook, new AppDeploymentWebhookDto(appDeploymentView, WebhookEventType.APPLICATION_REMOVAL));
+            AppDeploymentWebhookDto webhookDto = new AppDeploymentWebhookDto(appDeploymentView, WebhookEventType.APPLICATION_REMOVAL);
+            webhookDto.setLogicalDate(LocalDateTime.now().atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ISO_INSTANT));
+            callWebhook(webhook, webhookDto);
         } catch (GeneralSecurityException e) {
             log.error("Failed to decrypt webhook with id {}", webhookId);
             throw new JobExecutionException("Failed webhook decryption");

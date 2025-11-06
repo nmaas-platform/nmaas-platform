@@ -13,6 +13,13 @@ public class AppDeploymentWebhookDto {
 
     private AppDeploymentView appDeployment;
     private WebhookEventType webhookEventType;
+    @JsonProperty("logical_date")
+    private String logicalDate;
+
+    public AppDeploymentWebhookDto(AppDeploymentView appDeployment, WebhookEventType webhookEventType) {
+        this.appDeployment = appDeployment;
+        this.webhookEventType = webhookEventType;
+    }
 
     @Getter
     @Setter
@@ -24,8 +31,6 @@ public class AppDeploymentWebhookDto {
         private String state;
         private String owner;
         private String appName;
-        @JsonProperty("logical_date")
-        private String logicalDate;
 
     }
 
