@@ -1,9 +1,8 @@
 package net.geant.nmaas.webhooks.jobs;
 
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
-import net.geant.nmaas.orchestration.Identifier;
-import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.orchestration.exceptions.WebServiceCommunicationException;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
@@ -20,20 +19,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
 import java.security.GeneralSecurityException;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 
 @Slf4j
 @Component
-public class AppRemovalJob extends WebhookJob {
-
-    private final AppDeploymentRepositoryManager appDeploymentRepositoryManager;
+public class AppRemovalJob extends AppWebhookJob {
 
     @Autowired
-    public AppRemovalJob(RestClient restClient, WebhookEventService webhookEventService, ModelMapper modelMapper, AppDeploymentRepositoryManager appDeploymentRepositoryManager) {
-        super(restClient, webhookEventService, modelMapper);
-        this.appDeploymentRepositoryManager = appDeploymentRepositoryManager;
+    public AppRemovalJob(RestClient restClient, WebhookEventService webhookEventService, ModelMapper modelMapper,
+                            AppDeploymentRepositoryManager appDeploymentRepositoryManager, KubernetesRepositoryManager serviceInfoRepositoryManager) {
+        super(restClient, webhookEventService, modelMapper, appDeploymentRepositoryManager, serviceInfoRepositoryManager);
     }
 
     @Override
@@ -48,10 +42,7 @@ public class AppRemovalJob extends WebhookJob {
                 log.warn("Webhook's event type with id {} has been updated. AppRemovalJob is abandoned", webhookId);
                 return;
             }
-            AppDeployment appDeployment = appDeploymentRepositoryManager.load(Identifier.newInstance(deploymentId));
-            AppDeploymentWebhookDto.AppDeploymentView appDeploymentView = modelMapper.map(appDeployment, AppDeploymentWebhookDto.AppDeploymentView.class);
-            AppDeploymentWebhookDto webhookDto = new AppDeploymentWebhookDto(appDeploymentView, WebhookEventType.APPLICATION_REMOVAL);
-            webhookDto.setLogicalDate(LocalDateTime.now().atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ISO_INSTANT));
+            AppDeploymentWebhookDto webhookDto = getWebhookDto(deploymentId);
             callWebhook(webhook, webhookDto);
         } catch (GeneralSecurityException e) {
             log.error("Failed to decrypt webhook with id {}", webhookId);
