@@ -7,6 +7,7 @@ import net.geant.nmaas.orchestration.api.model.AppDeploymentView;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.orchestration.exceptions.WebServiceCommunicationException;
+import net.geant.nmaas.portal.service.WebhookHistoryService;
 import net.geant.nmaas.webhooks.AppDeploymentWebhookDto;
 import net.geant.nmaas.portal.domain.WebhookEventDto;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
@@ -30,8 +31,8 @@ public class AppDeploymentJob extends WebhookJob {
     private final AppDeploymentRepositoryManager appDeploymentRepositoryManager;
 
     @Autowired
-    public AppDeploymentJob(RestClient restClient, WebhookEventService webhookEventService, ModelMapper modelMapper, AppDeploymentRepositoryManager appDeploymentRepositoryManager) {
-        super(restClient, webhookEventService, modelMapper);
+    public AppDeploymentJob(RestClient restClient, WebhookEventService webhookEventService, ModelMapper modelMapper, WebhookHistoryService webhookHistoryService, AppDeploymentRepositoryManager appDeploymentRepositoryManager) {
+        super(restClient, webhookEventService, modelMapper, webhookHistoryService);
         this.appDeploymentRepositoryManager = appDeploymentRepositoryManager;
     }
 

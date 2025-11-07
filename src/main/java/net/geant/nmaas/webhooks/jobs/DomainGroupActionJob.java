@@ -3,6 +3,7 @@ package net.geant.nmaas.webhooks.jobs;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.orchestration.exceptions.WebServiceCommunicationException;
 import net.geant.nmaas.portal.domain.DomainGroupView;
+import net.geant.nmaas.portal.service.WebhookHistoryService;
 import net.geant.nmaas.webhooks.DomainGroupWebhookDto;
 import net.geant.nmaas.portal.domain.WebhookEventDto;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
@@ -23,8 +24,8 @@ import java.security.GeneralSecurityException;
 public class DomainGroupActionJob extends WebhookJob {
 
     @Autowired
-    public DomainGroupActionJob(RestClient restClient, WebhookEventService webhookEventService, ModelMapper modelMapper) {
-        super(restClient, webhookEventService, modelMapper);
+    public DomainGroupActionJob(RestClient restClient, WebhookEventService webhookEventService, ModelMapper modelMapper, WebhookHistoryService webhookHistoryService) {
+        super(restClient, webhookEventService, modelMapper, webhookHistoryService);
     }
 
     @Override

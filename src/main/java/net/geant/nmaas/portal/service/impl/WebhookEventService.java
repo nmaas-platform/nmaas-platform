@@ -86,10 +86,6 @@ public class WebhookEventService {
                 }).toList();
     }
 
-    public List<Long> findIdByEventType(WebhookEventType webhookEventType) {
-        return webhookRepository.findIdByEventType(webhookEventType);
-    }
-
     public WebhookEventDto getById(Long id) throws GeneralSecurityException {
         WebhookEvent event = webhookRepository.findById(id)
                 .orElseThrow(() -> new MissingElementException(String.format("WebhookEventType with id: %d cannot be found", id)));

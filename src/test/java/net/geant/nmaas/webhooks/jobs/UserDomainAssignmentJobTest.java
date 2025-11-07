@@ -5,10 +5,16 @@ import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.entity.Role;
 import net.geant.nmaas.portal.persistence.entity.User;
 import net.geant.nmaas.portal.persistence.entity.WebhookEventType;
+import net.geant.nmaas.portal.persistence.entity.WebhookHistory;
+import net.geant.nmaas.portal.persistence.repositories.WebhookHistoryRepository;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
+import net.geant.nmaas.portal.service.WebhookHistoryService;
 import net.geant.nmaas.portal.service.impl.WebhookEventService;
+import net.geant.nmaas.portal.service.impl.WebhookHistoryServiceImpl;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.modelmapper.ModelMapper;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -19,6 +25,9 @@ import org.springframework.web.client.RestClient;
 import java.security.GeneralSecurityException;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -30,6 +39,16 @@ class UserDomainAssignmentJobTest {
     private final WebhookEventService webhookEventService = mock(WebhookEventService.class);
     private final DomainService domainService = mock(DomainService.class);
     private final UserService userService = mock(UserService.class);
+    private final ModelMapper mapper = new ModelMapper();
+
+    private final WebhookHistoryRepository webhookHistoryRepository = mock(WebhookHistoryRepository.class);
+
+    private WebhookHistoryService webhookHistoryService;
+
+    @BeforeEach
+    void setUp() {
+        webhookHistoryService = new WebhookHistoryServiceImpl(webhookHistoryRepository, mapper);
+    }
 
     @Test
     void shouldExecuteSampleJob() throws GeneralSecurityException {
@@ -50,10 +69,18 @@ class UserDomainAssignmentJobTest {
 
         assertThrows(JobExecutionException.class, () -> {
             UserDomainAssignmentJob job =
-                    new UserDomainAssignmentJob(restClient, webhookEventService, new ModelMapper(), domainService, userService);
+                    new UserDomainAssignmentJob(restClient, webhookEventService, mapper, webhookHistoryService, domainService, userService);
             job.execute(jobExecutionContext);
         });
         verify(webhookEventService).getById(10L);
+        ArgumentCaptor<WebhookHistory> webhookHistoryCaptor = ArgumentCaptor.forClass(WebhookHistory.class);
+        verify(webhookHistoryRepository).save(webhookHistoryCaptor.capture());
+        WebhookHistory savedHistory = webhookHistoryCaptor.getValue();
+        assertNotNull(savedHistory);
+        assertEquals(WebhookEventType.USER_ASSIGNMENT, savedHistory.getEventType());
+        assertEquals("https://example.webhook-url.pl", savedHistory.getUrl());
+        assertNull(savedHistory.getResponseBody());
+        assertNotNull(savedHistory.getExecutionTimestamp());
     }
 
 }
