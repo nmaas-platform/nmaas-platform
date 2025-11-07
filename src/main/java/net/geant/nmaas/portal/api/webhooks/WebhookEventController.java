@@ -3,9 +3,9 @@ package net.geant.nmaas.portal.api.webhooks;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.domain.Id;
 import net.geant.nmaas.portal.domain.WebhookEventDto;
-import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistence.entity.WebhookEvent;
 import net.geant.nmaas.portal.service.impl.WebhookEventService;
 import org.springframework.http.ResponseEntity;
@@ -49,13 +49,13 @@ public class WebhookEventController {
 
     @PutMapping("/{id}")
     @Transactional
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_DOMAIN_ADMIN')")
-    public ResponseEntity<WebhookEventDto> updateWebhook(@PathVariable Long id, @RequestBody @Valid WebhookEventDto webhook, Principal principal) {
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+    public ResponseEntity<WebhookEventDto> updateWebhook(@PathVariable Long id, @RequestBody @Valid WebhookEventDto webhook) {
         if (!id.equals(webhook.getId())) {
             throw new ProcessingException(UNABLE_TO_CHANGE_WEBHOOK_EVENT);
         }
         try {
-            return ResponseEntity.ok(webhookEventService.update(webhook, principal.getName()));
+            return ResponseEntity.ok(webhookEventService.update(webhook));
         } catch (GeneralSecurityException e) {
             throw new RuntimeException(e);
         }
@@ -63,23 +63,73 @@ public class WebhookEventController {
 
     @DeleteMapping("/{id}")
     @Transactional
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_DOMAIN_ADMIN')")
-    public void deleteWebhook(@PathVariable Long id, Principal principal) {
-        webhookEventService.remove(id, principal.getName());
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+    public void deleteWebhook(@PathVariable Long id) {
+        webhookEventService.remove(id);
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @Transactional
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_DOMAIN_ADMIN')")
-    public ResponseEntity<WebhookEventDto> getWebhook(@PathVariable Long id, Principal principal) throws GeneralSecurityException {
-        return ResponseEntity.ok(webhookEventService.getById(id, principal.getName()));
+    public ResponseEntity<WebhookEventDto> getWebhook(@PathVariable Long id) throws GeneralSecurityException {
+        return ResponseEntity.ok(webhookEventService.getById(id));
     }
 
     @GetMapping
-    @Transactional
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+    @Transactional
     public ResponseEntity<List<WebhookEventDto>> getAllWebhooks() {
         return ResponseEntity.ok(webhookEventService.getAllWebhooks());
+    }
+
+    @PostMapping("/domain/{domainId}")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasPermission(#domainId, 'domain', 'OWNER')")
+    @Transactional
+    public ResponseEntity<Id> createWebhookInDomain(@PathVariable Long domainId, @RequestBody @Valid WebhookEventDto webhook) {
+        if (!domainId.equals(webhook.getDomain().getId())) {
+            throw new IllegalArgumentException("Domain identifiers don't match.");
+        }
+        WebhookEvent webhookEvent = null;
+        try {
+            webhookEvent = webhookEventService.create(webhook);
+        } catch (GeneralSecurityException e) {
+            throw new RuntimeException(e);
+        }
+        return ResponseEntity.ok(new Id(webhookEvent.getId()));
+    }
+
+    @PutMapping("/domain/{domainId}/{id}")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasPermission(#domainId, 'domain', 'OWNER')")
+    @Transactional
+    public ResponseEntity<WebhookEventDto> updateWebhookInDomain(@PathVariable Long domainId, @PathVariable Long id, @RequestBody @Valid WebhookEventDto webhook, Principal principal) {
+        if (!id.equals(webhook.getId()) || (!domainId.equals(webhook.getDomain().getId()))) {
+            throw new ProcessingException(UNABLE_TO_CHANGE_WEBHOOK_EVENT);
+        }
+        try {
+            return ResponseEntity.ok(webhookEventService.update(domainId, webhook));
+        } catch (GeneralSecurityException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @DeleteMapping("/domain/{domainId}/{id}")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasPermission(#domainId, 'domain', 'OWNER')")
+    @Transactional
+    public void deleteWebhookInDomain(@PathVariable Long domainId, @PathVariable Long id) {
+        webhookEventService.remove(domainId, id);
+    }
+
+    @GetMapping("/domain/{domainId}/{id}")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasPermission(#domainId, 'domain', 'OWNER')")
+    @Transactional
+    public ResponseEntity<WebhookEventDto> getWebhookInDomain(@PathVariable Long domainId, @PathVariable Long id) throws GeneralSecurityException {
+        return ResponseEntity.ok(webhookEventService.getById(domainId, id));
+    }
+
+    @GetMapping("/domain/{domainId}")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasPermission(#domainId, 'domain', 'OWNER')")
+    public ResponseEntity<List<WebhookEventDto>> getWebhooksInDomain(@PathVariable Long domainId) {
+        return ResponseEntity.ok(webhookEventService.getAllWebhooks(domainId));
     }
 
 }

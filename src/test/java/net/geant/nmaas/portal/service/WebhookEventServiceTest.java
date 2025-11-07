@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.service;
 
-import net.geant.nmaas.portal.domain.WebhookEventDto;
 import net.geant.nmaas.portal.api.security.EncryptionService;
+import net.geant.nmaas.portal.domain.WebhookEventDto;
 import net.geant.nmaas.portal.persistence.entity.WebhookEvent;
 import net.geant.nmaas.portal.persistence.entity.WebhookEventType;
 import net.geant.nmaas.portal.persistence.repositories.WebhookEventRepository;
@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 
 import java.security.GeneralSecurityException;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,11 +26,11 @@ import static org.mockito.Mockito.when;
 
 class WebhookEventServiceTest {
 
-    WebhookEventRepository webhookEventRepository = mock(WebhookEventRepository.class);
-
-    private final ModelMapper modelMapper = new ModelMapper();
+    private final WebhookEventRepository webhookEventRepository = mock(WebhookEventRepository.class);
     private final EncryptionService encryptionService = mock(EncryptionService.class);
     private final UserService userService = mock(UserService.class);
+    private final ModelMapper modelMapper = new ModelMapper();
+
     private final WebhookEventService webhookEventService = new WebhookEventService(webhookEventRepository, encryptionService, modelMapper, userService);
 
     private WebhookEventDto webhookEventDto;
@@ -44,7 +44,7 @@ class WebhookEventServiceTest {
     }
 
     @Test
-    void crudWebhookEvent() throws GeneralSecurityException {
+    void shouldPerformCrudWebhookEventActions() throws GeneralSecurityException {
         webhookEventDto = new WebhookEventDto(2L, "webhook2", "https://example.com/webhook2", WebhookEventType.DOMAIN_ACTION, "xxxxyyyy", "Authorization", null);
         webhookEvent = new WebhookEvent(2L, "webhook2", "https://example.com/webhook2", WebhookEventType.DOMAIN_ACTION, "sjxV/ytRIoHjXy+CtXMzD4T+bntbqzQX25eztXbJ9r4gIZXT", "Authorization", null);
         when(webhookEventRepository.save(isA(WebhookEvent.class))).thenReturn(webhookEvent);
@@ -63,25 +63,25 @@ class WebhookEventServiceTest {
         webhookEventDto.setName("updated webhook");
         when(webhookEventRepository.findById(2L)).thenReturn(Optional.of(webhookEvent));
         when(userService.isAdmin("test")).thenReturn(true);
-        webhookEventService.update(webhookEventDto, "test");
+        webhookEventService.update(webhookEventDto);
 
         when(webhookEventRepository.existsById(2L)).thenReturn(true);
         doNothing().when(webhookEventRepository).deleteById(2L);
 
         when(userService.isAdmin("test")).thenReturn(true);
-        webhookEventService.remove(2L, "test");
+        webhookEventService.remove(2L);
     }
 
     @Test
     void shouldGetAllWebhookEvents() throws GeneralSecurityException {
         // when(encryptionService.decrypt(anyString())).thenAnswer(i -> "xxxxyyyy");
-        when(webhookEventRepository.findAll()).thenReturn(Arrays.asList(webhookEvent));
+        when(webhookEventRepository.findAll()).thenReturn(Collections.singletonList(webhookEvent));
 
         List<WebhookEventDto> webhooks = webhookEventService.getAllWebhooks();
 
         assertNotNull(webhooks);
         assertEquals(1, webhooks.size());
-        WebhookEventDto created = webhooks.get(0);
+        WebhookEventDto created = webhooks.getFirst();
         assertEquals(webhookEventDto.getId(), created.getId());
         assertEquals(webhookEventDto.getName(), created.getName());
         assertEquals(webhookEventDto.getTargetUrl(), created.getTargetUrl());
@@ -104,7 +104,7 @@ class WebhookEventServiceTest {
 
         assertThrows(RuntimeException.class, () -> {
             when(userService.isAdmin("test")).thenReturn(true);
-            webhookEventService.remove(999L, "test");
+            webhookEventService.remove(999L);
         });
     }
 }
