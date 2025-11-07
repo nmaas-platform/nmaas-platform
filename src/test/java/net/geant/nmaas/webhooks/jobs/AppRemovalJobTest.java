@@ -1,5 +1,7 @@
 package net.geant.nmaas.webhooks.jobs;
 
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
@@ -35,6 +37,7 @@ class AppRemovalJobTest {
     private final RestClient restClient = RestClient.create();
     private final WebhookEventService webhookEventService = mock(WebhookEventService.class);
     private final AppDeploymentRepositoryManager appDeploymentRepositoryManager = mock(AppDeploymentRepositoryManager.class);
+    private final KubernetesRepositoryManager kubernetesRepositoryManager = mock(KubernetesRepositoryManager.class);
 
     private final ModelMapper mapper = new ModelMapper();
 
@@ -60,9 +63,11 @@ class AppRemovalJobTest {
                 new WebhookEventDto(10L, "webhook-name", "https://example.webhook-url.pl", WebhookEventType.APPLICATION_REMOVAL));
         when(appDeploymentRepositoryManager.load(Identifier.newInstance("id"))).thenReturn(
                 new AppDeployment());
+        when(kubernetesRepositoryManager.loadService(Identifier.newInstance("id"))).thenReturn(
+                new KubernetesNmServiceInfo());
 
         assertThrows(JobExecutionException.class, () -> {
-            AppRemovalJob job = new AppRemovalJob(restClient, webhookEventService, mapper, webhookHistoryService, appDeploymentRepositoryManager);
+            AppRemovalJob job = new AppRemovalJob(restClient, webhookEventService, mapper, appDeploymentRepositoryManager, kubernetesRepositoryManager, webhookHistoryService);
             job.execute(jobExecutionContext);
         });
 

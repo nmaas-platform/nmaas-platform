@@ -93,8 +93,8 @@ dependencies {
     implementation 'org.hibernate.orm:hibernate-envers:6.6.34.Final'
 
     // Database migrations
-    implementation('org.flywaydb:flyway-core:11.15.0')
-    runtimeOnly 'org.flywaydb:flyway-database-postgresql:11.15.0'
+    implementation('org.flywaydb:flyway-core:11.16.0')
+    runtimeOnly 'org.flywaydb:flyway-database-postgresql:11.16.0'
 
     // Templates
     implementation('org.freemarker:freemarker:2.3.34')
@@ -102,7 +102,7 @@ dependencies {
     implementation('com.vdurmont:semver4j:3.1.0')
 
     // nmaas statistics extracted from the database
-    implementation('io.micrometer:micrometer-registry-prometheus:1.15.5')
+    implementation('io.micrometer:micrometer-registry-prometheus:1.15.6')
 
     // Kubernetes API client
     implementation('io.fabric8:kubernetes-client:7.4.0')
