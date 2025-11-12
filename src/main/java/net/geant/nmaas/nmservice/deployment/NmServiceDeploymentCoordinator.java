@@ -27,8 +27,8 @@ import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.portal.domain.RejectionReason;
-import net.geant.nmaas.portal.service.ResourcesLimitService;
 import net.geant.nmaas.portal.domain.ResourcesLimitValidationResult;
+import net.geant.nmaas.portal.service.ResourcesLimitService;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.beans.factory.annotation.Value;
@@ -75,8 +75,8 @@ import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentSta
 public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvider {
 
     private final ContainerOrchestrator orchestrator;
-    private final ApplicationEventPublisher applicationEventPublisher;
     private final ResourcesLimitService resourcesLimitService;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Value("${nmaas.service.deployment.check.interval}")
     int serviceDeploymentCheckInternal;
