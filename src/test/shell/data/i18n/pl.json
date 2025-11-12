@@ -1393,6 +1393,7 @@
     "TYPE" : "Webhook event",
     "TOKEN" : "Token value",
     "AUTH" : "Authorization header",
+    "DOMAIN": "Domena",
     "DOMAIN_ACTION" : "Domain action",
     "DOMAIN_GROUP_ACTION" : "Domain group action",
     "APPLICATION_DEPLOYMENT" : "Application deployment",
