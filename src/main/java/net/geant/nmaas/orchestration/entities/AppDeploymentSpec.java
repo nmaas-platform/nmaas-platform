@@ -18,6 +18,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
+import net.geant.nmaas.utils.Utils;
 import org.apache.commons.lang3.Validate;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -79,6 +80,18 @@ public class AppDeploymentSpec implements Serializable {
     private Integer consumedMemory;
 
     private Integer consumedCpu;
+
+    public Integer getConsumedPods() {
+        return consumedPods != null ? consumedPods : Utils.DEFAULT_CONSUMED_PODS;
+    }
+
+    public Integer getConsumedMemory() {
+        return consumedMemory != null ? consumedMemory : Utils.DEFAULT_CONSUMED_MEMORY;
+    }
+
+    public Integer getConsumedCpu() {
+        return consumedCpu != null ? consumedCpu : Utils.DEFAULT_CONSUMED_CPU;
+    }
 
     public void validate() {
         Validate.isTrue(kubernetesTemplate != null, "Kubernetes template cannot be null");

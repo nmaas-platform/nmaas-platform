@@ -2,13 +2,25 @@ package net.geant.nmaas.portal.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.portal.api.exceptions.MissingElementException;
+import net.geant.nmaas.kubernetes.KubernetesApiClientService;
+import net.geant.nmaas.kubernetes.KubernetesClusterDeploymentManager;
+import net.geant.nmaas.kubernetes.remote.entities.KCluster;
+import net.geant.nmaas.kubernetes.remote.repositories.KClusterRepository;
+import net.geant.nmaas.orchestration.Identifier;
+import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
+import net.geant.nmaas.portal.domain.RejectionReason;
 import net.geant.nmaas.portal.domain.ResourcesLimitDto;
 import net.geant.nmaas.portal.domain.ResourcesLimitUpdateDto;
+import net.geant.nmaas.portal.api.exceptions.MissingElementException;
+import net.geant.nmaas.portal.persistence.entity.AppInstance;
+import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.entity.ResourcesLimit;
 import net.geant.nmaas.portal.persistence.entity.ResourcesLimitType;
+import net.geant.nmaas.portal.persistence.repositories.AppInstanceRepository;
+import net.geant.nmaas.portal.persistence.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistence.repositories.ResourcesLimitRepository;
 import net.geant.nmaas.portal.service.ResourcesLimitService;
+import net.geant.nmaas.portal.domain.ResourcesLimitValidationResult;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +39,11 @@ public class ResourcesLimitServiceImpl implements ResourcesLimitService {
     private static final String DOMAIN_GROUP_UNIQUE_RESOURCES_LIMIT = "You can define only one resources limit per domain group";
 
     private final ResourcesLimitRepository resourcesLimitRepository;
+    private final AppInstanceRepository appInstanceRepository;
+    private final KubernetesApiClientService kubernetesApiClientService;
+    private final KubernetesClusterDeploymentManager clusterDeploymentManager;
+    private final DomainRepository domainRepository;
+    private final KClusterRepository kClusterRepository;
     private final ModelMapper modelMapper;
 
     @Override
@@ -62,7 +79,7 @@ public class ResourcesLimitServiceImpl implements ResourcesLimitService {
     @Override
     public ResourcesLimitDto create(ResourcesLimitDto dto) {
 
-        if (ResourcesLimitType.GLOBAL.equals(dto.getLimitType())) {
+        if (ResourcesLimitType.GLOBAL.equals(dto.getLimitType()) && resourcesLimitRepository.existsByLimitType(ResourcesLimitType.GLOBAL)) {
             throw new IllegalArgumentException(GLOBAL_UNIQUE_RESOURCES_LIMIT);
         } else if (ResourcesLimitType.DOMAIN.equals(dto.getLimitType()) && (dto.getDomain() == null || dto.getDomain().getId() == null)) {
             throw new IllegalArgumentException(DOMAIN_RESOURCES_LIMIT);
@@ -117,5 +134,87 @@ public class ResourcesLimitServiceImpl implements ResourcesLimitService {
 
     public List<ResourcesLimitDto> getAllResourcesLimits() {
         return resourcesLimitRepository.findAll().stream().map(entity -> modelMapper.map(entity, ResourcesLimitDto.class)).toList();
+    }
+
+    @Override
+    public ResourcesLimitValidationResult validateNewDeployment(String domainCodename,
+                                                                Identifier applicationId,
+                                                                int requestedInstances,
+                                                                AppDeploymentSpec deploymentSpec) {
+        ResourcesLimit limit = resourcesLimitRepository.findByDomain_Codename(domainCodename);
+        List<ResourcesLimit> groupsLimits = resourcesLimitRepository.findForGroupsBasedOnDomain(domainCodename);
+        if (limit != null) {
+            return validateAgainst(false, limit, groupsLimits, domainCodename, requestedInstances, deploymentSpec);
+        } else {
+            List<ResourcesLimit> globalLimits = resourcesLimitRepository.findByLimitType(ResourcesLimitType.GLOBAL);
+            if (!globalLimits.isEmpty()) {
+                return validateAgainst(true, globalLimits.get(0), groupsLimits, domainCodename, requestedInstances, deploymentSpec);
+            }
+        }
+        ResourcesLimitValidationResult validationResult =  new ResourcesLimitValidationResult();
+        validationResult.setAccepted(true);
+        return validationResult;
+    }
+
+    private ResourcesLimitValidationResult validateAgainst(boolean basedOnGlobal,
+                                                           ResourcesLimit limit,
+                                                           List<ResourcesLimit> groupsLimits,
+                                                           String domainCodename,
+                                                           int requestedInstances,
+                                                           AppDeploymentSpec deploymentSpec) {
+        ResourcesLimitValidationResult validationResult =  new ResourcesLimitValidationResult();
+        validationResult.setAccepted(true);
+        List<AppInstance> runningDeployments = appInstanceRepository.findAllActiveInDomain(domainCodename);
+
+        if (limit.getInstancesNo() != null && (runningDeployments.size() + requestedInstances > limit.getInstancesNo()+ groupsLimits.stream().mapToInt(ResourcesLimit::getInstancesNo).sum())) {
+            validationResult.setAccepted(false);
+            validationResult.getReasons().add(basedOnGlobal
+                            ? RejectionReason.GLOBAL_INSTANCES_LIMIT_REACHED
+                            : RejectionReason.DOMAIN_INSTANCES_LIMIT_REACHED);
+        }
+
+        if (limit.getContainersNo() != null && (countRunningContainersInDomain(domainCodename) + deploymentSpec.getConsumedPods() > limit.getContainersNo()+ groupsLimits.stream().mapToInt(ResourcesLimit::getContainersNo).sum())) {
+            validationResult.setAccepted(false);
+            validationResult.getReasons().add(basedOnGlobal
+                            ? RejectionReason.GLOBAL_CONTAINERS_LIMIT_REACHED
+                            : RejectionReason.DOMAIN_CONTAINERS_LIMIT_REACHED);
+        }
+
+        if (limit.getCpu() != null && (runningDeployments.stream().mapToInt(x -> x.getApplication().getAppDeploymentSpec().getConsumedCpu()).sum() + deploymentSpec.getConsumedCpu() > limit.getCpu()+ groupsLimits.stream().mapToInt(ResourcesLimit::getCpu).sum())) {
+            validationResult.setAccepted(false);
+            validationResult.getReasons().add(basedOnGlobal
+                    ? RejectionReason.GLOBAL_CPU_LIMIT_REACHED
+                    : RejectionReason.DOMAIN_CPU_LIMIT_REACHED);
+        }
+
+        if (limit.getMemory() != null && (runningDeployments.stream().mapToInt(x -> x.getApplication().getAppDeploymentSpec().getConsumedMemory()).sum() + deploymentSpec.getConsumedMemory() > limit.getMemory()+ groupsLimits.stream().mapToInt(ResourcesLimit::getMemory).sum())) {
+            validationResult.setAccepted(false);
+            validationResult.getReasons().add(basedOnGlobal
+                    ? RejectionReason.GLOBAL_MEMORY_LIMIT_REACHED
+                    : RejectionReason.DOMAIN_MEMORY_LIMIT_REACHED);
+        }
+
+        return validationResult;
+    }
+
+    private int countRunningContainersInDomain(String domainCodename) {
+        String namespace = clusterDeploymentManager.namespace(domainCodename);
+        final int localClusterCount = countRunningContainersInNamespace(null, namespace);
+        int remoteClustersCount = 0;
+        Optional<Domain> domainOpt = domainRepository.findByCodename(domainCodename);
+        if (domainOpt.isPresent()) {
+            for (KCluster cluster : kClusterRepository.findByDomains_Id(domainOpt.get().getId())) {
+                remoteClustersCount += countRunningContainersInNamespace(cluster, namespace);
+            }
+        }
+        return localClusterCount + remoteClustersCount;
+    }
+
+    private int countRunningContainersInNamespace(KCluster cluster, String namespace) {
+        try {
+            return kubernetesApiClientService.getPods(cluster, namespace).getItems().size();
+        } catch (Exception e) {
+            return 0;
+        }
     }
 }

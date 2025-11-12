@@ -8,6 +8,8 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.mo
 import net.geant.nmaas.orchestration.entities.AppDeploymentEnv;
 
 import jakarta.validation.constraints.NotNull;
+import net.geant.nmaas.utils.Utils;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -17,10 +19,6 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AppDeploymentSpecView {
-
-    private static Integer DEFAULT_CONSUMED_PODS = 1;
-    private static Integer DEFAULT_CONSUMED_MEMORY = 128;
-    private static Integer DEFAULT_CONSUMED_CPU = 100;
 
     private Long id;
 
@@ -52,14 +50,14 @@ public class AppDeploymentSpecView {
     private Integer consumedCpu;
 
     public Integer getConsumedPods() {
-        return consumedPods != null ? consumedPods : DEFAULT_CONSUMED_PODS;
+        return consumedPods != null ? consumedPods : Utils.DEFAULT_CONSUMED_PODS;
     }
 
     public Integer getConsumedMemory() {
-        return consumedMemory != null ? consumedMemory : DEFAULT_CONSUMED_MEMORY;
+        return consumedMemory != null ? consumedMemory : Utils.DEFAULT_CONSUMED_MEMORY;
     }
 
     public Integer getConsumedCpu() {
-        return consumedCpu != null ? consumedCpu : DEFAULT_CONSUMED_CPU;
+        return consumedCpu != null ? consumedCpu : Utils.DEFAULT_CONSUMED_CPU;
     }
 }

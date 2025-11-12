@@ -26,6 +26,9 @@ import net.geant.nmaas.orchestration.AppUpgradeMode;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
+import net.geant.nmaas.portal.domain.RejectionReason;
+import net.geant.nmaas.portal.service.ResourcesLimitService;
+import net.geant.nmaas.portal.domain.ResourcesLimitValidationResult;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,6 +37,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.DEPLOYED;
 import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.DEPLOYMENT_FAILED;
@@ -72,6 +76,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
 
     private final ContainerOrchestrator orchestrator;
     private final ApplicationEventPublisher applicationEventPublisher;
+    private final ResourcesLimitService resourcesLimitService;
 
     @Value("${nmaas.service.deployment.check.interval}")
     int serviceDeploymentCheckInternal;
@@ -84,6 +89,14 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
     public void verifyRequest(Identifier deploymentId, AppDeployment appDeployment, AppDeploymentSpec deploymentSpec) {
         try {
             orchestrator.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(deploymentId, appDeployment, deploymentSpec);
+            // Validate against resource limits
+            ResourcesLimitValidationResult validation = resourcesLimitService
+                    .validateNewDeployment(appDeployment.getDomain(), appDeployment.getApplicationId(), 1, deploymentSpec);
+            if (!validation.isAccepted()) {
+                String errorReason = "Request validation failed for the following reasons: " + validation.getReasons().stream().map(RejectionReason::getDescription).collect(Collectors.joining(","));
+                notifyStateChangeListeners(deploymentId, REQUEST_VERIFICATION_FAILED, errorReason);
+                throw new ServiceRequestVerificationException(errorReason);
+            }
             orchestrator.verifyRequestAndObtainInitialDeploymentDetails(deploymentId);
             notifyStateChangeListeners(deploymentId, REQUEST_VERIFIED);
         } catch (Exception e) {
