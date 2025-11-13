@@ -28,6 +28,8 @@ public class WebhookHistory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private Long webhookEventId;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private WebhookEventType eventType;

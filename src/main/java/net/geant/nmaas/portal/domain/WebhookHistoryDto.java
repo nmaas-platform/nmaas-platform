@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 public class WebhookHistoryDto {
 
     private Long id;
+    private Long webhookEventId;
     private WebhookEventType eventType;
     private String domainCodename;
     private String url;
