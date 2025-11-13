@@ -15,7 +15,6 @@ public interface ApplicationStatePerDomainService {
 
     List<ApplicationStatePerDomain> generateListOfDefaultApplicationStatesPerDomainDisabled();
 
-
     List<Domain> updateAllDomainsWithNewApplicationBase(ApplicationBase applicationBase);
 
     List<ApplicationStatePerDomain> updateDomain(DomainView changes);
