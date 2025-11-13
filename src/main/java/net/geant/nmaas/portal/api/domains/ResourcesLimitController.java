@@ -25,13 +25,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/resources-limits")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
 @Tag(name = "ResourcesLimit", description = "ResourcesLimits management API")
 public class ResourcesLimitController {
 
     private final ResourcesLimitService resourcesLimitService;
 
     @PostMapping("/global")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @Transactional
     public ResponseEntity<Void> setGlobalResourcesLimit(@RequestBody @Valid ResourcesLimitDto resourcesLimit) {
         resourcesLimitService.setGlobalResourcesLimit(resourcesLimit);
@@ -39,12 +39,14 @@ public class ResourcesLimitController {
     }
 
     @GetMapping("/global")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @Transactional
     public ResponseEntity<ResourcesLimitDto> getGlobalResourcesLimit() {
         return ResponseEntity.ok(resourcesLimitService.getGlobalResourcesLimit());
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @Transactional
     public ResponseEntity<Id> createResourcesLimit(@RequestBody @Valid ResourcesLimitDto resourcesLimit) {
         resourcesLimit = resourcesLimitService.create(resourcesLimit);
@@ -52,6 +54,7 @@ public class ResourcesLimitController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @Transactional
     public ResponseEntity<Id> updateResourcesLimit(@PathVariable Long id, @RequestBody @Valid ResourcesLimitUpdateDto resourcesLimit) {
         if (!id.equals(resourcesLimit.getId())) {
@@ -62,21 +65,31 @@ public class ResourcesLimitController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @Transactional
     public void deleteResourcesLimit(@PathVariable Long id) {
         resourcesLimitService.delete(id);
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @Transactional
     public ResponseEntity<ResourcesLimitDto> getResourcesLimit(@PathVariable Long id) {
         return ResponseEntity.ok(resourcesLimitService.getResourcesLimit(id));
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @Transactional
     public ResponseEntity<List<ResourcesLimitDto>> getAllResourcesLimits() {
         return ResponseEntity.ok(resourcesLimitService.getAllResourcesLimits());
+    }
+
+    @GetMapping("/domain/{domainId}")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasPermission(#domainId, 'domain', 'OWNER')")
+    @Transactional
+    public ResponseEntity<ResourcesLimitDto> getDomainResourceLimit(@PathVariable Long domainId) {
+        return ResponseEntity.ok(resourcesLimitService.getDomainResourceLimit(domainId));
     }
 
 }

@@ -23,6 +23,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.modelmapper.ModelMapper;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -45,13 +46,13 @@ import static org.mockito.Mockito.when;
 public class ResourcesLimitTest {
 
     private final ResourcesLimitRepository resourcesLimitRepository = mock(ResourcesLimitRepository.class);
-    private ResourcesLimitServiceImpl resourcesLimitService ;
+    private ResourcesLimitServiceImpl resourcesLimitService;
 
     private ResourcesLimitDto resourcesLimitDto;
     private ResourcesLimit resourcesLimit;
     private final AppInstanceRepository appInstanceRepository = mock(AppInstanceRepository.class);
     private KubernetesApiClientService kubernetesApiClientService = mock(KubernetesApiClientService.class);
-    private  KubernetesClusterDeploymentManager clusterDeploymentManager = mock(KubernetesClusterDeploymentManager.class);
+    private KubernetesClusterDeploymentManager clusterDeploymentManager = mock(KubernetesClusterDeploymentManager.class);
     private final DomainRepository domainRepository = mock(DomainRepository.class);
     private final KClusterRepository kClusterRepository = mock(KClusterRepository.class);
     private DomainBase domainView = new DomainBase();
@@ -128,7 +129,7 @@ public class ResourcesLimitTest {
         Identifier applicationId = Mockito.mock(Identifier.class);
 
         ResourcesLimit domainLimit = ResourcesLimit.builder().instancesNo(5).containersNo(10).memory(4028).cpu(1000).build();
-        when(resourcesLimitRepository.findByDomain_Codename(domainCodename)).thenReturn(domainLimit);
+        when(resourcesLimitRepository.findByDomain_Codename(domainCodename)).thenReturn(Optional.of(domainLimit));
         when(resourcesLimitRepository.findForGroupsBasedOnDomain(domainCodename)).thenReturn(Collections.emptyList());
 
         List<AppInstance> runningDeployments = List.of(
@@ -155,7 +156,7 @@ public class ResourcesLimitTest {
         Identifier applicationId = Mockito.mock(Identifier.class);
 
         ResourcesLimit domainLimit = ResourcesLimit.builder().instancesNo(2).containersNo(10).memory(4028).cpu(300).build();
-        when(resourcesLimitRepository.findByDomain_Codename(domainCodename)).thenReturn(domainLimit);
+        when(resourcesLimitRepository.findByDomain_Codename(domainCodename)).thenReturn(Optional.of(domainLimit));
         when(resourcesLimitRepository.findForGroupsBasedOnDomain(domainCodename)).thenReturn(Collections.emptyList());
 
         List<AppInstance> runningDeployments = List.of(
@@ -174,16 +175,20 @@ public class ResourcesLimitTest {
     void validateNewDeploymentWithDomainGroupLimits() {
         Identifier applicationId = Mockito.mock(Identifier.class);
 
-        ResourcesLimit globalLimit = ResourcesLimit.builder().instancesNo(10).containersNo(20).memory(1024).cpu(500).build();
+        ResourcesLimit globalLimit = ResourcesLimit.builder()
+                .instancesNo(10).containersNo(20).memory(1024).cpu(500)
+                .build();
         when(resourcesLimitRepository.findByLimitType(ResourcesLimitType.GLOBAL)).thenReturn(Stream.of(globalLimit).toList());
+        when(resourcesLimitRepository.findByDomain_Codename(domainCodename)).thenReturn(Optional.empty());
 
-        when(resourcesLimitRepository.findByDomain_Codename(domainCodename)).thenReturn(null);
-
-        ResourcesLimit groupLimit1 = ResourcesLimit.builder().instancesNo(2).containersNo(5).memory(Utils.DEFAULT_CONSUMED_MEMORY).cpu(Utils.DEFAULT_CONSUMED_CPU).build();
-        ResourcesLimit groupLimit2 = ResourcesLimit.builder().instancesNo(2).containersNo(5).memory(Utils.DEFAULT_CONSUMED_MEMORY).cpu(Utils.DEFAULT_CONSUMED_CPU).build();
+        ResourcesLimit groupLimit1 = ResourcesLimit.builder()
+                .instancesNo(2).containersNo(5).memory(Utils.DEFAULT_CONSUMED_MEMORY).cpu(Utils.DEFAULT_CONSUMED_CPU)
+                .build();
+        ResourcesLimit groupLimit2 = ResourcesLimit.builder()
+                .instancesNo(2).containersNo(5).memory(Utils.DEFAULT_CONSUMED_MEMORY).cpu(Utils.DEFAULT_CONSUMED_CPU)
+                .build();
 
         when(resourcesLimitRepository.findForGroupsBasedOnDomain(domainCodename)).thenReturn(Arrays.asList(groupLimit1, groupLimit2));
-
 
         List<AppInstance> runningDeployments = List.of(
                 createAppInstance(200, 124),
@@ -211,11 +216,11 @@ public class ResourcesLimitTest {
         ResourcesLimit globalLimit = ResourcesLimit.builder().instancesNo(1).containersNo(5).memory(128).cpu(300).build();
         when(resourcesLimitRepository.findByLimitType(ResourcesLimitType.GLOBAL)).thenReturn(Stream.of(globalLimit).toList());
 
-        when(resourcesLimitRepository.findByDomain_Codename(domainCodename)).thenReturn(null);
+        when(resourcesLimitRepository.findByDomain_Codename(domainCodename)).thenReturn(Optional.empty());
 
         ResourcesLimit groupLimit1 = ResourcesLimit.builder().instancesNo(1).containersNo(1).memory(Utils.DEFAULT_CONSUMED_MEMORY).cpu(Utils.DEFAULT_CONSUMED_CPU).build();
         ResourcesLimit groupLimit2 = ResourcesLimit.builder().instancesNo(1).containersNo(1).memory(Utils.DEFAULT_CONSUMED_MEMORY).cpu(Utils.DEFAULT_CONSUMED_CPU).build();
-        
+
         when(resourcesLimitRepository.findForGroupsBasedOnDomain(domainCodename)).thenReturn(Arrays.asList(groupLimit1, groupLimit2));
         List<AppInstance> runningDeployments = List.of(
                 createAppInstance(200, 252),
@@ -227,7 +232,7 @@ public class ResourcesLimitTest {
 
         ResourcesLimitValidationResult result = resourcesLimitService.validateNewDeployment(domainCodename, applicationId, 1, new AppDeploymentSpec());
         assertFalse(result.isAccepted());
-        assertEquals( Stream.of(RejectionReason.GLOBAL_INSTANCES_LIMIT_REACHED.getDescription(), RejectionReason.GLOBAL_MEMORY_LIMIT_REACHED.getDescription()).collect(Collectors.joining(",")), result.getReasons().stream().map(RejectionReason::getDescription).collect(Collectors.joining(",")));
+        assertEquals(Stream.of(RejectionReason.GLOBAL_INSTANCES_LIMIT_REACHED.getDescription(), RejectionReason.GLOBAL_MEMORY_LIMIT_REACHED.getDescription()).collect(Collectors.joining(",")), result.getReasons().stream().map(RejectionReason::getDescription).collect(Collectors.joining(",")));
     }
 
     private AppInstance createAppInstance(int cpu, int memory) {
