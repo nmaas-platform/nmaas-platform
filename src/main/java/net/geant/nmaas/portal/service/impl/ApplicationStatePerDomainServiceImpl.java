@@ -43,14 +43,16 @@ public class ApplicationStatePerDomainServiceImpl implements ApplicationStatePer
     public List<Domain> updateAllDomainsWithNewApplicationBase(ApplicationBase applicationBase) {
         ApplicationStatePerDomain appState = new ApplicationStatePerDomain(applicationBase);
         appState.setEnabled(true);
-        appState.setPvStorageSizeLimit(ApplicationStatePerDomainServiceImpl.DEFAULT_PV_STORAGE_SIZE_LIMIT);
+        appState.setPvStorageSizeLimit(DEFAULT_PV_STORAGE_SIZE_LIMIT);
         List<Domain> allDomains = domainRepository.findAll();
         allDomains.forEach(domain -> domain.addApplicationState(appState));
+
         //update domains groups - set app to false by default
         ApplicationStatePerDomain appState2 = new ApplicationStatePerDomain(applicationBase);
         appState2.setEnabled(false);
-        domainGroupRepository.findAll().forEach(d -> {
-            d.getApplicationStatePerDomain().add(appState2);
+        appState2.setPvStorageSizeLimit(DEFAULT_PV_STORAGE_SIZE_LIMIT);
+        domainGroupRepository.findAll().forEach(group -> {
+            group.getApplicationStatePerDomain().add(appState2);
         });
         return domainRepository.saveAll(allDomains);
     }
