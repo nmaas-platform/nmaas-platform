@@ -19,6 +19,9 @@ import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRetrieveServiceCo
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotUpgradeKubernetesServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotVerifyServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.ServiceRequestVerificationException;
+import net.geant.nmaas.nmservice.deployment.limits.RejectionReason;
+import net.geant.nmaas.nmservice.deployment.limits.ResourcesLimitValidationService;
+import net.geant.nmaas.nmservice.deployment.limits.ValidationResult;
 import net.geant.nmaas.orchestration.AppComponentDetails;
 import net.geant.nmaas.orchestration.AppComponentLogs;
 import net.geant.nmaas.orchestration.AppUiAccessDetails;
@@ -26,9 +29,6 @@ import net.geant.nmaas.orchestration.AppUpgradeMode;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
-import net.geant.nmaas.portal.domain.RejectionReason;
-import net.geant.nmaas.portal.domain.ResourcesLimitValidationResult;
-import net.geant.nmaas.portal.service.ResourcesLimitService;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.beans.factory.annotation.Value;
@@ -75,7 +75,7 @@ import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentSta
 public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvider {
 
     private final ContainerOrchestrator orchestrator;
-    private final ResourcesLimitService resourcesLimitService;
+    private final ResourcesLimitValidationService resourceLimitsValidationService;
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @Value("${nmaas.service.deployment.check.interval}")
@@ -90,10 +90,11 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
         try {
             orchestrator.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(deploymentId, appDeployment, deploymentSpec);
             // Validate against resource limits
-            ResourcesLimitValidationResult validation = resourcesLimitService
-                    .validateNewDeployment(appDeployment.getDomain(), appDeployment.getApplicationId(), 1, deploymentSpec);
+            ValidationResult validation = resourceLimitsValidationService
+                    .validateNewDeployment(appDeployment.getDomain(), 1, deploymentSpec);
             if (!validation.isAccepted()) {
-                String errorReason = "Request validation failed for the following reasons: " + validation.getReasons().stream().map(RejectionReason::getDescription).collect(Collectors.joining(","));
+                String errorReason = "Request validation failed for the following reasons: "
+                        + validation.getReasons().stream().map(RejectionReason::getDescription).collect(Collectors.joining(","));
                 notifyStateChangeListeners(deploymentId, REQUEST_VERIFICATION_FAILED, errorReason);
                 throw new ServiceRequestVerificationException(errorReason);
             }

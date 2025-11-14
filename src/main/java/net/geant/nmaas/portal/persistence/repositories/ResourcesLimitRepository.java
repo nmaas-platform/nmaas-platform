@@ -31,5 +31,5 @@ public interface ResourcesLimitRepository extends JpaRepository<ResourcesLimit, 
             "WHERE d.codename = :codename")
     List<ResourcesLimit> findForGroupsBasedOnDomain(@Param("codename") String codename);
 
-
+    Optional<ResourcesLimit> findOneByLimitType(ResourcesLimitType resourcesLimitType);
 }

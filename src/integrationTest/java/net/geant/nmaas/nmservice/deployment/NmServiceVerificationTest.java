@@ -2,8 +2,8 @@ package net.geant.nmaas.nmservice.deployment;
 
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerCheckFailedException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotVerifyServiceException;
+import net.geant.nmaas.nmservice.deployment.limits.ResourcesLimitValidationService;
 import net.geant.nmaas.orchestration.Identifier;
-import net.geant.nmaas.portal.service.ResourcesLimitService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationEventPublisher;
@@ -17,14 +17,14 @@ import static org.mockito.Mockito.when;
 public class NmServiceVerificationTest {
 
     private final ContainerOrchestrator orchestrator = mock(ContainerOrchestrator.class);
+    private final ResourcesLimitValidationService resourcesLimitValidationService = mock(ResourcesLimitValidationService.class);
     private final ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);
-    private final ResourcesLimitService resourcesLimitService = mock(ResourcesLimitService.class);
 
     private NmServiceDeploymentCoordinator provider;
 
     @BeforeEach
     void setup() {
-        provider = new NmServiceDeploymentCoordinator(orchestrator, resourcesLimitService, eventPublisher);
+        provider = new NmServiceDeploymentCoordinator(orchestrator, resourcesLimitValidationService, eventPublisher);
         provider.serviceDeploymentCheckMaxWaitTime = 5;
         provider.serviceDeploymentCheckInternal = 1;
     }

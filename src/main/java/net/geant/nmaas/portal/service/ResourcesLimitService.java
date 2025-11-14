@@ -1,10 +1,7 @@
 package net.geant.nmaas.portal.service;
 
-import net.geant.nmaas.orchestration.Identifier;
-import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.portal.domain.ResourcesLimitDto;
 import net.geant.nmaas.portal.domain.ResourcesLimitUpdateDto;
-import net.geant.nmaas.portal.domain.ResourcesLimitValidationResult;
 
 import java.util.List;
 
@@ -20,14 +17,9 @@ public interface ResourcesLimitService {
 
     List<ResourcesLimitDto> getAllResourcesLimits();
 
-    ResourcesLimitValidationResult validateNewDeployment(String domainCodename,
-                                                         Identifier applicationId,
-                                                         int requestedInstances,
-                                                         AppDeploymentSpec deploymentSpec);
+    ResourcesLimitDto getGlobalResourcesLimit();
 
-   ResourcesLimitDto getGlobalResourcesLimit();
-
-   void setGlobalResourcesLimit(ResourcesLimitDto resourcesLimit);
+    void setGlobalResourcesLimit(ResourcesLimitDto resourcesLimit);
 
     ResourcesLimitDto getDomainResourceLimit(Long domainId);
 }

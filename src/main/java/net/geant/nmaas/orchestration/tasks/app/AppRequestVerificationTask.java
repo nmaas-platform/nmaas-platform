@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.kubernetes.remote.RemoteClusterManagementService;
 import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
+import net.geant.nmaas.nmservice.deployment.exceptions.ServiceRequestVerificationException;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.events.app.AppVerifyRequestActionEvent;
@@ -50,6 +51,8 @@ public class AppRequestVerificationTask {
                     deploymentId,
                     appDeployment,
                     application.getAppDeploymentSpec());
+        } catch (ServiceRequestVerificationException e) {
+            log.warn("New deployment was blocked.");
         } catch (Exception ex) {
             log.error("Error reported at {}", LocalDateTime.now(), ex);
         }
