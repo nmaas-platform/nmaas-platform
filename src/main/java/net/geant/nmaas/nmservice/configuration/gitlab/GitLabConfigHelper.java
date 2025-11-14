@@ -3,6 +3,7 @@ package net.geant.nmaas.nmservice.configuration.gitlab;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.gitlab.exceptions.GitLabInvalidConfigurationException;
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
 import net.geant.nmaas.orchestration.Identifier;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -10,6 +11,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.gitlab4j.api.models.RepositoryFile;
 import org.gitlab4j.api.models.User;
 import org.springframework.http.HttpStatus;
+
+import java.util.Locale;
+import java.util.Optional;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
@@ -20,6 +24,7 @@ public class GitLabConfigHelper {
     static final String DEFAULT_REPLACEMENT_FOR_INCORRECT_CHARACTER = "_";
     static final String FORBIDDEN_USERNAME_SUFFIX1 = ".git";
     static final String FORBIDDEN_USERNAME_SUFFIX2 = ".atom";
+    private static final String GITLAB_ALLOWED_CHARACTERS = "[A-Za-z0-9._-]+";
 
     static final int PROJECT_MEMBER_MAINTAINER_ACCESS_LEVEL = 40;
     private static final int DEFAULT_WEBHOOK_TOKEN_LENGTH = 30;
@@ -83,6 +88,10 @@ public class GitLabConfigHelper {
         return GROUPS_PATH_PREFIX + "-" + groupName(domain);
     }
 
+    static String fullGroupPath(String domain, Optional<String> parentPath) {
+        return parentPath.map(parent -> parent + "/" + groupPath(domain)).orElse(groupPath(domain));
+    }
+
     static boolean statusIsDifferentThenNotFound(int httpStatus) {
         return httpStatus != HttpStatus.NOT_FOUND.value();
     }
@@ -112,6 +121,31 @@ public class GitLabConfigHelper {
 
     static String updateCommitMessage(String fileName) {
         return "Update commit of " + fileName;
+    }
+
+    public static Optional<String> sanitizeGroupPathSegment(String value) {
+        if (value == null) {
+            throw new GitLabInvalidConfigurationException(
+                    "GitLab top-level group name must be defined"
+            );
+        }
+
+        // Remove leading or trailing dots/hyphens (not allowed in paths)
+        String sanitized = value.replaceAll("^[-.]+|[-.]+$", "").trim();
+
+        if (!sanitized.matches(GITLAB_ALLOWED_CHARACTERS)) {
+            throw new GitLabInvalidConfigurationException(
+                    "Invalid GitLab top-level group name: " + value
+            );
+        }
+
+        if (sanitized.isEmpty()) {
+            throw new GitLabInvalidConfigurationException(
+                    "Invalid GitLab top-level group name: " + value
+            );
+        }
+
+        return Optional.of(sanitized.toLowerCase(Locale.ROOT));
     }
 
 }

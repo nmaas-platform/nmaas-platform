@@ -1,11 +1,16 @@
 package net.geant.nmaas.nmservice.configuration.gitlab;
 
+import net.geant.nmaas.gitlab.exceptions.GitLabInvalidConfigurationException;
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
 import org.gitlab4j.api.models.RepositoryFile;
 import org.gitlab4j.api.models.User;
 import org.junit.jupiter.api.Test;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class GitLabConfigHelperTest {
 
@@ -76,6 +81,20 @@ class GitLabConfigHelperTest {
         assertEquals("email", result3.getEmail());
         assertEquals("username", result3.getName());
 
+    }
+
+    @Test
+    void shouldBuildFullGroupPathWhenParentProvided() {
+        String parent = "parent-group";
+        assertEquals("parent-group/groups-domain", GitLabConfigHelper.fullGroupPath("domain", Optional.of(parent)));
+        assertEquals("groups-domain", GitLabConfigHelper.fullGroupPath("domain", Optional.empty()));
+    }
+
+    @Test
+    void shouldSanitizeGroupPathSegment() {
+        Optional<String> sanitized = GitLabConfigHelper.sanitizeGroupPathSegment(" My-Group-Name ");
+        assertEquals("my-group-name", sanitized.get());
+        assertThrows(GitLabInvalidConfigurationException.class, () -> GitLabConfigHelper.sanitizeGroupPathSegment("name@+"));
     }
 
 }
