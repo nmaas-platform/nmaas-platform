@@ -1,4 +1,4 @@
-package net.geant.nmaas.portal.domain;
+package net.geant.nmaas.nmservice.deployment.limits;
 
 public enum RejectionReason {
     GLOBAL_INSTANCES_LIMIT_REACHED("Global instances limit reached"),

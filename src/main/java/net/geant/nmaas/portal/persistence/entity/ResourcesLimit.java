@@ -11,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -73,4 +74,18 @@ public class ResourcesLimit {
         this.limitType = ResourcesLimitType.DOMAIN;
     }
 
+    @Transient
+    public boolean isGlobal() {
+        return limitType == ResourcesLimitType.GLOBAL;
+    }
+
+    @Override
+    public String toString() {
+        return "ResourcesLimit{" +
+                "memory=" + memory +
+                ", cpu=" + cpu +
+                ", instancesNo=" + instancesNo +
+                ", containersNo=" + containersNo +
+                '}';
+    }
 }
