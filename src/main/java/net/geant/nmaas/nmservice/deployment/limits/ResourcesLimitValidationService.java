@@ -92,7 +92,7 @@ public class ResourcesLimitValidationService {
 
         if (limit.getMemory() != null) {
             int consumedMemory = runningDeployments.stream().mapToInt(x -> x.getApplication().getAppDeploymentSpec().getConsumedMemory()).sum();
-            log.info("CPU: used -> {}, requested -> {}", consumedMemory, requestedMemory);
+            log.info("Memory: used -> {}, requested -> {}", consumedMemory, requestedMemory);
             if (consumedMemory + requestedMemory > limit.getMemory() + groupsLimits.stream().mapToInt(ResourcesLimit::getMemory).sum()) {
                 validationResult.setAccepted(false);
                 validationResult.getReasons().add(limit.isGlobal() ? GLOBAL_MEMORY_LIMIT_REACHED : DOMAIN_MEMORY_LIMIT_REACHED);

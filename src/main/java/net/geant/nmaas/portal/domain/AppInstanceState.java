@@ -78,6 +78,12 @@ public enum AppInstanceState {
         public String getUserFriendlyState() {
             return "Failed application removed";
         }
+    },
+    VALIDATION_FAILED {
+        @Override
+        public String getUserFriendlyState() {
+            return "Deployment blocked due to validation issue";
+        }
     };
 
     public abstract String getUserFriendlyState();

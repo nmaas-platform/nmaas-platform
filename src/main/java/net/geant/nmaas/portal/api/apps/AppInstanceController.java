@@ -809,8 +809,10 @@ public class AppInstanceController extends AppBaseController {
             case APPLICATION_CONFIGURATION_REMOVED:
                 appInstanceState = AppInstanceState.DONE;
                 break;
-            case INTERNAL_ERROR:
             case REQUEST_VALIDATION_FAILED:
+                appInstanceState = AppInstanceState.VALIDATION_FAILED;
+                break;
+            case INTERNAL_ERROR:
             case DEPLOYMENT_ENVIRONMENT_PREPARATION_FAILED:
             case MANAGEMENT_VPN_CONFIGURATION_FAILED:
             case APPLICATION_CONFIGURATION_FAILED:
