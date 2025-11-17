@@ -17,7 +17,6 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.Ku
 import net.geant.nmaas.orchestration.AppConfigRepositoryAccessDetails;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
-import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.apache.commons.lang3.StringUtils;
@@ -39,6 +38,7 @@ import static net.geant.nmaas.nmservice.configuration.gitlab.GitLabConfigHelper.
 import static net.geant.nmaas.nmservice.configuration.gitlab.GitLabConfigHelper.committedFile;
 import static net.geant.nmaas.nmservice.configuration.gitlab.GitLabConfigHelper.createStandardUser;
 import static net.geant.nmaas.nmservice.configuration.gitlab.GitLabConfigHelper.fullAccessCode;
+import static net.geant.nmaas.nmservice.configuration.gitlab.GitLabConfigHelper.fullGroupPath;
 import static net.geant.nmaas.nmservice.configuration.gitlab.GitLabConfigHelper.generateRandomPassword;
 import static net.geant.nmaas.nmservice.configuration.gitlab.GitLabConfigHelper.generateRandomToken;
 import static net.geant.nmaas.nmservice.configuration.gitlab.GitLabConfigHelper.generateWebhookId;
@@ -61,7 +61,6 @@ public class GitLabConfigHandler implements GitConfigHandler {
     private final KubernetesRepositoryManager repositoryManager;
     private final NmServiceConfigFileRepository configurations;
     private final GitLabManager gitLabManager;
-    private final ConfigurationManager configurationManager;
 
     private static final String LOG_PREFIX = "GITLAB: ";
 
@@ -168,18 +167,39 @@ public class GitLabConfigHandler implements GitConfigHandler {
 
     private Long getOrCreateGroupWithMemberForUserIfNotExists(Long gitLabUserId, String domain) {
         try {
-            Optional<Group> group = gitLabManager.groups().getOptionalGroup(groupPath(domain));
+            Long topLevelGroupId = ensureTopLevelGroupExists();
+            String lookupPath = fullGroupPath(domain, gitLabManager.getTopLevelGroupPath());
+            Optional<Group> group = gitLabManager.groups().getOptionalGroup(lookupPath);
             if (group.isPresent()) {
                 return group.get().getId();
-            } else {
-                gitLabManager.groups().addGroup(groupName(domain), groupPath(domain));
-                Long groupId = gitLabManager.groups().getGroup(groupPath(domain)).getId();
-                gitLabManager.groups().addMember(groupId, gitLabUserId, fullAccessCode());
-                return groupId;
             }
+            Long groupId;
+            if (gitLabManager.isSharedInstance()) {
+                Group newGroup = new Group();
+                newGroup.setName(groupName(domain));
+                newGroup.setPath(groupPath(domain));
+                newGroup.setParentId(topLevelGroupId);
+                groupId = gitLabManager.groups().addGroup(newGroup).getId();
+            } else {
+                groupId = gitLabManager.groups().addGroup(groupName(domain), groupPath(domain)).getId();
+            }
+            gitLabManager.groups().addMember(groupId, gitLabUserId, fullAccessCode());
+            return groupId;
         } catch (GitLabApiException e) {
             throw new FileTransferException(LOG_PREFIX + e.getMessage());
         }
+    }
+
+    private Long ensureTopLevelGroupExists() throws GitLabApiException {
+        if (!gitLabManager.isSharedInstance()) {
+            return null;
+        }
+        Optional<Group> existing = gitLabManager.groups().getOptionalGroup(gitLabManager.getTopLevelGroupPath().get());
+        if (existing.isPresent()) {
+            return existing.get().getId();
+        }
+        return gitLabManager.groups().addGroup(gitLabManager.getTopLevelGroupName(), gitLabManager.getTopLevelGroupPath().get()).getId();
+
     }
 
     private Long createProjectWithinGroup(Long groupId, Identifier deploymentId) {

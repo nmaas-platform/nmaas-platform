@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.gitlab.exceptions.GitLabInvalidConfigurationException;
+import net.geant.nmaas.nmservice.configuration.gitlab.GitLabConfigHelper;
 import org.apache.commons.lang3.Validate;
 import org.gitlab4j.api.GitLabApi;
 import org.gitlab4j.api.GitLabApiException;
@@ -16,6 +17,7 @@ import org.gitlab4j.api.RepositoryFileApi;
 import org.gitlab4j.api.UserApi;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import java.util.Optional;
 
 @Component
 @NoArgsConstructor
@@ -31,6 +33,19 @@ public class GitLabManager {
 
     @Value("${gitlab.token}")
     private String gitLabToken;
+
+    @Getter
+    @Setter
+    @Value("${gitlab.sharedInstance}")
+    private boolean sharedInstance;
+
+    @Getter
+    @Setter
+    @Value("${gitlab.topLevelGroupName}")
+    private String topLevelGroupName;
+
+    @Getter
+    private Optional<String> topLevelGroupPath = Optional.empty();
 
     public GroupApi groups() {
         return api().getGroupApi();
@@ -70,6 +85,9 @@ public class GitLabManager {
             log.trace("GitLab instance is running");
         } catch (GitLabApiException e) {
             throw new GitLabInvalidConfigurationException("GitLab instance doesn't respond -> " + e.getMessage());
+        }
+        if (sharedInstance){
+            topLevelGroupPath = GitLabConfigHelper.sanitizeGroupPathSegment(topLevelGroupName);
         }
     }
 
