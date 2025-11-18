@@ -3,11 +3,11 @@ package net.geant.nmaas.portal.api.kubernetes.connectors;
 import io.fabric8.kubernetes.api.model.ObjectMeta;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.PodList;
-import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.dsl.MixedOperation;
 import io.fabric8.kubernetes.client.dsl.NonNamespaceOperation;
 import io.fabric8.kubernetes.client.dsl.PodResource;
-import net.geant.nmaas.kubernetes.KubernetesApiClientFactory;
+import net.geant.nmaas.kubernetes.KubernetesApiClientService;
+import net.geant.nmaas.kubernetes.remote.repositories.KClusterRepository;
 import net.geant.nmaas.kubernetes.shell.KubernetesConnectorHelper;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.Identifier;
@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -35,13 +36,15 @@ class KubernetesConnectorHelperTest {
 
     private final ApplicationInstanceService applicationInstanceService = mock(ApplicationInstanceService.class);
     private final AppDeploymentRepositoryManager appDeploymentRepositoryManager = mock(AppDeploymentRepositoryManager.class);
-    private final KubernetesApiClientFactory configFactory = mock(KubernetesApiClientFactory.class);
+    private final KClusterRepository kClusterRepository = mock(KClusterRepository.class);
+    private final KubernetesApiClientService kubernetesApiClientService = mock(KubernetesApiClientService.class);
 
     private KubernetesConnectorHelper helper;
 
     @BeforeEach
     void setup() {
-        helper = new KubernetesConnectorHelper(applicationInstanceService, appDeploymentRepositoryManager, configFactory);
+        helper = new KubernetesConnectorHelper(applicationInstanceService, appDeploymentRepositoryManager,
+                kClusterRepository, kubernetesApiClientService);
 
         AppInstance appInstance = mock(AppInstance.class);
         when(applicationInstanceService.find(anyLong())).thenReturn(Optional.of(appInstance));
@@ -61,12 +64,10 @@ class KubernetesConnectorHelperTest {
         when(appDeployment.getDescriptiveDeploymentId()).thenReturn(appInstanceDescriptiveDeploymentId);
         when(appInstanceDescriptiveDeploymentId.getValue()).thenReturn("good-prefix");
 
-        KubernetesClient client = mock(KubernetesClient.class);
         PodList podList = mock(PodList.class);
-        when(configFactory.getClient()).thenReturn(client);
+        when(kubernetesApiClientService.getPods(any(), any())).thenReturn(podList);
         MixedOperation<Pod, PodList, PodResource> pods = (MixedOperation<Pod, PodList, PodResource>) mock(MixedOperation.class);
         NonNamespaceOperation<Pod, PodList, PodResource> nsPods = (NonNamespaceOperation<Pod, PodList, PodResource>) mock(NonNamespaceOperation.class);
-        when(client.pods()).thenReturn(pods);
         when(pods.inNamespace("namespace")).thenReturn(nsPods);
         when(nsPods.list()).thenReturn(podList);
 

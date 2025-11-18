@@ -32,6 +32,7 @@ public class GitLabWebhookController {
                 log.info("Triggering configuration reload for service: {}", service.getDescriptiveDeploymentId());
                 configurationProvider.reloadNmService(NmServiceDeployment.builder()
                         .deploymentId(service.getDeploymentId())
+                        .remoteCluster(service.getRemoteCluster())
                         .descriptiveDeploymentId(service.getDescriptiveDeploymentId())
                         .domainName(service.getDomain())
                         .build()
