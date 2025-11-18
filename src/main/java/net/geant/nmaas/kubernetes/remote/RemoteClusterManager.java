@@ -207,7 +207,7 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
         }
         return view.getDomainNames().stream()
                 .map(d -> {
-                    Optional<Domain> dom = domainService.findDomain(d);
+                    Optional<Domain> dom = domainService.findDomainByCodename(d);
                     return dom.orElse(null);}
                 ).toList();
     }

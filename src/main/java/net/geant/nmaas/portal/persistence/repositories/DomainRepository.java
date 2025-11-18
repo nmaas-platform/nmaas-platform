@@ -24,10 +24,10 @@ public interface DomainRepository extends JpaRepository<Domain, Long>, JpaSpecif
 
     Optional<Domain> findByCodename(String name);
 
-    @Query("SELECT new net.geant.nmaas.portal.domain.DomainBase(d.id, d.codename, d.name, d.active, d.deleted) FROM Domain d where d.deleted = false")
+    @Query("SELECT new net.geant.nmaas.portal.domain.DomainBase(d.id, d.name, d.codename, d.active, d.deleted) FROM Domain d where d.deleted = false")
     List<DomainBase> findAllBaseDomains();
 
-    @Query("SELECT new net.geant.nmaas.portal.domain.DomainBase(d.id, d.codename, d.name, d.active, d.deleted) FROM Domain d where d.deleted = false")
+    @Query("SELECT new net.geant.nmaas.portal.domain.DomainBase(d.id, d.name, d.codename, d.active, d.deleted) FROM Domain d where d.deleted = false")
     Page<DomainBase> findAllBaseDomainsPageable(Pageable pageable);
 
     Page<Domain> findAll(Specification<Domain> spec, Pageable pageable);
