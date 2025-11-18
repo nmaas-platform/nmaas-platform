@@ -4,6 +4,8 @@ public interface RemoteClusterMonitoringService {
 
     boolean clusterAvailable(Long id);
 
+    void updateCluster(Long id);
+
     void updateAllClusterState();
 
 }

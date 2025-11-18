@@ -49,6 +49,7 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
     private final DomainService domainService;
     private final RemoteClusterMailer mailer;
     private final UserService userService;
+    private final RemoteClusterMonitoringService monitoringService;
     private final ApplicationEventPublisher eventPublisher;
     private final ModelMapper modelMapper;
 
@@ -207,8 +208,9 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
         }
         return view.getDomainNames().stream()
                 .map(d -> {
-                    Optional<Domain> dom = domainService.findDomainByCodename(d);
-                    return dom.orElse(null);}
+                            Optional<Domain> dom = domainService.findDomainByCodename(d);
+                            return dom.orElse(null);
+                        }
                 ).toList();
     }
 
@@ -299,6 +301,12 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
             return false;
         }
         return kClusterRepository.existsById(id);
+    }
+
+    @Override
+    public void updateClusterStatus(Long id) {
+        log.info("Triggering remote cluster status refresh request");
+        monitoringService.updateCluster(id);
     }
 
 }

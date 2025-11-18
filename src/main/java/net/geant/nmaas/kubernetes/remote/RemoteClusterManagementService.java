@@ -14,4 +14,6 @@ public interface RemoteClusterManagementService extends RemoteClusterInfoService
     boolean clusterExists(Long id);
 
     RemoteClusterView mapFile(RemoteClusterView view, MultipartFile file);
+
+    void updateClusterStatus(Long id);
 }
