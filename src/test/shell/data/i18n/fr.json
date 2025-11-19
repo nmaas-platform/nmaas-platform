@@ -205,6 +205,7 @@
     "DETAILS" : "Details",
     "STATE_SINCE" : "Last state change",
     "REMOVE" : "Remove cluster",
+    "REFRESH" : "Refresh status",
     "FILE": "Kubernetes config",
     "WIZARD" : {
       "ADD" : "Adding new remote cluster",
