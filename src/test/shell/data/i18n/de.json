@@ -1435,7 +1435,8 @@
       "NEW_CLUSTER": "Remote-Clusterdaten erstellt",
       "NOTIFICATION": "Benachrichtigung erfolgreich gesendet",
       "NEW_WEBHOOK": "Neuer Webhook hinzugefügt",
-      "WEBHOOK": "Webhook aktualisiert"
+      "WEBHOOK": "Webhook aktualisiert",
+      "GLOBAL_LIMIT": "Globales Limit hinzugefügt"
     },
     "ERROR": {
       "NEW_DOMAIN": "Das Hinzufügen einer neuen Domäne ist fehlgeschlagen",

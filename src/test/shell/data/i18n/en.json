@@ -1440,7 +1440,8 @@
       "NEW_CLUSTER": "Remote cluster added",
       "NOTIFICATION": "Notification sent",
       "NEW_WEBHOOK": "New webhook added",
-      "WEBHOOK": "Webhook data updated"
+      "WEBHOOK": "Webhook data updated",
+      "GLOBAL_LIMIT": "Global limit added"
     },
     "ERROR": {
       "NEW_GROUP": "Failed to add new group.",

@@ -1438,7 +1438,8 @@
       "NEW_CLUSTER": "Dodano nowy zdalny klaster",
       "NOTIFICATION": "Powiadomienie zostało wysłane",
       "NEW_WEBHOOK": "Dodano nowy webhook",
-      "WEBHOOK": "Dane webhooka zostały zaktualizowane"
+      "WEBHOOK": "Dane webhooka zostały zaktualizowane",
+      "GLOBAL_LIMIT": "Limit globalny został dodany"
     },
     "ERROR": {
       "NEW_DOMAIN": "Nie udało się dodać nowej domeny",

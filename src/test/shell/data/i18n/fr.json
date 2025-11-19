@@ -1439,7 +1439,8 @@
       "NEW_CLUSTER": "Données de cluster distant créées",
       "NOTIFICATION": "Notification envoyée avec succès",
       "NEW_WEBHOOK": "Nouveau webhook ajouté",
-      "WEBHOOK": "Webhook mis à jour"
+      "WEBHOOK": "Webhook mis à jour",
+      "GLOBAL_LIMIT": "Limite globale ajoutée"
     },
     "ERROR": {
       "NEW_GROUP": "Échec de l’ajout d’un nouveau groupe.",
