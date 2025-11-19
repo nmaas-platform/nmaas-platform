@@ -635,7 +635,8 @@
       "STATE": "State",
       "DEFAULT_ERROR_STATE": "Something went wrong",
       "DETAILS": "Details",
-      "DEFAULT_ERROR_MESSAGE": "Application deployment failed due to an unexpected error. nmaas support team has been notified already.<br>In order to raise an issue use the <a href=\"about?type=ISSUE_REPORT\">contact form</a>."
+      "DEFAULT_ERROR_MESSAGE": "Application deployment failed due to an unexpected error. nmaas support team has been notified already.<br>In order to raise an issue use the <a href=\"about?type=ISSUE_REPORT\">contact form</a>.",
+      "VALIDATION_FAILED": "Application deployment blocked due to a request validation issue. In order to contact administrators use the contact form."
     },
     "DEPLOYMENT_HISTORY": {
       "HEADER": "Deployment history",
@@ -1161,6 +1162,7 @@
     "FAILURE": "Failure",
     "UNKNOWN": "Unknown",
     "REMOVED": "Removed",
+    "VALIDATION_FAILED": "Validation failed",
     "STATE": {
       "ACTIVE": "Active",
       "REJECTED": "Rejected",
