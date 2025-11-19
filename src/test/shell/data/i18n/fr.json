@@ -635,7 +635,8 @@
       "STATE": "Etat",
       "DEFAULT_ERROR_STATE": "Une erreur est survenue",
       "DETAILS": "Details",
-      "DEFAULT_ERROR_MESSAGE": "Le déploiement de l'application a échoué en raison d'une erreur inattendue. L'équipe d'assistance nmaas a déjà été notifiée.<br>Pour signaler un problème, utilisez le <a href=\"about?type=ISSUE_REPORT\">formulaire de contact</a>."
+      "DEFAULT_ERROR_MESSAGE": "Le déploiement de l'application a échoué en raison d'une erreur inattendue. L'équipe d'assistance nmaas a déjà été notifiée.<br>Pour signaler un problème, utilisez le <a href=\"about?type=ISSUE_REPORT\">formulaire de contact</a>.",
+      "VALIDATION_FAILED": "Le déploiement de l'application est bloqué en raison d'un problème de validation de la requête. Pour contacter les administrateurs, veuillez utiliser le formulaire de contact."
     },
     "DEPLOYMENT_HISTORY": {
       "HEADER": "Historique des éeploiements",
@@ -1161,6 +1162,7 @@
     "FAILURE": "Échec",
     "UNKNOWN": "Inconnu",
     "REMOVED": "Enlevé",
+    "VALIDATION_FAILED": "Échec de la validation",
     "STATE": {
       "ACTIVE": "Activé",
       "REJECTED": "Rejected",

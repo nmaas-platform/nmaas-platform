@@ -633,7 +633,8 @@
       "STATE": "Status",
       "DEFAULT_ERROR_STATE": "Etwas ist schief gelaufen",
       "DETAILS": "Details",
-      "DEFAULT_ERROR_MESSAGE": "Die Anwendungsbereitstellung ist aufgrund eines unerwarteten Fehlers fehlgeschlagen. Das nmaas-Supportteam wurde bereits benachrichtigt.<br>Um ein Problem zu melden, verwenden Sie das <a href=\"about?type=ISSUE_REPORT\">Kontaktformular</a>."
+      "DEFAULT_ERROR_MESSAGE": "Die Anwendungsbereitstellung ist aufgrund eines unerwarteten Fehlers fehlgeschlagen. Das nmaas-Supportteam wurde bereits benachrichtigt.<br>Um ein Problem zu melden, verwenden Sie das <a href=\"about?type=ISSUE_REPORT\">Kontaktformular</a>.",
+      "VALIDATION_FAILED": "Die Anwendungsbereitstellung wurde aufgrund eines Fehlers bei der Anforderungsvalidierung blockiert. Um die Administratoren zu kontaktieren, verwenden Sie bitte das Kontaktformular."
     },
     "DEPLOYMENT_HISTORY": {
       "HEADER": "Installationshistorie",
@@ -1158,6 +1159,7 @@
     "FAILURE": "Fehler",
     "UNKNOWN": "Unbekannt",
     "REMOVED": "Entfernt",
+    "VALIDATION_FAILED": "Die Validierung ist fehlgeschlagen",
     "STATE": {
       "ACTIVE": "Aktiv",
       "REJECTED": "Abgelehnt",

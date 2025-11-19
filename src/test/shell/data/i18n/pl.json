@@ -634,7 +634,8 @@
       "STATE": "Stan",
       "DEFAULT_ERROR_STATE": "Coś poszło nie tak",
       "DETAILS": "Szczegóły",
-      "DEFAULT_ERROR_MESSAGE": "Aktywacja aplikacji nie powiodła się z powodu nieoczekiwanego błędu. Zespół nmaas został już powiadomiony.<br>Aby zgłosić problem, skorzystaj z <a href=\"about?type=ISSUE_REPORT\">formularza kontaktowego</a>."
+      "DEFAULT_ERROR_MESSAGE": "Aktywacja aplikacji nie powiodła się z powodu nieoczekiwanego błędu. Zespół nmaas został już powiadomiony.<br>Aby zgłosić problem, skorzystaj z <a href=\"about?type=ISSUE_REPORT\">formularza kontaktowego</a>.",
+      "VALIDATION_FAILED": "Wdrożenie aplikacji zostało zablokowane z powodu problemu z walidacją żądania. Aby skontaktować się z administratorami, skorzystaj z formularza kontaktowego."
     },
     "DEPLOYMENT_HISTORY": {
       "HEADER": "Historia uruchomienia aplikacji",
@@ -1160,6 +1161,7 @@
     "FAILURE": "Błąd",
     "UNKNOWN": "Nieznany",
     "REMOVED": "Usunięta",
+    "VALIDATION_FAILED": "Walidacja nie powiodła się",
     "STATE": {
       "ACTIVE": "Aktywne",
       "REJECTED": "Odrzucone",
