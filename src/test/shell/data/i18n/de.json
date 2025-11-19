@@ -203,6 +203,7 @@
     "STATE_SINCE" : "Last state change",
     "CONTACT_MAIL" : "Contact mail",
     "REMOVE" : "Remove cluster",
+    "REFRESH" : "Refresh status",
     "FILE": "Kubernetes config",
     "WIZARD" : {
       "ADD" : "Adding new remote cluster",
