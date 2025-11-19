@@ -1,8 +1,8 @@
 package net.geant.nmaas.portal.api.kubernetes;
 
-import net.geant.nmaas.kubernetes.shell.PodSessionsStorage;
 import net.geant.nmaas.kubernetes.shell.AsyncConnector;
 import net.geant.nmaas.kubernetes.shell.AsyncConnectorFactory;
+import net.geant.nmaas.kubernetes.shell.PodSessionsStorage;
 import net.geant.nmaas.kubernetes.shell.observer.ShellSessionObserver;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.portal.domain.K8sShellCommandRequest;
@@ -39,7 +39,7 @@ class PodSessionsStorageTest {
 
     @BeforeEach
     void setup() throws IOException {
-        when(connectorFactory.preparePodShellConnection(any())).thenReturn(connector);
+        when(connectorFactory.preparePodShellConnection(any(AppInstance.class), anyString())).thenReturn(connector);
         storage = new PodSessionsStorage(instanceService, connectorFactory);
 
         PipedInputStream inputStream = new PipedInputStream();
@@ -62,7 +62,7 @@ class PodSessionsStorageTest {
     void shouldThrowExceptionWhenAppInstanceDoesNotExist() {
         when(instanceService.find(anyLong())).thenReturn(Optional.empty());
         RuntimeException ex = assertThrows(RuntimeException.class, () -> {
-            storage.createSession(1L);
+            storage.createSession(1L, "");
         });
         assertEquals("This application instance does not exists", ex.getMessage());
     }
@@ -78,7 +78,7 @@ class PodSessionsStorageTest {
         when(instanceService.find(anyLong())).thenReturn(Optional.of(appInstance));
 
         RuntimeException ex = assertThrows(RuntimeException.class, () -> {
-            storage.createSession(1L);
+            storage.createSession(1L, "");
         });
 
         assertEquals("SSH connection is not allowed", ex.getMessage());
@@ -87,7 +87,7 @@ class PodSessionsStorageTest {
     @Test
     void shouldThrowExceptionWhenRetrievingNotExistingConnection() {
         RuntimeException ex = assertThrows(RuntimeException.class, () -> {
-            storage.executeCommand("sessionId", new K8sShellCommandRequest("command",""));
+            storage.executeCommand("sessionId", new K8sShellCommandRequest("command", ""));
         });
         assertEquals("Session with id: sessionId does not exist", ex.getMessage());
     }
@@ -102,9 +102,8 @@ class PodSessionsStorageTest {
         when(appInstance.getApplication()).thenReturn(application);
         when(instanceService.find(anyLong())).thenReturn(Optional.of(appInstance));
 
-        String sessionId = storage.createSession(1L);
-
-        verify(connectorFactory, times(1)).preparePodShellConnection(any());
+        String sessionId = storage.createSession(1L, "test");
+        verify(connectorFactory, times(1)).preparePodShellConnection(any(AppInstance.class), anyString());
 
         storage.executeCommand(sessionId, new K8sShellCommandRequest("command", ""));
         verify(connector, times(1)).executeCommand(anyString());
@@ -114,6 +113,22 @@ class PodSessionsStorageTest {
 
         storage.completeSession(sessionId);
         verify(connector, times(1)).close();
+    }
+
+    @Test
+    void shouldThrowWhenPodNameNotProvided() {
+        AppDeploymentSpec appDeploymentSpec = mock(AppDeploymentSpec.class);
+        when(appDeploymentSpec.isAllowSshAccess()).thenReturn(true);
+        Application application = mock(Application.class);
+        when(application.getAppDeploymentSpec()).thenReturn(appDeploymentSpec);
+        AppInstance appInstance = mock(AppInstance.class);
+        when(appInstance.getApplication()).thenReturn(application);
+        when(instanceService.find(anyLong())).thenReturn(Optional.of(appInstance));
+
+        assertThrows(IllegalArgumentException.class, () ->
+            storage.createSession(1L, "")
+        );
+
     }
 
 }

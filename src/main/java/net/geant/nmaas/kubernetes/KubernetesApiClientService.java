@@ -232,4 +232,8 @@ public class KubernetesApiClientService {
         return client;
     }
 
+    public KubernetesClient getDirectClient(KCluster kCluster) {
+        return initClient(kCluster);
+    }
+
 }

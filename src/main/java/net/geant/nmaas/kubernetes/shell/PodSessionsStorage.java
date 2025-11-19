@@ -9,6 +9,7 @@ import net.geant.nmaas.kubernetes.shell.observer.ShellSessionObserver;
 import net.geant.nmaas.portal.domain.K8sShellCommandRequest;
 import net.geant.nmaas.portal.persistence.entity.AppInstance;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
@@ -39,6 +40,7 @@ public class PodSessionsStorage {
     @Getter
     @AllArgsConstructor
     private static class ObserverObservablePair implements Serializable {
+
         private final ShellSessionObserver observer;
         private final GenericShellSessionObservable observable;
 
@@ -51,6 +53,7 @@ public class PodSessionsStorage {
     /**
      * Creates pod connection and associates it with custom generated session identifier
      * this method is synchronized, so assigned session id will not be re-assigned in a meantime
+     *
      * @param appInstanceId app instance identifier
      * @return shell session id
      */
@@ -58,8 +61,12 @@ public class PodSessionsStorage {
         AppInstance instance = this.instanceService.find(appInstanceId)
                 .orElseThrow(() -> new RuntimeException("This application instance does not exists"));
         // check if you can connect to this app instance
-        if(!instance.getApplication().getAppDeploymentSpec().isAllowSshAccess()) {
+        if (!instance.getApplication().getAppDeploymentSpec().isAllowSshAccess()) {
             throw new RuntimeException("SSH connection is not allowed");
+        }
+        // pod name must be provided
+        if (StringUtils.isEmpty(podName)) {
+            throw new IllegalArgumentException("Pod name must be provided");
         }
 
         String sessionId = UUID.randomUUID().toString();
@@ -68,12 +75,7 @@ public class PodSessionsStorage {
             sessionId = UUID.randomUUID().toString();
         }
 
-        AsyncConnector connector = null;
-        if (podName == null ) {
-            connector = connectorFactory.preparePodShellConnection(instance);
-        } else {
-            connector = connectorFactory.preparePodShellConnection(instance, podName);
-        }
+        AsyncConnector connector = connectorFactory.preparePodShellConnection(instance, podName);
 
         // create observer and observable and bind them
         GenericShellSessionObservable observable = new SshConnectionShellSessionObservable(sessionId, connector);
@@ -85,12 +87,9 @@ public class PodSessionsStorage {
         return sessionId;
     }
 
-    public synchronized String createSession(Long appInstanceId) {
-        return this.createSession(appInstanceId, null);
-    }
-
     /**
      * Returns an observer with event emitter for given session
+     *
      * @param sessionId sSession identifier
      * @return observer with event emitter
      */
@@ -101,7 +100,8 @@ public class PodSessionsStorage {
 
     /**
      * Executes command in given session
-     * @param sessionId Session identifier
+     *
+     * @param sessionId      Session identifier
      * @param commandRequest Command to be executed
      */
     public void executeCommand(String sessionId, K8sShellCommandRequest commandRequest) {
@@ -111,6 +111,7 @@ public class PodSessionsStorage {
 
     /**
      * Completes given session and removes it from storage
+     *
      * @param sessionId Session identifier
      */
     public void completeSession(String sessionId) {
@@ -122,6 +123,7 @@ public class PodSessionsStorage {
 
     /**
      * Checks if session with given id is available
+     *
      * @param sessionId Session identifier
      */
     private void isSessionAvailable(String sessionId) {

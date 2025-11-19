@@ -19,7 +19,7 @@ import java.nio.file.Path;
  */
 @Component
 @Slf4j
-public class KubernetesApiClientFactory {
+class KubernetesApiClientFactory {
 
     @Value("${nmaas.kubernetes.incluster:true}")
     private boolean inCluster;

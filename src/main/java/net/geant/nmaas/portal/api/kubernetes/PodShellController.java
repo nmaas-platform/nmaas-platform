@@ -39,9 +39,10 @@ public class PodShellController {
 
     /**
      * Initializes connection if not exists
-     * @param principal - principal
+     *
+     * @param principal     - principal
      * @param appInstanceId - target application instance identifier
-     * @param podName - name of target connection kubernetes pod
+     * @param podName       - name of target connection kubernetes pod
      * @return session identifier
      */
     @PostMapping(value = "/{appInstanceId}/init/{podName}", produces = MediaType.TEXT_PLAIN_VALUE)
@@ -52,31 +53,34 @@ public class PodShellController {
 
     /**
      * Returns stream of events happening on the shell
+     *
      * @param principal - principal
-     * @param id - session identifier
+     * @param sessionId - session identifier
      * @return SSE stream of events
      */
     @CrossOrigin
-    @GetMapping(value = "/{id}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter getShell(Principal principal, @PathVariable String id) {
-        return k8sShellService.getEmitterForShellSession(id);
+    @GetMapping(value = "/{sessionId}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter getShell(Principal principal, @PathVariable String sessionId) {
+        return k8sShellService.getEmitterForShellSession(sessionId);
     }
 
     /**
      * Sending commands to the shell
-     * @param principal - principal
-     * @param id - session identifier
+     *
+     * @param principal      - principal
+     * @param sessionId      - session identifier
      * @param commandRequest - command or signal to be executed
      */
-    @PostMapping(value = "/{id}/command")
-    public void execute(Principal principal, @PathVariable String id, @RequestBody K8sShellCommandRequest commandRequest) {
-        k8sShellService.executeShellCommand(id, commandRequest);
+    @PostMapping(value = "/{sessionId}/command")
+    public void execute(Principal principal, @PathVariable String sessionId, @RequestBody K8sShellCommandRequest commandRequest) {
+        k8sShellService.executeShellCommand(sessionId, commandRequest);
     }
 
     /**
      * This method is responsible for completing session, closing and removing connection
+     *
      * @param principal - principal
-     * @param id - session identifier
+     * @param id        - session identifier
      */
     @DeleteMapping(value = "/{id}")
     public void complete(Principal principal, @PathVariable String id) {
@@ -85,7 +89,8 @@ public class PodShellController {
 
     /**
      * Retrieves pod names for given application instance
-     * @param principal - principal
+     *
+     * @param principal     - principal
      * @param appInstanceId - identifier of application instance
      * @return names of pods and corresponding service names (to be displayed to the user)
      */

@@ -44,9 +44,9 @@ public class PodShellControllerIntTest extends BaseControllerTestSetup {
     public void shouldRetrievePodNames() throws Exception {
         when(connectorHelper.checkAppInstanceSupportsSshAccess(1L)).thenReturn(true);
         MvcResult result = mvc.perform(get("/api/pods/shell/{id}/podnames", 1L)
-                .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
+                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
         assertTrue(result.getResponse().getContentAsString().contains("name1"));
@@ -56,9 +56,9 @@ public class PodShellControllerIntTest extends BaseControllerTestSetup {
     public void shouldNotRetrievePodNames() throws Exception {
         when(connectorHelper.checkAppInstanceSupportsSshAccess(1L)).thenReturn(false);
         mvc.perform(get("/api/pods/shell/{id}/podnames", 1L)
-                .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
+                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotAcceptable())
                 .andReturn();
     }

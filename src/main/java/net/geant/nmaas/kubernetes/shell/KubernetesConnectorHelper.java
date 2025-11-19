@@ -1,6 +1,7 @@
 package net.geant.nmaas.kubernetes.shell;
 
 import io.fabric8.kubernetes.api.model.PodList;
+import io.fabric8.kubernetes.client.KubernetesClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.kubernetes.KubernetesApiClientService;
@@ -70,6 +71,13 @@ public class KubernetesConnectorHelper {
                 )
                 .filter(entry -> entry.getKey().startsWith(prefix))
                 .collect(Collectors.toMap(SimpleEntry::getKey, SimpleEntry::getValue));
+    }
+
+    public KubernetesClient getKubernetesClient(AppInstance appInstance) {
+        final AppDeployment appDeployment = appDeploymentRepositoryManager.load(appInstance.getInternalId());
+        final KCluster kCluster = Objects.nonNull(appDeployment.getRemoteClusterId()) ?
+                kClusterRepository.getReferenceById(appDeployment.getRemoteClusterId()) : null;
+        return kubernetesApiClientService.getDirectClient(kCluster);
     }
 
 }
