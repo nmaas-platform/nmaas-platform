@@ -75,10 +75,6 @@ public class SecurityConstants {
      */
     //TODO check that this function will work without commented strings
     protected static final String[] AUTH_AUTHENTICATED_LIST = {
-//            "/api/orchestration/deployments/**/state",
-//            "/api/orchestration/deployments/**/access",
-            "/api/orchestration/deployments/**",
-            "/api/management/**",
             "/api/**"
     };
     /**
@@ -118,7 +114,6 @@ public class SecurityConstants {
      * Paths that are protected and require UUID-based token authentication.
      */
     static final String[] AUTH_UUID_AUTHENTICATED_LIST = {
-            "/api/example/resource/**",
-            "/api/domains/*"
+            "/api/**"
     };
 }
