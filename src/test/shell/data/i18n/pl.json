@@ -1439,7 +1439,7 @@
       "NOTIFICATION": "Powiadomienie zostało wysłane",
       "NEW_WEBHOOK": "Dodano nowy webhook",
       "WEBHOOK": "Dane webhooka zostały zaktualizowane",
-      "GLOBAL_LIMIT": "Limit globalny został dodany"
+      "GLOBAL_LIMIT": "Globalny limity zostały zaktualizowane"
     },
     "ERROR": {
       "NEW_DOMAIN": "Nie udało się dodać nowej domeny",

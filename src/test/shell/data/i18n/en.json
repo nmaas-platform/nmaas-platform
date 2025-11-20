@@ -1441,7 +1441,7 @@
       "NOTIFICATION": "Notification sent",
       "NEW_WEBHOOK": "New webhook added",
       "WEBHOOK": "Webhook data updated",
-      "GLOBAL_LIMIT": "Global limit added"
+      "GLOBAL_LIMIT": "Global limits updated"
     },
     "ERROR": {
       "NEW_GROUP": "Failed to add new group.",
