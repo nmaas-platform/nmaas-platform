@@ -5,6 +5,7 @@ import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.portal.persistence.entity.WebhookEventType;
+import net.geant.nmaas.portal.service.WebhookHistoryService;
 import net.geant.nmaas.portal.service.impl.WebhookEventService;
 import net.geant.nmaas.webhooks.AppDeploymentWebhookDto;
 import org.modelmapper.ModelMapper;
@@ -19,8 +20,8 @@ public abstract class AppWebhookJob extends WebhookJob {
     private final AppDeploymentRepositoryManager appDeploymentRepositoryManager;
     private final KubernetesRepositoryManager serviceInfoRepositoryManager;
 
-    public AppWebhookJob(RestClient restClient, WebhookEventService webhookEventService, ModelMapper modelMapper, AppDeploymentRepositoryManager appDeploymentRepositoryManager, KubernetesRepositoryManager serviceInfoRepositoryManager) {
-        super(restClient, webhookEventService, modelMapper);
+    public AppWebhookJob(RestClient restClient, WebhookEventService webhookEventService, ModelMapper modelMapper, AppDeploymentRepositoryManager appDeploymentRepositoryManager, KubernetesRepositoryManager serviceInfoRepositoryManager, WebhookHistoryService webhookHistoryService) {
+        super(restClient, webhookEventService, modelMapper, webhookHistoryService);
         this.appDeploymentRepositoryManager = appDeploymentRepositoryManager;
         this.serviceInfoRepositoryManager = serviceInfoRepositoryManager;
     }

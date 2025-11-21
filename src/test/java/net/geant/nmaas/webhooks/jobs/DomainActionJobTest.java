@@ -4,9 +4,15 @@ import net.geant.nmaas.portal.domain.DomainView;
 import net.geant.nmaas.portal.domain.WebhookEventDto;
 import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.entity.WebhookEventType;
+import net.geant.nmaas.portal.persistence.entity.WebhookHistory;
+import net.geant.nmaas.portal.persistence.repositories.WebhookHistoryRepository;
 import net.geant.nmaas.portal.service.DomainService;
+import net.geant.nmaas.portal.service.WebhookHistoryService;
 import net.geant.nmaas.portal.service.impl.WebhookEventService;
+import net.geant.nmaas.portal.service.impl.WebhookHistoryServiceImpl;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.modelmapper.ModelMapper;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -17,8 +23,12 @@ import org.springframework.web.client.RestClient;
 import java.security.GeneralSecurityException;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class DomainActionJobTest {
@@ -26,6 +36,17 @@ class DomainActionJobTest {
     private final RestClient restClient = RestClient.create();
     private final WebhookEventService webhookEventService = mock(WebhookEventService.class);
     private final DomainService domainService = mock(DomainService.class);
+
+    private final ModelMapper mapper = new ModelMapper();
+
+    private final WebhookHistoryRepository webhookHistoryRepository = mock(WebhookHistoryRepository.class);
+
+    private WebhookHistoryService webhookHistoryService;
+
+    @BeforeEach
+    void setUp() {
+        webhookHistoryService = new WebhookHistoryServiceImpl(webhookHistoryRepository, mapper);
+    }
 
     @Test
     void shouldExecuteSampleJob() throws GeneralSecurityException {
@@ -46,9 +67,18 @@ class DomainActionJobTest {
         when(domainService.findDomain(1L)).thenReturn(Optional.of(new Domain("name", "codename")));
 
         assertThrows(JobExecutionException.class, () -> {
-            DomainActionJob job = new DomainActionJob(restClient, webhookEventService, new ModelMapper());
+            DomainActionJob job = new DomainActionJob(restClient, webhookEventService, mapper, webhookHistoryService);
             job.execute(jobExecutionContext);
         });
+
+        ArgumentCaptor<WebhookHistory> webhookHistoryCaptor = ArgumentCaptor.forClass(WebhookHistory.class);
+        verify(webhookHistoryRepository).save(webhookHistoryCaptor.capture());
+        WebhookHistory savedHistory = webhookHistoryCaptor.getValue();
+        assertNotNull(savedHistory);
+        assertEquals(WebhookEventType.DOMAIN_ACTION, savedHistory.getEventType());
+        assertEquals("https://example.webhook-url.pl", savedHistory.getUrl());
+        assertNull(savedHistory.getResponseBody());
+        assertNotNull(savedHistory.getExecutionTimestamp());
     }
 
 }

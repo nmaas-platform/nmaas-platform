@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.orchestration.exceptions.WebServiceCommunicationException;
 import net.geant.nmaas.portal.domain.WebhookEventDto;
+import net.geant.nmaas.portal.service.WebhookHistoryService;
 import net.geant.nmaas.portal.service.impl.WebhookEventService;
 import org.modelmapper.ModelMapper;
 import org.quartz.Job;
@@ -19,6 +20,7 @@ public abstract class WebhookJob implements Job {
     protected final RestClient restClient;
     protected final WebhookEventService webhookEventService;
     protected final ModelMapper modelMapper;
+    protected final WebhookHistoryService webhookHistoryService;
 
     protected void callWebhook(WebhookEventDto webhook, Object payload) {
         RestClient.RequestBodySpec request = restClient.post()
@@ -33,23 +35,27 @@ public abstract class WebhookJob implements Job {
 
         // throw WebServiceCommunicationException for any possible error in calling webhook
         try {
-            ResponseEntity<String> response = request.retrieve()
-                    .onStatus(
-                            status -> !status.is2xxSuccessful(),
-                            (req, res) -> {
-                                String errorMessage = "Webhook call failed with status: " + res.getStatusCode() + ", body: " + res.getBody();
-                                log.error(errorMessage);
-                                throw new WebServiceCommunicationException(errorMessage);
-                            }
-                    )
+            ResponseEntity<String> response = request
+                    .retrieve()
                     .toEntity(String.class);
-            log.info("Webhook call for {} was successful. Response: {}", webhook.getEventType(), response.getBody());
+
+            String body = response.getBody();
+            webhookHistoryService.create(webhook, payload, response.getStatusCode().value(), body);
+
+            if (!response.getStatusCode().is2xxSuccessful()) {
+                String errorMessage = "Webhook call failed with status: " + response.getStatusCode().value() + ", body: " + body;
+                log.error(errorMessage);
+                throw new WebServiceCommunicationException(errorMessage);
+            }
+            log.info("Webhook call for {} was successful. Response: {}", webhook.getEventType(), body);
         } catch (WebServiceCommunicationException e) {
             throw e;
         } catch (Exception error) {
-            log.error("Webhook call failed with error: {}", error.getMessage(), error);
+            log.error("Webhook call failed: {}", error.getMessage(), error);
+            webhookHistoryService.create(webhook, payload, null, null);
             throw new WebServiceCommunicationException("Webhook call failed: " + error.getMessage());
         }
+
     }
 
 }

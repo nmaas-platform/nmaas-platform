@@ -5,6 +5,7 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.Ku
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.orchestration.exceptions.WebServiceCommunicationException;
+import net.geant.nmaas.portal.service.WebhookHistoryService;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.domain.WebhookEventDto;
 import net.geant.nmaas.portal.persistence.entity.WebhookEventType;
@@ -26,8 +27,8 @@ public class AppDeploymentJob extends AppWebhookJob {
 
     @Autowired
     public AppDeploymentJob(RestClient restClient, WebhookEventService webhookEventService, ModelMapper modelMapper,
-                            AppDeploymentRepositoryManager appDeploymentRepositoryManager, KubernetesRepositoryManager serviceInfoRepositoryManager) {
-        super(restClient, webhookEventService, modelMapper, appDeploymentRepositoryManager, serviceInfoRepositoryManager);
+                            AppDeploymentRepositoryManager appDeploymentRepositoryManager, KubernetesRepositoryManager serviceInfoRepositoryManager, WebhookHistoryService webhookHistoryService) {
+        super(restClient, webhookEventService, modelMapper, appDeploymentRepositoryManager, serviceInfoRepositoryManager, webhookHistoryService);
     }
 
     @Override
