@@ -4,8 +4,8 @@ CREATE TABLE webhook_history (
     event_type VARCHAR(50) NOT NULL,
     domain_codename VARCHAR(255),
     url VARCHAR(255) NOT NULL,
-    request_body CLOB NOT NULL,
+    request_body TEXT NOT NULL,
     response_status VARCHAR(255),
-    response_body CLOB,
+    response_body TEXT,
     execution_timestamp timestamp NOT NULL
 );
