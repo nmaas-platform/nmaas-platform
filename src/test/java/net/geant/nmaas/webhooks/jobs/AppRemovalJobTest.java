@@ -8,11 +8,11 @@ import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.portal.domain.WebhookEventDto;
 import net.geant.nmaas.portal.persistence.entity.WebhookEventType;
 import net.geant.nmaas.portal.persistence.entity.WebhookHistory;
+import net.geant.nmaas.portal.persistence.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistence.repositories.WebhookHistoryRepository;
 import net.geant.nmaas.portal.service.WebhookHistoryService;
 import net.geant.nmaas.portal.service.impl.WebhookEventService;
 import net.geant.nmaas.portal.service.impl.WebhookHistoryServiceImpl;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.modelmapper.ModelMapper;
@@ -36,19 +36,13 @@ class AppRemovalJobTest {
 
     private final RestClient restClient = RestClient.create();
     private final WebhookEventService webhookEventService = mock(WebhookEventService.class);
+    private final DomainRepository domainRepository = mock(DomainRepository.class);
     private final AppDeploymentRepositoryManager appDeploymentRepositoryManager = mock(AppDeploymentRepositoryManager.class);
     private final KubernetesRepositoryManager kubernetesRepositoryManager = mock(KubernetesRepositoryManager.class);
-
-    private final ModelMapper mapper = new ModelMapper();
-
     private final WebhookHistoryRepository webhookHistoryRepository = mock(WebhookHistoryRepository.class);
 
-    private WebhookHistoryService webhookHistoryService;
-
-    @BeforeEach
-    void setUp() {
-        webhookHistoryService = new WebhookHistoryServiceImpl(webhookHistoryRepository, mapper);
-    }
+    private final ModelMapper mapper = new ModelMapper();
+    private final WebhookHistoryService webhookHistoryService = new WebhookHistoryServiceImpl(webhookHistoryRepository, domainRepository, mapper);
 
     @Test
     void shouldExecuteSampleJob() throws GeneralSecurityException {

@@ -37,7 +37,7 @@ public class SSHKeyEntity implements Serializable {
 
     private String name;
 
-    @Column(columnDefinition="TEXT")
+    @Column(columnDefinition = "TEXT")
     private String keyValue;
 
     // base64 encoded SHA256
@@ -59,7 +59,7 @@ public class SSHKeyEntity implements Serializable {
         // https://stackoverflow.com/questions/51059782/how-to-calculate-fingerprint-from-ssh-rsa-public-key-in-java
         String temp = "";
         String[] elements = keyValue.split(" ");
-        if(elements.length>1) {
+        if (elements.length > 1) {
             temp = elements[1];
         } else {
             temp = elements[0];

@@ -41,14 +41,14 @@ public class WebhookHistory {
     private String url;
 
     @Lob
-    @Column(name = "request_body", columnDefinition = "CLOB")
+    @Column(name = "request_body", columnDefinition = "TEXT")
     private String requestBody;
 
     @Column
     private Integer responseStatus;
 
     @Lob
-    @Column(name = "response_body", columnDefinition = "CLOB")
+    @Column(name = "response_body", columnDefinition = "TEXT")
     private String responseBody;
 
     private LocalDateTime executionTimestamp;

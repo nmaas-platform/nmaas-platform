@@ -38,13 +38,12 @@ public class WebhookEventController {
     @Transactional
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     public ResponseEntity<Id> createWebhook(@RequestBody @Valid WebhookEventDto webhook) {
-        WebhookEvent webhookEvent = null;
         try {
-            webhookEvent = webhookEventService.create(webhook);
+            final WebhookEvent webhookEvent = webhookEventService.create(webhook);
+            return ResponseEntity.ok(new Id(webhookEvent.getId()));
         } catch (GeneralSecurityException e) {
             throw new RuntimeException(e);
         }
-        return ResponseEntity.ok(new Id(webhookEvent.getId()));
     }
 
     @PutMapping("/{id}")
@@ -89,13 +88,12 @@ public class WebhookEventController {
         if (!domainId.equals(webhook.getDomain().getId())) {
             throw new IllegalArgumentException("Domain identifiers don't match.");
         }
-        WebhookEvent webhookEvent = null;
         try {
-            webhookEvent = webhookEventService.create(webhook);
+            final WebhookEvent webhookEvent = webhookEventService.create(webhook);
+            return ResponseEntity.ok(new Id(webhookEvent.getId()));
         } catch (GeneralSecurityException e) {
             throw new RuntimeException(e);
         }
-        return ResponseEntity.ok(new Id(webhookEvent.getId()));
     }
 
     @PutMapping("/domain/{domainId}/{id}")

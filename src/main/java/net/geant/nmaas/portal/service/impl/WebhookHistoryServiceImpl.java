@@ -7,8 +7,10 @@ import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.domain.WebhookEventDto;
 import net.geant.nmaas.portal.domain.WebhookHistoryDto;
+import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.entity.WebhookEventType;
 import net.geant.nmaas.portal.persistence.entity.WebhookHistory;
+import net.geant.nmaas.portal.persistence.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistence.repositories.WebhookHistoryRepository;
 import net.geant.nmaas.portal.service.WebhookHistoryService;
 import org.modelmapper.ModelMapper;
@@ -25,20 +27,23 @@ import java.util.Optional;
 public class WebhookHistoryServiceImpl implements WebhookHistoryService {
 
     private final WebhookHistoryRepository webhookHistoryRepository;
+    private final DomainRepository domainRepository;
     private final ModelMapper modelMapper;
+
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public void create(WebhookEventDto webhook, Object payload, Integer responseStatus, String responseBody) {
         WebhookHistory webhookHistory = new WebhookHistory();
         webhookHistory.setEventType(webhook.getEventType());
-        if (webhook.getDomain() != null)
+        if (webhook.getDomain() != null) {
             webhookHistory.setDomainCodename(webhook.getDomain().getCodename());
+        }
         webhookHistory.setUrl(webhook.getTargetUrl());
         try {
             webhookHistory.setRequestBody(objectMapper.writeValueAsString(payload));
         } catch (JsonProcessingException e) {
-            log.warn("Failed to write webhook request body to json String with error: "+e.getMessage());
+            log.warn("Failed to write webhook request body to json String with error: {}", e.getMessage());
         }
         webhookHistory.setResponseStatus(responseStatus);
         webhookHistory.setResponseBody(responseBody);
@@ -56,21 +61,39 @@ public class WebhookHistoryServiceImpl implements WebhookHistoryService {
     }
 
     @Override
-    public List<WebhookHistoryDto> search(WebhookEventType eventType,
-                                          String domainCodename,
-                                          String url,
-                                          LocalDateTime from,
-                                          LocalDateTime to) {
+    public List<WebhookHistoryDto> search(Long webhookEventId, WebhookEventType eventType, String domainCodename,
+                                          LocalDateTime from, LocalDateTime to) {
+        final Specification<WebhookHistory> spec = prepareQuerySpec(webhookEventId, eventType, domainCodename, from, to);
+
+        return webhookHistoryRepository.findAll(spec)
+                .stream()
+                .map(entity -> modelMapper.map(entity, WebhookHistoryDto.class))
+                .toList();
+    }
+
+    @Override
+    public List<WebhookHistoryDto> search(Long webhookEventId, WebhookEventType eventType, Long domainId,
+                                          LocalDateTime from, LocalDateTime to) {
+        final Domain domain = domainRepository.findById(domainId).orElseThrow();
+        final Specification<WebhookHistory> spec = prepareQuerySpec(webhookEventId, eventType, domain.getCodename(), from, to);
+
+        return webhookHistoryRepository.findAll(spec)
+                .stream()
+                .map(entity -> modelMapper.map(entity, WebhookHistoryDto.class))
+                .toList();
+    }
+
+    private static Specification<WebhookHistory> prepareQuerySpec(Long eventId, WebhookEventType eventType, String domainCodename, LocalDateTime from, LocalDateTime to) {
         Specification<WebhookHistory> spec = (root, query, cb) -> cb.conjunction();
 
+        if (eventId != null) {
+            spec = spec.and((root, query, cb) -> cb.equal(root.get("webhookEventId"), eventId));
+        }
         if (eventType != null) {
             spec = spec.and((root, query, cb) -> cb.equal(root.get("eventType"), eventType));
         }
         if (domainCodename != null && !domainCodename.isEmpty()) {
             spec = spec.and((root, query, cb) -> cb.equal(root.get("domainCodename"), domainCodename));
-        }
-        if (url != null && !url.isEmpty()) {
-            spec = spec.and((root, query, cb) -> cb.equal(root.get("url"), url));
         }
         if (from != null && to != null) {
             spec = spec.and((root, query, cb) -> cb.between(root.get("executionTimestamp"), from, to));
@@ -79,10 +102,7 @@ public class WebhookHistoryServiceImpl implements WebhookHistoryService {
         } else if (to != null) {
             spec = spec.and((root, query, cb) -> cb.lessThanOrEqualTo(root.get("executionTimestamp"), to));
         }
-
-        return webhookHistoryRepository.findAll(spec)
-                .stream()
-                .map(entity -> modelMapper.map(entity, WebhookHistoryDto.class))
-                .toList();
+        return spec;
     }
+
 }
