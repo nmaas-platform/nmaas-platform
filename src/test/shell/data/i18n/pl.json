@@ -31,7 +31,12 @@
     "GROUP": "Grupy",
     "CATALOG": "Katalog",
     "ADMIN_PANEL": "Panel administratora",
-    "USER_PANEL": "Panel użytkownika"
+    "USER_PANEL": "Panel użytkownika",
+    "WEBHOOKS":  {
+      "TITLE": "Webhooks",
+      "LIST": "Lista",
+      "HISTORY": "Historia"
+    }
   },
   "WELCOME": {
     "LOGIN": "Logowanie",
@@ -1406,7 +1411,22 @@
     "DETAILS" : "Webhooks details",
     "SAVE" : "Save",
     "REMOVE" : "Remove",
-    "AUTH_REQUIRED": "Wymagane uwierzytelnienie"
+    "AUTH_REQUIRED": "Wymagane uwierzytelnienie",
+    "HISTORY": {
+      "TITLE": "Historia webhooków",
+      "HISTORY": "Historia",
+      "EVENT_ID": "Event id",
+      "EVENT_TYPE": "Event type",
+      "DOMAIN": "Domain",
+      "DATE": "Date",
+      "RESPONSE_STATUS": "Response status",
+      "EXECUTION_TIMESTAMP": "Execution timestamp",
+      "CLEAR_FILTER": "Clear filter",
+      "ID": "Id",
+      "REQUEST_BODY": "Request body",
+      "URL": "Url",
+      "RESPONSE_BODY": "Response body"
+    }
   },
   "DASHBOARD": {
     "NUMBERS_OF_USERS": "Aktualna liczba użytkowników",
