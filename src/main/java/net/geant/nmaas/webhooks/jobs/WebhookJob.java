@@ -56,6 +56,7 @@ public abstract class WebhookJob implements Job {
             } else if (e instanceof HttpClientErrorException he) {
                 webhookHistoryService.create(webhook, payload, he.getStatusCode().value(), he.getResponseBodyAsString());
             }
+            webhookHistoryService.create(webhook, payload, null, null);
             throw new WebServiceCommunicationException("Webhook call failed: " + e.getMessage());
         }
 
