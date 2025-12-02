@@ -35,6 +35,7 @@ public class WebhookHistoryServiceImpl implements WebhookHistoryService {
     @Override
     public void create(WebhookEventDto webhook, Object payload, Integer responseStatus, String responseBody) {
         WebhookHistory webhookHistory = new WebhookHistory();
+        webhookHistory.setWebhookEventId(webhook.getId());
         webhookHistory.setEventType(webhook.getEventType());
         if (webhook.getDomain() != null) {
             webhookHistory.setDomainCodename(webhook.getDomain().getCodename());
