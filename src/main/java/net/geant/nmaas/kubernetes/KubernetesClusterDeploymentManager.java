@@ -108,17 +108,17 @@ public class KubernetesClusterDeploymentManager implements KubernetesClusterName
     }
 
     public KClusterView.KClusterDeploymentView getKClusterDeploymentView() {
-        KClusterView.KClusterDeploymentView kClusterDeploymentView = new KClusterView.KClusterDeploymentView();
-        kClusterDeploymentView.setNamespaceConfigOption(this.namespaceConfigOption);
-        kClusterDeploymentView.setDefaultNamespace(this.defaultNamespace);
-        kClusterDeploymentView.setDefaultStorageClass(this.defaultStorageClass);
-        kClusterDeploymentView.setSmtpServerHostname(this.smtpServerHostname);
-        kClusterDeploymentView.setSmtpServerPort(this.smtpServerPort);
-        kClusterDeploymentView.setSmtpServerUsername(this.smtpServerUsername);
-        kClusterDeploymentView.setSmtpServerPassword(this.smtpServerPassword);
-        kClusterDeploymentView.setSmtpFromDefaultDomain(this.smtpFromDefaultDomain);
-        kClusterDeploymentView.setForceDedicatedWorkers(this.forceDedicatedWorkers);
-        return kClusterDeploymentView;
+        KClusterView.KClusterDeploymentView view = new KClusterView.KClusterDeploymentView();
+        view.setNamespaceConfigOption(this.namespaceConfigOption);
+        view.setDefaultNamespace(this.defaultNamespace);
+        view.setDefaultStorageClass(this.defaultStorageClass);
+        view.setSmtpServerHostname(this.smtpServerHostname);
+        view.setSmtpServerPort(this.smtpServerPort);
+        view.setSmtpServerUsername(this.smtpServerUsername);
+        view.setSmtpServerPassword(this.smtpServerPassword);
+        view.setSmtpFromDefaultDomain(this.smtpFromDefaultDomain);
+        view.setForceDedicatedWorkers(this.forceDedicatedWorkers);
+        return view;
     }
 
     @PostConstruct
