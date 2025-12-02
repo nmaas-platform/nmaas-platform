@@ -187,6 +187,7 @@
     "SMTP_SERVER_PORT": "Port serwera SMTP",
     "SMTP_SERVER_USERNAME": "Nazwa użytkownika serwera SMTP",
     "SMTP_SERVER_PASSWORD": "Hasło użytkownika serwera SMTP",
+    "SMTP_FROM_DEFAULT_DOMAIN": "Domyślna domena serwera SMTP",
     "TITLE_GENERAL" : "Podstawowe ustawienia klastra",
     "GENERAL" : "Ustawienia klastra",
     "NAME" : "Nazwa klastra",
