@@ -182,6 +182,7 @@
     "SMTP_SERVER_PORT": "SMTP server port",
     "SMTP_SERVER_USERNAME": "SMTP server username",
     "SMTP_SERVER_PASSWORD": "SMTP server password",
+    "SMTP_FROM_DEFAULT_DOMAIN": "SMTP default FROM domain",
     "TITLE_GENERAL" : "General cluster information",
     "GENERAL" : "Basic information",
     "NAME" : "Cluster name",
