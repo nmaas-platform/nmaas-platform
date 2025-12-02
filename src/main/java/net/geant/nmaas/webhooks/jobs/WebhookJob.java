@@ -9,6 +9,7 @@ import net.geant.nmaas.portal.service.impl.WebhookEventService;
 import org.modelmapper.ModelMapper;
 import org.quartz.Job;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
 @RequiredArgsConstructor
@@ -52,8 +53,8 @@ public abstract class WebhookJob implements Job {
             log.error("Webhook call failed: {}", e.getMessage(), e);
             if (e instanceof WebServiceCommunicationException we) {
                 webhookHistoryService.create(webhook, payload, we.getResponseStatus(), we.getResponseBody());
-            } else {
-                webhookHistoryService.create(webhook, payload, null, null);
+            } else if (e instanceof HttpClientErrorException he) {
+                webhookHistoryService.create(webhook, payload, he.getStatusCode().value(), he.getResponseBodyAsString());
             }
             throw new WebServiceCommunicationException("Webhook call failed: " + e.getMessage());
         }
