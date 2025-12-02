@@ -45,15 +45,17 @@ public abstract class WebhookJob implements Job {
             if (!response.getStatusCode().is2xxSuccessful()) {
                 String errorMessage = "Webhook call failed with status: " + response.getStatusCode().value() + ", body: " + body;
                 log.error(errorMessage);
-                throw new WebServiceCommunicationException(errorMessage);
+                throw new WebServiceCommunicationException(errorMessage, response.getStatusCode().value(), response.getBody());
             }
             log.info("Webhook call for {} was successful. Response: {}", webhook.getEventType(), body);
-        } catch (WebServiceCommunicationException e) {
-            throw e;
-        } catch (Exception error) {
-            log.error("Webhook call failed: {}", error.getMessage(), error);
-            webhookHistoryService.create(webhook, payload, null, null);
-            throw new WebServiceCommunicationException("Webhook call failed: " + error.getMessage());
+        } catch (Exception e) {
+            log.error("Webhook call failed: {}", e.getMessage(), e);
+            if (e instanceof WebServiceCommunicationException we) {
+                webhookHistoryService.create(webhook, payload, we.getResponseStatus(), we.getResponseBody());
+            } else {
+                webhookHistoryService.create(webhook, payload, null, null);
+            }
+            throw new WebServiceCommunicationException("Webhook call failed: " + e.getMessage());
         }
 
     }
