@@ -1419,7 +1419,7 @@
       "EVENT_ID": "Event id",
       "EVENT_TYPE": "Event type",
       "DOMAIN": "Domain",
-      "DATE": "Date",
+      "DATE": "Date range",
       "RESPONSE_STATUS": "Response status",
       "EXECUTION_TIMESTAMP": "Execution timestamp",
       "CLEAR_FILTER": "Clear filter",
