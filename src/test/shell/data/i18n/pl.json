@@ -1416,17 +1416,17 @@
     "HISTORY": {
       "TITLE": "Historia webhooków",
       "HISTORY": "Historia",
-      "EVENT_ID": "Event id",
-      "EVENT_TYPE": "Event type",
-      "DOMAIN": "Domain",
-      "DATE": "Date",
-      "RESPONSE_STATUS": "Response status",
-      "EXECUTION_TIMESTAMP": "Execution timestamp",
-      "CLEAR_FILTER": "Clear filter",
+      "EVENT_ID": "Id zdarzenia",
+      "EVENT_TYPE": "Typ zdarzenia",
+      "DOMAIN": "Domena",
+      "DATE": "Zakres dat",
+      "RESPONSE_STATUS": "Status odpowiedzi",
+      "EXECUTION_TIMESTAMP": "Czas wykonania",
+      "CLEAR_FILTER": "Wyczyść filtry",
       "ID": "Id",
-      "REQUEST_BODY": "Request body",
+      "REQUEST_BODY": "Treść żądania",
       "URL": "Url",
-      "RESPONSE_BODY": "Response body"
+      "RESPONSE_BODY": "Treść odpowiedzi"
     }
   },
   "DASHBOARD": {
