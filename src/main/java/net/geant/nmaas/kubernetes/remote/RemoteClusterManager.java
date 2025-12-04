@@ -5,6 +5,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.kubernetes.ClusterConfigView;
+import net.geant.nmaas.kubernetes.KubernetesApiClientService;
 import net.geant.nmaas.kubernetes.KubernetesClusterDeploymentManager;
 import net.geant.nmaas.kubernetes.KubernetesClusterIngressManager;
 import net.geant.nmaas.kubernetes.remote.api.model.RemoteClusterView;
@@ -51,7 +52,8 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
     private final UserService userService;
     private final RemoteClusterMonitoringService monitoringService;
     private final ApplicationEventPublisher eventPublisher;
-    private final ModelMapper modelMapper;
+    private final ModelMapper modelMapper;;
+    private final KubernetesApiClientService kubernetesApiClientService;
 
     @Override
     public RemoteClusterView getCluster(Long id, Principal principal) {
@@ -146,60 +148,72 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
 
     @Override
     public RemoteClusterView processNewCluster(RemoteClusterView remoteClusterSpec, MultipartFile kubeConfigFile, boolean createNamespace) {
-        checkRequest(remoteClusterSpec);
         try {
-            KClusterDeployment deployment;
-            KClusterIngress ingress;
-
-            if (remoteClusterSpec.getDeployment() != null) {
-                deployment = modelMapper.map(remoteClusterSpec.getDeployment(), KClusterDeployment.class);
-            } else {
-                deployment = modelMapper.map(kClusterDeploymentManager.getKClusterDeploymentView(), KClusterDeployment.class);
-            }
-
-            if (remoteClusterSpec.getIngress() != null) {
-                ingress = modelMapper.map(remoteClusterSpec.getIngress(), KClusterIngress.class);
-            } else {
-                ingress = modelMapper.map(kClusterDeploymentManager.getKClusterDeploymentView(), KClusterIngress.class);
-            }
-
-            KCluster cluster = KCluster.builder()
-                    .name(remoteClusterSpec.getName())
-                    .description(remoteClusterSpec.getDescription())
-                    .creationDate(OffsetDateTime.now())
-                    .modificationDate(OffsetDateTime.now())
-                    .codename(remoteClusterSpec.getCodename())
-                    .clusterConfigFile(new String(kubeConfigFile.getBytes()))
-                    .deployment(deployment)
-                    .ingress(ingress)
-                    .state(KClusterState.UNKNOWN)
-                    .contactEmail(remoteClusterSpec.getContactEmail())
-                    .currentStateSince(OffsetDateTime.now())
-                    .domains(toListOfDomains(remoteClusterSpec))
-                    .build();
-
-            String savedPath = saveFileToTmp(kubeConfigFile);
-            cluster.setPathConfigFile(savedPath);
-            log.debug("Configuration kubeConfigFile saved in {}", savedPath);
-
-            KCluster savedCluster = kClusterRepository.save(cluster);
-
-            log.debug("Sending email notification (cluster support)");
-            mailer.sendMail(savedCluster, MailType.REMOTE_CLUSTER_WELCOME_SUPPORT);
-
-            if (createNamespace) {
-                savedCluster.getDomains().forEach(d ->
-                        eventPublisher.publishEvent(
-                                new RemoteClusterNamespaceEvent(this, savedCluster.getId(), d.getCodename(), Collections.emptyList()))
-                );
-            } else {
-                log.debug("Namespace creation flag is disabled");
-            }
-            return toView(savedCluster);
-
+            return saveNewCluster(remoteClusterSpec, createNamespace, kubeConfigFile.getBytes());
         } catch (IOException | NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public RemoteClusterView processNewCluster(RemoteClusterView remoteClusterSpec, boolean createNamespace, String namespace, String secretName) {
+        try {
+            return saveNewCluster(remoteClusterSpec, createNamespace, kubernetesApiClientService.getLocalClusterConfigBytes(namespace, secretName));
+        } catch (IOException | NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private RemoteClusterView saveNewCluster(RemoteClusterView remoteClusterSpec, boolean createNamespace, byte[] data) throws IOException, NoSuchAlgorithmException {
+
+        KClusterDeployment deployment;
+        KClusterIngress ingress;
+
+        if (remoteClusterSpec.getDeployment() != null) {
+            deployment = modelMapper.map(remoteClusterSpec.getDeployment(), KClusterDeployment.class);
+        } else {
+            deployment = modelMapper.map(kClusterDeploymentManager.getKClusterDeploymentView(), KClusterDeployment.class);
+        }
+
+        if (remoteClusterSpec.getIngress() != null) {
+            ingress = modelMapper.map(remoteClusterSpec.getIngress(), KClusterIngress.class);
+        } else {
+            ingress = modelMapper.map(kClusterDeploymentManager.getKClusterDeploymentView(), KClusterIngress.class);
+        }
+
+        KCluster cluster = KCluster.builder()
+                .name(remoteClusterSpec.getName())
+                .description(remoteClusterSpec.getDescription())
+                .creationDate(OffsetDateTime.now())
+                .modificationDate(OffsetDateTime.now())
+                .codename(remoteClusterSpec.getCodename())
+                .deployment(deployment)
+                .ingress(ingress)
+                .state(KClusterState.UNKNOWN)
+                .contactEmail(remoteClusterSpec.getContactEmail())
+                .currentStateSince(OffsetDateTime.now())
+                .domains(toListOfDomains(remoteClusterSpec))
+                .build();
+        cluster.setClusterConfigFile(new String(data));
+
+        String savedPath = saveFileToTmp(data);
+        cluster.setPathConfigFile(savedPath);
+        log.debug("Configuration kubeConfigFile saved in {}", savedPath);
+        KCluster savedCluster = kClusterRepository.save(cluster);
+
+        log.debug("Sending email notification (cluster support)");
+        mailer.sendMail(savedCluster, MailType.REMOTE_CLUSTER_WELCOME_SUPPORT);
+
+        if (createNamespace) {
+            savedCluster.getDomains().forEach(d ->
+                    eventPublisher.publishEvent(
+                            new RemoteClusterNamespaceEvent(this, savedCluster.getId(), d.getCodename(), Collections.emptyList()))
+            );
+        } else {
+            log.debug("Namespace creation flag is disabled");
+        }
+        return toView(savedCluster);
+
     }
 
     private List<Domain> toListOfDomains(RemoteClusterView view) {
@@ -248,7 +262,8 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
         throw new IllegalArgumentException("Cluster with id: " + id + " is missing. Can not update.");
     }
 
-    private void checkRequest(RemoteClusterView view) {
+    @Override
+    public void checkRequest(RemoteClusterView view) {
         if (view.getName() == null) {
             throw new IllegalArgumentException(CLUSTER_NAME_NULL_MESSAGE);
         }
