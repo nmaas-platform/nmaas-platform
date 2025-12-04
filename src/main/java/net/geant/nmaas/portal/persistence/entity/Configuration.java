@@ -1,5 +1,9 @@
 package net.geant.nmaas.portal.persistence.entity;
 
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,6 +16,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -81,6 +87,10 @@ public class Configuration {
 
     @Column(name = "health_check_job_cron", nullable = false)
     private String healthCheckJobCron;
+
+    @ManyToOne
+    @JoinColumn(name = "default_domain_for_sso_users")
+    private Domain defaultDomainForSsoUsers;
 
     public Configuration(
             boolean maintenance,

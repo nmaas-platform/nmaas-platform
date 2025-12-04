@@ -3,6 +3,7 @@ package net.geant.nmaas.portal.api.auth;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.portal.api.configuration.model.ConfigurationView;
 import net.geant.nmaas.portal.api.exceptions.AuthenticationException;
 import net.geant.nmaas.portal.api.exceptions.ExternalUserCanNotBeLinked;
 import net.geant.nmaas.portal.api.exceptions.ExternalUserMatchException;
@@ -117,6 +118,11 @@ public class OIDCAuthController {
 
         try {
             User user = oidcUserService.checkUser(oidcUser);
+            // If a default domain for SSO users is configured and user has no role in that domain, add ROLE_USER in configured domain
+            ConfigurationView configuration = configurationManager.getConfiguration();
+            if (configuration.getDefaultDomainForSsoUsers() != null && (user.getRoles() == null || user.getRoles().isEmpty())) {
+                domains.addMemberRole(configuration.getDefaultDomainForSsoUsers().getId(), user.getId(), Role.ROLE_USER);
+            }
             String redirectUrl = portalAddress
                     + "/login-success?token="
                     + jwtTokenService.getToken(user)

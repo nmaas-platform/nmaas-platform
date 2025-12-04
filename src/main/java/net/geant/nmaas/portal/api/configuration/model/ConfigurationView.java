@@ -7,6 +7,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import jakarta.validation.constraints.Email;
+import net.geant.nmaas.portal.domain.DomainView;
+import net.geant.nmaas.portal.persistence.entity.Domain;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,5 +59,7 @@ public class ConfigurationView {
     private String deploymentPrefix;
 
     private String healthCheckJobCron;
+
+    private DomainView defaultDomainForSsoUsers;
 
 }
