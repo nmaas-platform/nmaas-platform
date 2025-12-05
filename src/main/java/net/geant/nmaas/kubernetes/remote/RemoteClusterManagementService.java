@@ -19,5 +19,7 @@ public interface RemoteClusterManagementService extends RemoteClusterInfoService
 
     RemoteClusterView mapFile(RemoteClusterView view, MultipartFile file);
 
+    RemoteClusterView mapFile(RemoteClusterView view, String secretNamespace, String secretName);
+
     void updateClusterStatus(Long id);
 }

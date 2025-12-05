@@ -50,7 +50,7 @@ public class RemoteClusterManagerController {
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR') || hasRole('ROLE_DOMAIN_ADMIN')")
     @PostMapping
     public RemoteClusterView createKubernetesCluster(@RequestPart("file") MultipartFile file,
-                                                     @RequestPart("namespace") String namespace,
+                                                     @RequestPart("secretNamespace") String secretNamespace,
                                                      @RequestPart("secretName") String secretName,
                                                      @RequestPart("data") String viewString,
                                                      @RequestPart("createNamespace") String createNamespace) {
@@ -61,10 +61,10 @@ public class RemoteClusterManagerController {
             remoteClusterManager.checkRequest(cluster);
             if (file != null && !file.isEmpty()) {
                 return remoteClusterManager.processNewCluster(cluster, file, createNamespaceFlag);
-            } else  if (!StringUtils.isBlank(namespace) && !StringUtils.isBlank(secretName)) {
-                return remoteClusterManager.processNewCluster(cluster, createNamespaceFlag, namespace, secretName);
+            } else if (!StringUtils.isBlank(secretNamespace) && !StringUtils.isBlank(secretName)) {
+                return remoteClusterManager.processNewCluster(cluster, createNamespaceFlag, secretNamespace, secretName);
             } else {
-                throw new RuntimeException("You need either to upload the kubeConfig file or  the namespace of a secret object that holds the respective kubeConfig file in the local cluster");
+                throw new RuntimeException("You need either to upload the kubeConfig file or name of secret object that holds the respective kubeConfig file in the local cluster");
             }
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
@@ -85,11 +85,20 @@ public class RemoteClusterManagerController {
 
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR') || hasRole('ROLE_DOMAIN_ADMIN')")
     @PostMapping("/read")
-    public RemoteClusterView readKubernetesCluster(@RequestPart("file") MultipartFile file, @RequestPart("data") String viewString) {
+    public RemoteClusterView readKubernetesCluster(@RequestPart("file") MultipartFile file,
+                                                   @RequestPart("secretNamespace") String secretNamespace,
+                                                   @RequestPart("secretName") String secretName,
+                                                   @RequestPart("data") String viewString) {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             RemoteClusterView cluster = objectMapper.readValue(viewString, RemoteClusterView.class);
-            return remoteClusterManager.mapFile(cluster, file);
+            if (file != null && !file.isEmpty()) {
+                return remoteClusterManager.mapFile(cluster, file);
+            } else if (!StringUtils.isBlank(secretNamespace) && !StringUtils.isBlank(secretName)) {
+                return remoteClusterManager.mapFile(cluster, secretNamespace, secretName);
+            } else {
+                throw new RuntimeException("You need either to upload the kubeConfig file or name of secret object that holds the respective kubeConfig file in the local cluster");
+            }
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }

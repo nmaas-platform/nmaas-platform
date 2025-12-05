@@ -235,7 +235,7 @@ public class KubernetesApiClientService {
 
             String encoded = secret.getData().get("kubeconfig");
             if (encoded == null) {
-                throw new NoSuchElementException("kubeconfig does not found in secret.");
+                throw new NoSuchElementException("kubeConfig not found in secret");
             }
 
             // The content is Base64-encoded by Kubernetes, so decode it

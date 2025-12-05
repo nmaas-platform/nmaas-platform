@@ -52,7 +52,8 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
     private final UserService userService;
     private final RemoteClusterMonitoringService monitoringService;
     private final ApplicationEventPublisher eventPublisher;
-    private final ModelMapper modelMapper;;
+    private final ModelMapper modelMapper;
+    ;
     private final KubernetesApiClientService kubernetesApiClientService;
 
     @Override
@@ -105,18 +106,29 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
 
     @Override
     public RemoteClusterView mapFile(RemoteClusterView view, MultipartFile file) {
+        try {
+            return getRemoteClusterView(view, file.getBytes());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public RemoteClusterView mapFile(RemoteClusterView view, String secretNamespace, String secretName) {
+        return getRemoteClusterView(view, kubernetesApiClientService.getLocalClusterConfigBytes(secretNamespace, secretName));
+    }
+
+    private RemoteClusterView getRemoteClusterView(RemoteClusterView view, byte[] fileBytes) {
         checkRequestRead(view);
 
         ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
-
         try {
-            ClusterConfigView configView = yamlMapper.readValue(file.getInputStream(), ClusterConfigView.class);
+            ClusterConfigView clusterConfig = yamlMapper.readValue(fileBytes, ClusterConfigView.class);
+            log.info("Mapped: {}", clusterConfig.toString());
 
-            log.info("Mapped {}", configView.toString());
-
-            if (configView.getClusters().isEmpty()) {
+            if (clusterConfig.getClusters().isEmpty()) {
                 log.info("No clusters info provided in configuration file");
-            } else if (configView.getClusters().size() == 1) {
+            } else if (clusterConfig.getClusters().size() == 1) {
                 log.info("One cluster provided, create view and return ");
                 KClusterDeployment deployment = modelMapper.map(kClusterDeploymentManager.getKClusterDeploymentView(), KClusterDeployment.class);
                 KClusterIngress ingress = modelMapper.map(kClusterIngressManager.getKClusterIngressView(), KClusterIngress.class);
@@ -125,8 +137,8 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
                         .description(view.getDescription())
                         .creationDate(OffsetDateTime.now())
                         .modificationDate(OffsetDateTime.now())
-                        .codename(configView.getClusters().stream().findFirst().get().getName())
-                        .clusterConfigFile(new String(file.getBytes()))
+                        .codename(clusterConfig.getClusters().stream().findFirst().get().getName())
+                        .clusterConfigFile(new String(fileBytes))
                         .deployment(deployment)
                         .ingress(ingress)
                         .state(KClusterState.UNKNOWN)
@@ -134,15 +146,12 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
                         .currentStateSince(OffsetDateTime.now())
                         .domains(toListOfDomains(view))
                         .build());
-
             } else {
                 log.warn("More than 1 cluster provided, not implemented yet");
             }
-
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
         return null;
     }
 
