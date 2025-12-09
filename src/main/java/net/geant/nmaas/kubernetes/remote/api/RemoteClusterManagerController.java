@@ -49,9 +49,9 @@ public class RemoteClusterManagerController {
 
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR') || hasRole('ROLE_DOMAIN_ADMIN')")
     @PostMapping
-    public RemoteClusterView createKubernetesCluster(@RequestPart("file") MultipartFile file,
-                                                     @RequestPart("secretNamespace") String secretNamespace,
-                                                     @RequestPart("secretName") String secretName,
+    public RemoteClusterView createKubernetesCluster(@RequestPart(value = "file", required = false) MultipartFile file,
+                                                     @RequestPart(value = "secretNamespace", required = false) String secretNamespace,
+                                                     @RequestPart(value = "secretName", required = false) String secretName,
                                                      @RequestPart("data") String viewString,
                                                      @RequestPart("createNamespace") String createNamespace) {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -85,9 +85,9 @@ public class RemoteClusterManagerController {
 
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR') || hasRole('ROLE_DOMAIN_ADMIN')")
     @PostMapping("/read")
-    public RemoteClusterView readKubernetesCluster(@RequestPart("file") MultipartFile file,
-                                                   @RequestPart("secretNamespace") String secretNamespace,
-                                                   @RequestPart("secretName") String secretName,
+    public RemoteClusterView readKubernetesCluster(@RequestPart(value = "file", required = false) MultipartFile file,
+                                                   @RequestPart(value = "secretNamespace", required = false) String secretNamespace,
+                                                   @RequestPart(value = "secretName", required = false) String secretName,
                                                    @RequestPart("data") String viewString) {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
