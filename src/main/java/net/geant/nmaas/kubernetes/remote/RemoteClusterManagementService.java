@@ -5,7 +5,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface RemoteClusterManagementService extends RemoteClusterInfoService {
 
+    void checkRequest(RemoteClusterView view);
+
     RemoteClusterView processNewCluster(RemoteClusterView remoteClusterSpec, MultipartFile kubeConfigFile, boolean createNamespace);
+
+    RemoteClusterView processNewCluster(RemoteClusterView remoteClusterSpec, boolean createNamespace, String namespace, String secretName);
 
     RemoteClusterView updateCluster(RemoteClusterView cluster, Long id);
 
@@ -14,6 +18,8 @@ public interface RemoteClusterManagementService extends RemoteClusterInfoService
     boolean clusterExists(Long id);
 
     RemoteClusterView mapFile(RemoteClusterView view, MultipartFile file);
+
+    RemoteClusterView mapFile(RemoteClusterView view, String secretNamespace, String secretName);
 
     void updateClusterStatus(Long id);
 }
