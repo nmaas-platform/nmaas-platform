@@ -8,6 +8,7 @@ import net.geant.nmaas.portal.persistence.entity.WebhookEventType;
 import net.geant.nmaas.portal.persistence.entity.WebhookHistory;
 import net.geant.nmaas.portal.persistence.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistence.repositories.WebhookHistoryRepository;
+import net.geant.nmaas.portal.service.AutoWebhookTemplateService;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 import net.geant.nmaas.portal.service.WebhookHistoryService;
@@ -41,6 +42,7 @@ class UserDomainAssignmentJobTest {
     private final DomainService domainService = mock(DomainService.class);
     private final UserService userService = mock(UserService.class);
     private final WebhookHistoryRepository webhookHistoryRepository = mock(WebhookHistoryRepository.class);
+    private final AutoWebhookTemplateService templateService = mock(AutoWebhookTemplateService.class);
 
     private final ModelMapper mapper = new ModelMapper();
     private final WebhookHistoryService webhookHistoryService = new WebhookHistoryServiceImpl(webhookHistoryRepository, domainRepository, mapper);
@@ -64,7 +66,7 @@ class UserDomainAssignmentJobTest {
 
         assertThrows(JobExecutionException.class, () -> {
             UserDomainAssignmentJob job =
-                    new UserDomainAssignmentJob(restClient, webhookEventService, mapper, webhookHistoryService, domainService, userService);
+                    new UserDomainAssignmentJob(restClient, webhookEventService, mapper, webhookHistoryService, domainService, userService, templateService);
             job.execute(jobExecutionContext);
         });
         verify(webhookEventService).getById(10L);

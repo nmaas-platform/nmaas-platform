@@ -3,6 +3,7 @@ package net.geant.nmaas.webhooks;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.geant.nmaas.portal.persistence.entity.WebhookEventType;
 
@@ -11,6 +12,7 @@ import java.util.Map;
 @AllArgsConstructor
 @Getter
 @Setter
+@NoArgsConstructor
 public class AppDeploymentWebhookDto {
 
     private AppDeploymentView appDeployment;

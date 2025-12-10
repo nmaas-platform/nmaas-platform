@@ -7,6 +7,7 @@ import net.geant.nmaas.portal.persistence.entity.WebhookEventType;
 import net.geant.nmaas.portal.persistence.entity.WebhookHistory;
 import net.geant.nmaas.portal.persistence.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistence.repositories.WebhookHistoryRepository;
+import net.geant.nmaas.portal.service.AutoWebhookTemplateService;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.WebhookHistoryService;
 import net.geant.nmaas.portal.service.impl.WebhookEventService;
@@ -38,6 +39,7 @@ class DomainActionJobTest {
     private final DomainRepository domainRepository = mock(DomainRepository.class);
     private final DomainService domainService = mock(DomainService.class);
     private final WebhookHistoryRepository webhookHistoryRepository = mock(WebhookHistoryRepository.class);
+    private final AutoWebhookTemplateService templateService = mock(AutoWebhookTemplateService.class);
 
     private final ModelMapper mapper = new ModelMapper();
     private final WebhookHistoryService webhookHistoryService = new WebhookHistoryServiceImpl(webhookHistoryRepository, domainRepository, mapper);
@@ -61,7 +63,7 @@ class DomainActionJobTest {
         when(domainService.findDomain(1L)).thenReturn(Optional.of(new Domain("name", "codename")));
 
         assertThrows(JobExecutionException.class, () -> {
-            DomainActionJob job = new DomainActionJob(restClient, webhookEventService, mapper, webhookHistoryService);
+            DomainActionJob job = new DomainActionJob(restClient, webhookEventService, mapper, webhookHistoryService, templateService);
             job.execute(jobExecutionContext);
         });
 

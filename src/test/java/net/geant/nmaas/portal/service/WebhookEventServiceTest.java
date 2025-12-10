@@ -30,8 +30,9 @@ class WebhookEventServiceTest {
     private final EncryptionService encryptionService = mock(EncryptionService.class);
     private final UserService userService = mock(UserService.class);
     private final ModelMapper modelMapper = new ModelMapper();
+    private final AutoWebhookTemplateService autoWebhookTemplateService =  mock(AutoWebhookTemplateService.class);
 
-    private final WebhookEventService webhookEventService = new WebhookEventService(webhookEventRepository, encryptionService, modelMapper, userService);
+    private final WebhookEventService webhookEventService = new WebhookEventService(webhookEventRepository, encryptionService, modelMapper, userService, autoWebhookTemplateService);
 
     private WebhookEventDto webhookEventDto;
     private WebhookEvent webhookEvent;
@@ -45,8 +46,8 @@ class WebhookEventServiceTest {
 
     @Test
     void shouldPerformCrudWebhookEventActions() throws GeneralSecurityException {
-        webhookEventDto = new WebhookEventDto(2L, "webhook2", "https://example.com/webhook2", WebhookEventType.DOMAIN_ACTION, "xxxxyyyy", "Authorization", null);
-        webhookEvent = new WebhookEvent(2L, "webhook2", "https://example.com/webhook2", WebhookEventType.DOMAIN_ACTION, "sjxV/ytRIoHjXy+CtXMzD4T+bntbqzQX25eztXbJ9r4gIZXT", "Authorization", null);
+        webhookEventDto = new WebhookEventDto(2L, "webhook2", "https://example.com/webhook2", WebhookEventType.DOMAIN_ACTION, "xxxxyyyy", "Authorization", null, null);
+        webhookEvent = new WebhookEvent(2L, "webhook2", "https://example.com/webhook2", WebhookEventType.DOMAIN_ACTION, "sjxV/ytRIoHjXy+CtXMzD4T+bntbqzQX25eztXbJ9r4gIZXT", "Authorization", null, null);
         when(webhookEventRepository.save(isA(WebhookEvent.class))).thenReturn(webhookEvent);
         when(encryptionService.encrypt(anyString())).thenAnswer(i -> "sjxV/ytRIoHjXy+CtXMzD4T+bntbqzQX25eztXbJ9r4gIZXT");
         when(encryptionService.decrypt(anyString())).thenAnswer(i -> "xxxxyyyy");

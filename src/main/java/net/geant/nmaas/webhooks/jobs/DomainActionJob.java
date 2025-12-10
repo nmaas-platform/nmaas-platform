@@ -7,6 +7,7 @@ import net.geant.nmaas.portal.domain.DomainBase;
 import net.geant.nmaas.portal.domain.WebhookEventDto;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.persistence.entity.WebhookEventType;
+import net.geant.nmaas.portal.service.AutoWebhookTemplateService;
 import net.geant.nmaas.portal.service.WebhookHistoryService;
 import net.geant.nmaas.portal.service.impl.WebhookEventService;
 import org.modelmapper.ModelMapper;
@@ -24,8 +25,8 @@ import java.security.GeneralSecurityException;
 public class DomainActionJob extends WebhookJob {
 
     @Autowired
-    public DomainActionJob(RestClient restClient, WebhookEventService webhookEventService, ModelMapper modelMapper, WebhookHistoryService webhookHistoryService) {
-        super(restClient, webhookEventService, modelMapper, webhookHistoryService);
+    public DomainActionJob(RestClient restClient, WebhookEventService webhookEventService, ModelMapper modelMapper, WebhookHistoryService webhookHistoryService, AutoWebhookTemplateService templateService) {
+        super(restClient, webhookEventService, modelMapper, webhookHistoryService, templateService);
     }
 
     @Override

@@ -3,6 +3,7 @@ package net.geant.nmaas.webhooks.jobs;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.orchestration.exceptions.WebServiceCommunicationException;
 import net.geant.nmaas.portal.domain.DomainBase;
+import net.geant.nmaas.portal.service.AutoWebhookTemplateService;
 import net.geant.nmaas.portal.service.WebhookHistoryService;
 import net.geant.nmaas.webhooks.UserDomainAssignmentWebhookDto;
 import net.geant.nmaas.portal.domain.UserView;
@@ -33,8 +34,8 @@ public class UserDomainAssignmentJob extends WebhookJob {
     private final UserService userService;
 
     @Autowired
-    public UserDomainAssignmentJob(RestClient restClient, WebhookEventService webhookEventService, ModelMapper modelMapper, WebhookHistoryService webhookHistoryService, DomainService domainService, UserService userService) {
-        super(restClient, webhookEventService, modelMapper, webhookHistoryService);
+    public UserDomainAssignmentJob(RestClient restClient, WebhookEventService webhookEventService, ModelMapper modelMapper, WebhookHistoryService webhookHistoryService, DomainService domainService, UserService userService, AutoWebhookTemplateService templateService) {
+        super(restClient, webhookEventService, modelMapper, webhookHistoryService, templateService);
         this.domainService = domainService;
         this.userService = userService;
     }

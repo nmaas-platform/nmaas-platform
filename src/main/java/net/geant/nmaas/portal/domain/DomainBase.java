@@ -14,11 +14,11 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class DomainBase implements Serializable {
 
-    Long id;
-    String name;
-    String codename;
-    boolean active;
-    boolean deleted;
+    protected Long id;
+    protected String name;
+    protected String codename;
+    protected boolean active;
+    protected boolean deleted;
 
     public static DomainBase fromEntity(Domain domain) {
         return new DomainBase(domain.getId(), domain.getName(), domain.getCodename(), domain.isActive(), domain.isDeleted());

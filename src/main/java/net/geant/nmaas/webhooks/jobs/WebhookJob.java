@@ -4,10 +4,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.orchestration.exceptions.WebServiceCommunicationException;
 import net.geant.nmaas.portal.domain.WebhookEventDto;
+import net.geant.nmaas.portal.service.AutoWebhookTemplateService;
 import net.geant.nmaas.portal.service.WebhookHistoryService;
 import net.geant.nmaas.portal.service.impl.WebhookEventService;
 import org.modelmapper.ModelMapper;
 import org.quartz.Job;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
@@ -22,20 +24,23 @@ public abstract class WebhookJob implements Job {
     protected final WebhookEventService webhookEventService;
     protected final ModelMapper modelMapper;
     protected final WebhookHistoryService webhookHistoryService;
+    protected final AutoWebhookTemplateService templateService;
 
     protected void callWebhook(WebhookEventDto webhook, Object payload) {
-        RestClient.RequestBodySpec request = restClient.post()
-                .uri(webhook.getTargetUrl())
-                .body(payload);
-
-        if (AUTHORIZATION_HEADER.equals(webhook.getAuthorizationHeader())) {
-            request.header("Authorization", "Bearer " + webhook.getTokenValue());
-        } else if (webhook.getAuthorizationHeader() != null) {
-            request.header(webhook.getAuthorizationHeader(), webhook.getTokenValue());
-        }
-
         // throw WebServiceCommunicationException for any possible error in calling webhook
         try {
+            RestClient.RequestBodySpec request = restClient.post()
+                    .uri(webhook.getTargetUrl())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(templateService.render(webhook.getTemplate(), payload));
+
+            if (AUTHORIZATION_HEADER.equals(webhook.getAuthorizationHeader())) {
+                request.header("Authorization", "Bearer " + webhook.getTokenValue());
+            } else if (webhook.getAuthorizationHeader() != null) {
+                request.header(webhook.getAuthorizationHeader(), webhook.getTokenValue());
+            }
+
+
             ResponseEntity<String> response = request
                     .retrieve()
                     .toEntity(String.class);

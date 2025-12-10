@@ -6,6 +6,7 @@ import net.geant.nmaas.portal.persistence.entity.WebhookEventType;
 import net.geant.nmaas.portal.persistence.entity.WebhookHistory;
 import net.geant.nmaas.portal.persistence.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistence.repositories.WebhookHistoryRepository;
+import net.geant.nmaas.portal.service.AutoWebhookTemplateService;
 import net.geant.nmaas.portal.service.WebhookHistoryService;
 import net.geant.nmaas.portal.service.impl.WebhookEventService;
 import net.geant.nmaas.portal.service.impl.WebhookHistoryServiceImpl;
@@ -34,6 +35,7 @@ class DomainGroupActionJobTest {
     private final WebhookEventService webhookEventService = mock(WebhookEventService.class);
     private final DomainRepository domainRepository = mock(DomainRepository.class);
     private final WebhookHistoryRepository webhookHistoryRepository = mock(WebhookHistoryRepository.class);
+    private final AutoWebhookTemplateService templateService = mock(AutoWebhookTemplateService.class);
 
     private final ModelMapper mapper = new ModelMapper();
     private final WebhookHistoryService webhookHistoryService = new WebhookHistoryServiceImpl(webhookHistoryRepository, domainRepository, mapper);
@@ -53,7 +55,7 @@ class DomainGroupActionJobTest {
                 new WebhookEventDto(10L, "webhook-name", "https://example.webhook-url.pl", WebhookEventType.DOMAIN_GROUP_ACTION));
 
         assertThrows(JobExecutionException.class, () -> {
-            DomainGroupActionJob job = new DomainGroupActionJob(restClient, webhookEventService, mapper, webhookHistoryService);
+            DomainGroupActionJob job = new DomainGroupActionJob(restClient, webhookEventService, mapper, webhookHistoryService, templateService);
             job.execute(jobExecutionContext);
         });
         verify(webhookEventService).getById(10L);
