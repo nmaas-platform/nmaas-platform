@@ -1,5 +1,6 @@
 package net.geant.nmaas.kubernetes.remote;
 
+import net.geant.nmaas.kubernetes.KubernetesApiClientService;
 import net.geant.nmaas.kubernetes.KubernetesClusterDeploymentManager;
 import net.geant.nmaas.kubernetes.KubernetesClusterIngressManager;
 import net.geant.nmaas.kubernetes.remote.api.model.RemoteClusterView;
@@ -40,11 +41,12 @@ class RemoteClusterManagerTest {
     private final UserService userService = mock(UserService.class);
     private final RemoteClusterMonitoringService monitoringService = mock(RemoteClusterMonitoringService.class);
     private final ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);
+    private final KubernetesApiClientService kubernetesApiClientService = mock(KubernetesApiClientService.class);
     private final ModelMapper modelMapper = new ModelMapper();
 
     private final RemoteClusterManager remoteClusterManager = new RemoteClusterManager(
             kClusterRepository, kClusterIngressManager, kClusterDeploymentManager, domainService,
-            null, userService, monitoringService, eventPublisher, modelMapper);
+            null, userService, monitoringService, eventPublisher, modelMapper, kubernetesApiClientService);
 
     private Domain globalDomain;
     private Domain specificDomain;

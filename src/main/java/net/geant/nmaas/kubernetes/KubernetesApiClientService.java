@@ -22,10 +22,11 @@ import net.geant.nmaas.nmservice.configuration.ConfigFile;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.springframework.stereotype.Component;
-
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 @Component
@@ -219,6 +220,26 @@ public class KubernetesApiClientService {
                     .inNamespace(namespace)
                     .withName(secretName)
                     .delete();
+        }
+    }
+
+    public byte[] getLocalClusterConfigBytes(String namespace, String secretName) {
+        try (KubernetesClient client = initClient(null)) {
+            Secret secret = client.secrets()
+                    .inNamespace(namespace)
+                    .withName(secretName)
+                    .get();
+            if (secret == null) {
+                throw new NoSuchElementException("Secret not found: " + secretName);
+            }
+
+            String encoded = secret.getData().get("kubeconfig");
+            if (encoded == null) {
+                throw new NoSuchElementException("kubeConfig not found in secret");
+            }
+
+            // The content is Base64-encoded by Kubernetes, so decode it
+            return Base64.getDecoder().decode(encoded);
         }
     }
 

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import net.geant.nmaas.kubernetes.remote.RemoteClusterManagementService;
 import net.geant.nmaas.kubernetes.remote.api.model.RemoteClusterView;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -48,14 +49,23 @@ public class RemoteClusterManagerController {
 
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR') || hasRole('ROLE_DOMAIN_ADMIN')")
     @PostMapping
-    public RemoteClusterView createKubernetesCluster(@RequestPart("file") MultipartFile file,
+    public RemoteClusterView createKubernetesCluster(@RequestPart(value = "file", required = false) MultipartFile file,
+                                                     @RequestPart(value = "secretNamespace", required = false) String secretNamespace,
+                                                     @RequestPart(value = "secretName", required = false) String secretName,
                                                      @RequestPart("data") String viewString,
                                                      @RequestPart("createNamespace") String createNamespace) {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             RemoteClusterView cluster = objectMapper.readValue(viewString, RemoteClusterView.class);
             final boolean createNamespaceFlag = Objects.isNull(createNamespace) ? Boolean.FALSE : Boolean.valueOf(createNamespace);
-            return remoteClusterManager.processNewCluster(cluster, file, createNamespaceFlag);
+            remoteClusterManager.checkRequest(cluster);
+            if (file != null && !file.isEmpty()) {
+                return remoteClusterManager.processNewCluster(cluster, file, createNamespaceFlag);
+            } else if (!StringUtils.isBlank(secretNamespace) && !StringUtils.isBlank(secretName)) {
+                return remoteClusterManager.processNewCluster(cluster, createNamespaceFlag, secretNamespace, secretName);
+            } else {
+                throw new RuntimeException("You need either to upload the kubeConfig file or name of secret object that holds the respective kubeConfig file in the local cluster");
+            }
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
@@ -75,11 +85,20 @@ public class RemoteClusterManagerController {
 
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR') || hasRole('ROLE_DOMAIN_ADMIN')")
     @PostMapping("/read")
-    public RemoteClusterView readKubernetesCluster(@RequestPart("file") MultipartFile file, @RequestPart("data") String viewString) {
+    public RemoteClusterView readKubernetesCluster(@RequestPart(value = "file", required = false) MultipartFile file,
+                                                   @RequestPart(value = "secretNamespace", required = false) String secretNamespace,
+                                                   @RequestPart(value = "secretName", required = false) String secretName,
+                                                   @RequestPart("data") String viewString) {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             RemoteClusterView cluster = objectMapper.readValue(viewString, RemoteClusterView.class);
-            return remoteClusterManager.mapFile(cluster, file);
+            if (file != null && !file.isEmpty()) {
+                return remoteClusterManager.mapFile(cluster, file);
+            } else if (!StringUtils.isBlank(secretNamespace) && !StringUtils.isBlank(secretName)) {
+                return remoteClusterManager.mapFile(cluster, secretNamespace, secretName);
+            } else {
+                throw new RuntimeException("You need either to upload the kubeConfig file or name of secret object that holds the respective kubeConfig file in the local cluster");
+            }
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
