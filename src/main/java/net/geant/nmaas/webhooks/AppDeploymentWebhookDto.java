@@ -1,6 +1,5 @@
 package net.geant.nmaas.webhooks;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,8 +14,6 @@ public class AppDeploymentWebhookDto {
 
     private AppDeploymentView appDeployment;
     private WebhookEventType webhookEventType;
-    @JsonProperty("logical_date")
-    private String logicalDate;
     private Map<String, String> appData;
 
     public AppDeploymentWebhookDto(AppDeploymentView appDeployment, WebhookEventType webhookEventType) {
