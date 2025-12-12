@@ -35,7 +35,7 @@ class DomainGroupActionJobTest {
     private final WebhookEventService webhookEventService = mock(WebhookEventService.class);
     private final DomainRepository domainRepository = mock(DomainRepository.class);
     private final WebhookHistoryRepository webhookHistoryRepository = mock(WebhookHistoryRepository.class);
-    private final AutoWebhookTemplateService templateService = mock(AutoWebhookTemplateService.class);
+    private final AutoWebhookTemplateService templateService = new AutoWebhookTemplateService();
 
     private final ModelMapper mapper = new ModelMapper();
     private final WebhookHistoryService webhookHistoryService = new WebhookHistoryServiceImpl(webhookHistoryRepository, domainRepository, mapper);
@@ -52,7 +52,8 @@ class DomainGroupActionJobTest {
         JobExecutionContext jobExecutionContext = mock(JobExecutionContext.class);
         when(jobExecutionContext.getJobDetail()).thenReturn(jobDetail);
         when(webhookEventService.getById(10L)).thenReturn(
-                new WebhookEventDto(10L, "webhook-name", "https://example.webhook-url.pl", WebhookEventType.DOMAIN_GROUP_ACTION));
+                new WebhookEventDto(10L, "webhook-name", "https://example.webhook-url.pl", WebhookEventType.DOMAIN_GROUP_ACTION, null, null, null,
+                        "{\"group\": $DOMAINGROUP_CODENAME, \"event\": $WEBHOOKEVENTTYPE}"));
 
         assertThrows(JobExecutionException.class, () -> {
             DomainGroupActionJob job = new DomainGroupActionJob(restClient, webhookEventService, mapper, webhookHistoryService, templateService);

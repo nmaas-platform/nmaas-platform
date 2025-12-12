@@ -42,7 +42,7 @@ class UserDomainAssignmentJobTest {
     private final DomainService domainService = mock(DomainService.class);
     private final UserService userService = mock(UserService.class);
     private final WebhookHistoryRepository webhookHistoryRepository = mock(WebhookHistoryRepository.class);
-    private final AutoWebhookTemplateService templateService = mock(AutoWebhookTemplateService.class);
+    private final AutoWebhookTemplateService templateService = new AutoWebhookTemplateService();
 
     private final ModelMapper mapper = new ModelMapper();
     private final WebhookHistoryService webhookHistoryService = new WebhookHistoryServiceImpl(webhookHistoryRepository, domainRepository, mapper);
@@ -60,7 +60,8 @@ class UserDomainAssignmentJobTest {
         JobExecutionContext jobExecutionContext = mock(JobExecutionContext.class);
         when(jobExecutionContext.getJobDetail()).thenReturn(jobDetail);
         when(webhookEventService.getById(10L)).thenReturn(
-                new WebhookEventDto(10L, "webhook-name", "https://example.webhook-url.pl", WebhookEventType.USER_ASSIGNMENT));
+                new WebhookEventDto(10L, "webhook-name", "https://example.webhook-url.pl", WebhookEventType.USER_ASSIGNMENT, null, null, null,
+                        "{\"user\": $USER_USERNAME, \"role\": $ROLE, \"event\": $WEBHOOKEVENTTYPE}"));
         when(domainService.findDomain(1L)).thenReturn(Optional.of(new Domain("name", "codename")));
         when(userService.findById(8L)).thenReturn(Optional.of(new User("name", true)));
 

@@ -41,7 +41,7 @@ class AppDeploymentJobTest {
     private final AppDeploymentRepositoryManager appDeploymentRepositoryManager = mock(AppDeploymentRepositoryManager.class);
     private final KubernetesRepositoryManager kubernetesRepositoryManager = mock(KubernetesRepositoryManager.class);
     private final WebhookHistoryRepository webhookHistoryRepository = mock(WebhookHistoryRepository.class);
-    private final AutoWebhookTemplateService templateService = mock(AutoWebhookTemplateService.class);
+    private final AutoWebhookTemplateService templateService = new AutoWebhookTemplateService();
 
     private final ModelMapper mapper = new ModelMapper();
     private final WebhookHistoryService webhookHistoryService = new WebhookHistoryServiceImpl(webhookHistoryRepository, domainRepository, mapper);
@@ -56,7 +56,8 @@ class AppDeploymentJobTest {
         JobExecutionContext jobExecutionContext = mock(JobExecutionContext.class);
         when(jobExecutionContext.getJobDetail()).thenReturn(jobDetail);
         when(webhookEventService.getById(10L)).thenReturn(
-                new WebhookEventDto(10L, "webhook-name", "https://example.webhook-url.pl", WebhookEventType.APPLICATION_DEPLOYMENT));
+                new WebhookEventDto(10L, "webhook-name", "https://example.webhook-url.pl", WebhookEventType.APPLICATION_DEPLOYMENT, null, null, null,
+                        "{\"deployment\": $APPDEPLOYMENT_DEPLOYMENTID, \"event\": $WEBHOOKEVENTTYPE}"));
         when(appDeploymentRepositoryManager.load(Identifier.newInstance("id"))).thenReturn(
                 new AppDeployment());
         when(kubernetesRepositoryManager.loadService(Identifier.newInstance("id"))).thenReturn(
