@@ -197,6 +197,9 @@
     "SMTP_FROM_DEFAULT_DOMAIN": "Domyślna domena serwera SMTP",
     "TITLE_GENERAL" : "Podstawowe ustawienia klastra",
     "GENERAL" : "Ustawienia klastra",
+    "READ_FROM_SECRET": "Użyj kubeConfig z Secret",
+    "SECRET_NAME": "Secret name",
+    "SECRET_NAMESPACE": "Secret namespace",
     "NAME" : "Nazwa klastra",
     "CODENAME" : "Nazwa kodowa klastra",
     "ID" : "Identyfikator",
@@ -224,11 +227,11 @@
       "STEP_1" : "General information",
       "STEP_2" : "Basic cluster settings",
       "STEP_3" : "Advanced cluster settings",
-      "STEP_1_INFO" : "Kubernetes configuration is required to proceed. Please paste the content of the .kuberconfig file in the text area.",
+      "STEP_1_INFO" : "Kubernetes configuration is required to proceed. Please paste the content of the .kuberconfig file in the text area or point to a secret object with the respective configuration.",
       "STEP_2_INFO" : "Provide basic information about the new cluster and assign it to one of Your domains.",
       "STEP_3_INFO" : "Cluster Ingress and Storage properties were populated with default values. Update it according to your remote cluster configuration.",
-      "TOOLTIP_1" : "You need to add kubernetes config file to proceed",
-      "TOOLTIP_2" : "All fields must be fill"
+      "TOOLTIP_1" : "You need to provide kubernetes config file to proceed",
+      "TOOLTIP_2" : "All fields must be filled"
     }
   },
   "GITLAB": {

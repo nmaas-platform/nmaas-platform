@@ -7,6 +7,9 @@ import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
 import net.geant.nmaas.notifications.templates.MailType;
+import net.geant.nmaas.portal.api.exceptions.MissingElementException;
+import net.geant.nmaas.portal.api.exceptions.ProcessingException;
+import net.geant.nmaas.portal.api.security.JWTTokenService;
 import net.geant.nmaas.portal.domain.PasswordChange;
 import net.geant.nmaas.portal.domain.PasswordReset;
 import net.geant.nmaas.portal.domain.UserBase;
@@ -15,9 +18,6 @@ import net.geant.nmaas.portal.domain.UserRequest;
 import net.geant.nmaas.portal.domain.UserRoleView;
 import net.geant.nmaas.portal.domain.UserView;
 import net.geant.nmaas.portal.domain.UserViewMinimal;
-import net.geant.nmaas.portal.api.exceptions.MissingElementException;
-import net.geant.nmaas.portal.api.exceptions.ProcessingException;
-import net.geant.nmaas.portal.api.security.JWTTokenService;
 import net.geant.nmaas.portal.events.UserDomainAssignmentEvent;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistence.entity.Domain;
@@ -83,10 +83,11 @@ import static net.geant.nmaas.portal.persistence.entity.Role.ROLE_USER;
 @Tag(name = "Users", description = "User and role management API")
 public class UsersController {
 
-    private static final String USER_NOT_FOUND_ERROR_MESSAGE = "User not found.";
-    private static final String DOMAIN_NOT_FOUND_ERROR_MESSAGE = "Domain not found.";
-    private static final String ROLE_CANNOT_BE_ASSIGNED_ERROR_MESSAGE = "Role cannot be assigned.";
     public static final String GLOBAL_DOMAIN_NOT_FOUND_ERROR_MESSAGE = "Global domain not found";
+
+    private static final String USER_NOT_FOUND_ERROR_MESSAGE = "User not found";
+    private static final String DOMAIN_NOT_FOUND_ERROR_MESSAGE = "Domain not found";
+    private static final String ROLE_CANNOT_BE_ASSIGNED_ERROR_MESSAGE = "Role cannot be assigned";
 
     @Value("${portal.address}")
     private String portalAddress;
@@ -108,7 +109,6 @@ public class UsersController {
     private final ApplicationInstanceService instanceService;
 
     private final UserEntryListRepository userEntryListRepository;
-
 
     @Autowired
     public UsersController(UserService userService,
@@ -136,8 +136,9 @@ public class UsersController {
     @Transactional
     public List<UserBase> getUsers(Pageable pageable, Principal principal) {
 
-        User owner = this.userService.findByUsername(principal.getName()).orElseThrow(
-                () -> new RuntimeException("User with username: " + principal.getName() + " does not exist"));
+        User owner = userService.findByUsername(principal.getName())
+                .orElseThrow(() -> new RuntimeException("User with username: " + principal.getName() + " does not exist"));
+
         /* when user is not system admin, then return only basic information about users */
         if (owner.getRoles().stream().noneMatch(role -> role.getRole() == ROLE_SYSTEM_ADMIN)) {
             return userService.findAll(pageable).getContent().stream()
@@ -150,10 +151,11 @@ public class UsersController {
                     .map(user -> modelMapper.map(user, UserViewMinimal.class)).collect(Collectors.toList());
         }
 
-        /* reads all users first and last successful login, transforms it to map*/
+        /* reads all users first and last successful login, transforms it to map */
         Map<Long, UserLoginDate> userLoginDateMap = this.userLoginService.getAllFirstAndLastSuccessfulLoginDate().stream()
                 .map(x -> new AbstractMap.SimpleEntry<>(x.getUserId(), x))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
         /* updates user view with first and last login date */
         return userService.findAll(pageable).getContent().stream()
                 .map(user -> mapUser(user, userLoginDateMap))

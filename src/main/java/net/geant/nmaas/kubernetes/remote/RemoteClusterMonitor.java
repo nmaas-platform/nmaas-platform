@@ -95,7 +95,7 @@ public class RemoteClusterMonitor implements RemoteClusterMonitoringService {
                         "application/x-yaml",
                         cluster.getClusterConfigFile());
                 try {
-                    String savedPath = saveFileToTmp(file);
+                    String savedPath = saveFileToTmp(file.getBytes());
                     cluster.setPathConfigFile(savedPath);
                     this.clusterRepository.save(cluster);
                 } catch (IOException | NoSuchAlgorithmException e) {
