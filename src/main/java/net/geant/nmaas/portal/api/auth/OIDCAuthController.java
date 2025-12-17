@@ -106,11 +106,40 @@ public class OIDCAuthController {
         );
     }
 
+    @PostMapping("api/oidc/approvals")
+    public UserOidcToken oidcApprovalsSuccess(@RequestBody final OidcApprovals oidcLogin, HttpServletRequest request) {
+        User user = oidcUserService.registerNewUser(oidcLogin);
+
+        if (configurationManager.getConfiguration().isMaintenance()
+                && user.getRoles().stream().noneMatch(value -> value.getRole().equals(Role.ROLE_SYSTEM_ADMIN))) {
+            throw new UndergoingMaintenanceException("Application is undergoing maintenance right now");
+        }
+
+        this.loginRegisterService.registerNewSuccessfulLogin(
+                user,
+                request.getHeader(HttpHeaders.HOST),
+                request.getHeader(HttpHeaders.USER_AGENT),
+                BasicAuthController.getClientIpAddr(request)
+        );
+
+        return new UserOidcToken(
+                jwtTokenService.getToken(user),
+                jwtTokenService.getRefreshToken(user),
+                oidcLogin.oidcToken()
+        );
+    }
+
     @GetMapping("/api/oidc/success")
     public RedirectView oidcLoginSuccess(@AuthenticationPrincipal OidcUser oidcUser, HttpServletRequest request) {
         if (oidcUserService.externalUserRequiresLinking(oidcUser)) {
             String linkingRedirectUrl = portalAddress
                     + "/login-linking?oidc-token="
+                    + oidcUser.getIdToken().getTokenValue();
+            return new RedirectView(linkingRedirectUrl);
+        }
+        if (oidcUserService.externalUserRequiresAupAndPn(oidcUser)) {
+            String linkingRedirectUrl = portalAddress
+                    + "/sso-first-login?oidc-token="
                     + oidcUser.getIdToken().getTokenValue();
             return new RedirectView(linkingRedirectUrl);
         }

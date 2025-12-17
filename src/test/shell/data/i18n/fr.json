@@ -90,7 +90,14 @@
     "USER_ALREADY_EXISTS_MESSAGE": "L'utilisateur existe déjà.",
     "DOMAIN_NOT_FOUND_MESSAGE": "Domaine introuvable.",
     "UNABLE_TO_UPDATE_USER_MESSAGE": "Impossible de mettre à jour l'utilisateur récemment enregistré.",
-    "UNABLE_TO_FETCH_CONTENT_MESSAGE": "Impossible d'extraire le contenu"
+    "UNABLE_TO_FETCH_CONTENT_MESSAGE": "Impossible d'extraire le contenu",
+    "TERMS_AND_CONDITIONS": "Terms and conditions",
+    "ACCEPTABLE_USE_POLICY": "Acceptable Use Policy",
+    "TERMS_PANEL": {
+      "HEADER": "Privacy policy and Use policy",
+      "INFO": "You are trying to log in to an local account, you should first read the privacy policy and Acceptable Use Policy.",
+      "CONFIRM": "Confirm"
+    }
   },
   "LOGIN": {
     "USERNAME": "Nom d'utilisateur",

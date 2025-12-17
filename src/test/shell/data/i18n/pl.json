@@ -90,7 +90,14 @@
     "USER_ALREADY_EXISTS_MESSAGE": "Użytkownik już istnieje",
     "DOMAIN_NOT_FOUND_MESSAGE": "Domena nie została znaleziona",
     "UNABLE_TO_UPDATE_USER_MESSAGE": "Nie można zaktualizować nowo zarejestrowanego użytkownika",
-    "UNABLE_TO_FETCH_CONTENT_MESSAGE": "Nie można pobrać treści"
+    "UNABLE_TO_FETCH_CONTENT_MESSAGE": "Nie można pobrać treści",
+    "TERMS_AND_CONDITIONS": "Polityką prywatności",
+    "ACCEPTABLE_USE_POLICY": "Acceptable Use Policy",
+    "TERMS_PANEL": {
+      "HEADER": "Polotyka prywatności oraz regulamin",
+      "INFO": "You are trying to log in to an local account, you should first read the privacy policy and Acceptable Use Policy.",
+      "CONFIRM": "Confirm"
+    }
   },
   "LOGIN": {
     "USERNAME": "Nazwa użytkownika",
