@@ -25,6 +25,7 @@ import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -32,14 +33,15 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.time.Instant;
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 /**
@@ -49,6 +51,9 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 @RequiredArgsConstructor
 @Slf4j
 public class DefaultAppLifecycleManager implements AppLifecycleManager {
+
+    public static final String TAG_DOT = "_dot_";
+    public static final String TAG_BRACKET = "_bracket_";
 
     private final AppDeploymentRepositoryManager deploymentRepositoryManager;
     private final ApplicationEventPublisher eventPublisher;
@@ -119,7 +124,9 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     @Loggable(LogLevel.INFO)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void applyConfiguration(Identifier deploymentId, AppConfigurationView configuration, String initiator) {
-        AppDeployment appDeployment = deploymentRepositoryManager.load(deploymentId);
+        final AppDeployment appDeployment = deploymentRepositoryManager.load(deploymentId);
+        verifyTermsAcceptanceIfRequired(configuration, initiator, appDeployment);
+
         if (appDeployment.getConfiguration() != null) {
             appDeployment.getConfiguration().setJsonInput(configuration.getJsonInput());
         } else {
@@ -131,53 +138,55 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
         if (isNotEmpty(configuration.getAdditionalParameters())) {
             serviceRepositoryManager.addAdditionalParameters(
                     deploymentId,
-                    replaceHashWithDotInMapKeysAndProcessValues(getMapFromJson(configuration.getAdditionalParameters())));
+                    preprocessParameters(getMapFromJson(configuration.getAdditionalParameters())));
         }
         if (isNotEmpty(configuration.getMandatoryParameters())) {
             serviceRepositoryManager.addAdditionalParameters(
                     deploymentId,
-                    replaceHashWithDotInMapKeysAndProcessValues(getMapFromJson(configuration.getMandatoryParameters())));
+                    preprocessParameters(getMapFromJson(configuration.getMandatoryParameters())));
         }
         if (isNotEmpty(configuration.getAccessCredentials())) {
             triggerBasicAuthUpdate(deploymentId, configuration);
         }
-        /*
-         * if terms acceptance is required, perform check actions
-         */
+        deploymentRepositoryManager.update(appDeployment);
+
+        if (appDeployment.getState().equals(AppDeploymentState.MANAGEMENT_VPN_CONFIGURED)) {
+            eventPublisher.publishEvent(new AppApplyConfigurationActionEvent(this, deploymentId));
+        }
+    }
+
+    private void verifyTermsAcceptanceIfRequired(AppConfigurationView configuration, String initiator, AppDeployment appDeployment) {
         if (appDeployment.isTermsAcceptanceRequired()) {
-            if (!isNotEmpty(configuration.getTermsAcceptance())) {
-                // Terms are empty
+            if (isEmpty(configuration.getTermsAcceptance())) {
                 log.error("Terms acceptance is required for this application, however terms are not present in user configuration data");
                 throw new ProcessingException("Terms acceptance is required, however terms are not present");
             }
-            Map<String, String> termsAcceptanceMap = replaceHashWithDotInMapKeysAndProcessValues(getMapFromJson(configuration.getTermsAcceptance()));
+            Map<String, String> termsAcceptanceMap = preprocessParameters(getMapFromJson(configuration.getTermsAcceptance()));
             String termsContent = termsAcceptanceMap.get("termsContent");
+
             // TODO validate terms content
             String termsAcceptanceStatement = termsAcceptanceMap.get("termsAcceptanceStatement");
-
-            OffsetDateTime now = OffsetDateTime.ofInstant(Instant.now(), ZoneId.systemDefault());
-
             if (termsAcceptanceStatement != null && termsAcceptanceStatement.equalsIgnoreCase("yes")) {
                 // OK
-                log.info("Application usage terms were accepted: application [{}], instance id [{}], content [{}], statement [{}], by [{}], at: [{}]", appDeployment.getAppName(), appDeployment.getInstanceId(), termsContent, termsAcceptanceStatement, initiator, now.format(DateTimeFormatter.ISO_DATE_TIME));
+                log.info("Application usage terms were accepted: application [{}], instance id [{}], content [{}], statement [{}], by [{}], at: [{}]",
+                        appDeployment.getAppName(),
+                        appDeployment.getInstanceId(),
+                        termsContent,
+                        termsAcceptanceStatement,
+                        initiator,
+                        OffsetDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
                 appTermsAcceptanceService.addTermsAcceptanceEntry(
                         appDeployment.getAppName(),
                         appDeployment.getInstanceId(),
                         initiator,
                         termsContent,
                         termsAcceptanceStatement,
-                        now
+                        OffsetDateTime.now()
                 );
             } else {
                 // Terms were not accepted by they should
                 throw new ProcessingException("Application usage terms acceptance is required, however terms were not accepted");
             }
-        }
-
-        deploymentRepositoryManager.update(appDeployment);
-
-        if (appDeployment.getState().equals(AppDeploymentState.MANAGEMENT_VPN_CONFIGURED)) {
-            eventPublisher.publishEvent(new AppApplyConfigurationActionEvent(this, deploymentId));
         }
     }
 
@@ -201,19 +210,35 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
         }
     }
 
-    static Map<String, String> replaceHashWithDotInMapKeysAndProcessValues(Map<String, String> map) {
+    static Map<String, String> preprocessParameters(Map<String, String> parameters) {
         Map<String, String> newMap = new HashMap<>();
-        for (Map.Entry<String, String> entry : map.entrySet()) {
-            if (entry.getValue() != null && !entry.getValue().isEmpty()) {
-                newMap.put(
-                        entry.getKey().replace("_dot_", "."),
-                        escapeCommasIfRequired(
-                                addQuotationMarkIfRequired(
-                                        replaceHashWithQuote(entry.getValue())))
-                );
+        for (Map.Entry<String, String> entry : parameters.entrySet()) {
+            if (StringUtils.isNotEmpty(entry.getValue())) {
+                newMap.put(processParamName(entry.getKey()), processParamValue(entry.getValue()));
             }
         }
         return newMap;
+    }
+
+    private static String processParamName(String name) {
+        String processed = name.replace(TAG_DOT, ".");
+        if (countBrackets(name) == 2) {
+            processed = processed.replaceFirst(TAG_BRACKET, "[").replaceFirst(TAG_BRACKET, "]");
+        }
+        return processed;
+    }
+
+    public static int countBrackets(String text) {
+        Matcher m = Pattern.compile(Pattern.quote(TAG_BRACKET)).matcher(text);
+        int count = 0;
+        while (m.find()) count++;
+        return count;
+    }
+
+    private static String processParamValue(String value) {
+        return escapeCommasIfRequired(
+                addQuotationMarkIfRequired(
+                        replaceHashWithQuote(value)));
     }
 
     private static String replaceHashWithQuote(String value) {

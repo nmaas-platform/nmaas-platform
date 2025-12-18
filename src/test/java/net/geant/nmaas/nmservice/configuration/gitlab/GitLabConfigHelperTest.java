@@ -10,7 +10,6 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class GitLabConfigHelperTest {
 
@@ -92,8 +91,8 @@ class GitLabConfigHelperTest {
 
     @Test
     void shouldSanitizeGroupPathSegment() {
-        Optional<String> sanitized = GitLabConfigHelper.sanitizeGroupPathSegment(" My-Group-Name ");
-        assertEquals("my-group-name", sanitized.get());
+        String sanitized = GitLabConfigHelper.sanitizeGroupPathSegment(" My-Group-Name ");
+        assertEquals("my-group-name", sanitized);
         assertThrows(GitLabInvalidConfigurationException.class, () -> GitLabConfigHelper.sanitizeGroupPathSegment("name@+"));
     }
 
