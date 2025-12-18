@@ -200,6 +200,16 @@ class DefaultAppLifecycleManagerTest {
     }
 
     @Test
+    void shouldReplaceBracketsToBracketsInMapKeys() {
+        Map<String, String> input = new HashMap<>();
+        input.put("keywith_bracket_and_bracket_", "value");
+        input.put("keywith_bracket_", "value");
+        Map<String, String> output = DefaultAppLifecycleManager.preprocessParameters(input);
+        assertThat(output.size(), is(2));
+        assertThat(output.keySet().containsAll(Arrays.asList("keywith[and]", "keywith_bracket_")), is(true));
+    }
+
+    @Test
     void shouldAddQuotesInMapValuesWhereRequired() {
         Map<String, String> input = new HashMap<>();
         input.put("keywith_dot_", "value");
