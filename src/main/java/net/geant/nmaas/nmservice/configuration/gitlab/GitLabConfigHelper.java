@@ -123,29 +123,25 @@ public class GitLabConfigHelper {
         return "Update commit of " + fileName;
     }
 
-    public static Optional<String> sanitizeGroupPathSegment(String value) {
+    public static String sanitizeGroupPathSegment(String value) {
         if (value == null) {
             throw new GitLabInvalidConfigurationException(
                     "GitLab top-level group name must be defined"
             );
         }
-
         // Remove leading or trailing dots/hyphens (not allowed in paths)
         String sanitized = value.replaceAll("^[-.]+|[-.]+$", "").trim();
-
         if (!sanitized.matches(GITLAB_ALLOWED_CHARACTERS)) {
             throw new GitLabInvalidConfigurationException(
                     "Invalid GitLab top-level group name: " + value
             );
         }
-
         if (sanitized.isEmpty()) {
             throw new GitLabInvalidConfigurationException(
                     "Invalid GitLab top-level group name: " + value
             );
         }
-
-        return Optional.of(sanitized.toLowerCase(Locale.ROOT));
+        return sanitized.toLowerCase(Locale.ROOT);
     }
 
 }
