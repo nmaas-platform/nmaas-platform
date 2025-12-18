@@ -17,7 +17,6 @@ import org.gitlab4j.api.RepositoryFileApi;
 import org.gitlab4j.api.UserApi;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import java.util.Optional;
 
 @Component
 @NoArgsConstructor
@@ -45,7 +44,7 @@ public class GitLabManager {
     private String topLevelGroupName;
 
     @Getter
-    private Optional<String> topLevelGroupPath = Optional.empty();
+    private String topLevelGroupPath;
 
     public GroupApi groups() {
         return api().getGroupApi();
@@ -86,7 +85,7 @@ public class GitLabManager {
         } catch (GitLabApiException e) {
             throw new GitLabInvalidConfigurationException("GitLab instance doesn't respond -> " + e.getMessage());
         }
-        if (sharedInstance){
+        if (sharedInstance) {
             topLevelGroupPath = GitLabConfigHelper.sanitizeGroupPathSegment(topLevelGroupName);
         }
     }

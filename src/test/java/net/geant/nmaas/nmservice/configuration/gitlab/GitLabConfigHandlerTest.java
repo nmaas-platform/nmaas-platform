@@ -6,7 +6,6 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.Ku
 import net.geant.nmaas.orchestration.AppConfigRepositoryAccessDetails;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
-import net.geant.nmaas.portal.service.ConfigurationManager;
 import org.gitlab4j.api.GitLabApiException;
 import org.gitlab4j.api.GroupApi;
 import org.gitlab4j.api.ProjectApi;
@@ -21,7 +20,6 @@ import org.mockito.ArgumentCaptor;
 import java.util.Optional;
 
 import static net.geant.nmaas.nmservice.configuration.gitlab.GitLabConfigHelper.PROJECT_MEMBER_MAINTAINER_ACCESS_LEVEL;
-import static net.geant.nmaas.nmservice.configuration.gitlab.GitLabConfigHelper.groupPath;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -131,7 +129,7 @@ class GitLabConfigHandlerTest {
         when(gitLabManager.users()).thenReturn(userApi);
         when(gitLabManager.isSharedInstance()).thenReturn(true);
         when(gitLabManager.getTopLevelGroupName()).thenReturn("toplevel");
-        when(gitLabManager.getTopLevelGroupPath()).thenReturn(Optional.of("toplevel"));
+        when(gitLabManager.getTopLevelGroupPath()).thenReturn("toplevel");
         GroupApi groupApi = mock(GroupApi.class);
         Group topLevel = new Group();
         topLevel.setId(200L);
