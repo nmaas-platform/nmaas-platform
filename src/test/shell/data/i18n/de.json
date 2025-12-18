@@ -90,7 +90,14 @@
     "USER_ALREADY_EXISTS_MESSAGE": "Benutzer ist bereits vorhanden.",
     "DOMAIN_NOT_FOUND_MESSAGE": "Domain nicht gefunden.",
     "UNABLE_TO_UPDATE_USER_MESSAGE": "Neu registrierter Benutzer kann nicht aktualisiert werden.",
-    "UNABLE_TO_FETCH_CONTENT_MESSAGE": "Inhalt kann nicht abgerufen werden"
+    "UNABLE_TO_FETCH_CONTENT_MESSAGE": "Inhalt kann nicht abgerufen werden",
+    "TERMS_AND_CONDITIONS": "Terms and conditions",
+    "ACCEPTABLE_USE_POLICY": "Acceptable Use Policy",
+    "TERMS_PANEL": {
+      "HEADER": "Privacy policy and Terms",
+      "INFO": "You are trying to log in to an local account, you should first read the privacy policy and terms of use.",
+      "CONFIRM": "Confirm"
+    }
   },
   "LOGIN": {
     "USERNAME": "Benutzername",

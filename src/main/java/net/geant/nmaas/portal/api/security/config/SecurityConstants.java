@@ -25,6 +25,7 @@ public class SecurityConstants {
     static final String AUTH_OIDC_LOGIN = "/api/auth/oidc/login";
     static final String AUTH_OIDC_SUCCESS = "/api/oidc/success";
     static final String AUTH_OIDC_LINK = "/api/oidc/link";
+    static final String AUTH_OIDC_APPROVALS = "/api/oidc/approvals";
     static final String AUTH_LOGOUT = "/api/oidc/logout/*";
     static final String AUTH_OIDC = "/api/oidc/**";
     static final String AUTH_CODE = "/api/login/oauth2/code";
@@ -59,6 +60,7 @@ public class SecurityConstants {
             AUTH_OIDC_LOGIN,
             AUTH_OIDC_LOGIN_PAGE,
             AUTH_OIDC,
+            AUTH_OIDC_APPROVALS,
             AUTH_LOGOUT,
             AUTH_CODE,
             AUTH_OIDC_LINK,
