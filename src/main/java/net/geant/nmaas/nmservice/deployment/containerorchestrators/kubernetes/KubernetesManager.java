@@ -316,14 +316,11 @@ public class KubernetesManager implements ContainerOrchestrator {
         return service.getDeploymentName().toLowerCase() + "-" + service.getDomain() + "." + ingressManager.getPublicServiceDomain();
     }
 
-
     private Set<ServiceAccessMethod> populateAccessMethodsWithUrl(Set<ServiceAccessMethod> inputAccessMethods, String serviceExternalUrl, String servicePublicUrl) {
         Set<ServiceAccessMethod> accessMethods = new HashSet<>();
         inputAccessMethods.forEach(m -> {
             ServiceAccessMethod updated = copy(m);
             switch (m.getType()) {
-                case INTERNAL, LOCAL -> {
-                }
                 case DEFAULT -> updated.setUrl(serviceExternalUrl);
                 case EXTERNAL -> updated.setUrl(updated.getName().toLowerCase() + "-" + serviceExternalUrl);
                 case PUBLIC -> {

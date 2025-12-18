@@ -51,10 +51,10 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
     private final RemoteClusterMailer mailer;
     private final UserService userService;
     private final RemoteClusterMonitoringService monitoringService;
+    private final KubernetesApiClientService kubernetesApiClientService;
+
     private final ApplicationEventPublisher eventPublisher;
     private final ModelMapper modelMapper;
-    ;
-    private final KubernetesApiClientService kubernetesApiClientService;
 
     @Override
     public RemoteClusterView getCluster(Long id, Principal principal) {

@@ -131,7 +131,7 @@ public class GitLabConfigHelper {
         }
 
         // Remove leading or trailing dots/hyphens (not allowed in paths)
-        String sanitized = value.replaceAll("^[-.]+|[-.]+$", "").trim();
+        String sanitized = value.replace("^[-.]+|[-.]+$", "").trim();
 
         if (!sanitized.matches(GITLAB_ALLOWED_CHARACTERS)) {
             throw new GitLabInvalidConfigurationException(
