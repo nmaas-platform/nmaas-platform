@@ -28,14 +28,14 @@ public class WebhookHistoryController {
 
     @GetMapping("/{id}")
     @Transactional
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
     public ResponseEntity<WebhookHistoryDto> getWebhook(@PathVariable Long id) {
         return ResponseEntity.ok(webhookHistoryService.getById(id));
     }
 
     @GetMapping
     @Transactional
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
     public ResponseEntity<List<WebhookHistoryDto>> search(
             @RequestParam(required = false) Long eventId,
             @RequestParam(required = false) WebhookEventType eventType,
@@ -48,7 +48,7 @@ public class WebhookHistoryController {
 
     @GetMapping("/domain/{domainId}")
     @Transactional
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasPermission(#domainId, 'domain', 'OWNER')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR') || hasPermission(#domainId, 'domain', 'OWNER')")
     public ResponseEntity<List<WebhookHistoryDto>> searchInDomain(
             @PathVariable Long domainId,
             @RequestParam(required = false) Long eventId,
