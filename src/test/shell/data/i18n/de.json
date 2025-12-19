@@ -285,6 +285,7 @@
     "DELETE_BUTTON": "Remove",
     "ITEMS_PER_PAGE": "Domains per page",
     "NOTACTIVE": "Show not active domains",
+    "ADD_INFO": "Benutzer auswählen, der zur Domäne hinzugefügt werden soll",
     "GLOBAL_SETTINGS": {
       "HEADER": "Domain resource limits",
       "DESCRIPTION": "Set of limits to be applied to each domain",

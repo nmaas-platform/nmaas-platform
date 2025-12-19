@@ -286,6 +286,7 @@
     "DELETE_BUTTON": "Usuń",
     "ITEMS_PER_PAGE" : "Liczba domen na liście",
     "NOTACTIVE": "Pokaż nieaktywne domeny",
+    "ADD_INFO": "Wybierz użytkownika, który ma zostać dodany do domeny",
     "GLOBAL_SETTINGS": {
       "HEADER": "Limity zasobów domeny",
       "DESCRIPTION": "Zestaw limitów stosowanych do każdej domeny",
