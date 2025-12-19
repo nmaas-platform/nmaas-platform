@@ -166,12 +166,14 @@ public class OidcUserServiceImpl implements OidcUserService {
 
         String oidcUserEmail = oidcUser.getAttribute("email");
 
-        if (userService.existsByEmail(oidcUserEmail)) {
-            final User user = userService.findByEmail(oidcUserEmail);
-            return !user.isTermsOfUseAccepted() || !user.isPrivacyPolicyAccepted();
-        }
+        return !userService.existsByEmail(oidcUserEmail);
 
-        return true;
+//        if (userService.existsByEmail(oidcUserEmail)) {
+//            final User user = userService.findByEmail(oidcUserEmail);
+//            return !user.isTermsOfUseAccepted() || !user.isPrivacyPolicyAccepted();
+//        }
+//
+//        return true;
     }
 
     @Override
