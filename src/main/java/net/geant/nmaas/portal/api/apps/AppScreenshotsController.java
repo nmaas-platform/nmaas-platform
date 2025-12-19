@@ -1,9 +1,9 @@
 package net.geant.nmaas.portal.api.apps;
 
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.domain.FileInfoView;
 import net.geant.nmaas.portal.domain.UserFile;
-import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.persistence.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistence.entity.FileInfo;
 import net.geant.nmaas.portal.service.ApplicationBaseService;
@@ -32,7 +32,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @RestController
@@ -95,11 +94,9 @@ public class AppScreenshotsController extends AppBaseController {
     @GetMapping("/screenshots")
     public List<UserFile> getScreenshotsInfo(@PathVariable("appId") Long appId) {
         ApplicationBase app = getBaseApp(appId);
-
-        return app.getScreenshots()
-                .stream()
+        return app.getScreenshots().stream()
                 .map(screenshot -> modelMapper.map(screenshot, UserFile.class))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @PostMapping("/screenshots")

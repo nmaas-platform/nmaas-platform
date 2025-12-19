@@ -13,6 +13,7 @@ import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
+import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.domain.AppInstanceBase;
 import net.geant.nmaas.portal.domain.AppInstanceRequest;
 import net.geant.nmaas.portal.domain.AppInstanceStatus;
@@ -22,7 +23,6 @@ import net.geant.nmaas.portal.domain.AppInstanceViewExtendedDTO;
 import net.geant.nmaas.portal.domain.ApplicationDTO;
 import net.geant.nmaas.portal.domain.DomainBase;
 import net.geant.nmaas.portal.domain.UserBase;
-import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.persistence.entity.AppInstance;
 import net.geant.nmaas.portal.persistence.entity.Application;
 import net.geant.nmaas.portal.persistence.entity.ApplicationBase;
@@ -55,7 +55,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -407,7 +406,7 @@ public class AppInstanceControllerTest {
         users.add(user3domain2);
         users.add(user5domain1);
 
-        List<UserBase> members = users.stream().map(u -> modelMapper.map(u, UserBase.class)).collect(Collectors.toList());
+        List<UserBase> members = users.stream().map(u -> modelMapper.map(u, UserBase.class)).toList();
 
         appInstanceController.updateMembers(appInstance.getId(), members);
 

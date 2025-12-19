@@ -30,6 +30,7 @@ public interface UserEntryListRepository extends JpaRepository<User, Long> {
     @Query("""
             SELECT new net.geant.nmaas.portal.domain.UserListEntry(
                         user,
+                        :domainId,
                         (SELECT MAX(l.date) FROM UserLoginRegister l WHERE l.userId = user.id ) as lastSuccessfulLoginDate,
                         (SELECT MIN(l.date) FROM UserLoginRegister l WHERE l.userId = user.id ) as firstLoginDate
                         )
@@ -41,5 +42,5 @@ public interface UserEntryListRepository extends JpaRepository<User, Long> {
                 OR LOWER(user.email) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%')))
             AND (userRole.id.domain.id = :domainId)
             """)
-    Page<UserListEntry> findAllByDomainId(@Param("domainId") long domainId,@Param("search") String searchValue, Pageable pageable);
+    Page<UserListEntry> findAllByDomainId(@Param("domainId") long domainId, @Param("search") String searchValue, Pageable pageable);
 }

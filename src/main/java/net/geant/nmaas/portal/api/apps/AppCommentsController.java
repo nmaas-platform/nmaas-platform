@@ -68,7 +68,7 @@ public class AppCommentsController extends AppBaseController {
 
                     return c;
                 }
-        ).collect(Collectors.toList());
+        ).toList();
     }
 
 

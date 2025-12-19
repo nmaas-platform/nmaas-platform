@@ -308,7 +308,7 @@ public class UserServiceImpl implements UserService {
         return findAll().stream()
                 .filter(user -> user.getRoles().stream().anyMatch(role -> role.getRole().name().equalsIgnoreCase(Role.ROLE_SYSTEM_ADMIN.name())))
                 .map(user -> modelMapper.map(user, UserView.class))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -317,7 +317,7 @@ public class UserServiceImpl implements UserService {
         return findAll().stream()
                 .filter(user -> user.getRoles().stream().anyMatch(role -> role.getRole().name().equalsIgnoreCase(Role.ROLE_SYSTEM_ADMIN.name()) || role.getRole().name().equalsIgnoreCase(Role.ROLE_OPERATOR.name())))
                 .map(user -> modelMapper.map(user, UserView.class))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override

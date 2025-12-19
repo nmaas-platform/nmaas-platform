@@ -47,7 +47,7 @@ class AppConfigurationJsonToMapTest {
         AppConfiguration appConfiguration = new AppConfiguration(EXAMPLE_OXIDIZED_CONFIG_FORM_INPUT);
         List<Map> list = (List<Map>) ConfigFilePreparerHelper.createModelEntriesFromUserInput(appConfiguration).get("targets");
         assertThat(list.size(), equalTo(2));
-        assertThat(list.stream().map(entry -> entry.get("ipAddress")).collect(Collectors.toList()), Matchers.contains("1.1.1.1", "2.2.2.2"));
+        assertThat(list.stream().map(entry -> entry.get("ipAddress")).toList(), Matchers.contains("1.1.1.1", "2.2.2.2"));
     }
 
     @Test
@@ -55,7 +55,7 @@ class AppConfigurationJsonToMapTest {
         AppConfiguration appConfiguration = new AppConfiguration(EXAMPLE_LIBRENMS_CONFIG_FORM_INPUT);
         List<Map> list = (List<Map>) ConfigFilePreparerHelper.createModelEntriesFromUserInput(appConfiguration).get("targets");
         assertThat(list.size(), equalTo(2));
-        assertThat(list.stream().map(entry -> entry.get("ipAddress")).collect(Collectors.toList()), Matchers.contains("192.168.1.1", "10.10.3.2"));
+        assertThat(list.stream().map(entry -> entry.get("ipAddress")).toList(), Matchers.contains("192.168.1.1", "10.10.3.2"));
     }
 
 }

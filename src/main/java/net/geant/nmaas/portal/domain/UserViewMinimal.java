@@ -25,5 +25,4 @@ public class UserViewMinimal extends UserBase implements Serializable {
 
     protected Boolean hasSshKeys;
 
-
 }

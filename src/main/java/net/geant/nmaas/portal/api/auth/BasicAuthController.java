@@ -4,10 +4,10 @@ import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.portal.domain.Pong;
 import net.geant.nmaas.portal.api.exceptions.AuthenticationException;
 import net.geant.nmaas.portal.api.exceptions.SignupException;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
+import net.geant.nmaas.portal.domain.Pong;
 import net.geant.nmaas.portal.exceptions.UndergoingMaintenanceException;
 import net.geant.nmaas.portal.persistence.entity.Role;
 import net.geant.nmaas.portal.persistence.entity.User;
@@ -28,7 +28,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.security.Principal;
 import java.util.Date;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 
@@ -62,7 +61,7 @@ public class BasicAuthController {
 
         log.info(format("User [%s] logged in with:%n \t- roles [%s]%n \t- host: [%s]%n \t- user-agent: [%s]%n \t- ip: [%s]",
                 userLogin.getUsername(),
-                user.getRoles().stream().map(UserRole::getRoleAsString).collect(Collectors.toList()),
+                user.getRoles().stream().map(UserRole::getRoleAsString).toList(),
                 request.getHeader(HttpHeaders.HOST),
                 request.getHeader(HttpHeaders.USER_AGENT),
                 BasicAuthController.getClientIpAddr(request)));

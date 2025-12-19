@@ -58,7 +58,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
 import java.util.AbstractMap;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -292,14 +291,16 @@ public class UsersController {
         if (userRole.getDomainId() == null) {
             domain = domainService.getGlobalDomain().orElseThrow(() -> new MissingElementException(GLOBAL_DOMAIN_NOT_FOUND_ERROR_MESSAGE));
         } else {
-            domain = domainService.findDomain(userRole.getDomainId()).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND_ERROR_MESSAGE));
+            domain = domainService.findDomain(userRole.getDomainId())
+                    .orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND_ERROR_MESSAGE));
         }
 
         User user = getUser(userId);
 
         try {
             domainService.removeMemberRole(domain.getId(), user.getId(), userRole.getRole());
-            final User adminUser = userService.findByUsername(principal.getName()).orElseThrow(() -> new ObjectNotFoundException(USER_NOT_FOUND_ERROR_MESSAGE));
+            final User adminUser = userService.findByUsername(principal.getName())
+                    .orElseThrow(() -> new ObjectNotFoundException(USER_NOT_FOUND_ERROR_MESSAGE));
             final String adminRoles = getRoleAsString(adminUser.getRoles());
             log.info("User [{}] with role [{}] removed role [{}] from user [{}] in domain [{}]",
                     principal.getName(), adminRoles, userRole.getRole().authority(), user.getUsername(), userRole.getDomainId());
@@ -335,7 +336,8 @@ public class UsersController {
     @PreAuthorize("hasRole('ROLE_INCOMPLETE')")
     @Transactional
     public void completeRegistration(Principal principal, @RequestBody UserRequest userRequest) {
-        User user = userService.findByUsername(principal.getName()).orElseThrow(() -> new MissingElementException("Internal error. User not found."));
+        User user = userService.findByUsername(principal.getName())
+                .orElseThrow(() -> new MissingElementException("User not found"));
         Long domainId = domainService.getGlobalDomain().orElseThrow(ProcessingException::new).getId();
         completeRegistration(userRequest, user, domainId);
     }
@@ -440,7 +442,7 @@ public class UsersController {
     public List<UserViewMinimal> getDomainUsers(@PathVariable Long domainId) {
         return domainService.getMembers(domainId).stream()
                 .map(this::mapMinimalUser)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @GetMapping("/domains/{domainId}/users/admin")
@@ -634,40 +636,37 @@ public class UsersController {
     @GetMapping(value = "/users/search", params = {"searchPart"})
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') or hasRole('ROLE_DOMAIN_ADMIN') or hasRole('ROLE_GROUP_MANAGER')")
     public List<UserViewMinimal> searchUser(@RequestParam(required = false) String searchPart, @RequestParam(required = false) Long domainId) {
-        List<UserViewMinimal> result = new ArrayList<>();
         String search = searchPart.toLowerCase();
 
         List<User> allUsers = this.userService.findAll().stream()
                 .filter(User::isEnabled)
                 .filter(user -> Objects.nonNull(user.getEmail()))
-                .collect(Collectors.toList());
+                .toList();
         if (domainId != null) {
-            result = allUsers.stream()
+            return allUsers.stream()
                     .filter(user -> user.getEmail().toLowerCase().contentEquals(search))
                     .filter(user -> user.getRoles().stream().noneMatch(roles -> roles.getDomain().getId().equals(domainId)))
-                    .map(this::mapMinimalUser).collect(Collectors.toList());
+                    .map(this::mapMinimalUser)
+                    .toList();
         } else {
-            result = allUsers.stream()
+            return allUsers.stream()
                     .filter(user -> user.getEmail().toLowerCase().contentEquals(search))
-                    .map(this::mapMinimalUser).collect(Collectors.toList());
+                    .map(this::mapMinimalUser)
+                    .toList();
         }
-        return result;
     }
 
     @GetMapping(value = "/users/search/managers", params = {"searchPart"})
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') or hasRole('ROLE_GROUP_MANAGER')")
     public List<UserViewMinimal> searchGroupManagers(@RequestParam(required = false) String searchPart) {
         String search = searchPart.toLowerCase();
-
-        List<User> allUsers = this.userService.findAll().stream()
+        return userService.findAll().stream()
                 .filter(User::isEnabled)
                 .filter(user -> Objects.nonNull(user.getEmail()))
                 .filter(user -> user.getRoles().stream().anyMatch(role -> role.getRole().equals(ROLE_GROUP_MANAGER)))
-                .collect(Collectors.toList());
-
-        return allUsers.stream()
                 .filter(user -> user.getEmail().toLowerCase().contentEquals(search))
-                .map(this::mapMinimalUser).collect(Collectors.toList());
+                .map(this::mapMinimalUser)
+                .toList();
     }
 
     private Role convertRole(String userRole) {
@@ -745,7 +744,7 @@ public class UsersController {
         MailAttributes mailAttributes = MailAttributes.builder()
                 .mailType(mailType)
                 .otherAttributes(other)
-                .addressees(Collections.singletonList(modelMapper.map(user, UserView.class)))
+                .addresses(Collections.singletonList(modelMapper.map(user, UserView.class)))
                 .build();
         this.eventPublisher.publishEvent(new NotificationEvent(this, mailAttributes));
     }
