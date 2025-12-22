@@ -37,8 +37,10 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 @Slf4j
 public class AutoWebhookTemplateService {
+
     private static final Pattern VARIABLE_PATTERN = Pattern.compile("\\$[A-Z0-9_]+");
     private static final String RAW_VAR_SENTINEL = "__RAW_VAR__";
+
     private final ObjectMapper mapper = new ObjectMapper()
             .registerModule(new JavaTimeModule())
             .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
