@@ -33,7 +33,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.List;
 
-
 @RestController
 @RequestMapping("/api/apps/{appId}")
 @Slf4j
@@ -50,12 +49,9 @@ public class AppScreenshotsController extends AppBaseController {
     @GetMapping("/logo")
     public ResponseEntity<InputStreamResource> getLogo(@PathVariable("appId") Long appId) throws FileNotFoundException {
         ApplicationBase app = getBaseApp(appId);
-
         if (app.getLogo() != null) {
             return getFile(app.getLogo());
         }
-
-        log.error("No logo found for app {}", app.getId());
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
@@ -83,7 +79,6 @@ public class AppScreenshotsController extends AppBaseController {
     @Transactional
     public void deleteLogo(@PathVariable("appId") Long appId) {
         ApplicationBase app = getBaseApp(appId);
-
         if (app.getLogo() != null) {
             fileStorage.remove(app.getLogo());
             app.setLogo(null);
@@ -115,7 +110,6 @@ public class AppScreenshotsController extends AppBaseController {
     @GetMapping("/screenshots/{screenshotId}")
     public ResponseEntity<InputStreamResource> getScreenshot(@PathVariable("appId") Long appId, @PathVariable("screenshotId") Long screenshotId) throws FileNotFoundException {
         ApplicationBase app = getBaseApp(appId);
-
         for (FileInfo screenshot : app.getScreenshots()) {
             if (screenshot.getId().equals(screenshotId)) {
                 return getFile(screenshot);
@@ -141,7 +135,7 @@ public class AppScreenshotsController extends AppBaseController {
     @Transactional
     public void deleteScreenshots(@PathVariable(value = "appId") Long appId) {
         ApplicationBase app = getBaseApp(appId);
-        app.getScreenshots().forEach(fileInfo -> fileStorage.remove(fileInfo));
+        app.getScreenshots().forEach(fileStorage::remove);
         app.getScreenshots().clear();
         appBaseService.update(app);
     }
@@ -159,9 +153,10 @@ public class AppScreenshotsController extends AppBaseController {
 
     private FileInfo getScreenshot(ApplicationBase app, Long screenshotId) {
         for (FileInfo screenshot : app.getScreenshots()) {
-            if (screenshot.getId().equals(screenshotId))
+            if (screenshot.getId().equals(screenshotId)) {
                 return screenshot;
+            }
         }
-        throw new MissingElementException("Screenshot id= " + screenshotId + " for app id=" + app.getId() + " not found.");
+        throw new MissingElementException("Screenshot id= " + screenshotId + " for app id=" + app.getId() + " not found");
     }
 }
