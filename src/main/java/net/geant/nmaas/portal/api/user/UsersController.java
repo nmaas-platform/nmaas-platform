@@ -7,6 +7,9 @@ import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
 import net.geant.nmaas.notifications.templates.MailType;
+import net.geant.nmaas.portal.api.exceptions.MissingElementException;
+import net.geant.nmaas.portal.api.exceptions.ProcessingException;
+import net.geant.nmaas.portal.api.security.JWTTokenService;
 import net.geant.nmaas.portal.domain.PasswordChange;
 import net.geant.nmaas.portal.domain.PasswordReset;
 import net.geant.nmaas.portal.domain.UserBase;
@@ -15,9 +18,6 @@ import net.geant.nmaas.portal.domain.UserRequest;
 import net.geant.nmaas.portal.domain.UserRoleView;
 import net.geant.nmaas.portal.domain.UserView;
 import net.geant.nmaas.portal.domain.UserViewMinimal;
-import net.geant.nmaas.portal.api.exceptions.MissingElementException;
-import net.geant.nmaas.portal.api.exceptions.ProcessingException;
-import net.geant.nmaas.portal.api.security.JWTTokenService;
 import net.geant.nmaas.portal.events.UserDomainAssignmentEvent;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistence.entity.Domain;
@@ -58,7 +58,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
 import java.util.AbstractMap;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -83,10 +82,11 @@ import static net.geant.nmaas.portal.persistence.entity.Role.ROLE_USER;
 @Tag(name = "Users", description = "User and role management API")
 public class UsersController {
 
-    private static final String USER_NOT_FOUND_ERROR_MESSAGE = "User not found.";
-    private static final String DOMAIN_NOT_FOUND_ERROR_MESSAGE = "Domain not found.";
-    private static final String ROLE_CANNOT_BE_ASSIGNED_ERROR_MESSAGE = "Role cannot be assigned.";
     public static final String GLOBAL_DOMAIN_NOT_FOUND_ERROR_MESSAGE = "Global domain not found";
+
+    private static final String USER_NOT_FOUND_ERROR_MESSAGE = "User not found";
+    private static final String DOMAIN_NOT_FOUND_ERROR_MESSAGE = "Domain not found";
+    private static final String ROLE_CANNOT_BE_ASSIGNED_ERROR_MESSAGE = "Role cannot be assigned";
 
     @Value("${portal.address}")
     private String portalAddress;
@@ -108,7 +108,6 @@ public class UsersController {
     private final ApplicationInstanceService instanceService;
 
     private final UserEntryListRepository userEntryListRepository;
-
 
     @Autowired
     public UsersController(UserService userService,
@@ -136,8 +135,9 @@ public class UsersController {
     @Transactional
     public List<UserBase> getUsers(Pageable pageable, Principal principal) {
 
-        User owner = this.userService.findByUsername(principal.getName()).orElseThrow(
-                () -> new RuntimeException("User with username: " + principal.getName() + " does not exist"));
+        User owner = userService.findByUsername(principal.getName())
+                .orElseThrow(() -> new RuntimeException("User with username: " + principal.getName() + " does not exist"));
+
         /* when user is not system admin, then return only basic information about users */
         if (owner.getRoles().stream().noneMatch(role -> role.getRole() == ROLE_SYSTEM_ADMIN)) {
             return userService.findAll(pageable).getContent().stream()
@@ -150,10 +150,11 @@ public class UsersController {
                     .map(user -> modelMapper.map(user, UserViewMinimal.class)).collect(Collectors.toList());
         }
 
-        /* reads all users first and last successful login, transforms it to map*/
+        /* reads all users first and last successful login, transforms it to map */
         Map<Long, UserLoginDate> userLoginDateMap = this.userLoginService.getAllFirstAndLastSuccessfulLoginDate().stream()
                 .map(x -> new AbstractMap.SimpleEntry<>(x.getUserId(), x))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
         /* updates user view with first and last login date */
         return userService.findAll(pageable).getContent().stream()
                 .map(user -> mapUser(user, userLoginDateMap))
@@ -290,14 +291,16 @@ public class UsersController {
         if (userRole.getDomainId() == null) {
             domain = domainService.getGlobalDomain().orElseThrow(() -> new MissingElementException(GLOBAL_DOMAIN_NOT_FOUND_ERROR_MESSAGE));
         } else {
-            domain = domainService.findDomain(userRole.getDomainId()).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND_ERROR_MESSAGE));
+            domain = domainService.findDomain(userRole.getDomainId())
+                    .orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND_ERROR_MESSAGE));
         }
 
         User user = getUser(userId);
 
         try {
             domainService.removeMemberRole(domain.getId(), user.getId(), userRole.getRole());
-            final User adminUser = userService.findByUsername(principal.getName()).orElseThrow(() -> new ObjectNotFoundException(USER_NOT_FOUND_ERROR_MESSAGE));
+            final User adminUser = userService.findByUsername(principal.getName())
+                    .orElseThrow(() -> new ObjectNotFoundException(USER_NOT_FOUND_ERROR_MESSAGE));
             final String adminRoles = getRoleAsString(adminUser.getRoles());
             log.info("User [{}] with role [{}] removed role [{}] from user [{}] in domain [{}]",
                     principal.getName(), adminRoles, userRole.getRole().authority(), user.getUsername(), userRole.getDomainId());
@@ -333,7 +336,8 @@ public class UsersController {
     @PreAuthorize("hasRole('ROLE_INCOMPLETE')")
     @Transactional
     public void completeRegistration(Principal principal, @RequestBody UserRequest userRequest) {
-        User user = userService.findByUsername(principal.getName()).orElseThrow(() -> new MissingElementException("Internal error. User not found."));
+        User user = userService.findByUsername(principal.getName())
+                .orElseThrow(() -> new MissingElementException("User not found"));
         Long domainId = domainService.getGlobalDomain().orElseThrow(ProcessingException::new).getId();
         completeRegistration(userRequest, user, domainId);
     }
@@ -438,7 +442,7 @@ public class UsersController {
     public List<UserViewMinimal> getDomainUsers(@PathVariable Long domainId) {
         return domainService.getMembers(domainId).stream()
                 .map(this::mapMinimalUser)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @GetMapping("/domains/{domainId}/users/admin")
@@ -632,40 +636,37 @@ public class UsersController {
     @GetMapping(value = "/users/search", params = {"searchPart"})
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') or hasRole('ROLE_DOMAIN_ADMIN') or hasRole('ROLE_GROUP_MANAGER')")
     public List<UserViewMinimal> searchUser(@RequestParam(required = false) String searchPart, @RequestParam(required = false) Long domainId) {
-        List<UserViewMinimal> result = new ArrayList<>();
         String search = searchPart.toLowerCase();
 
         List<User> allUsers = this.userService.findAll().stream()
                 .filter(User::isEnabled)
                 .filter(user -> Objects.nonNull(user.getEmail()))
-                .collect(Collectors.toList());
+                .toList();
         if (domainId != null) {
-            result = allUsers.stream()
+            return allUsers.stream()
                     .filter(user -> user.getEmail().toLowerCase().contentEquals(search))
                     .filter(user -> user.getRoles().stream().noneMatch(roles -> roles.getDomain().getId().equals(domainId)))
-                    .map(this::mapMinimalUser).collect(Collectors.toList());
+                    .map(this::mapMinimalUser)
+                    .toList();
         } else {
-            result = allUsers.stream()
+            return allUsers.stream()
                     .filter(user -> user.getEmail().toLowerCase().contentEquals(search))
-                    .map(this::mapMinimalUser).collect(Collectors.toList());
+                    .map(this::mapMinimalUser)
+                    .toList();
         }
-        return result;
     }
 
     @GetMapping(value = "/users/search/managers", params = {"searchPart"})
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') or hasRole('ROLE_GROUP_MANAGER')")
     public List<UserViewMinimal> searchGroupManagers(@RequestParam(required = false) String searchPart) {
         String search = searchPart.toLowerCase();
-
-        List<User> allUsers = this.userService.findAll().stream()
+        return userService.findAll().stream()
                 .filter(User::isEnabled)
                 .filter(user -> Objects.nonNull(user.getEmail()))
                 .filter(user -> user.getRoles().stream().anyMatch(role -> role.getRole().equals(ROLE_GROUP_MANAGER)))
-                .collect(Collectors.toList());
-
-        return allUsers.stream()
                 .filter(user -> user.getEmail().toLowerCase().contentEquals(search))
-                .map(this::mapMinimalUser).collect(Collectors.toList());
+                .map(this::mapMinimalUser)
+                .toList();
     }
 
     private Role convertRole(String userRole) {
@@ -743,7 +744,7 @@ public class UsersController {
         MailAttributes mailAttributes = MailAttributes.builder()
                 .mailType(mailType)
                 .otherAttributes(other)
-                .addressees(Collections.singletonList(modelMapper.map(user, UserView.class)))
+                .addresses(Collections.singletonList(modelMapper.map(user, UserView.class)))
                 .build();
         this.eventPublisher.publishEvent(new NotificationEvent(this, mailAttributes));
     }

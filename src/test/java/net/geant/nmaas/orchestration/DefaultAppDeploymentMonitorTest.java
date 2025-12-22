@@ -151,7 +151,7 @@ class DefaultAppDeploymentMonitorTest {
         when(repositoryManager.loadStateHistory(deploymentId)).thenReturn(stubHistory);
         List<AppDeploymentHistoryView> history = monitor.appDeploymentHistory(deploymentId);
         assertThat(history.size(), is(2));
-        assertThat(history.stream().map(AppDeploymentHistoryView::getCurrentState).collect(Collectors.toList()),
+        assertThat(history.stream().map(AppDeploymentHistoryView::getCurrentState).toList(),
                 contains(APPLICATION_DEPLOYED.lifecycleState().getUserFriendlyState(),
                         APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS.lifecycleState().getUserFriendlyState()));
     }

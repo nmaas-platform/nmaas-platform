@@ -45,6 +45,15 @@ public class UserListEntry extends UserBase implements Serializable {
         this.firstLoginDate = firstLoginDate;
     }
 
+    public UserListEntry(User user,
+                         Long domainId,
+                         OffsetDateTime lastSuccessfulLoginDate,
+                         OffsetDateTime firstLoginDate) {
+        this(user, domainId);
+        this.lastSuccessfulLoginDate = lastSuccessfulLoginDate;
+        this.firstLoginDate = firstLoginDate;
+    }
+
     public UserListEntry(User user, Long domainId) {
         this.id = user.getId();
         this.username = user.getUsername();

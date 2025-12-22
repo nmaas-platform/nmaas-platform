@@ -90,7 +90,14 @@
     "USER_ALREADY_EXISTS_MESSAGE": "Użytkownik już istnieje",
     "DOMAIN_NOT_FOUND_MESSAGE": "Domena nie została znaleziona",
     "UNABLE_TO_UPDATE_USER_MESSAGE": "Nie można zaktualizować nowo zarejestrowanego użytkownika",
-    "UNABLE_TO_FETCH_CONTENT_MESSAGE": "Nie można pobrać treści"
+    "UNABLE_TO_FETCH_CONTENT_MESSAGE": "Nie można pobrać treści",
+    "TERMS_AND_CONDITIONS": "Polityką prywatności",
+    "ACCEPTABLE_USE_POLICY": "Acceptable Use Policy",
+    "TERMS_PANEL": {
+      "HEADER": "Polotyka prywatności oraz regulamin",
+      "INFO": "You are trying to log in to an local account, you should first read the privacy policy and Acceptable Use Policy.",
+      "CONFIRM": "Confirm"
+    }
   },
   "LOGIN": {
     "USERNAME": "Nazwa użytkownika",
@@ -220,11 +227,11 @@
       "STEP_1" : "General information",
       "STEP_2" : "Basic cluster settings",
       "STEP_3" : "Advanced cluster settings",
-      "STEP_1_INFO" : "Kubernetes configuration is required to proceed. Please paste the content of the .kuberconfig file in the text area.",
+      "STEP_1_INFO" : "Kubernetes configuration is required to proceed. Please paste the content of the .kuberconfig file in the text area or point to a secret object with the respective configuration.",
       "STEP_2_INFO" : "Provide basic information about the new cluster and assign it to one of Your domains.",
       "STEP_3_INFO" : "Cluster Ingress and Storage properties were populated with default values. Update it according to your remote cluster configuration.",
-      "TOOLTIP_1" : "You need to add kubernetes config file to proceed",
-      "TOOLTIP_2" : "All fields must be fill"
+      "TOOLTIP_1" : "You need to provide kubernetes config file to proceed",
+      "TOOLTIP_2" : "All fields must be filled"
     }
   },
   "GITLAB": {
@@ -279,6 +286,7 @@
     "DELETE_BUTTON": "Usuń",
     "ITEMS_PER_PAGE" : "Liczba domen na liście",
     "NOTACTIVE": "Pokaż nieaktywne domeny",
+    "ADD_INFO": "Wybierz użytkownika, który ma zostać dodany do domeny",
     "GLOBAL_SETTINGS": {
       "HEADER": "Limity zasobów domeny",
       "DESCRIPTION": "Zestaw limitów stosowanych do każdej domeny",

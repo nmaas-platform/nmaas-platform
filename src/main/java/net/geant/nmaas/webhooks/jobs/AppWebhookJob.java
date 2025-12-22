@@ -12,10 +12,6 @@ import net.geant.nmaas.webhooks.AppDeploymentWebhookDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.web.client.RestClient;
 
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
-
 public abstract class AppWebhookJob extends WebhookJob {
 
     private final AppDeploymentRepositoryManager appDeploymentRepositoryManager;
@@ -32,7 +28,6 @@ public abstract class AppWebhookJob extends WebhookJob {
         AppDeployment appDeployment = appDeploymentRepositoryManager.load(identifier);
         AppDeploymentWebhookDto.AppDeploymentView appDeploymentView = modelMapper.map(appDeployment, AppDeploymentWebhookDto.AppDeploymentView.class);
         AppDeploymentWebhookDto webhookDto = new AppDeploymentWebhookDto(appDeploymentView, WebhookEventType.APPLICATION_DEPLOYMENT);
-        webhookDto.setLogicalDate(LocalDateTime.now().atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ISO_INSTANT));
         webhookDto.setAppData(serviceInfoRepositoryManager.loadService(identifier).getAdditionalParameters());
         return webhookDto;
     }

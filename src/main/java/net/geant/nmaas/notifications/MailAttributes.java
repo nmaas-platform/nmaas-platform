@@ -19,18 +19,17 @@ import java.util.Optional;
 @NoArgsConstructor
 public class MailAttributes implements Serializable {
 
-    private List<UserView> addressees;
-
+    private List<UserView> addresses;
     private MailType mailType;
-
     @Builder.Default
     private Map<String, Object> otherAttributes = new HashMap<>();
 
     @Builder
     @SuppressWarnings("unused")
-    private MailAttributes(List<UserView> addressees, MailType mailType, Map<String, Object> otherAttributes){
-        this.addressees = addressees;
+    private MailAttributes(List<UserView> addresses, MailType mailType, Map<String, Object> otherAttributes) {
+        this.addresses = addresses;
         this.mailType = mailType;
         this.otherAttributes = Optional.ofNullable(otherAttributes).orElse(this.otherAttributes);
     }
+
 }

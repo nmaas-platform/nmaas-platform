@@ -3,6 +3,7 @@ package net.geant.nmaas.nmservice.configuration.gitlab;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.gitlab.GitLabManager;
+import net.geant.nmaas.gitlab.exceptions.GitLabInvalidConfigurationException;
 import net.geant.nmaas.gitlab.exceptions.GitLabNotFoundException;
 import net.geant.nmaas.nmservice.configuration.ConfigFile;
 import net.geant.nmaas.nmservice.configuration.GitConfigHandler;
@@ -31,6 +32,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static net.geant.nmaas.nmservice.configuration.gitlab.GitLabConfigHelper.commitBranch;
@@ -168,7 +170,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
     private Long getOrCreateGroupWithMemberForUserIfNotExists(Long gitLabUserId, String domain) {
         try {
             Long topLevelGroupId = ensureTopLevelGroupExists();
-            String lookupPath = fullGroupPath(domain, gitLabManager.getTopLevelGroupPath());
+            String lookupPath = fullGroupPath(domain, Optional.ofNullable(gitLabManager.getTopLevelGroupPath()));
             Optional<Group> group = gitLabManager.groups().getOptionalGroup(lookupPath);
             if (group.isPresent()) {
                 return group.get().getId();
@@ -194,12 +196,14 @@ public class GitLabConfigHandler implements GitConfigHandler {
         if (!gitLabManager.isSharedInstance()) {
             return null;
         }
-        Optional<Group> existing = gitLabManager.groups().getOptionalGroup(gitLabManager.getTopLevelGroupPath().get());
+        if (Objects.isNull(gitLabManager.getTopLevelGroupPath())) {
+            throw new GitLabInvalidConfigurationException("Instance is marked as shared but root group path is not set");
+        }
+        Optional<Group> existing = gitLabManager.groups().getOptionalGroup(gitLabManager.getTopLevelGroupPath());
         if (existing.isPresent()) {
             return existing.get().getId();
         }
-        return gitLabManager.groups().addGroup(gitLabManager.getTopLevelGroupName(), gitLabManager.getTopLevelGroupPath().get()).getId();
-
+        return gitLabManager.groups().addGroup(gitLabManager.getTopLevelGroupName(), gitLabManager.getTopLevelGroupPath()).getId();
     }
 
     private Long createProjectWithinGroup(Long groupId, Identifier deploymentId) {

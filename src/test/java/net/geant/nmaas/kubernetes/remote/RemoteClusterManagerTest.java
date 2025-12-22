@@ -40,13 +40,13 @@ class RemoteClusterManagerTest {
     private final DomainService domainService = mock(DomainService.class);
     private final UserService userService = mock(UserService.class);
     private final RemoteClusterMonitoringService monitoringService = mock(RemoteClusterMonitoringService.class);
-    private final ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);
     private final KubernetesApiClientService kubernetesApiClientService = mock(KubernetesApiClientService.class);
+    private final ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);
     private final ModelMapper modelMapper = new ModelMapper();
 
     private final RemoteClusterManager remoteClusterManager = new RemoteClusterManager(
             kClusterRepository, kClusterIngressManager, kClusterDeploymentManager, domainService,
-            null, userService, monitoringService, eventPublisher, modelMapper, kubernetesApiClientService);
+            null, userService, monitoringService, kubernetesApiClientService, eventPublisher, modelMapper);
 
     private Domain globalDomain;
     private Domain specificDomain;

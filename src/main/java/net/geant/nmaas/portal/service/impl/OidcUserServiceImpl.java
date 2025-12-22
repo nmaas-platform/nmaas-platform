@@ -2,6 +2,7 @@ package net.geant.nmaas.portal.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.portal.api.auth.OidcApprovals;
 import net.geant.nmaas.portal.api.exceptions.ExternalUserMatchException;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.exceptions.SignupException;
@@ -20,6 +21,8 @@ import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 import java.util.Base64;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -58,7 +61,7 @@ public class OidcUserServiceImpl implements OidcUserService {
                 user.setSamlToken(oidcUserSub);
                 userService.update(user);
                 return user;
-            }else{
+            } else {
                 throw new ExternalUserMatchException("External user "
                         + oidcUserSub
                         + " does not match internal user with SamlToken " +
@@ -67,6 +70,24 @@ public class OidcUserServiceImpl implements OidcUserService {
         }
         return registerNewUser(oidcUser);
 
+    }
+
+    @Override
+    public User registerNewUser(OidcApprovals oidcUser) {
+        try {
+            return register(oidcUser.username(),
+                    oidcUser.email(),
+                    oidcUser.lastName(),
+                    oidcUser.firstName(),
+                    oidcUser.uuid(),
+                    oidcUser.isAupApprove(),
+                    oidcUser.isPnApprove(),
+                    domains.getGlobalDomain().orElseThrow(MissingElementException::new));
+        } catch (ObjectAlreadyExistsException e) {
+            throw new SignupException("User already exists");
+        } catch (MissingElementException e) {
+            throw new SignupException("Domain not found");
+        }
     }
 
     @Override
@@ -80,23 +101,47 @@ public class OidcUserServiceImpl implements OidcUserService {
         }
     }
 
-    @Override
-    public User register(OidcUser oidcUser, Domain globalDomain) {
 
+    private User register(OidcUser oidcUser, Domain globalDomain) {
+        String preferredUsername = Objects.requireNonNull(Optional.ofNullable(oidcUser.getAttribute("preferred_username"))
+                .orElseGet(() -> Optional.ofNullable(oidcUser.getAttribute("username"))
+                        .orElseGet(() -> oidcUser.getAttribute("name")))).toString();
+
+        return this.register(preferredUsername,
+                oidcUser.getAttribute("email"),
+                oidcUser.getAttribute("family_name"),
+                oidcUser.getAttribute("given_name"),
+                oidcUser.getAttribute("sub"),
+                false,
+                false,
+                globalDomain
+        );
+    }
+
+    private User register(String username,
+                          String email,
+                          String lastName,
+                          String firstName,
+                          String samlToken,
+                          boolean isAupAccepted,
+                          boolean isPnAccepted,
+                          Domain globalDomain) {
         byte[] array = new byte[16];
         new SecureRandom().nextBytes(array);
         String generatedString = Base64.getEncoder().encodeToString(array);
 
         User newUser = new User(
-                oidcUser.getAttribute("preferred_username"),
+                username,
                 true,
                 generatedString,
                 globalDomain,
                 Role.ROLE_GUEST);
-        newUser.setEmail(oidcUser.getAttribute("email"));
-        newUser.setLastname(oidcUser.getAttribute("family_name"));
-        newUser.setFirstname(oidcUser.getAttribute("given_name"));
-        newUser.setSamlToken(oidcUser.getAttribute("sub"));
+        newUser.setEmail(email);
+        newUser.setLastname(lastName);
+        newUser.setFirstname(firstName);
+        newUser.setSamlToken(samlToken);
+        newUser.setTermsOfUseAccepted(isAupAccepted);
+        newUser.setPrivacyPolicyAccepted(isPnAccepted);
         newUser.setSelectedLanguage(configurationManager.getConfiguration().getDefaultLanguage());
 
         userRepository.save(newUser);
@@ -114,6 +159,21 @@ public class OidcUserServiceImpl implements OidcUserService {
         }
 
         return false;
+    }
+
+    @Override
+    public boolean externalUserRequiresAupAndPn(OidcUser oidcUser) {
+
+        String oidcUserEmail = oidcUser.getAttribute("email");
+
+        return !userService.existsByEmail(oidcUserEmail);
+
+//        if (userService.existsByEmail(oidcUserEmail)) {
+//            final User user = userService.findByEmail(oidcUserEmail);
+//            return !user.isTermsOfUseAccepted() || !user.isPrivacyPolicyAccepted();
+//        }
+//
+//        return true;
     }
 
     @Override

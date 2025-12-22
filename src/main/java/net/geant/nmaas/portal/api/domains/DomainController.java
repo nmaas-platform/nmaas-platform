@@ -55,7 +55,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/domains")
@@ -153,10 +152,10 @@ public class DomainController extends BaseController {
     @Transactional(readOnly = true)
     public List<DomainBase> getMyDomains(@NotNull Principal principal, @RequestParam(required = false) String searchValue) {
         try {
-            User user = userService.findByUsername(principal.getName()).orElseThrow(() -> new ProcessingException("User not found."));
+            User user = userService.findByUsername(principal.getName()).orElseThrow(() -> new ProcessingException("User not found"));
             return domainService.getUserDomains(user.getId(), searchValue).stream()
                     .map(d -> modelMapper.map(d, DomainBase.class))
-                    .collect(Collectors.toList());
+                    .toList();
         } catch (ObjectNotFoundException e) {
             throw new MissingElementException(e.getMessage());
         }

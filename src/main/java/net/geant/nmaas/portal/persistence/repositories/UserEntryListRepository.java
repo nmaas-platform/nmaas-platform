@@ -19,19 +19,28 @@ public interface UserEntryListRepository extends JpaRepository<User, Long> {
                         (SELECT MIN(l.date) FROM UserLoginRegister l WHERE l.userId = user.id ) as firstLoginDate
                         )
             FROM User user
-            WHERE (:search IS NULL OR LOWER(user.username) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%')))
+            WHERE (:search IS NULL
+                OR LOWER(user.username) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%'))
+                OR LOWER(user.firstname) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%'))
+                OR LOWER(user.lastname) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%'))
+                OR LOWER(user.email) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%')))
             """)
     Page<UserListEntry> findAll(@Param("search") String searchValue, Pageable pageable);
 
     @Query("""
             SELECT new net.geant.nmaas.portal.domain.UserListEntry(
                         user,
+                        :domainId,
                         (SELECT MAX(l.date) FROM UserLoginRegister l WHERE l.userId = user.id ) as lastSuccessfulLoginDate,
                         (SELECT MIN(l.date) FROM UserLoginRegister l WHERE l.userId = user.id ) as firstLoginDate
                         )
             FROM User user JOIN UserRole userRole ON userRole.id.user.id = user.id
-            WHERE (:search IS NULL OR LOWER(user.username) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%')))
+            WHERE (:search IS NULL
+                OR LOWER(user.username) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%'))
+                OR LOWER(user.firstname) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%'))
+                OR LOWER(user.lastname) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%'))
+                OR LOWER(user.email) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%')))
             AND (userRole.id.domain.id = :domainId)
             """)
-    Page<UserListEntry> findAllByDomainId(@Param("domainId") long domainId,@Param("search") String searchValue, Pageable pageable);
+    Page<UserListEntry> findAllByDomainId(@Param("domainId") long domainId, @Param("search") String searchValue, Pageable pageable);
 }

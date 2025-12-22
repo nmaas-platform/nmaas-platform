@@ -194,9 +194,19 @@ class DefaultAppLifecycleManagerTest {
         input.put("keywith_dot_inthemiddle", "value");
         input.put("keywith_dot_andnullvalue", null);
         input.put("keywith_dot_andemptyvalue", "");
-        Map<String, String> output = DefaultAppLifecycleManager.replaceHashWithDotInMapKeysAndProcessValues(input);
+        Map<String, String> output = DefaultAppLifecycleManager.preprocessParameters(input);
         assertThat(output.size(), is(2));
         assertThat(output.keySet().containsAll(Arrays.asList("keywith.", "keywith.inthemiddle")), is(true));
+    }
+
+    @Test
+    void shouldReplaceBracketsToBracketsInMapKeys() {
+        Map<String, String> input = new HashMap<>();
+        input.put("keywith_bracket_and_bracket_", "value");
+        input.put("keywith_bracket_", "value");
+        Map<String, String> output = DefaultAppLifecycleManager.preprocessParameters(input);
+        assertThat(output.size(), is(2));
+        assertThat(output.keySet().containsAll(Arrays.asList("keywith[and]", "keywith_bracket_")), is(true));
     }
 
     @Test
@@ -204,7 +214,7 @@ class DefaultAppLifecycleManagerTest {
         Map<String, String> input = new HashMap<>();
         input.put("keywith_dot_", "value");
         input.put("keywith_dot_inthemiddle", "value, this value and another value");
-        Map<String, String> output = DefaultAppLifecycleManager.replaceHashWithDotInMapKeysAndProcessValues(input);
+        Map<String, String> output = DefaultAppLifecycleManager.preprocessParameters(input);
         assertThat(output.values().containsAll(Arrays.asList("value", "\"value\\, this value and another value\"")), is(true));
     }
 
@@ -213,7 +223,7 @@ class DefaultAppLifecycleManagerTest {
         Map<String, String> input = new HashMap<>();
         input.put("key1", "value");
         input.put("key2", "#valuewithhashonbothends#");
-        Map<String, String> output = DefaultAppLifecycleManager.replaceHashWithDotInMapKeysAndProcessValues(input);
+        Map<String, String> output = DefaultAppLifecycleManager.preprocessParameters(input);
         assertThat(output.values().containsAll(Arrays.asList("value", "\\\"valuewithhashonbothends\\\"")), is(true));
     }
 

@@ -40,7 +40,7 @@ public class RemoteClusterMailer {
         MailAttributes mailAttributes = MailAttributes.builder()
                 .mailType(mailType)
                 .otherAttributes(attr)
-                .addressees(Collections.singletonList(recipient))
+                .addresses(Collections.singletonList(recipient))
                 .build();
 
         this.eventPublisher.publishEvent(new NotificationEvent(this, mailAttributes));

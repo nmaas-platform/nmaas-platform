@@ -15,10 +15,10 @@ import net.geant.nmaas.notifications.templates.api.MailTemplateView;
 import net.geant.nmaas.notifications.types.persistence.entity.FormType;
 import net.geant.nmaas.notifications.types.service.FormTypeService;
 import net.geant.nmaas.portal.api.configuration.model.ConfigurationView;
-import net.geant.nmaas.portal.domain.GroupAppListElement;
-import net.geant.nmaas.portal.domain.UserView;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
+import net.geant.nmaas.portal.domain.GroupAppListElement;
+import net.geant.nmaas.portal.domain.UserView;
 import net.geant.nmaas.portal.persistence.entity.Role;
 import net.geant.nmaas.portal.persistence.entity.User;
 import net.geant.nmaas.portal.service.ConfigurationManager;
@@ -81,7 +81,7 @@ public class NotificationManager {
 
         this.getAllAddressees(mailAttributes);
 
-        for (UserView user : mailAttributes.getAddressees()) {
+        for (UserView user : mailAttributes.getAddresses()) {
             try {
                 LanguageMailContentView mailContent = getTemplateInSelectedLanguage(mailTemplate.getTemplates(), user.getSelectedLanguage());
                 customizeMessage(mailContent, mailAttributes);
@@ -95,7 +95,7 @@ public class NotificationManager {
                 log.error("Unable to generate template; to: [{}], template: [{}], message: {}", user.getEmail(), template.getName(), e.getMessage());
             }
         }
-        log.info("Mail {} was sent to {}", mailAttributes.getMailType().name(), getListOfMails(mailAttributes.getAddressees()));
+        log.info("Mail {} was sent to {}", mailAttributes.getMailType().name(), getListOfMails(mailAttributes.getAddresses()));
     }
 
     private LanguageMailContentView getTemplateInSelectedLanguage(List<LanguageMailContentView> mailContentList, String selectedLanguage) {
@@ -119,29 +119,29 @@ public class NotificationManager {
                 List<UserView> users = configuration.getAppInstanceFailureEmailList().stream()
                         .map(this::convertEmailToUserView)
                         .collect(Collectors.toList());
-                mailAttributes.setAddressees(users);
+                mailAttributes.setAddresses(users);
             }
         }
         if (mailAttributes.getMailType().equals(MailType.EXTERNAL_SERVICE_HEALTH_CHECK)) {
-            mailAttributes.setAddressees(userService.findUsersWithRoleSystemAdminAndOperator());
+            mailAttributes.setAddresses(userService.findUsersWithRoleSystemAdminAndOperator());
         }
         if (mailAttributes.getMailType().equals(MailType.NEW_BULK_LOGIN) || mailAttributes.getMailType().equals(MailType.NEW_BULK_SSO_LOGIN)) {
-            mailAttributes.setAddressees(List.of(convertEmailToUserView((mailAttributes.getOtherAttributes().get("email").toString()))));
+            mailAttributes.setAddresses(List.of(convertEmailToUserView((mailAttributes.getOtherAttributes().get("email").toString()))));
         }
         if (List.of(MailType.REGISTRATION, MailType.APP_NEW, MailType.NEW_SSO_LOGIN, MailType.APP_UPGRADE_SUMMARY)
                 .contains(mailAttributes.getMailType())) {
-            mailAttributes.setAddressees(userService.findAllUsersWithAdminRole());
+            mailAttributes.setAddresses(userService.findAllUsersWithAdminRole());
         }
         if (List.of(MailType.APP_DEPLOYED, MailType.APP_UPGRADED, MailType.APP_UPGRADE_POSSIBLE)
                 .contains(mailAttributes.getMailType())) {
-            mailAttributes.setAddressees(new ArrayList<>(domainService.findUsersWithDomainAdminRole((String) mailAttributes.getOtherAttributes().get("domainName"))));
-            if (mailAttributes.getAddressees().stream().noneMatch(user -> user.getUsername().equals(mailAttributes.getOtherAttributes().get("owner")))) {
+            mailAttributes.setAddresses(new ArrayList<>(domainService.findUsersWithDomainAdminRole((String) mailAttributes.getOtherAttributes().get("domainName"))));
+            if (mailAttributes.getAddresses().stream().noneMatch(user -> user.getUsername().equals(mailAttributes.getOtherAttributes().get("owner")))) {
                 userService.findByUsername((String) mailAttributes.getOtherAttributes().get("owner"))
-                        .ifPresent(user -> mailAttributes.getAddressees().add(modelMapper.map(user, UserView.class)));
+                        .ifPresent(user -> mailAttributes.getAddresses().add(modelMapper.map(user, UserView.class)));
             }
         }
         if (mailAttributes.getMailType().equals(MailType.BROADCAST)) {
-            mailAttributes.setAddressees(userService.findAll().stream()
+            mailAttributes.setAddresses(userService.findAll().stream()
                     .filter(User::isEnabled)
                     .filter(u -> !StringUtils.isEmpty(u.getEmail()))
                     .filter(u -> u.getRoles().stream().noneMatch(r -> r.getRole().equals(Role.ROLE_INCOMPLETE)))
@@ -150,7 +150,6 @@ public class NotificationManager {
         }
         if (List.of(MailType.CONTACT_FORM, MailType.ISSUE_REPORT, MailType.NEW_DOMAIN_REQUEST, MailType.VLAB_REQUEST)
                 .contains(mailAttributes.getMailType())) {
-            List<UserView> base = userService.findAllUsersWithAdminRole();
             Optional<String> contactFormKey = Optional.ofNullable((String) mailAttributes.getOtherAttributes().get("subType"));
             if (mailAttributes.getMailType().equals(MailType.VLAB_REQUEST)) {
                 Object datesObject = mailAttributes.getOtherAttributes().get("dates");
@@ -165,11 +164,10 @@ public class NotificationManager {
                     mailAttributes.getOtherAttributes().put(k, offsetDateTime.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
                 });
 
-                List<GroupAppListElement> appList = objectMapper.convertValue(mailAttributes.getOtherAttributes().get("appList"), new TypeReference<List<GroupAppListElement>>() {
-                });
+                List<GroupAppListElement> appList = objectMapper.convertValue(mailAttributes.getOtherAttributes().get("appList"), new TypeReference<List<GroupAppListElement>>() {});
                 mailAttributes.getOtherAttributes().put("appList", appList.stream().map(GroupAppListElement::getAppListName).collect(Collectors.joining(", ")));
-
             }
+            List<UserView> targetUsers = new ArrayList<>(userService.findAllUsersWithAdminRole());
             if (contactFormKey.isEmpty()) {
                 log.error("Invalid contact form request, subType is null");
             } else {
@@ -186,10 +184,10 @@ public class NotificationManager {
                                     .username(email)
                                     .selectedLanguage("en")
                                     .build();
-                            base.add(userView);
+                            targetUsers.add(userView);
                         });
             }
-            mailAttributes.setAddressees(base);
+            mailAttributes.setAddresses(targetUsers);
         }
     }
 

@@ -9,6 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
 import net.geant.nmaas.notifications.templates.MailType;
+import net.geant.nmaas.portal.api.exceptions.MissingElementException;
+import net.geant.nmaas.portal.api.exceptions.PortalException;
+import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.domain.AppInstanceState;
 import net.geant.nmaas.portal.domain.AppRateView;
 import net.geant.nmaas.portal.domain.ApplicationBaseView;
@@ -17,9 +20,6 @@ import net.geant.nmaas.portal.domain.ApplicationStateChangeRequest;
 import net.geant.nmaas.portal.domain.ApplicationView;
 import net.geant.nmaas.portal.domain.Id;
 import net.geant.nmaas.portal.domain.UserView;
-import net.geant.nmaas.portal.api.exceptions.PortalException;
-import net.geant.nmaas.portal.api.exceptions.MissingElementException;
-import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
 import net.geant.nmaas.portal.persistence.entity.Application;
 import net.geant.nmaas.portal.persistence.entity.ApplicationBase;
@@ -443,7 +443,7 @@ public class ApplicationController extends AppBaseController {
             UserView owner = modelMapper.map(userService.findByUsername(applicationBase.getOwner()).orElseThrow(() -> new IllegalArgumentException("Owner not found")), UserView.class);
             MailAttributes mailAttributes = MailAttributes.builder()
                     .mailType(stateChangeRequest.getState().getMailType())
-                    .addressees(Collections.singletonList(owner))
+                    .addresses(Collections.singletonList(owner))
                     .otherAttributes(attributes)
                     .build();
             this.eventPublisher.publishEvent(new NotificationEvent(this, mailAttributes));
@@ -453,10 +453,10 @@ public class ApplicationController extends AppBaseController {
                     .stream()
                     .filter(User::isEnabled)
                     .map(user -> modelMapper.map(user, UserView.class))
-                    .collect(Collectors.toList());
+                    .toList();
             MailAttributes mailAttributes = MailAttributes.builder()
                     .mailType(MailType.NEW_ACTIVE_APP)
-                    .addressees(users)
+                    .addresses(users)
                     .otherAttributes(attributes)
                     .build();
             this.eventPublisher.publishEvent(new NotificationEvent(this, mailAttributes));

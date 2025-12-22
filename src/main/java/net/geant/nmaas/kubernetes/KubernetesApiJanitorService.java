@@ -132,7 +132,7 @@ public class KubernetesApiJanitorService {
     }
 
     private static String generateConfigMapName(Identifier deploymentId, String filePath, String fileName) {
-        final String fileDirectory = filePath.replaceAll(fileName, "").replaceAll("/", "");
+        final String fileDirectory = filePath.replace(fileName, "").replace("/", "");
         return fileDirectory.isBlank() ? deploymentId.value() : deploymentId.value() + "-" + fileDirectory;
     }
 
