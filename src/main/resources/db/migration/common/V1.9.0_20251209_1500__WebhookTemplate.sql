@@ -1,0 +1,1 @@
+alter table webhooks add column template text;

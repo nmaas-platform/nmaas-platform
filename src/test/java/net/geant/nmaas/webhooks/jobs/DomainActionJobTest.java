@@ -7,6 +7,7 @@ import net.geant.nmaas.portal.persistence.entity.WebhookEventType;
 import net.geant.nmaas.portal.persistence.entity.WebhookHistory;
 import net.geant.nmaas.portal.persistence.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistence.repositories.WebhookHistoryRepository;
+import net.geant.nmaas.portal.service.AutoWebhookTemplateService;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.WebhookHistoryService;
 import net.geant.nmaas.portal.service.impl.WebhookEventService;
@@ -38,6 +39,7 @@ class DomainActionJobTest {
     private final DomainRepository domainRepository = mock(DomainRepository.class);
     private final DomainService domainService = mock(DomainService.class);
     private final WebhookHistoryRepository webhookHistoryRepository = mock(WebhookHistoryRepository.class);
+    private final AutoWebhookTemplateService templateService = new AutoWebhookTemplateService();
 
     private final ModelMapper mapper = new ModelMapper();
     private final WebhookHistoryService webhookHistoryService = new WebhookHistoryServiceImpl(webhookHistoryRepository, domainRepository, mapper);
@@ -57,11 +59,12 @@ class DomainActionJobTest {
         JobExecutionContext jobExecutionContext = mock(JobExecutionContext.class);
         when(jobExecutionContext.getJobDetail()).thenReturn(jobDetail);
         when(webhookEventService.getById(10L)).thenReturn(
-                new WebhookEventDto(10L, "webhook-name", "https://example.webhook-url.pl", WebhookEventType.DOMAIN_ACTION));
+                new WebhookEventDto(10L, "webhook-name", "https://example.webhook-url.pl", WebhookEventType.DOMAIN_ACTION, null, null, null,
+                        "{\"action\": $ACTION, \"event\": $WEBHOOKEVENTTYPE}"));
         when(domainService.findDomain(1L)).thenReturn(Optional.of(new Domain("name", "codename")));
 
         assertThrows(JobExecutionException.class, () -> {
-            DomainActionJob job = new DomainActionJob(restClient, webhookEventService, mapper, webhookHistoryService);
+            DomainActionJob job = new DomainActionJob(restClient, webhookEventService, mapper, webhookHistoryService, templateService);
             job.execute(jobExecutionContext);
         });
 

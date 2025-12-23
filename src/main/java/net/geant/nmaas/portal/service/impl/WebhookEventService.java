@@ -8,6 +8,7 @@ import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.entity.WebhookEvent;
 import net.geant.nmaas.portal.persistence.entity.WebhookEventType;
 import net.geant.nmaas.portal.persistence.repositories.WebhookEventRepository;
+import net.geant.nmaas.portal.service.AutoWebhookTemplateService;
 import net.geant.nmaas.portal.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -27,9 +28,11 @@ public class WebhookEventService {
     private final EncryptionService encryptionService;
     private final ModelMapper modelMapper;
     private final UserService userService;
+    private final AutoWebhookTemplateService templateService;
 
     public WebhookEvent create(WebhookEventDto webhookEventDto) throws GeneralSecurityException {
         WebhookEvent webhookEvent = new WebhookEvent();
+        templateService.validateTemplate(webhookEventDto.getTemplate(), webhookEventDto.getEventType());
         setWebhookEvent(webhookEvent, webhookEventDto);
         return webhookRepository.save(webhookEvent);
     }
@@ -37,6 +40,7 @@ public class WebhookEventService {
     public WebhookEventDto update(WebhookEventDto webhookEventDto) throws GeneralSecurityException {
         WebhookEvent webhookEvent = webhookRepository.findById(webhookEventDto.getId())
                 .orElseThrow(() -> new MissingElementException(WEBHOOK_EVENT_NOT_FOUND));
+        templateService.validateTemplate(webhookEventDto.getTemplate(), webhookEventDto.getEventType());
         setWebhookEvent(webhookEvent, webhookEventDto);
         webhookEvent = webhookRepository.save(webhookEvent);
         return getWebhookEventDto(webhookEvent);
@@ -48,6 +52,7 @@ public class WebhookEventService {
         if (Objects.isNull(webhookEvent.getDomain()) || !webhookEventDto.getDomain().getId().equals(webhookEvent.getDomain().getId())) {
             throw new IllegalArgumentException("Can't change webhook domain");
         }
+        templateService.validateTemplate(webhookEventDto.getTemplate(), webhookEventDto.getEventType());
         setWebhookEvent(webhookEvent, webhookEventDto);
         webhookEvent = webhookRepository.save(webhookEvent);
         return getWebhookEventDto(webhookEvent);
@@ -64,6 +69,7 @@ public class WebhookEventService {
         webhookEvent.setTokenValue(webhookEventDto.getTokenValue() == null ? null : encryptionService.encrypt(webhookEventDto.getTokenValue()));
         webhookEvent.setAuthorizationHeader(webhookEventDto.getAuthorizationHeader());
         webhookEvent.setDomain(webhookEventDto.getDomain() != null ? new Domain(webhookEventDto.getDomain().getId()) : null);
+        webhookEvent.setTemplate(webhookEventDto.getTemplate());
     }
 
     public void remove(Long id) {

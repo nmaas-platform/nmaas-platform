@@ -10,6 +10,7 @@ import net.geant.nmaas.portal.persistence.entity.WebhookEventType;
 import net.geant.nmaas.portal.persistence.entity.WebhookHistory;
 import net.geant.nmaas.portal.persistence.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistence.repositories.WebhookHistoryRepository;
+import net.geant.nmaas.portal.service.AutoWebhookTemplateService;
 import net.geant.nmaas.portal.service.WebhookHistoryService;
 import net.geant.nmaas.portal.service.impl.WebhookEventService;
 import net.geant.nmaas.portal.service.impl.WebhookHistoryServiceImpl;
@@ -40,6 +41,7 @@ class AppRemovalJobTest {
     private final AppDeploymentRepositoryManager appDeploymentRepositoryManager = mock(AppDeploymentRepositoryManager.class);
     private final KubernetesRepositoryManager kubernetesRepositoryManager = mock(KubernetesRepositoryManager.class);
     private final WebhookHistoryRepository webhookHistoryRepository = mock(WebhookHistoryRepository.class);
+    private final AutoWebhookTemplateService templateService = mock(AutoWebhookTemplateService.class);
 
     private final ModelMapper mapper = new ModelMapper();
     private final WebhookHistoryService webhookHistoryService = new WebhookHistoryServiceImpl(webhookHistoryRepository, domainRepository, mapper);
@@ -61,7 +63,7 @@ class AppRemovalJobTest {
                 new KubernetesNmServiceInfo());
 
         assertThrows(JobExecutionException.class, () -> {
-            AppRemovalJob job = new AppRemovalJob(restClient, webhookEventService, mapper, appDeploymentRepositoryManager, kubernetesRepositoryManager, webhookHistoryService);
+            AppRemovalJob job = new AppRemovalJob(restClient, webhookEventService, mapper, appDeploymentRepositoryManager, kubernetesRepositoryManager, webhookHistoryService, templateService);
             job.execute(jobExecutionContext);
         });
 

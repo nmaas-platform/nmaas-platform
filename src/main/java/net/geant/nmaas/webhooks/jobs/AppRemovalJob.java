@@ -8,6 +8,7 @@ import net.geant.nmaas.orchestration.exceptions.WebServiceCommunicationException
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.domain.WebhookEventDto;
 import net.geant.nmaas.portal.persistence.entity.WebhookEventType;
+import net.geant.nmaas.portal.service.AutoWebhookTemplateService;
 import net.geant.nmaas.portal.service.WebhookHistoryService;
 import net.geant.nmaas.portal.service.impl.WebhookEventService;
 import net.geant.nmaas.webhooks.AppDeploymentWebhookDto;
@@ -27,8 +28,8 @@ public class AppRemovalJob extends AppWebhookJob {
 
     @Autowired
     public AppRemovalJob(RestClient restClient, WebhookEventService webhookEventService, ModelMapper modelMapper,
-                            AppDeploymentRepositoryManager appDeploymentRepositoryManager, KubernetesRepositoryManager serviceInfoRepositoryManager, WebhookHistoryService webhookHistoryService) {
-        super(restClient, webhookEventService, modelMapper, appDeploymentRepositoryManager, serviceInfoRepositoryManager, webhookHistoryService);
+                            AppDeploymentRepositoryManager appDeploymentRepositoryManager, KubernetesRepositoryManager serviceInfoRepositoryManager, WebhookHistoryService webhookHistoryService, AutoWebhookTemplateService templateService) {
+        super(restClient, webhookEventService, modelMapper, appDeploymentRepositoryManager, serviceInfoRepositoryManager, webhookHistoryService, templateService);
     }
 
     @Override
