@@ -23,14 +23,14 @@ public class WebhookTemplateController {
 
     @GetMapping("/variables/{eventType}")
     @Transactional(readOnly = true)
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasPermission(#domainId, 'domain', 'OWNER')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     public Set<String> getVariables(@PathVariable WebhookEventType eventType) {
         return templateService.getAvailableVariables(eventType);
     }
 
     @GetMapping("/default/{eventType}")
     @Transactional(readOnly = true)
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasPermission(#domainId, 'domain', 'OWNER')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     public String getDefault(@PathVariable WebhookEventType eventType) {
         return templateService.getDefaultTemplate(eventType);
     }
