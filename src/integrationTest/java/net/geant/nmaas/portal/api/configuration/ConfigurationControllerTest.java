@@ -7,6 +7,7 @@ import net.geant.nmaas.portal.api.i18n.api.InternationalizationView;
 import net.geant.nmaas.portal.persistence.entity.User;
 import net.geant.nmaas.portal.persistence.entity.UsersHelper;
 import net.geant.nmaas.portal.persistence.repositories.ConfigurationRepository;
+import net.geant.nmaas.portal.persistence.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistence.repositories.InternationalizationSimpleRepository;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import org.junit.jupiter.api.AfterEach;
@@ -40,6 +41,8 @@ public class ConfigurationControllerTest extends BaseControllerTestSetup {
 
     @Autowired
     private InternationalizationSimpleRepository intRepo;
+
+    private DomainRepository domainRepository;
 
     private User user;
 
@@ -82,6 +85,25 @@ public class ConfigurationControllerTest extends BaseControllerTestSetup {
         Long id = repository.findAll().get(0).getId();
         ConfigurationView configuration = new ConfigurationView(null, true, false, "en", false, false, new ArrayList<>(), true, true, true, "0 */1 * * * ?", 2, 60, 10, "", "0 */1 * * * ?", null);
         configuration.setId(id);
+        mvc.perform(put(URL_PREFIX + "/{id}", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + getValidTokenForUser(user))
+                        .content(new ObjectMapper().writeValueAsString(configuration))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+        MvcResult mvcResult = mvc.perform(get(URL_PREFIX)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + getValidTokenForUser(user)))
+                .andReturn();
+        assertThat(mvcResult.getResponse().getContentAsString(), containsString("\"maintenance\":true"));
+    }
+
+    @Test
+    void shouldUpdateConfigurationWithDefaultSsoUserDomain() throws Exception {
+        Long id = repository.findAll().get(0).getId();
+        ConfigurationView configuration = new ConfigurationView(null, true, false, "en", false, false, new ArrayList<>(), true, true, true, "0 */1 * * * ?", 2, 60, 10, "", "0 */1 * * * ?", null);
+        configuration.setId(id);
+        configuration.setDefaultDomainForSsoUsers(10L);
         mvc.perform(put(URL_PREFIX + "/{id}", id)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + getValidTokenForUser(user))

@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal;
 
 import net.geant.nmaas.portal.domain.converters.ApplicationSubscriptionConverter;
+import net.geant.nmaas.portal.domain.converters.ConfigurationConverter;
 import net.geant.nmaas.portal.domain.converters.InetAddressConverter;
 import net.geant.nmaas.portal.domain.converters.InetAddressInverseConverter;
 import net.geant.nmaas.portal.domain.converters.RoleInverseConverter;
@@ -35,6 +36,7 @@ public class ConvertersConfig {
         modelMapper.addConverter(new InetAddressInverseConverter());
         modelMapper.addConverter(new ApplicationSubscriptionConverter());
         modelMapper.addConverter(new UserConverter());
+        modelMapper.addConverter(new ConfigurationConverter());
         return modelMapper;
     }
 

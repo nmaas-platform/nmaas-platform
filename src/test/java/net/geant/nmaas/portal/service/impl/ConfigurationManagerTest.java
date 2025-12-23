@@ -3,10 +3,12 @@ package net.geant.nmaas.portal.service.impl;
 import net.geant.nmaas.nmservice.deployment.bulks.BulkDeploymentJob;
 import net.geant.nmaas.portal.api.configuration.model.ConfigurationView;
 import net.geant.nmaas.portal.api.i18n.api.InternationalizationView;
+import net.geant.nmaas.portal.domain.converters.ConfigurationConverter;
 import net.geant.nmaas.portal.exceptions.ConfigurationNotFoundException;
 import net.geant.nmaas.portal.exceptions.OnlyOneConfigurationSupportedException;
 import net.geant.nmaas.portal.persistence.entity.Configuration;
 import net.geant.nmaas.portal.persistence.repositories.ConfigurationRepository;
+import net.geant.nmaas.portal.persistence.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistence.repositories.InternationalizationSimpleRepository;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.scheduling.ScheduleManager;
@@ -33,6 +35,7 @@ class ConfigurationManagerTest {
     private final ModelMapper modelMapper = new ModelMapper();
     private final ScheduleManager scheduleManager = mock(ScheduleManager.class);
     private final BulkDeploymentJob bulkDeploymentJob = mock(BulkDeploymentJob.class);
+    private final DomainRepository domainRepository = mock(DomainRepository.class);
 
     private ConfigurationManager configurationManager;
 
@@ -43,7 +46,7 @@ class ConfigurationManagerTest {
     @BeforeEach
     public void setup() {
         this.configurationManager = new ConfigurationManagerImpl(
-                repository, internationalizationRepository, scheduleManager, bulkDeploymentJob, modelMapper);
+                repository, internationalizationRepository, scheduleManager, bulkDeploymentJob, domainRepository, modelMapper);
         this.config = Configuration.builder()
                 .id(1L)
                 .maintenance(true)
@@ -59,6 +62,7 @@ class ConfigurationManagerTest {
         this.internationalization = new InternationalizationView("pl", true, "{\"test\":\"test\"}");
         this.configView = new ConfigurationView(1L, false, false, "pl",
                 false, false, new ArrayList<>(), true, true, false, "0 */1 * * * ?", 2, 60, 10, "", "0 */1 * * * ?", null);
+        this.modelMapper.addConverter(new ConfigurationConverter());
     }
 
     @Test
@@ -75,7 +79,7 @@ class ConfigurationManagerTest {
     }
 
     @Test
-    void shouldSetConfiguration(){
+    void shouldSetConfiguration() {
         when(repository.count()).thenReturn(0L);
         Long id = configurationManager.setConfiguration(modelMapper.map(config, ConfigurationView.class));
         assertEquals(config.getId(), id);
@@ -83,7 +87,7 @@ class ConfigurationManagerTest {
     }
 
     @Test
-    void shouldNotSetConfigIfAlreadyExists(){
+    void shouldNotSetConfigIfAlreadyExists() {
         when(repository.count()).thenReturn(1L);
         assertThrows(OnlyOneConfigurationSupportedException.class, () -> {
             configurationManager.setConfiguration(modelMapper.map(config, ConfigurationView.class));
@@ -91,7 +95,7 @@ class ConfigurationManagerTest {
     }
 
     @Test
-    void shouldUpdateConfiguration(){
+    void shouldUpdateConfiguration() {
         when(repository.findById(config.getId())).thenReturn(Optional.of(config));
         when(internationalizationRepository.findByLanguageOrderByIdDesc(configView.getDefaultLanguage()))
                 .thenReturn(Optional.of(internationalization.getAsInternationalizationSimple()));
@@ -100,7 +104,7 @@ class ConfigurationManagerTest {
     }
 
     @Test
-    void shouldNotUpdateNotExistingConfig(){
+    void shouldNotUpdateNotExistingConfig() {
         when(repository.findById(config.getId())).thenReturn(Optional.empty());
         assertThrows(ConfigurationNotFoundException.class, () -> {
             configurationManager.updateConfiguration(1L, configView);
@@ -108,7 +112,7 @@ class ConfigurationManagerTest {
     }
 
     @Test
-    void shouldNotSetNotExistingLanguageAsDefault(){
+    void shouldNotSetNotExistingLanguageAsDefault() {
         when(repository.findById(config.getId())).thenReturn(Optional.of(config));
         when(internationalizationRepository.findByLanguageOrderByIdDesc(configView.getDefaultLanguage()))
                 .thenReturn(Optional.empty());
@@ -118,7 +122,7 @@ class ConfigurationManagerTest {
     }
 
     @Test
-    void shouldNotSetDisabledLanguageAsDefault(){
+    void shouldNotSetDisabledLanguageAsDefault() {
         internationalization.setEnabled(false);
         when(repository.findById(config.getId())).thenReturn(Optional.of(config));
         when(internationalizationRepository.findByLanguageOrderByIdDesc(configView.getDefaultLanguage()))
