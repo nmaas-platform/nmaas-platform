@@ -17,7 +17,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 
 @ExtendWith(MockitoExtension.class)
 class HelmChartUpdateListenerTest {
@@ -65,6 +64,23 @@ class HelmChartUpdateListenerTest {
         ApplicationListUpdatedEvent event = new ApplicationListUpdatedEvent(this, "app", "1.0", ADDED, spec);
         listener.trigger(event);
         verify(executor, times(1)).executeHelmRepoAddCommand("name", "url");
+    }
+
+    @Test
+    void shouldSkipRepoCommandsForOciRegistry() {
+        AppDeploymentSpec spec = new AppDeploymentSpec();
+        KubernetesTemplate template = new KubernetesTemplate();
+        HelmChartRepositoryEmbeddable repository = new HelmChartRepositoryEmbeddable();
+        repository.setName("name");
+        repository.setUrl("oci://registry-1.docker.io/bitnamicharts");
+        template.setHelmChartRepository(repository);
+        spec.setKubernetesTemplate(template);
+        ApplicationListUpdatedEvent event = new ApplicationListUpdatedEvent(this, "app", "1.0", ADDED, spec);
+
+        listener.trigger(event);
+
+        verify(executor, never()).executeHelmRepoAddCommand(any(), any());
+        verify(executor, never()).executeHelmRepoUpdateCommand();
     }
 
 }

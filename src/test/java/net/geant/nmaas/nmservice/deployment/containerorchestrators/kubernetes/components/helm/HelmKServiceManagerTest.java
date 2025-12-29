@@ -39,10 +39,12 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@SuppressWarnings("unchecked")
 class HelmKServiceManagerTest {
 
     private final Identifier deploymentId = Identifier.newInstance("deploymentId");
@@ -207,6 +209,31 @@ class HelmKServiceManagerTest {
     }
 
     @Test
+    void shouldDeployOciServiceWithoutRepoUpdate() {
+        when(namespaceService.namespace("domain")).thenReturn("namespace");
+        when(ingressManager.getResourceConfigOption()).thenReturn(IngressResourceConfigOption.DEPLOY_FROM_CHART);
+        when(ingressManager.getIngressPerDomain()).thenReturn(false);
+        when(ingressManager.getSupportedIngressClass()).thenReturn("testIngressClass");
+        when(ingressManager.getTlsSupported()).thenReturn(true);
+        when(ingressManager.getIssuerOrWildcardName()).thenReturn("testIssuerName");
+        when(ingressManager.getCertificateConfigOption()).thenReturn(IngressCertificateConfigOption.USE_LETSENCRYPT);
+        KubernetesNmServiceInfo service = repositoryManager.loadService(deploymentId);
+        service.getKubernetesTemplate().getChart().setName("oci://registry-1.docker.io/bitnamicharts/postgresql");
+        when(repositoryManager.loadService(deploymentId)).thenReturn(service);
+
+        manager.deployService(deploymentId);
+
+        verify(helmCommandExecutor, never()).executeHelmRepoUpdateCommand();
+        verify(helmCommandExecutor, times(1)).executeHelmInstallCommand(
+                eq("namespace"),
+                eq("descriptiveDeploymentId"),
+                any(KubernetesTemplate.class),
+                any(Map.class),
+                eq(null)
+        );
+    }
+
+    @Test
     void shouldDeleteServiceSinceExists() {
         when(namespaceService.namespace("domain")).thenReturn("namespace");
         when(helmCommandExecutor.executeHelmListCommand("namespace", null))
@@ -233,6 +260,24 @@ class HelmKServiceManagerTest {
         when(namespaceService.namespace("domain")).thenReturn("namespace");
         manager.upgradeService(deploymentId, new KubernetesTemplate());
         verify(helmCommandExecutor, times(1)).executeHelmRepoUpdateCommand();
+        verify(helmCommandExecutor, times(1)).executeHelmUpgradeCommand(
+                eq("namespace"),
+                eq("descriptiveDeploymentId"),
+                any(KubernetesTemplate.class),
+                isNull()
+        );
+    }
+
+    @Test
+    void shouldUpgradeOciServiceWithoutRepoUpdate() {
+        when(namespaceService.namespace("domain")).thenReturn("namespace");
+        KubernetesNmServiceInfo service = repositoryManager.loadService(deploymentId);
+        service.getKubernetesTemplate().getChart().setName("oci://registry-1.docker.io/bitnamicharts/postgresql");
+        when(repositoryManager.loadService(deploymentId)).thenReturn(service);
+
+        manager.upgradeService(deploymentId, new KubernetesTemplate());
+
+        verify(helmCommandExecutor, never()).executeHelmRepoUpdateCommand();
         verify(helmCommandExecutor, times(1)).executeHelmUpgradeCommand(
                 eq("namespace"),
                 eq("descriptiveDeploymentId"),
