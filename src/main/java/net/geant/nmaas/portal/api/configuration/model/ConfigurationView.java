@@ -59,6 +59,6 @@ public class ConfigurationView {
 
     private String healthCheckJobCron;
 
-    private DomainView defaultDomainForSsoUsers;
+    private Long defaultDomainForSsoUsers;
 
 }

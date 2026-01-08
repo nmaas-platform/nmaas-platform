@@ -150,7 +150,7 @@ public class OIDCAuthController {
             // If a default domain for SSO users is configured and user has no role in that domain, add ROLE_USER in configured domain
             ConfigurationView configuration = configurationManager.getConfiguration();
             if (configuration != null && configuration.getDefaultDomainForSsoUsers() != null && (user.getRoles() == null || user.getRoles().isEmpty())) {
-                domains.addMemberRole(configuration.getDefaultDomainForSsoUsers().getId(), user.getId(), Role.ROLE_USER);
+                domains.addMemberRole(configuration.getDefaultDomainForSsoUsers(), user.getId(), Role.ROLE_USER);
             }
             String redirectUrl = portalAddress
                     + "/login-success?token="
