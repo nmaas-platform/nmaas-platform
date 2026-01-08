@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
 import net.geant.nmaas.portal.api.configuration.model.ConfigurationView;
 import net.geant.nmaas.portal.api.i18n.api.InternationalizationView;
+import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.entity.User;
 import net.geant.nmaas.portal.persistence.entity.UsersHelper;
 import net.geant.nmaas.portal.persistence.repositories.ConfigurationRepository;
@@ -24,7 +25,9 @@ import java.util.ArrayList;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
@@ -42,6 +45,7 @@ public class ConfigurationControllerTest extends BaseControllerTestSetup {
     @Autowired
     private InternationalizationSimpleRepository intRepo;
 
+    @Autowired
     private DomainRepository domainRepository;
 
     private User user;
@@ -100,10 +104,11 @@ public class ConfigurationControllerTest extends BaseControllerTestSetup {
 
     @Test
     void shouldUpdateConfigurationWithDefaultSsoUserDomain() throws Exception {
+        Domain domain = domainRepository.save(new Domain("name", "codename"));
         Long id = repository.findAll().get(0).getId();
         ConfigurationView configuration = new ConfigurationView(null, true, false, "en", false, false, new ArrayList<>(), true, true, true, "0 */1 * * * ?", 2, 60, 10, "", "0 */1 * * * ?", null);
         configuration.setId(id);
-        configuration.setDefaultDomainForSsoUsers(10L);
+        configuration.setDefaultDomainForSsoUsers(domain.getId());
         mvc.perform(put(URL_PREFIX + "/{id}", id)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + getValidTokenForUser(user))

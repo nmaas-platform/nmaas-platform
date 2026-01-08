@@ -66,10 +66,11 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
             scheduleManager.deleteJob(BulkDeploymentScheduleInit.BULK_DEPLOYMENT_JOB);
             scheduleManager.createJob(bulkDeploymentJob, BulkDeploymentScheduleInit.BULK_DEPLOYMENT_JOB, updatedConfiguration.getBulkDeploymentJobCron());
         }
+        Configuration configurationToSave = modelMapper.map(updatedConfiguration, Configuration.class);
         if (updatedConfiguration.getDefaultDomainForSsoUsers() != null) {
-            configurationToUpdate.setDefaultDomainForSsoUsers(domainRepository.getReferenceById(updatedConfiguration.getDefaultDomainForSsoUsers()));
+            configurationToSave.setDefaultDomainForSsoUsers(domainRepository.getReferenceById(updatedConfiguration.getDefaultDomainForSsoUsers()));
         }
-        repository.save(modelMapper.map(updatedConfiguration, Configuration.class));
+        repository.save(configurationToSave);
     }
 
     private Configuration loadSingleConfiguration() {

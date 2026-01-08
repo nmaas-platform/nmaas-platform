@@ -20,12 +20,12 @@ import org.hibernate.type.descriptor.jdbc.VarcharJdbcType;
 @Getter
 @Setter
 @Entity
-@Table(name="content")
+@Table(name = "content")
 public class Content {
 
     @Setter(AccessLevel.NONE)
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(unique = true, nullable = false)

@@ -24,6 +24,7 @@ public class GitLabConfigHelper {
     static final String DEFAULT_REPLACEMENT_FOR_INCORRECT_CHARACTER = "_";
     static final String FORBIDDEN_USERNAME_SUFFIX1 = ".git";
     static final String FORBIDDEN_USERNAME_SUFFIX2 = ".atom";
+
     private static final String GITLAB_ALLOWED_CHARACTERS = "[A-Za-z0-9._-]+";
 
     static final int PROJECT_MEMBER_MAINTAINER_ACCESS_LEVEL = 40;
@@ -65,7 +66,7 @@ public class GitLabConfigHelper {
     }
 
     static String generateRandomPassword() {
-        return RandomStringUtils.random(10, true, true);
+        return RandomStringUtils.secure().next(10, true, true);
     }
 
     static String generateWebhookId() {
@@ -73,7 +74,7 @@ public class GitLabConfigHelper {
     }
 
     static String generateRandomToken() {
-        return RandomStringUtils.random(DEFAULT_WEBHOOK_TOKEN_LENGTH, true, true);
+        return RandomStringUtils.secure().next(DEFAULT_WEBHOOK_TOKEN_LENGTH, true, true);
     }
 
     static String projectName(Identifier deploymentId) {
