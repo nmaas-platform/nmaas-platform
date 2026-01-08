@@ -49,9 +49,7 @@ public class ShellSessionObserver implements Observer, Serializable {
                             .name("heartbeat")
                             .id(Long.toString(i))
                             .comment("heartbeat");
-
                     this.emitter.send(builder);
-
                     Thread.sleep(DEFAULT_HEARTBEAT_INTERVAL_MS);
                 }
             } catch (IOException e) {
@@ -76,7 +74,6 @@ public class ShellSessionObserver implements Observer, Serializable {
     public void update(Observable observable, Object o) {
         try {
             this.emitter.send(o);
-            log.debug("Message: {}", o);
         } catch (IOException e) {
             this.emitter.completeWithError(e);
             log.error("Failed to send message: {}", o);

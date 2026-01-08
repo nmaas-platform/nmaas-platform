@@ -78,8 +78,6 @@ public class SshConnectionShellSessionObservable extends GenericShellSessionObse
     /**
      * Creates observable, sets up SSH connection
      *
-     * @param sessionId
-     * @param connector
      */
     public SshConnectionShellSessionObservable(String sessionId, AsyncConnector connector) {
         this.sessionId = sessionId;
@@ -98,7 +96,6 @@ public class SshConnectionShellSessionObservable extends GenericShellSessionObse
                 ShellResultReader shellResultReader = new ShellResultReader(reader);
                 String part = shellResultReader.readWord();
                 while (part != null) {
-                    log.debug("Part:\t" + part);
                     this.sendMessage(part);
                     part = shellResultReader.readWord();
                 }
@@ -112,12 +109,9 @@ public class SshConnectionShellSessionObservable extends GenericShellSessionObse
 
         errorReader = Executors.newSingleThreadExecutor();
         errorReader.execute(() -> {
-            try (
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(this.sshConnector.getErrorStream()))
-            ) {
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(this.sshConnector.getErrorStream()))) {
                 String line = reader.readLine();
                 while (line != null) {
-                    log.debug("Error:\t" + line);
                     this.sendMessage(line);
                     line = reader.readLine();
                 }
@@ -140,11 +134,7 @@ public class SshConnectionShellSessionObservable extends GenericShellSessionObse
      * @param commandRequest command request
      */
     public void executeCommand(K8sShellCommandRequest commandRequest) {
-        log.info(sessionId + "\tCOMMAND:\t" + commandRequest.getCommand());
-
         String result = this.sshConnector.executeSingleCommand(commandRequest.getCommand());
-
-        log.info(sessionId + "\tRESULT:\t" + result);
         for (String r : result.split("\n")) {
             this.sendMessage(r);
         }
@@ -157,8 +147,6 @@ public class SshConnectionShellSessionObservable extends GenericShellSessionObse
      * @param commandRequest command request
      */
     public void executeCommandAsync(K8sShellCommandRequest commandRequest) {
-        log.debug(sessionId + "\tCOMMAND:\t" + commandRequest.getCommand());
-
         this.sshConnector.executeCommand(commandRequest.getCommand());
     }
 
