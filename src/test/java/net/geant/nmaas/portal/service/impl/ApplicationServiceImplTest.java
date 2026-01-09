@@ -119,7 +119,7 @@ class ApplicationServiceImplTest {
     }
 
     @Test
-    public void updateMethodShouldThrowExceptionDueToEmptyKubernetesChartName() {
+    void updateMethodShouldThrowExceptionDueToEmptyKubernetesChartName() {
         assertThrows(IllegalArgumentException.class, () -> {
             Application app = getDefaultApplication();
             app.getAppDeploymentSpec().getKubernetesTemplate().getChart().setName("");

@@ -184,7 +184,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void shouldUpdateApplicationVersion() throws Exception {
+    void shouldUpdateApplicationVersion() throws Exception {
         ApplicationView applicationView = modelMapper.map(this.testApp1, ApplicationView.class);
         applicationView.setConfigWizardTemplate(new ConfigWizardTemplateView(null, "{}"));
 
@@ -227,7 +227,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void shouldUpdateAppBase() {
+    void shouldUpdateAppBase() {
         assertDoesNotThrow(() -> {
             mvc.perform(patch("/api/apps/base")
                             .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
@@ -311,7 +311,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void shouldChangeAppState() throws Exception {
+    void shouldChangeAppState() throws Exception {
         long id = this.testApp1.getId();
         mvc.perform(patch("/api/apps/state/" + id)
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
@@ -338,7 +338,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void shouldAddNewVersion() {
+    void shouldAddNewVersion() {
         AppDeploymentSpecView appDeploymentSpec = new AppDeploymentSpecView();
         appDeploymentSpec.setKubernetesTemplate(
                 new KubernetesTemplateView(

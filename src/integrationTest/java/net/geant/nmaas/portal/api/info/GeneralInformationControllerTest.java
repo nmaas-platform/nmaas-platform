@@ -15,12 +15,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class GeneralInformationControllerTest extends BaseControllerTestSetup {
 
     @BeforeEach
-    public void setup(){
+    void setup() {
         this.mvc = this.createMVC();
     }
 
     @Test
-    public void shouldReturnGitProperties() throws Exception {
+    void shouldReturnGitProperties() throws Exception {
         MvcResult result = mvc.perform(get("/api/info/git"))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -28,7 +28,7 @@ public class GeneralInformationControllerTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void shouldReturnChangelog() throws Exception{
+    void shouldReturnChangelog() throws Exception {
         MvcResult result = mvc.perform(get("/api/info/changelog"))
                 .andExpect(status().isOk())
                 .andReturn();

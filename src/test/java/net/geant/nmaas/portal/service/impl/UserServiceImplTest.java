@@ -353,7 +353,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    public void deleteShouldFailDueToEmptyUserId() {
+    void deleteShouldFailDueToEmptyUserId() {
         assertThrows(IllegalArgumentException.class, () -> {
             User user = new User("test", true);
             userService.delete(user);

@@ -44,7 +44,7 @@ class ConfigurationManagerTest {
     private InternationalizationView internationalization;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         this.configurationManager = new ConfigurationManagerImpl(
                 repository, internationalizationRepository, scheduleManager, bulkDeploymentJob, domainRepository, modelMapper);
         this.config = Configuration.builder()

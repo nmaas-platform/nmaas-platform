@@ -41,7 +41,7 @@ public class PodShellControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void shouldRetrievePodNames() throws Exception {
+    void shouldRetrievePodNames() throws Exception {
         when(connectorHelper.checkAppInstanceSupportsSshAccess(1L)).thenReturn(true);
         MvcResult result = mvc.perform(get("/api/pods/shell/{id}/podnames", 1L)
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
@@ -53,7 +53,7 @@ public class PodShellControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void shouldNotRetrievePodNames() throws Exception {
+    void shouldNotRetrievePodNames() throws Exception {
         when(connectorHelper.checkAppInstanceSupportsSshAccess(1L)).thenReturn(false);
         mvc.perform(get("/api/pods/shell/{id}/podnames", 1L)
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))

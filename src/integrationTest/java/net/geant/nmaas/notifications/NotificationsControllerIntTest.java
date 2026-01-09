@@ -3,7 +3,6 @@ package net.geant.nmaas.notifications;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
 import net.geant.nmaas.portal.persistence.entity.Role;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -58,8 +57,6 @@ public class NotificationsControllerIntTest extends BaseControllerTestSetup {
         });
     }
 
-    // TODO review and fix
-    @Disabled
     @Test
     void unauthorizedAdminNotificationShouldFail() {
         assertDoesNotThrow(() -> {
@@ -67,7 +64,7 @@ public class NotificationsControllerIntTest extends BaseControllerTestSetup {
                             .contentType(MediaType.APPLICATION_JSON)
                             .content("{\"mailType\": \"BROADCAST\",\"otherAttributes\": {\"text\": \"test\",\"TITLE\":\"Message title\"}}")
                             .accept(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isUnauthorized());
+                    .andExpect(status().isForbidden());
         });
     }
 

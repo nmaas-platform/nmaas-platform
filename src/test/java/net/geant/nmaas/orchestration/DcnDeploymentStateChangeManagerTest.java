@@ -25,12 +25,12 @@ class DcnDeploymentStateChangeManagerTest {
 
     private DcnDeploymentStateChangeManager manager;
 
-    private DcnDeploymentStateChangeEvent event = mock(DcnDeploymentStateChangeEvent.class);
+    private final DcnDeploymentStateChangeEvent event = mock(DcnDeploymentStateChangeEvent.class);
 
     private static final String DOMAIN = "domain";
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         manager = new DcnDeploymentStateChangeManager();
     }
 

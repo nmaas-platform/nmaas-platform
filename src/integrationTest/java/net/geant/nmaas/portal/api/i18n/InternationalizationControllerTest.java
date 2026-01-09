@@ -31,20 +31,20 @@ public class InternationalizationControllerTest extends BaseControllerTestSetup 
     private InternationalizationSimpleRepository repository;
 
     @BeforeEach
-    public void setup(){
+    void setup() {
         this.mvc = createMVC();
         this.repository.save(new InternationalizationView("pl", true, "{\"content\":\"content\"}").getAsInternationalizationSimple());
     }
 
     @AfterEach
-    public void tearDown(){
+    void tearDown() {
         this.repository.findAll().stream()
                 .filter(lang -> !lang.getLanguage().equalsIgnoreCase("en"))
                 .forEach(lang -> repository.delete(lang));
     }
 
     @Test
-    public void shouldSaveNewLanguage() {
+    void shouldSaveNewLanguage() {
         assertDoesNotThrow(() -> {
             mvc.perform(post("/api/i18n/de?enabled=true")
                     .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
@@ -56,7 +56,7 @@ public class InternationalizationControllerTest extends BaseControllerTestSetup 
     }
 
     @Test
-    public void shouldUpdateLanguage() {
+    void shouldUpdateLanguage() {
         assertDoesNotThrow(() -> {
             mvc.perform(patch("/api/i18n/pl")
                     .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
@@ -68,10 +68,10 @@ public class InternationalizationControllerTest extends BaseControllerTestSetup 
     }
 
     @Test
-    public void shouldGetLanguage() throws Exception {
+    void shouldGetLanguage() throws Exception {
         MvcResult result = mvc.perform(get("/api/i18n/pl")
-                .header("Authorization","Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                .accept(MediaType.APPLICATION_JSON))
+                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
         InternationalizationView lang = new ObjectMapper().readValue(result.getResponse().getContentAsString(), InternationalizationView.class);
@@ -79,43 +79,43 @@ public class InternationalizationControllerTest extends BaseControllerTestSetup 
     }
 
     @Test
-    public void shouldGetAllSupportedLanguage() throws Exception {
+    void shouldGetAllSupportedLanguage() throws Exception {
         MvcResult result = mvc.perform(get("/api/i18n/all")
-                .header("Authorization","Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                .accept(MediaType.APPLICATION_JSON))
+                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
         assertTrue(StringUtils.isNotEmpty(result.getResponse().getContentAsString()));
     }
 
     @Test
-    public void shouldDisableLanguage() {
+    void shouldDisableLanguage() {
         assertDoesNotThrow(() -> {
             mvc.perform(put("/api/i18n/state")
-                    .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(new ObjectMapper().writeValueAsString(new InternationalizationBriefView(false, "pl")))
-                    .accept(MediaType.APPLICATION_JSON))
+                            .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(new ObjectMapper().writeValueAsString(new InternationalizationBriefView(false, "pl")))
+                            .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isNoContent())
                     .andReturn();
         });
     }
 
     @Test
-    public void shouldGetLanguageContent() throws Exception {
+    void shouldGetLanguageContent() throws Exception {
         MvcResult result = mvc.perform(get("/api/i18n/content/pl")
-                .header("Authorization","Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                .accept(MediaType.APPLICATION_JSON))
+                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
         assertTrue(StringUtils.isNotEmpty(result.getResponse().getContentAsString()));
     }
 
     @Test
-    public void shouldGetAllEnabledLanguages() throws Exception {
+    void shouldGetAllEnabledLanguages() throws Exception {
         MvcResult result = mvc.perform(get("/api/i18n/all/enabled")
-                .header("Authorization","Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                .accept(MediaType.APPLICATION_JSON))
+                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
         assertTrue(StringUtils.isNotEmpty(result.getResponse().getContentAsString()));

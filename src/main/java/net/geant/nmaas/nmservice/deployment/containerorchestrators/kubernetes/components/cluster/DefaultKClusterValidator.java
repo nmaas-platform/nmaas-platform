@@ -1,11 +1,13 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster;
 
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KClusterValidator;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 public class DefaultKClusterValidator implements KClusterValidator {
 
     /**
@@ -15,9 +17,9 @@ public class DefaultKClusterValidator implements KClusterValidator {
      * @throws KClusterCheckException if requirements are not met
      */
     @Override
-    @Loggable(LogLevel.INFO)
+    @Loggable(LogLevel.TRACE)
     public void checkClusterStatusAndPrerequisites() {
-        // TODO this check should be delegated to a dedicated external component which does not yet exist
+        log.trace("No conditions defined");
     }
 
 }

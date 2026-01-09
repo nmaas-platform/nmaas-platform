@@ -22,7 +22,6 @@ public class ShellSessionObserver implements Observer, Serializable {
     private static final Long DEFAULT_HEARTBEAT_INTERVAL_MS = 30000L;
     private static final Long SSE_TIMEOUT_24H_MS = 86400000L;
 
-    // TODO verify if emitter access should be synchronized
     protected transient SseEmitter emitter;
     private transient ExecutorService executor;
 

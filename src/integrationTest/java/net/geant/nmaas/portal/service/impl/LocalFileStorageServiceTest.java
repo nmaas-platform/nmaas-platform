@@ -44,19 +44,19 @@ public class LocalFileStorageServiceTest {
 	private Path path;
 	
 	@BeforeEach
-	public void setUp() {
+	void setUp() {
 		path = null;
 	}
 	
 	@AfterEach
-	public void tearDown() throws IOException {
+	void tearDown() throws IOException {
 		if (path != null ) 
 			Files.deleteIfExists(path);
 	}
 
 	@Disabled
 	@Test
-	public void testStoreGetRemove() throws StorageException, MissingElementException, IOException {
+	void testStoreGetRemove() throws StorageException, MissingElementException, IOException {
         MockMultipartFile multipartFile = new MockMultipartFile("file", "test.txt", "text/plain", content.getBytes());
         
         FileInfo fileInfo = storage.store(multipartFile);
