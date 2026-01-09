@@ -404,6 +404,8 @@
     "SUBMIT_BUTTON": "Submit",
     "LANGUAGE_ERROR": "Cannot disable active or default language",
     "DEFAULT_LANGUAGE": "Default language",
+    "DEFAULT_DOMAIN_FOR_SSO_USER": "Default domain for SSO users",
+    "NULL": "None",
     "LANGUAGE_SUPPORT": "Supported languages",
     "LANGUAGE_ENABLED": "Enabled",
     "LANGUAGE_DISABLED": "Disabled",

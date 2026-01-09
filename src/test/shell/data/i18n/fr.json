@@ -404,6 +404,8 @@
     "ALLOW_SSO_LOGIN": "Autoriser la connexion SSO",
     "SUBMIT_BUTTON": "Soumettre",
     "LANGUAGE_ERROR": "Impossibilité de désactiver le langage actif ou le langage par défaut",
+    "DEFAULT_DOMAIN_FOR_SSO_USER": "Domaine par défaut pour les utilisateurs SSO",
+    "NULL": "Aucun",
     "DEFAULT_LANGUAGE": "Language par défaut",
     "LANGUAGE_SUPPORT": "Langues supportées",
     "LANGUAGE_ENABLED": "Activé",
