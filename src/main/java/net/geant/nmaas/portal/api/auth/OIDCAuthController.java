@@ -90,13 +90,6 @@ public class OIDCAuthController {
         }
         assignRoleInDefaultDomainIfRequired(user);
 
-        this.loginRegisterService.registerNewSuccessfulLogin(
-                user,
-                request.getHeader(HttpHeaders.HOST),
-                request.getHeader(HttpHeaders.USER_AGENT),
-                BasicAuthController.getClientIpAddr(request)
-        );
-
         User linkedUser = oidcUserService.linkUser(
                 oidcLogin.email(),
                 oidcLogin.uuid(),
@@ -104,6 +97,7 @@ public class OIDCAuthController {
                 oidcLogin.lastName()
         );
 
+        registerSuccessfulLogin(request, user);
         return new UserOidcToken(
                 jwtTokenService.getToken(linkedUser),
                 jwtTokenService.getRefreshToken(linkedUser),
@@ -121,13 +115,7 @@ public class OIDCAuthController {
             throw new UndergoingMaintenanceException("Application is undergoing maintenance right now");
         }
 
-        this.loginRegisterService.registerNewSuccessfulLogin(
-                user,
-                request.getHeader(HttpHeaders.HOST),
-                request.getHeader(HttpHeaders.USER_AGENT),
-                BasicAuthController.getClientIpAddr(request)
-        );
-
+        registerSuccessfulLogin(request, user);
         return new UserOidcToken(
                 jwtTokenService.getToken(user),
                 jwtTokenService.getRefreshToken(user),
@@ -162,12 +150,8 @@ public class OIDCAuthController {
                     + jwtTokenService.getRefreshToken(user)
                     + "&oidc-token="
                     + oidcUser.getIdToken().getTokenValue();
-            loginRegisterService.registerNewSuccessfulLogin(
-                    user,
-                    request.getHeader(HttpHeaders.HOST),
-                    request.getHeader(HttpHeaders.USER_AGENT),
-                    BasicAuthController.getClientIpAddr(request)
-            );
+
+            registerSuccessfulLogin(request, user);
             return new RedirectView(redirectUrl);
         } catch (ExternalUserMatchException exception) {
             //TODO handle this exception on the portal
@@ -188,7 +172,7 @@ public class OIDCAuthController {
     private void assignRoleInDefaultDomainIfRequired(User user) {
         ConfigurationView configuration = configurationManager.getConfiguration();
         if (configuration != null && configuration.getDefaultDomainForSsoUsers() != null
-                && (user.getRoles() == null || user.getRoles().isEmpty())) {
+                && (user.getRoles() == null || user.getRoles().size() < 2)) {
             domains.addMemberRole(configuration.getDefaultDomainForSsoUsers(), user.getId(), Role.ROLE_USER);
         }
     }
@@ -218,5 +202,14 @@ public class OIDCAuthController {
             log.info(errorMessage);
             throw new AuthenticationException("Invalid Credentials");
         }
+    }
+
+    private void registerSuccessfulLogin(HttpServletRequest request, User user) {
+        this.loginRegisterService.registerNewSuccessfulLogin(
+                user,
+                request.getHeader(HttpHeaders.HOST),
+                request.getHeader(HttpHeaders.USER_AGENT),
+                BasicAuthController.getClientIpAddr(request)
+        );
     }
 }

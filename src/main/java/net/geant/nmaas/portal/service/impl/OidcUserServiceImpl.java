@@ -101,7 +101,6 @@ public class OidcUserServiceImpl implements OidcUserService {
         }
     }
 
-
     private User register(OidcUser oidcUser, Domain globalDomain) {
         String preferredUsername = Objects.requireNonNull(Optional.ofNullable(oidcUser.getAttribute("preferred_username"))
                 .orElseGet(() -> Optional.ofNullable(oidcUser.getAttribute("username"))
