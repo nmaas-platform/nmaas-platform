@@ -404,6 +404,8 @@
     "LANGUAGE_ERROR": "Aktive- oder Standardsprache kann nicht deaktiviert werden",
     "DEFAULT_LANGUAGE": "Standard Sprache",
     "LANGUAGE_SUPPORT": "Sprachunterstützung",
+    "DEFAULT_DOMAIN_FOR_SSO_USER": "Standarddomäne für SSO-Benutzer",
+    "NULL": "Keine",
     "LANGUAGE_ENABLED": "Aktiviert",
     "LANGUAGE_DISABLED": "Deaktiviert",
     "TEST_INSTANCE": "Als Test-nmaas-Instanz markieren",

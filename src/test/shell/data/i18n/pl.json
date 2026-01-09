@@ -404,6 +404,8 @@
     "SUBMIT_BUTTON": "Prześlij",
     "LANGUAGE_ERROR": "Nie można zdeaktywować domyślnego lub aktywnego języka",
     "DEFAULT_LANGUAGE": "Domyślny język",
+    "DEFAULT_DOMAIN_FOR_SSO_USER": "Domyślna domena dla użytkowników SSO",
+    "NULL": "Brak",
     "LANGUAGE_SUPPORT": "Aktywowane języki",
     "LANGUAGE_ENABLED": "Aktywny",
     "LANGUAGE_DISABLED": "Nieaktywny",
