@@ -176,13 +176,12 @@ public class UserServiceImpl implements UserService {
         return newUser;
     }
 
-
     @Override
     public User registerBulk(CsvDomain csvUser, Domain globalDomain, Domain domain) {
         if (userRepository.existsByUsername(csvUser.getAdminUserName()) || userRepository.existsByEmail(csvUser.getEmail())) {
             throw new SignupException("User already exists");
         }
-        String temporaryPassword = RandomStringUtils.random(16);
+        String temporaryPassword = RandomStringUtils.secure().next(16);
         log.info("Creating user {} with temporary password", csvUser.getAdminUserName());
         User newUser = new User(csvUser.getAdminUserName(), false, passwordEncoder.encode(temporaryPassword), globalDomain, Role.ROLE_GUEST);
         newUser.setEmail(csvUser.getEmail());

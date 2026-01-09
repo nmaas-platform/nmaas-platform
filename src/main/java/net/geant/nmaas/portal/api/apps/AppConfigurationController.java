@@ -61,7 +61,7 @@ public class AppConfigurationController {
 
         try {
             appLifecycleManager.applyConfiguration(appInstance.getInternalId(), configuration, principal.getName());
-        } catch (Throwable e) {
+        } catch (Exception e) {
             throw new ProcessingException(e.getMessage());
         }
     }

@@ -28,16 +28,16 @@ class KubernetesParameterGenerator {
                 randomValue = additionalParameters.get(randomExpression);
             } else if (randomExpression.contains("STRING")) {
                 int randomStringLength = Integer.parseInt(randomExpression.replace("RANDOM_STRING_", ""));
-                randomValue = RandomStringUtils.randomAlphanumeric(randomStringLength);
+                randomValue = RandomStringUtils.secure().nextAlphanumeric(randomStringLength);
                 // store generated value to be used for subsequent parameters
                 additionalParameters.put(randomExpression, randomValue);
             } else if (randomExpression.contains("HEX")) {
                 int randomStringLength = Integer.parseInt(randomExpression.replace("RANDOM_HEX_", ""));
-                randomValue = RandomStringUtils.random(randomStringLength, HEXADECIMAL_PATTERN);
+                randomValue = RandomStringUtils.secure().next(randomStringLength, HEXADECIMAL_PATTERN);
                 additionalParameters.put(randomExpression, randomValue);
             } else if (randomExpression.contains("NUMBER")) {
                 int randomStringLength = Integer.parseInt(randomExpression.replace("RANDOM_NUMBER_", ""));
-                randomValue = RandomStringUtils.randomNumeric(randomStringLength);
+                randomValue = RandomStringUtils.secure().nextNumeric(randomStringLength);
                 additionalParameters.put(randomExpression, randomValue);
             }
             return value.replace("%" + randomExpression + "%", randomValue);

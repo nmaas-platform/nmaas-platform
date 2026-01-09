@@ -21,7 +21,7 @@ import java.util.UUID;
 public class ConfigFilePreparerHelper {
 
     public String randomString(int length) {
-        return RandomStringUtils.randomAlphanumeric(length);
+        return RandomStringUtils.secure().nextAlphabetic(length);
     }
 
     public static String encode(String password) {

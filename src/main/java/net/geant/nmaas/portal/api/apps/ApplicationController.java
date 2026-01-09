@@ -477,8 +477,8 @@ public class ApplicationController extends AppBaseController {
         this.applicationBaseOwnerCheck(applicationBase, principal);
     }
 
-    private void applicationBaseOwnerCheck(Long Id, Principal principal) {
-        ApplicationBase applicationBase = this.appBaseService.getBaseApp(Id);
+    private void applicationBaseOwnerCheck(Long id, Principal principal) {
+        ApplicationBase applicationBase = this.appBaseService.getBaseApp(id);
         this.applicationBaseOwnerCheck(applicationBase, principal);
     }
 

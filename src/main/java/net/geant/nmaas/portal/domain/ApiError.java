@@ -10,19 +10,19 @@ import org.springframework.http.HttpStatus;
 @Getter
 @Setter
 public class ApiError {
-	private String message;
-	long timestamp;
-	String statusMessage;
-	int statusCode;
-	
-	public ApiError(String message, long timestamp, HttpStatus status) {
-		super();
-		this.message = message;
-		this.timestamp = timestamp;
-		if(status != null) {
-			this.statusMessage = status.getReasonPhrase();
-			this.statusCode = status.value();
-		}
-	}
-	
+    private String message;
+    long timestamp;
+    String statusMessage;
+    int statusCode;
+
+    public ApiError(String message, long timestamp, HttpStatus status) {
+        super();
+        this.message = message;
+        this.timestamp = timestamp;
+        if (status != null) {
+            this.statusMessage = status.getReasonPhrase();
+            this.statusCode = status.value();
+        }
+    }
+
 }

@@ -18,6 +18,8 @@ import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.OidcUserService;
 import net.geant.nmaas.portal.service.UserLoginRegisterService;
 import net.geant.nmaas.portal.service.UserService;
+import net.geant.nmaas.utils.logging.LogLevel;
+import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpHeaders;
@@ -61,6 +63,7 @@ public class OIDCAuthController {
     @Value("${spring.security.oauth2.client.provider.my-oidc.issuer-uri}")
     private String oidcAddress;
 
+    @Loggable(LogLevel.INFO)
     @PostMapping("api/oidc/link")
     public UserOidcToken oidcLinkedSuccess(@RequestBody final OidcLogin oidcLogin, HttpServletRequest request) {
         User user = userService.findByEmail(oidcLogin.email());
@@ -85,6 +88,7 @@ public class OIDCAuthController {
                 && user.getRoles().stream().noneMatch(value -> value.getRole().equals(Role.ROLE_SYSTEM_ADMIN))) {
             throw new UndergoingMaintenanceException("Application is undergoing maintenance right now");
         }
+        assignRoleInDefaultDomainIfRequired(user);
 
         this.loginRegisterService.registerNewSuccessfulLogin(
                 user,
@@ -107,6 +111,7 @@ public class OIDCAuthController {
         );
     }
 
+    @Loggable(LogLevel.INFO)
     @PostMapping("api/oidc/approvals")
     public UserOidcToken oidcApprovalsSuccess(@RequestBody final OidcApprovals oidcLogin, HttpServletRequest request) {
         User user = oidcUserService.registerNewUser(oidcLogin);
@@ -130,6 +135,7 @@ public class OIDCAuthController {
         );
     }
 
+    @Loggable(LogLevel.INFO)
     @GetMapping("/api/oidc/success")
     public RedirectView oidcLoginSuccess(@AuthenticationPrincipal OidcUser oidcUser, HttpServletRequest request) {
         if (oidcUserService.externalUserRequiresLinking(oidcUser)) {
@@ -147,11 +153,8 @@ public class OIDCAuthController {
 
         try {
             User user = oidcUserService.checkUser(oidcUser);
-            // If a default domain for SSO users is configured and user has no role in that domain, add ROLE_USER in configured domain
-            ConfigurationView configuration = configurationManager.getConfiguration();
-            if (configuration != null && configuration.getDefaultDomainForSsoUsers() != null && (user.getRoles() == null || user.getRoles().isEmpty())) {
-                domains.addMemberRole(configuration.getDefaultDomainForSsoUsers(), user.getId(), Role.ROLE_USER);
-            }
+            assignRoleInDefaultDomainIfRequired(user);
+
             String redirectUrl = portalAddress
                     + "/login-success?token="
                     + jwtTokenService.getToken(user)
@@ -174,6 +177,19 @@ public class OIDCAuthController {
             //TODO handle this exception on the portal
             String logoutUrl = oidcAddress + OIDC_LOGOUT_PATH;
             return new RedirectView(logoutUrl + "?id_token_hint=" + oidcUser.getIdToken().getTokenValue());
+        }
+    }
+
+    /**
+     * If a default domain for SSO users is configured and user has no role in that domain, add ROLE_USER in configured domain
+     *
+     * @param user user that logged in
+     */
+    private void assignRoleInDefaultDomainIfRequired(User user) {
+        ConfigurationView configuration = configurationManager.getConfiguration();
+        if (configuration != null && configuration.getDefaultDomainForSsoUsers() != null
+                && (user.getRoles() == null || user.getRoles().isEmpty())) {
+            domains.addMemberRole(configuration.getDefaultDomainForSsoUsers(), user.getId(), Role.ROLE_USER);
         }
     }
 

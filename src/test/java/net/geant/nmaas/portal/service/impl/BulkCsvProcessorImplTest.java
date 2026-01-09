@@ -14,14 +14,14 @@ class BulkCsvProcessorImplTest {
 
     private final BulkCsvProcessor processor = new BulkCsvProcessorImpl();
 
-    private static final String csvContent =
-        "domain,instance,version,param.juiceshop.properties.ctfKey\n" +
-        "Customer 1,jsh50,14.5.1,OAXNjGDP9dHASMEH2shSCMFp\n" +
-        "Customer 3,jsh51,14.5.1,AOXNjGDP9dHASMEH2shSCMFp";
+    private static final String CSV_CONTENT = """
+            domain,instance,version,param.juiceshop.properties.ctfKey
+            Customer 1,jsh50,14.5.1,OAXNjGDP9dHASMEH2shSCMFp
+            Customer 3,jsh51,14.5.1,AOXNjGDP9dHASMEH2shSCMFp""";
 
     @Test
     void shouldProcessApplicationSpec() throws IOException {
-        MockMultipartFile multipartFile = new MockMultipartFile("appSpec", "appSpec.csv", "text/csv", csvContent.getBytes());
+        MockMultipartFile multipartFile = new MockMultipartFile("appSpec", "appSpec.csv", "text/csv", CSV_CONTENT.getBytes());
         assertThat(processor.isCSVFormat(multipartFile)).isTrue();
         List<CsvApplication> parsed = processor.processApplicationSpecs(multipartFile);
         assertThat(parsed.size()).isEqualTo(2);

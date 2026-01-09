@@ -9,6 +9,8 @@ import net.geant.nmaas.dcn.deployment.repositories.DomainDcnDetailsRepository;
 import net.geant.nmaas.kubernetes.remote.entities.KCluster;
 import net.geant.nmaas.kubernetes.remote.repositories.KClusterRepository;
 import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
+import net.geant.nmaas.portal.api.exceptions.MissingElementException;
+import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.domain.DomainAnnotationView;
 import net.geant.nmaas.portal.domain.DomainBase;
 import net.geant.nmaas.portal.domain.DomainGroupView;
@@ -17,8 +19,6 @@ import net.geant.nmaas.portal.domain.DomainView;
 import net.geant.nmaas.portal.domain.KeyValueView;
 import net.geant.nmaas.portal.domain.UserView;
 import net.geant.nmaas.portal.domain.UserViewMinimal;
-import net.geant.nmaas.portal.api.exceptions.MissingElementException;
-import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.events.DomainCreatedEvent;
 import net.geant.nmaas.portal.events.DomainRemovalEvent;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
@@ -38,6 +38,8 @@ import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
 import net.geant.nmaas.portal.service.DomainGroupService;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
+import net.geant.nmaas.utils.logging.LogLevel;
+import net.geant.nmaas.utils.logging.Loggable;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.modelmapper.ModelMapper;
@@ -93,7 +95,7 @@ public class DomainServiceImpl implements DomainService {
 
     @Autowired
     public DomainServiceImpl(CodenameValidator validator,
-                             @Qualifier("NamespaceValidator") CodenameValidator namespaceValidator,
+                             @Qualifier("namespaceValidator") CodenameValidator namespaceValidator,
                              DomainRepository domainRepository,
                              DomainDcnDetailsRepository domainDcnDetailsRepository,
                              DomainTechDetailsRepository domainTechDetailsRepository,
@@ -389,6 +391,8 @@ public class DomainServiceImpl implements DomainService {
         return userRoleRepository.findDomainMembers(id);
     }
 
+    @Loggable(LogLevel.INFO)
+    @Override
     public void addMemberRole(Long domainId, Long userId, Role role) {
         checkParams(domainId, userId);
         checkParams(role);

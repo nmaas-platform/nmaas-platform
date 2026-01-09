@@ -16,12 +16,12 @@ public class ValidatorsConfig {
         return new DefaultCodenameValidator(pattern);
     }
 
-    @Bean(name = "NamespaceValidator")
+    @Bean(name = "namespaceValidator")
     CodenameValidator defaultNamespaceValidator(@Value("${nmaas.portal.domains.namespace.pattern}") String pattern) {
         return new DefaultCodenameValidator(pattern);
     }
 
-    @Bean(name = "InstanceNameValidator")
+    @Bean(name = "instanceNameValidator")
     CodenameValidator defaultInstanceNameValidator(@Value("${nmaas.portal.modals.appinstall.pattern}") String pattern) {
         return new DefaultCodenameValidator(pattern);
     }

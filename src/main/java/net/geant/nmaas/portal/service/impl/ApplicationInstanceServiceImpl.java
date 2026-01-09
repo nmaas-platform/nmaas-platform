@@ -61,7 +61,7 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
             DomainService domains,
             UserService users,
             ApplicationSubscriptionService applicationSubscriptions,
-            @Qualifier("InstanceNameValidator") DomainServiceImpl.CodenameValidator validator,
+            @Qualifier("instanceNameValidator") DomainServiceImpl.CodenameValidator validator,
             ApplicationStatePerDomainService applicationStatePerDomainService,
             ApplicationInstanceUpgradeService instanceUpgradeService,
             AppLifecycleManager appLifecycleManager

@@ -11,6 +11,7 @@ import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -38,7 +39,7 @@ class DefaultAppDeploymentRepositoryManagerTest {
         User user1 = new User("user1");
         user1.setEmail("user1@test.eu");
         when(userRepository.findByUsername("user1")).thenReturn(Optional.of(user1));
-        when(sshKeyRepository.findAllByOwner(user1)).thenReturn(Lists.emptyList());
+        when(sshKeyRepository.findAllByOwner(user1)).thenReturn(Collections.emptyList());
         AppDeploymentOwner appDeploymentOwner = manager.loadOwner(deploymentId);
         assertEquals("user1", appDeploymentOwner.getUsername());
         assertEquals("user1", appDeploymentOwner.getName());

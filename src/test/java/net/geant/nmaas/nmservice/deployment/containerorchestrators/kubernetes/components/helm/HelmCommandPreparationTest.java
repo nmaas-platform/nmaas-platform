@@ -33,7 +33,7 @@ class HelmCommandPreparationTest {
             "helm install " + RELEASE_NAME + " --namespace " + NAMESPACE;
     private static final String CORRECT_HELM_INSTALL_COMMAND_USING_CHART_FROM_REPO =
             CORRECT_HELM_INSTALL_COMMAND_FIRST_PART + " " + CHART_NAME_WITH_REPO;
-    private static final String CORRECT_HELM_INSTALL_COMMAND_FOR_v3_USING_CHART_FROM_REPO =
+    private static final String CORRECT_HELM_INSTALL_COMMAND_FOR_V3_USING_CHART_FROM_REPO =
             CORRECT_HELM_INSTALL_COMMAND_FOR_V3_FIRST_PART + " " + CHART_NAME_WITH_REPO;
     private static final String CORRECT_HELM_INSTALL_COMMAND_USING_CHART_FROM_REPO_WITH_VERSION =
             CORRECT_HELM_INSTALL_COMMAND_FIRST_PART + " " + CHART_NAME_WITH_REPO + " --version " + CHART_VERSION;
@@ -80,7 +80,7 @@ class HelmCommandPreparationTest {
                         null,
                         CHART_NAME_WITH_REPO,
                         null, false, null).asString(),
-                equalTo(CORRECT_HELM_INSTALL_COMMAND_FOR_v3_USING_CHART_FROM_REPO));
+                equalTo(CORRECT_HELM_INSTALL_COMMAND_FOR_V3_USING_CHART_FROM_REPO));
         assertThat(
                 HelmInstallCommand.commandWithRepo(
                         HelmCommand.HELM_VERSION_3,
