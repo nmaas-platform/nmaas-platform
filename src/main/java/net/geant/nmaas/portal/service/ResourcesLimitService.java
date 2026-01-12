@@ -22,4 +22,6 @@ public interface ResourcesLimitService {
     void setGlobalResourcesLimit(ResourcesLimitDto resourcesLimit);
 
     ResourcesLimitDto getDomainResourceLimit(Long domainId);
+
+    ResourcesLimitDto getGroupResourceLimit(Long groupId);
 }

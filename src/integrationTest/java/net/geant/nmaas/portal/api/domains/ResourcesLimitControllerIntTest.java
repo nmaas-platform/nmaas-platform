@@ -3,6 +3,8 @@ package net.geant.nmaas.portal.api.domains;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
 import net.geant.nmaas.portal.domain.ResourcesLimitDto;
+import net.geant.nmaas.portal.persistence.entity.Domain;
+import net.geant.nmaas.portal.persistence.entity.DomainGroup;
 import net.geant.nmaas.portal.persistence.entity.ResourcesLimit;
 import net.geant.nmaas.portal.persistence.entity.ResourcesLimitType;
 import net.geant.nmaas.portal.persistence.entity.UsersHelper;
@@ -23,6 +25,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -66,7 +69,7 @@ public class ResourcesLimitControllerIntTest extends BaseControllerTestSetup {
 
     @Test
     void shouldSetGlobalLimitForFirstTime() throws Exception {
-        when(resourcesLimitRepository.findByLimitType (ResourcesLimitType.GLOBAL)).thenReturn(Collections.emptyList());
+        when(resourcesLimitRepository.findByLimitType(ResourcesLimitType.GLOBAL)).thenReturn(Collections.emptyList());
         mvc.perform(post("/api/resources-limits/global")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -84,7 +87,7 @@ public class ResourcesLimitControllerIntTest extends BaseControllerTestSetup {
 
     @Test
     void shouldNotGetGlobalLimitIfNotSet() throws Exception {
-        when(resourcesLimitRepository.findByLimitType (ResourcesLimitType.GLOBAL)).thenReturn(Collections.emptyList());
+        when(resourcesLimitRepository.findByLimitType(ResourcesLimitType.GLOBAL)).thenReturn(Collections.emptyList());
         mvc.perform(get("/api/resources-limits/global")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .accept(MediaType.APPLICATION_JSON))
@@ -93,7 +96,7 @@ public class ResourcesLimitControllerIntTest extends BaseControllerTestSetup {
 
     @Test
     void shouldGetGlobalLimit() throws Exception {
-        when(resourcesLimitRepository.findByLimitType (ResourcesLimitType.GLOBAL)).thenReturn(
+        when(resourcesLimitRepository.findByLimitType(ResourcesLimitType.GLOBAL)).thenReturn(
                 List.of(new ResourcesLimit(1L, 100, 200, 5, 10))
         );
         MvcResult result = mvc.perform(get("/api/resources-limits/global")
@@ -105,6 +108,40 @@ public class ResourcesLimitControllerIntTest extends BaseControllerTestSetup {
         ResourcesLimitDto dto = objectMapper.readValue(result.getResponse().getContentAsByteArray(), ResourcesLimitDto.class);
         assertThat(dto.getId()).isEqualTo(1L);
         assertThat(dto.getLimitType()).isEqualTo(ResourcesLimitType.GLOBAL);
+    }
+
+    @Test
+    void shouldGetDomainLimit() throws Exception {
+        when(resourcesLimitRepository.findByDomain_Id(100L)).thenReturn(
+                Optional.of(new ResourcesLimit(1L, 100, 200, 5, 10,
+                        ResourcesLimitType.DOMAIN, null, new Domain(100L)))
+        );
+        MvcResult result = mvc.perform(get("/api/resources-limits/domain/100")
+                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+        assertThat(result).isNotNull();
+        ResourcesLimitDto dto = objectMapper.readValue(result.getResponse().getContentAsByteArray(), ResourcesLimitDto.class);
+        assertThat(dto.getId()).isEqualTo(1L);
+        assertThat(dto.getLimitType()).isEqualTo(ResourcesLimitType.DOMAIN);
+    }
+
+    @Test
+    void shouldGetGroupLimit() throws Exception {
+        when(resourcesLimitRepository.findByDomainGroup_Id(100L)).thenReturn(
+                Optional.of(new ResourcesLimit(1L, 100, 200, 5, 10,
+                        ResourcesLimitType.DOMAIN_GROUP, new DomainGroup(100L), null))
+        );
+        MvcResult result = mvc.perform(get("/api/resources-limits/group/100")
+                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+        assertThat(result).isNotNull();
+        ResourcesLimitDto dto = objectMapper.readValue(result.getResponse().getContentAsByteArray(), ResourcesLimitDto.class);
+        assertThat(dto.getId()).isEqualTo(1L);
+        assertThat(dto.getLimitType()).isEqualTo(ResourcesLimitType.DOMAIN_GROUP);
     }
 
 }

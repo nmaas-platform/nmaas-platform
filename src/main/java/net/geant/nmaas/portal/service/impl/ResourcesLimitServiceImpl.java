@@ -136,4 +136,13 @@ public class ResourcesLimitServiceImpl implements ResourcesLimitService {
         }
     }
 
+    @Override
+    public ResourcesLimitDto getGroupResourceLimit(Long groupId) {
+        Optional<ResourcesLimit> entity = resourcesLimitRepository.findByDomainGroup_Id(groupId);
+        if (entity.isPresent()) {
+            return modelMapper.map(entity.get(), ResourcesLimitDto.class);
+        } else {
+            throw new MissingElementException("Resources Limit not found");
+        }
+    }
 }

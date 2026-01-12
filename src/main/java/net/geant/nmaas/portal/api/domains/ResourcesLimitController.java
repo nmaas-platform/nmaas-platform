@@ -92,4 +92,11 @@ public class ResourcesLimitController {
         return ResponseEntity.ok(resourcesLimitService.getDomainResourceLimit(domainId));
     }
 
+    @GetMapping("/group/{groupId}")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
+    @Transactional
+    public ResponseEntity<ResourcesLimitDto> getGroupResourceLimit(@PathVariable Long groupId) {
+        return ResponseEntity.ok(resourcesLimitService.getGroupResourceLimit(groupId));
+    }
+
 }

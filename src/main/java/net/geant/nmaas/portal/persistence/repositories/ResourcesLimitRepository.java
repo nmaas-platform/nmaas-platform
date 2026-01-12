@@ -25,6 +25,8 @@ public interface ResourcesLimitRepository extends JpaRepository<ResourcesLimit, 
 
     Optional<ResourcesLimit> findByDomain_Id(Long domainId);
 
+    Optional<ResourcesLimit> findByDomainGroup_Id(Long domainGroupId);
+
     @Query("SELECT rl FROM ResourcesLimit rl " +
             "JOIN rl.domainGroup dg " +
             "JOIN dg.domains d " +
