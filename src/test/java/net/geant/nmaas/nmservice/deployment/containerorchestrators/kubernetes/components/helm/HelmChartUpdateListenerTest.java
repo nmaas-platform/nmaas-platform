@@ -1,6 +1,7 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm;
 
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.HelmChartRepositoryEmbeddable;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesChart;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.portal.api.configuration.InitScriptsController;
@@ -17,7 +18,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 
 @ExtendWith(MockitoExtension.class)
 class HelmChartUpdateListenerTest {
@@ -65,6 +65,22 @@ class HelmChartUpdateListenerTest {
         ApplicationListUpdatedEvent event = new ApplicationListUpdatedEvent(this, "app", "1.0", ADDED, spec);
         listener.trigger(event);
         verify(executor, times(1)).executeHelmRepoAddCommand("name", "url");
+    }
+
+    @Test
+    void shouldSkipRepoCommandsForOciRegistry() {
+        AppDeploymentSpec spec = new AppDeploymentSpec();
+        KubernetesTemplate template = new KubernetesTemplate();
+        KubernetesChart chart = new KubernetesChart(
+                        "oci://registry-1.docker.io/bitnamicharts/postgresql", "1.0.0");
+        template.setChart(chart);
+        spec.setKubernetesTemplate(template);
+        ApplicationListUpdatedEvent event = new ApplicationListUpdatedEvent(this, "app", "1.0", ADDED, spec);
+
+        listener.trigger(event);
+
+        verify(executor, never()).executeHelmRepoAddCommand(any(), any());
+        verify(executor, never()).executeHelmRepoUpdateCommand();
     }
 
 }

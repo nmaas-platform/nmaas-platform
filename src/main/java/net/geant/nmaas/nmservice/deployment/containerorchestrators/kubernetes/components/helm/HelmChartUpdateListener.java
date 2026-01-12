@@ -29,7 +29,7 @@ public class HelmChartUpdateListener {
     @Loggable(LogLevel.INFO)
     public ApplicationEvent trigger(ApplicationListUpdatedEvent event) {
         // add Helm repository from KubernetesTemplate (it will be overwritten if already exists)
-        if (Arrays.asList(ADDED, UPDATED).contains(event.getAction()) && event.getDeploymentSpec() != null) {
+        if (Arrays.asList(ADDED, UPDATED).contains(event.getAction()) && event.getDeploymentSpec() != null && !HelmChartUtils.isOciChart(event.getDeploymentSpec().getKubernetesTemplate())) {
             String repoName = event.getDeploymentSpec().getKubernetesTemplate().getHelmChartRepository().getName();
             String repoUrl = event.getDeploymentSpec().getKubernetesTemplate().getHelmChartRepository().getUrl();
             if (StringUtils.hasText(repoName) && StringUtils.hasText(repoUrl)) {

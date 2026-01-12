@@ -1,5 +1,8 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm;
 
+
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesChart;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -62,6 +65,26 @@ class HelmCommandExecutorTest {
         executor.setHelmRepositoryName("nmaas");
         assertThat(executor.constructChartNameWithRepo("chart-name"), equalTo("nmaas/chart-name"));
         assertThat(executor.constructChartNameWithRepo("repo-name/chart-name"), equalTo("repo-name/chart-name"));
+    }
+
+    @Test
+    void shouldResolveOciChartReference() {
+        HelmCommandExecutor executor = new HelmCommandExecutor();
+        executor.setHelmRepositoryName("nmaas");
+        KubernetesTemplate template = new KubernetesTemplate();
+        KubernetesChart chart = new KubernetesChart("oci://registry-1.docker.io/bitnamicharts/postgresql", "1.0.0");
+        template.setChart(chart);
+        assertThat(executor.constructChartNameWithRepo(template.getChart().getName()), equalTo("oci://registry-1.docker.io/bitnamicharts/postgresql"));
+    }
+
+    @Test
+    void shouldResolveNonOciChartReference() {
+        HelmCommandExecutor executor = new HelmCommandExecutor();
+        executor.setHelmRepositoryName("nmaas");
+        KubernetesTemplate template = new KubernetesTemplate();
+        KubernetesChart chart = new KubernetesChart("postgresql", "1.0.0");
+        template.setChart(chart);
+        assertThat(executor.constructChartNameWithRepo(template.getChart().getName()), equalTo("nmaas/postgresql"));
     }
 
 }

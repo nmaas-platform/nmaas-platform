@@ -60,10 +60,11 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
     @Loggable(LogLevel.TRACE)
     public void deployService(Identifier deploymentId) {
         try {
-            if (!helmRepoUpdateAsyncEnabled) {
+            KubernetesNmServiceInfo serviceInfo = repositoryManager.loadService(deploymentId);
+            if (!helmRepoUpdateAsyncEnabled && !HelmChartUtils.isOciChart(serviceInfo.getKubernetesTemplate())) {
                 updateHelmRepo();
             }
-            installHelmChart(repositoryManager.loadService(deploymentId));
+            installHelmChart(serviceInfo);
         } catch (CommandExecutionException cee) {
             throw new KServiceManipulationException(HELM_COMMAND_EXECUTION_FAILED_ERROR_MESSAGE + cee.getMessage());
         }
@@ -210,9 +211,9 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
     @Override
     @Loggable(LogLevel.TRACE)
     public void upgradeService(Identifier deploymentId, KubernetesTemplate targetVersion) {
-        final KubernetesNmServiceInfo serviceInfo = repositoryManager.loadService(deploymentId);
         try {
-            if (!helmRepoUpdateAsyncEnabled) {
+            final KubernetesNmServiceInfo serviceInfo = repositoryManager.loadService(deploymentId);
+            if (!helmRepoUpdateAsyncEnabled && !HelmChartUtils.isOciChart(targetVersion)) {
                 updateHelmRepo();
             }
             helmCommandExecutor.executeHelmUpgradeCommand(
