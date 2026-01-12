@@ -277,6 +277,7 @@
     "TITLE": "Organisation",
     "DETAILS_TITLE": "Domain",
     "CODE_NAME": "Code idientifiant",
+    "NUMBER_OF_DOMAINS": "Nombre de domaines",
     "NAME": "Nom",
     "ACTIVATE": "Actif",
     "DETAILS_BUTTON": "Détails",
