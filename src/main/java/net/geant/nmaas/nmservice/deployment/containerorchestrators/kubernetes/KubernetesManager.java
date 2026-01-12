@@ -335,7 +335,7 @@ public class KubernetesManager implements ContainerOrchestrator {
     }
 
     @Override
-    @Loggable(LogLevel.INFO)
+    @Loggable(LogLevel.TRACE)
     public boolean checkService(Identifier deploymentId) {
         try {
             if (!serviceLifecycleManager.checkServiceDeployed(deploymentId)) {
@@ -500,6 +500,7 @@ public class KubernetesManager implements ContainerOrchestrator {
     }
 
     @Override
+    @Loggable(LogLevel.INFO)
     public AppComponentLogs serviceComponentLogs(Identifier deploymentId, String serviceComponentName, String serviceSubComponentName, int limit) {
         try {
             KubernetesNmServiceInfo service = repositoryManager.loadService(deploymentId);
@@ -527,6 +528,7 @@ public class KubernetesManager implements ContainerOrchestrator {
     }
 
     @Override
+    @Loggable(LogLevel.INFO)
     public void pauseNmService(Identifier deploymentId) {
         try {
             serviceOperationsManager.scaleService(deploymentId, 0);
@@ -538,6 +540,7 @@ public class KubernetesManager implements ContainerOrchestrator {
     }
 
     @Override
+    @Loggable(LogLevel.INFO)
     public void resumeNmService(Identifier deploymentId) {
         try {
             serviceOperationsManager.scaleService(deploymentId, 1);

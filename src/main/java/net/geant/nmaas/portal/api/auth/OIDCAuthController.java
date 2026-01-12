@@ -124,15 +124,17 @@ public class OIDCAuthController {
     }
 
     @Loggable(LogLevel.INFO)
-    @GetMapping("/api/oidc/success")
     public RedirectView oidcLoginSuccess(@AuthenticationPrincipal OidcUser oidcUser, HttpServletRequest request) {
+        log.info("OIDC LOGIN SUCCESS: {}", request.toString());
         if (oidcUserService.externalUserRequiresLinking(oidcUser)) {
+            log.info("External user requires linking");
             String linkingRedirectUrl = portalAddress
                     + "/login-linking?oidc-token="
                     + oidcUser.getIdToken().getTokenValue();
             return new RedirectView(linkingRedirectUrl);
         }
         if (oidcUserService.externalUserRequiresAupAndPn(oidcUser)) {
+            log.info("External user requires AUP and PN confirmation");
             String linkingRedirectUrl = portalAddress
                     + "/sso-first-login?oidc-token="
                     + oidcUser.getIdToken().getTokenValue();

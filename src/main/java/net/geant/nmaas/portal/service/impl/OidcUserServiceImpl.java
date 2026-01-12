@@ -53,7 +53,7 @@ public class OidcUserServiceImpl implements OidcUserService {
                     .orElseThrow();
         }
 
-        if (userService.existsByEmail(oidcUserEmail)) {//exist by email needs work with this account
+        if (userService.existsByEmail(oidcUserEmail)) { //exist by email needs work with this account
             User user = userService.findByEmail(oidcUserEmail);
             //check if user with given email have older SamlToken as Email or Username
             if (user.getSamlToken().equals(oidcUserEmail)
@@ -69,7 +69,6 @@ public class OidcUserServiceImpl implements OidcUserService {
             }
         }
         return registerNewUser(oidcUser);
-
     }
 
     @Override
@@ -177,7 +176,6 @@ public class OidcUserServiceImpl implements OidcUserService {
 
     @Override
     public User linkUser(String email, String samlToken, String firstName, String lastName) {
-
         User user = userService.findByEmail(email);
         user.setSamlToken(samlToken);
         user.setFirstname(firstName);
