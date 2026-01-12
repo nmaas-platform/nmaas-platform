@@ -213,7 +213,7 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
     public void upgradeService(Identifier deploymentId, KubernetesTemplate targetVersion) {
         try {
             final KubernetesNmServiceInfo serviceInfo = repositoryManager.loadService(deploymentId);
-            if (!helmRepoUpdateAsyncEnabled && !HelmChartUtils.isOciChart(serviceInfo.getKubernetesTemplate())) {
+            if (!helmRepoUpdateAsyncEnabled && !HelmChartUtils.isOciChart(targetVersion)) {
                 updateHelmRepo();
             }
             helmCommandExecutor.executeHelmUpgradeCommand(

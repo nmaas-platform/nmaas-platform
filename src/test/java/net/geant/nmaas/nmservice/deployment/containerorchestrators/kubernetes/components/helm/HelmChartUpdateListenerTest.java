@@ -1,6 +1,7 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm;
 
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.HelmChartRepositoryEmbeddable;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesChart;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.portal.api.configuration.InitScriptsController;
@@ -70,10 +71,9 @@ class HelmChartUpdateListenerTest {
     void shouldSkipRepoCommandsForOciRegistry() {
         AppDeploymentSpec spec = new AppDeploymentSpec();
         KubernetesTemplate template = new KubernetesTemplate();
-        HelmChartRepositoryEmbeddable repository = new HelmChartRepositoryEmbeddable();
-        repository.setName("name");
-        repository.setUrl("oci://registry-1.docker.io/bitnamicharts");
-        template.setHelmChartRepository(repository);
+        KubernetesChart chart = new KubernetesChart(
+                        "oci://registry-1.docker.io/bitnamicharts/postgresql", "1.0.0");
+        template.setChart(chart);
         spec.setKubernetesTemplate(template);
         ApplicationListUpdatedEvent event = new ApplicationListUpdatedEvent(this, "app", "1.0", ADDED, spec);
 

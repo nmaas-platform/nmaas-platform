@@ -11,6 +11,7 @@ import net.geant.nmaas.kubernetes.remote.entities.KClusterIngress;
 import net.geant.nmaas.kubernetes.remote.entities.KClusterState;
 import net.geant.nmaas.kubernetes.remote.entities.NamespaceConfigOption;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesChart;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethod;
@@ -272,10 +273,12 @@ class HelmKServiceManagerTest {
     void shouldUpgradeOciServiceWithoutRepoUpdate() {
         when(namespaceService.namespace("domain")).thenReturn("namespace");
         KubernetesNmServiceInfo service = repositoryManager.loadService(deploymentId);
-        service.getKubernetesTemplate().getChart().setName("oci://registry-1.docker.io/bitnamicharts/postgresql");
         when(repositoryManager.loadService(deploymentId)).thenReturn(service);
+        KubernetesTemplate targetTemplate = new KubernetesTemplate();
+        KubernetesChart chart = new KubernetesChart("oci://registry-1.docker.io/bitnamicharts/postgresql", null);
+        targetTemplate.setChart(chart);
 
-        manager.upgradeService(deploymentId, new KubernetesTemplate());
+        manager.upgradeService(deploymentId, targetTemplate);
 
         verify(helmCommandExecutor, never()).executeHelmRepoUpdateCommand();
         verify(helmCommandExecutor, times(1)).executeHelmUpgradeCommand(
