@@ -124,6 +124,7 @@ public class OIDCAuthController {
     }
 
     @Loggable(LogLevel.INFO)
+    @GetMapping("/api/oidc/success")
     public RedirectView oidcLoginSuccess(@AuthenticationPrincipal OidcUser oidcUser, HttpServletRequest request) {
         log.info("OIDC LOGIN SUCCESS: {}", request.toString());
         if (oidcUserService.externalUserRequiresLinking(oidcUser)) {
