@@ -29,9 +29,8 @@ public class DefaultCommandExecutor implements CommandExecutor {
             final String errorOutput = new String(process.getErrorStream().readAllBytes(), StandardCharsets.UTF_8);
             if (Strings.isNotEmpty(errorOutput)) {
                 // warnings should not be considered as errors
-                if (!errorOutput.contains("Warning")) {
-                    throw new CommandExecutionException("Error received during command execution (details: " + errorOutput + ")");
-                }
+                log.warn("Some command execution information present in the error output. Will continue anyway.");
+                log.debug(errorOutput);
             }
             final String output = new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
             validateOutput(output, command.isOutputCorrect());
