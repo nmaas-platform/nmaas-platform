@@ -900,7 +900,7 @@
     "BRIEF_DESCRIPTION_LABEL": "Brief description",
     "FULL_DESCRIPTION_LABEL": "Full description",
     "APP_DEPLOYMENT_HEADER": "Application deployment specification",
-    "CHART_NAME_LABEL": "Chart name",
+    "CHART_NAME_LABEL": "Chart name or OCI registry URL",
     "CHART_VERSION_LABEL": "Chart version",
     "HELM_CHART_REPOSITORY_NAME_LABEL": "Helm Chart repository name",
     "HELM_CHART_REPOSITORY_URL_LABEL": "Helm Chart repository URL address",

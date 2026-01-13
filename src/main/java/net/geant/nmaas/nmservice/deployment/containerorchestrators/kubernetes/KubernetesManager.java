@@ -500,7 +500,6 @@ public class KubernetesManager implements ContainerOrchestrator {
     }
 
     @Override
-    @Loggable(LogLevel.INFO)
     public AppComponentLogs serviceComponentLogs(Identifier deploymentId, String serviceComponentName, String serviceSubComponentName, int limit) {
         try {
             KubernetesNmServiceInfo service = repositoryManager.loadService(deploymentId);
