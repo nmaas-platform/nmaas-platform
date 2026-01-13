@@ -34,21 +34,29 @@ public class BulkCsvProcessorImpl implements BulkCsvProcessor {
     private static final List<String> REQUIRED_APPLICATION_HEADER = List.of("domain", "instance", "version");
 
     @Override
-    public List<CsvDomain> processDomainSpecs(MultipartFile file) throws IOException {
-        List<CsvDomain> result = process(file, CsvDomain.class).stream().map(d -> (CsvDomain) d).collect(Collectors.toList());
-        if (result.isEmpty()) {
-            throw new ProcessingException("CSV file contains 0 entries");
+    public List<CsvDomain> processDomainSpecs(MultipartFile file) {
+        try {
+            List<CsvDomain> result = process(file, CsvDomain.class).stream().map(d -> (CsvDomain) d).collect(Collectors.toList());
+            if (result.isEmpty()) {
+                throw new ProcessingException("CSV file contains 0 entries");
+            }
+            return result;
+        } catch (IOException e) {
+            throw new ProcessingException(e);
         }
-        return result;
     }
 
     @Override
-    public List<CsvApplication> processApplicationSpecs(MultipartFile file) throws IOException {
-        List<CsvApplication> result = process(file, CsvApplication.class).stream().map(d -> (CsvApplication) d).collect(Collectors.toList());
-        if (result.isEmpty()) {
-            throw new ProcessingException("CSV file contains 0 entries");
+    public List<CsvApplication> processApplicationSpecs(MultipartFile file) {
+        try {
+            List<CsvApplication> result = process(file, CsvApplication.class).stream().map(d -> (CsvApplication) d).collect(Collectors.toList());
+            if (result.isEmpty()) {
+                throw new ProcessingException("CSV file contains 0 entries");
+            }
+            return result;
+        } catch (IOException e) {
+            throw new ProcessingException(e);
         }
-        return result;
     }
 
     /**

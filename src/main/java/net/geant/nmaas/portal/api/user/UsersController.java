@@ -210,33 +210,32 @@ public class UsersController {
     @ResponseStatus(HttpStatus.ACCEPTED)
     @Transactional
     public void updateUser(@PathVariable("userId") final Long userId, @RequestBody final UserRequest userRequest, final Principal principal) {
-        User userDetails = userService.findById(userId).orElseThrow(() -> new MissingElementException(USER_NOT_FOUND_ERROR_MESSAGE));
-
+        final User user = getUser(userId);
         if (userRequest == null) {
             throw new MissingElementException("User request is null");
         }
-        if (!userDetails.getUsername().equals(principal.getName()) && !userService.canUpdateData(principal.getName(), userDetails.getRoles())) {
-            throw new ProcessingException(principal.getName() + " was trying to edit data of user " + userDetails.getUsername() + " without required role.");
+        if (!user.getUsername().equals(principal.getName()) && !userService.canUpdateData(principal.getName(), user.getRoles())) {
+            throw new ProcessingException(principal.getName() + " was trying to edit data of user " + user.getUsername() + " without required role.");
         }
-        String message = getMessageWhenUserUpdated(userDetails, userRequest);
-        final String userRoles = getRoleAsString(userDetails.getRoles());
+        String message = getMessageWhenUserUpdated(user, userRequest);
+        final String userRoles = getRoleAsString(user.getRoles());
         if (userRequest.getFirstname() != null) {
-            userDetails.setFirstname(userRequest.getFirstname());
+            user.setFirstname(userRequest.getFirstname());
         }
         if (userRequest.getLastname() != null) {
-            userDetails.setLastname(userRequest.getLastname());
+            user.setLastname(userRequest.getLastname());
         }
-        if (userRequest.getEmail() != null && !userRequest.getEmail().equalsIgnoreCase(userDetails.getEmail())) {
+        if (userRequest.getEmail() != null && !userRequest.getEmail().equalsIgnoreCase(user.getEmail())) {
             if (userService.existsByEmail(userRequest.getEmail())) {
                 throw new ProcessingException("User with mail " + userRequest.getEmail() + " already exists.");
             }
-            userDetails.setEmail(userRequest.getEmail());
+            user.setEmail(userRequest.getEmail());
         }
-        userDetails.setDefaultDomain(userRequest.getDefaultDomain());
-        userService.update(userDetails);
+        user.setDefaultDomain(userRequest.getDefaultDomain());
+        userService.update(user);
         if (!StringUtils.isEmpty(message)) {
             log.info("Data of user [{}] with role [{}] were updated. The following changes are: [{}] ",
-                    userDetails.getUsername(), userRoles, message);
+                    user.getUsername(), userRoles, message);
         }
     }
 
@@ -244,8 +243,8 @@ public class UsersController {
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void deleteUser(@PathVariable("userId") Long userId) {
-        User user = this.userService.findById(userId).orElseThrow(() -> new MissingElementException("User not found"));
-        Long globalDomainId = this.domainService.getGlobalDomain().orElseThrow(() -> new MissingElementException(GLOBAL_DOMAIN_NOT_FOUND_ERROR_MESSAGE)).getId();
+        final User user = getUser(userId);
+        Long globalDomainId = domainService.getGlobalDomain().orElseThrow(() -> new MissingElementException(GLOBAL_DOMAIN_NOT_FOUND_ERROR_MESSAGE)).getId();
         if (user.getRoles().stream().anyMatch(userRole -> userRole.getRole().equals(ROLE_SYSTEM_ADMIN))) {
             throw new ProcessingException("Cannot delete SYSTEM ADMIN");
         }
@@ -266,7 +265,7 @@ public class UsersController {
     @GetMapping("/users/{userId}/roles")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') or hasRole('ROLE_DOMAIN_ADMIN')")
     public Set<UserRoleView> getUserRoles(@PathVariable Long userId) {
-        User user = getUser(userId);
+        final User user = getUser(userId);
         return user.getRoles().stream()
                 .map(ur -> modelMapper.map(ur, UserRoleView.class))
                 .collect(Collectors.toSet());
@@ -282,7 +281,6 @@ public class UsersController {
         if (userRole == null) {
             throw new MissingElementException("userRole is null");
         }
-
         if (userRole.getRole() == null) {
             throw new MissingElementException("Missing role");
         }

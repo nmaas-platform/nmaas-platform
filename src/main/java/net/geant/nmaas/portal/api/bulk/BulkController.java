@@ -8,8 +8,8 @@ import net.geant.nmaas.portal.api.bulk.model.BulkDeploymentEntryView;
 import net.geant.nmaas.portal.api.bulk.model.BulkDeploymentView;
 import net.geant.nmaas.portal.api.bulk.model.BulkDeploymentViewS;
 import net.geant.nmaas.portal.api.bulk.model.BulkQueueDetails;
-import net.geant.nmaas.portal.domain.UserViewMinimal;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
+import net.geant.nmaas.portal.domain.UserViewMinimal;
 import net.geant.nmaas.portal.persistence.entity.BulkDeployment;
 import net.geant.nmaas.portal.persistence.entity.BulkDeploymentEntry;
 import net.geant.nmaas.portal.persistence.entity.BulkDeploymentState;
@@ -86,26 +86,18 @@ public class BulkController {
             @RequestParam("file") MultipartFile file) {
         log.info("Processing new bulk application deployment request");
         if (bulkCsvProcessor.isCSVFormat(file)) {
-            try {
-                List<CsvApplication> csvApplications = bulkCsvProcessor.processApplicationSpecs(file);
-                User userFromDb = userService.findByUsername(principal.getName()).orElseThrow();
-                UserViewMinimal user = modelMapper.map(userFromDb, UserViewMinimal.class);
+            List<CsvApplication> csvApplications = bulkCsvProcessor.processApplicationSpecs(file);
+            User userFromDb = userService.findByUsername(principal.getName()).orElseThrow();
+            UserViewMinimal user = modelMapper.map(userFromDb, UserViewMinimal.class);
 
-                //validate domains before processing bulk
-                if (!bulkApplicationService.validateDomainsList(csvApplications.stream()
-                        .map(CsvApplication::getDomainName)
-                        .collect(Collectors.toSet()))
-                ) {
-                    log.error("Domain validation error. Some domains are missing. Please check the CSV information.");
-                    throw new MissingElementException("Domain validation error. Some domains are missing. Please check the CSV content.");
-                }
-
-                return ResponseEntity.ok(bulkApplicationService.handleBulkDeployment(applicationName, csvApplications, user, limit));
-            } catch (MissingElementException ex) {
-                throw ex;
-            } catch (Exception e) {
-                throw new RuntimeException(e.getMessage());
+            // validate domains before processing bulk
+            if (!bulkApplicationService.validateDomainsList(csvApplications.stream()
+                    .map(CsvApplication::getDomainName)
+                    .collect(Collectors.toSet()))) {
+                log.error("Domain validation error. Some domains are missing. Please check the CSV information.");
+                throw new MissingElementException("Domain validation error. Some domains are missing. Please check the CSV content.");
             }
+            return ResponseEntity.ok(bulkApplicationService.handleBulkDeployment(applicationName, csvApplications, user, limit));
         } else {
             log.warn("Incorrect applications input file format");
             return ResponseEntity.badRequest().build();
@@ -181,11 +173,9 @@ public class BulkController {
     public ResponseEntity<Void> removeBulkDeployment(
             @PathVariable Long id,
             @RequestParam(name = "removeAll") boolean removeApps,
-            Principal principal
-    ) {
-        User user = this.userService.findByUsername(principal.getName()).orElseThrow(() -> new MissingElementException("Missing user " + principal.getName()));
-
-        Optional<BulkDeployment> bulk = this.bulkDeploymentRepository.findById(id);
+            Principal principal) {
+        final User user = userService.findByUsername(principal.getName()).orElseThrow(() -> new MissingElementException("Missing user " + principal.getName()));
+        Optional<BulkDeployment> bulk = bulkDeploymentRepository.findById(id);
         if (bulk.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
@@ -221,12 +211,6 @@ public class BulkController {
         return ResponseEntity.ok(bulkApplicationService.getQueueDetails(id));
     }
 
-    private List<BulkDeploymentViewS> mapToView(List<BulkDeployment> deployments) {
-        return deployments.stream()
-                .map(bulk -> mapToView(bulk, BulkDeploymentViewS.class))
-                .toList();
-    }
-
     private <T extends BulkDeploymentViewS> T mapToView(BulkDeployment bulk, Class<T> viewType) {
         T bulkView = modelMapper.map(bulk, viewType);
         try {
@@ -256,7 +240,7 @@ public class BulkController {
             Map<String, String> details = new HashMap<>();
             if (!deployment.getEntries().isEmpty()) {
                 details.put(BulkDeploymentViewS.BULK_DETAIL_KEY_APP_INSTANCE_NO, String.valueOf(deployment.getEntries().size()));
-                BulkDeploymentEntry entry = deployment.getEntries().get(0);
+                BulkDeploymentEntry entry = deployment.getEntries().getFirst();
                 if (entry.getDetails().containsKey(BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_APP_ID)) {
                     details.put(BulkDeploymentViewS.BULK_DETAIL_KEY_APP_ID, entry.getDetails().get(BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_APP_ID));
                 }
@@ -269,8 +253,7 @@ public class BulkController {
     }
 
     private UserViewMinimal getUserView(Long id) {
-        User user = userService.findById(id)
-                .orElseThrow();
+        User user = userService.findById(id).orElseThrow();
         return modelMapper.map(user, UserViewMinimal.class);
     }
 
@@ -278,7 +261,7 @@ public class BulkController {
         if (showDeleted) {
             return deployments;
         } else {
-            return deployments.stream().filter(d -> !d.getDeleted()).collect(Collectors.toList());
+            return deployments.stream().filter(d -> !d.getDeleted()).toList();
         }
     }
 

@@ -102,26 +102,17 @@ public class AppDeploymentStateChangeManager {
     }
 
     Optional<ApplicationEvent> triggerActionEventIfRequired(Identifier deploymentId, AppDeploymentState currentState) {
-        switch (currentState) {
-            case REQUEST_VALIDATED:
-                return Optional.of(new AppPrepareEnvironmentActionEvent(this, deploymentId));
-            case DEPLOYMENT_ENVIRONMENT_PREPARED:
-                return Optional.of(new AppRequestNewOrVerifyExistingDcnEvent(this, deploymentId));
-            case MANAGEMENT_VPN_CONFIGURED:
-                return Optional.of(new AppVerifyConfigurationActionEvent(this, deploymentId));
-            case APPLICATION_CONFIGURED:
-                return Optional.of(new AppDeployServiceActionEvent(this, deploymentId));
-            case APPLICATION_DEPLOYED:
-            case APPLICATION_RESTARTED:
-            case APPLICATION_UPGRADED:
-            case APPLICATION_CONFIGURATION_UPDATED:
-            case APPLICATION_RESUMED:
-                return Optional.of(new AppVerifyServiceActionEvent(this, deploymentId));
-            case APPLICATION_REMOVED:
-                return Optional.of(new AppRemoveDcnIfRequiredEvent(this, deploymentId));
-            default:
-                return Optional.empty();
-        }
+        return switch (currentState) {
+            case REQUEST_VALIDATED -> Optional.of(new AppPrepareEnvironmentActionEvent(this, deploymentId));
+            case DEPLOYMENT_ENVIRONMENT_PREPARED ->
+                    Optional.of(new AppRequestNewOrVerifyExistingDcnEvent(this, deploymentId));
+            case MANAGEMENT_VPN_CONFIGURED -> Optional.of(new AppVerifyConfigurationActionEvent(this, deploymentId));
+            case APPLICATION_CONFIGURED -> Optional.of(new AppDeployServiceActionEvent(this, deploymentId));
+            case APPLICATION_DEPLOYED, APPLICATION_RESTARTED, APPLICATION_UPGRADED, APPLICATION_CONFIGURATION_UPDATED,
+                 APPLICATION_RESUMED -> Optional.of(new AppVerifyServiceActionEvent(this, deploymentId));
+            case APPLICATION_REMOVED -> Optional.of(new AppRemoveDcnIfRequiredEvent(this, deploymentId));
+            default -> Optional.empty();
+        };
     }
 
     @EventListener
