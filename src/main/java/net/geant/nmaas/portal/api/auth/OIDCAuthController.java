@@ -88,7 +88,6 @@ public class OIDCAuthController {
                 && user.getRoles().stream().noneMatch(value -> value.getRole().equals(Role.ROLE_SYSTEM_ADMIN))) {
             throw new UndergoingMaintenanceException("Application is undergoing maintenance right now");
         }
-        assignRoleInDefaultDomainIfRequired(user);
 
         User linkedUser = oidcUserService.linkUser(
                 oidcLogin.email(),
@@ -114,7 +113,7 @@ public class OIDCAuthController {
                 && user.getRoles().stream().noneMatch(value -> value.getRole().equals(Role.ROLE_SYSTEM_ADMIN))) {
             throw new UndergoingMaintenanceException("Application is undergoing maintenance right now");
         }
-
+        assignRoleInDefaultDomainIfRequired(user);
         registerSuccessfulLogin(request, user);
         return new UserOidcToken(
                 jwtTokenService.getToken(user),
@@ -144,7 +143,6 @@ public class OIDCAuthController {
 
         try {
             User user = oidcUserService.checkUser(oidcUser);
-            assignRoleInDefaultDomainIfRequired(user);
 
             String redirectUrl = portalAddress
                     + "/login-success?token="
