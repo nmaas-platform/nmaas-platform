@@ -1,0 +1,25 @@
+name: Mirror to GitHub Repo
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Workdays: 07,10,13,16 UTC
+    - cron: '5 7,10,13,16 * * 1-5'
+    # Weekends: 17 UTC
+    - cron: '5 17 * * 6,0'
+
+concurrency:
+  group: git-mirror
+
+jobs:
+  git-mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: korvoj/git-mirror-action@v1.2.0
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        with:
+          source-repo: "git@gitlab.software.geant.org:nmaas/nmaas-platform.git"
+          destination-repo: "git@github.com:nmaas-platform/nmaas-platform.git"
+          single-branch: true
+          single-branch-name: "develop"
