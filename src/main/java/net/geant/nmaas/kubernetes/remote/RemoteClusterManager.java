@@ -115,7 +115,7 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
 
     @Override
     public RemoteClusterView mapFile(RemoteClusterView view, String secretNamespace, String secretName) {
-        return getRemoteClusterView(view, kubernetesApiClientService.getLocalClusterConfigBytes(secretNamespace, secretName));
+        return getRemoteClusterView(view, kubernetesApiClientService.readClusterConfigBytesFromSecret(secretNamespace, secretName));
     }
 
     private RemoteClusterView getRemoteClusterView(RemoteClusterView view, byte[] fileBytes) {
@@ -167,7 +167,7 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
     @Override
     public RemoteClusterView processNewCluster(RemoteClusterView remoteClusterSpec, boolean createNamespace, String namespace, String secretName) {
         try {
-            return saveNewCluster(remoteClusterSpec, createNamespace, kubernetesApiClientService.getLocalClusterConfigBytes(namespace, secretName));
+            return saveNewCluster(remoteClusterSpec, createNamespace, kubernetesApiClientService.readClusterConfigBytesFromSecret(namespace, secretName));
         } catch (IOException | NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }

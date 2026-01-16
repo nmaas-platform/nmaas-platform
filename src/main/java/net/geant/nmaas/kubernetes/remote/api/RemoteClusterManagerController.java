@@ -37,13 +37,13 @@ public class RemoteClusterManagerController {
 
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
     @GetMapping("/all")
-    public List<RemoteClusterView> getAllKubernetesCluster() {
+    public List<RemoteClusterView> getAllKubernetesClusters() {
         return remoteClusterManager.getAllClusters();
     }
 
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR') || hasPermission(#domainId, 'domain', 'OWNER')")
     @GetMapping("/domain/{domainId}")
-    public List<RemoteClusterView> getKubernetesClusterInDomain(@PathVariable Long domainId) {
+    public List<RemoteClusterView> getKubernetesClustersInDomain(@PathVariable Long domainId) {
         return remoteClusterManager.getClustersInDomain(domainId);
     }
 

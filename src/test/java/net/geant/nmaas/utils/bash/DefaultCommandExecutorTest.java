@@ -12,7 +12,7 @@ class DefaultCommandExecutorTest {
 
     private final CommandExecutor executor = new DefaultCommandExecutor();
 
-    @Disabled
+    @Disabled("Only for local test run manually")
     @Test
     void shouldRunExampleCommand() throws IOException {
         String output = executor.executeWithOutput(new Command() {

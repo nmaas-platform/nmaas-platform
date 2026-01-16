@@ -22,7 +22,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -53,7 +58,6 @@ class DashboardServiceImplTest {
     @Test
     void getSystemDashboardShouldThrowExceptionWhenRepositoryFails() {
         when(domainRepository.count()).thenThrow(new RuntimeException("Database error"));
-
         assertThrows(RuntimeException.class, () ->
                 dashboardService.getSystemDashboard(OffsetDateTime.now().minusDays(1), OffsetDateTime.now())
         );
@@ -63,10 +67,10 @@ class DashboardServiceImplTest {
     void getDomainDashboardShouldReturnEmptyObjectWhenDomainIdIsNull() {
         DomainDashboardView result = dashboardService.getDomainDashboard(null);
 
-        assert result != null;
-        assert result.getUserLogins() == null;
-        assert result.getApplicationDeployed() == null;
-        assert result.getApplicationUpgradeStatus() == null;
+        assertNotNull(result);
+        assertNull(result.getUserLogins());
+        assertNull(result.getApplicationDeployed());
+        assertNull(result.getApplicationUpgradeStatus());
     }
 
     @Test
@@ -80,10 +84,10 @@ class DashboardServiceImplTest {
 
         DomainDashboardView result = dashboardService.getDomainDashboard(domainId);
 
-        assert result != null;
-        assert result.getUserLogins().isEmpty();
-        assert result.getApplicationDeployed().isEmpty();
-        assert result.getApplicationUpgradeStatus().isEmpty();
+        assertNotNull(result);
+        assertTrue(result.getUserLogins().isEmpty());
+        assertTrue(result.getApplicationDeployed().isEmpty());
+        assertTrue(result.getApplicationUpgradeStatus().isEmpty());
     }
 
     @Test
@@ -108,9 +112,9 @@ class DashboardServiceImplTest {
 
         DomainDashboardView result = dashboardService.getDomainDashboard(domainId);
 
-        assert result != null;
-        assert !result.getUserLogins().isEmpty();
-        assert result.getApplicationUpgradeStatus().isEmpty();
+        assertNotNull(result);
+        assertFalse(result.getUserLogins().isEmpty());
+        assertTrue(result.getApplicationUpgradeStatus().isEmpty());
     }
 
     @Test
@@ -123,8 +127,8 @@ class DashboardServiceImplTest {
 
         DashboardView result = dashboardService.getSystemDashboard(OffsetDateTime.now().minusDays(1), OffsetDateTime.now());
 
-        assert result != null;
-        assert result.getPopularApps().isEmpty();
+        assertNotNull(result);
+        assertTrue(result.getPopularApps().isEmpty());
     }
 
     @Test
@@ -153,9 +157,9 @@ class DashboardServiceImplTest {
         long endTimestamp = endCaptor.getValue();
 
         // The timestamps should be positive and start should be less than or equal to end
-        assert startTimestamp > 0;
-        assert endTimestamp > 0;
-        assert startTimestamp <= endTimestamp;
+        assertTrue(startTimestamp > 0);
+        assertTrue(endTimestamp > 0);
+        assertTrue(startTimestamp <= endTimestamp);
     }
 
     @Test
@@ -168,7 +172,7 @@ class DashboardServiceImplTest {
 
         int actualCount = appInstanceRepository.countAllDeployedInTimePeriod(sinceTime, toTime);
 
-        assert actualCount == expectedCount;
+        assertEquals(expectedCount, actualCount);
         verify(appInstanceRepository).countAllDeployedInTimePeriod(sinceTime, toTime);
     }
 
@@ -194,9 +198,9 @@ class DashboardServiceImplTest {
         long sinceTime = sinceCaptor.getValue();
         long toTime = toCaptor.getValue();
 
-        assert sinceTime > 0;
-        assert toTime > 0;
-        assert sinceTime < toTime;
+        assertTrue(sinceTime > 0);
+        assertTrue(toTime > 0);
+        assertTrue(sinceTime < toTime);
     }
 
     @Test
@@ -209,8 +213,8 @@ class DashboardServiceImplTest {
         DashboardView result = dashboardService.getOperatorDashboard();
 
         // Verify the result
-        assert result != null;
-        assert result.getDomainsCount() == expectedDomainCount;
+        assertNotNull(result);
+        assertEquals(expectedDomainCount, (long) result.getDomainsCount());
 
         // Verify that the repository method was called
         verify(domainRepository).countByActiveTrueAndDeletedFalse();
