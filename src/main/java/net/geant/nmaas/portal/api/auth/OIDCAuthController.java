@@ -3,12 +3,16 @@ package net.geant.nmaas.portal.api.auth;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.notifications.MailAttributes;
+import net.geant.nmaas.notifications.NotificationEvent;
+import net.geant.nmaas.notifications.templates.MailType;
 import net.geant.nmaas.portal.api.configuration.model.ConfigurationView;
 import net.geant.nmaas.portal.api.exceptions.AuthenticationException;
 import net.geant.nmaas.portal.api.exceptions.ExternalUserCanNotBeLinked;
 import net.geant.nmaas.portal.api.exceptions.ExternalUserMatchException;
 import net.geant.nmaas.portal.api.exceptions.SignupException;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
+import net.geant.nmaas.portal.domain.UserView;
 import net.geant.nmaas.portal.exceptions.UndergoingMaintenanceException;
 import net.geant.nmaas.portal.persistence.entity.Role;
 import net.geant.nmaas.portal.persistence.entity.User;
@@ -20,8 +24,10 @@ import net.geant.nmaas.portal.service.UserLoginRegisterService;
 import net.geant.nmaas.portal.service.UserService;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -34,6 +40,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
 
+import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 
 import static java.lang.String.format;
@@ -57,6 +65,8 @@ public class OIDCAuthController {
     private final PasswordEncoder passwordEncoder;
     private final DomainService domains;
     private final ConfigurationManager configurationManager;
+    private final ModelMapper modelMapper;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Value("${portal.address}")
     private String portalAddress;
@@ -108,6 +118,7 @@ public class OIDCAuthController {
     @PostMapping("api/oidc/approvals")
     public UserOidcToken oidcApprovalsSuccess(@RequestBody final OidcApprovals oidcLogin, HttpServletRequest request) {
         User user = oidcUserService.registerNewUser(oidcLogin);
+        this.sendMail(this.userService.findAllUsersWithAdminRole().getFirst(), Map.of("newUser", user.getUsername()));
 
         if (configurationManager.getConfiguration().isMaintenance()
                 && user.getRoles().stream().noneMatch(value -> value.getRole().equals(Role.ROLE_SYSTEM_ADMIN))) {
@@ -212,5 +223,13 @@ public class OIDCAuthController {
                 request.getHeader(HttpHeaders.USER_AGENT),
                 BasicAuthController.getClientIpAddr(request)
         );
+    }
+    private void sendMail(UserView user, Map<String, Object> other) {
+        MailAttributes mailAttributes = MailAttributes.builder()
+                .mailType(MailType.NEW_SSO_LOGIN)
+                .otherAttributes(other)
+                .addresses(Collections.singletonList(modelMapper.map(user, UserView.class)))
+                .build();
+        this.eventPublisher.publishEvent(new NotificationEvent(this, mailAttributes));
     }
 }
