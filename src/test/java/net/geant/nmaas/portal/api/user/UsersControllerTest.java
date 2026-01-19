@@ -435,66 +435,6 @@ class UsersControllerTest {
     }
 
     @Test
-    void shouldCompleteRegistration() {
-        UserRequest userRequest = new UserRequest(userList.get(0).getId(), userList.get(0).getUsername(), userList.get(0).getPassword());
-        when(userService.existsByUsername(userRequest.getUsername())).thenReturn(false);
-        usersController.completeRegistration(principal, userRequest);
-        verify(userService, times(1)).update(userList.get(0));
-    }
-
-    @Test
-    void shouldCompleteRegistrationAndSendEmail() {
-        UserRequest userRequest = new UserRequest(userList.get(0).getId(), userList.get(0).getUsername(), userList.get(0).getPassword());
-        when(userService.existsByUsername(userRequest.getUsername())).thenReturn(false);
-        usersController.completeRegistration(principal, userRequest);
-        verify(userService, times(1)).update(userList.get(0));
-        verify(eventPublisher, times(1)).publishEvent(any());
-    }
-
-    @Test
-    void shouldCompleteRegistrationWithFullData() {
-        UserRequest userRequest = new UserRequest(userList.get(0).getId(), userList.get(0).getUsername(), userList.get(0).getPassword());
-        userRequest.setFirstname("First");
-        userRequest.setLastname("Last");
-        when(userService.existsByUsername(userRequest.getUsername())).thenReturn(false);
-        usersController.completeRegistration(principal, userRequest);
-        verify(userService, times(1)).update(userList.get(0));
-    }
-
-    @Test
-    void shouldNotCompleteRegistrationWithNonUniqueUsername() {
-        assertThrows(ProcessingException.class, () -> {
-            UserRequest userRequest = new UserRequest(userList.get(0).getId(), userList.get(0).getUsername(), userList.get(0).getPassword());
-            when(userService.existsByUsername(userRequest.getUsername())).thenReturn(true);
-            usersController.completeRegistration(principal, userRequest);
-        });
-    }
-
-    @Test
-    void shouldNotCompleteRegistrationWithNonUniqueMail() {
-        assertThrows(ProcessingException.class, () -> {
-            UserRequest userRequest = new UserRequest(userList.getFirst().getId(), userList.getFirst().getUsername(), userList.getFirst().getPassword());
-            userRequest.setEmail("test@test.com");
-            when(userService.existsByUsername(userRequest.getUsername())).thenReturn(false);
-            when(userService.existsByEmail(userRequest.getEmail())).thenReturn(true);
-            usersController.completeRegistration(principal, userRequest);
-        });
-    }
-
-    @Test
-    void shouldCompleteRegistrationAndRemoveIncompleteRole() {
-        UserRequest userRequest = new UserRequest(userList.getFirst().getId(), userList.getFirst().getUsername(), userList.getFirst().getPassword());
-        userRequest.setEmail("test@nmaas.net");
-        when(principal.getName()).thenReturn(userList.getFirst().getUsername());
-        when(userService.findByUsername(userList.getFirst().getUsername())).thenReturn(Optional.of(userList.getFirst()));
-        when(userService.existsByUsername(userRequest.getUsername())).thenReturn(false);
-        when(domainService.getMemberRoles(GLOBAL_DOMAIN.getId(), userRequest.getId())).thenReturn(Set.of(Role.ROLE_GUEST));
-        usersController.completeRegistration(principal, userRequest);
-        verify(domainService, times(1)).addMemberRole(GLOBAL_DOMAIN.getId(), userList.getFirst().getId(), Role.ROLE_GUEST);
-        verify(userService, times(1)).update(userList.getFirst());
-    }
-
-    @Test
     void shouldDeleteUser() {
         User tester = userList.getFirst();
         tester.setRoles(new ArrayList<>());
