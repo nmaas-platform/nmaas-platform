@@ -60,7 +60,7 @@ public class RemoteClusterMonitor implements RemoteClusterMonitoringService {
 
     private void checkAndUpdate(KCluster cluster) {
         try {
-            log.debug("Updating cluster {}/{} status. All good if no error is printed.", cluster.getId(), cluster.getCodename());
+            log.trace("Updating cluster {}/{} status. All good if no error is printed.", cluster.getId(), cluster.getCodename());
             final String version = kubernetesApiClientService.getKubernetesVersion(cluster);
             log.trace("Received version information for cluster {} -> {}", cluster.getCodename(), version);
             updateStateIfNeeded(cluster, KClusterState.UP);
