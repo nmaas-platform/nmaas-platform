@@ -1,6 +1,7 @@
 package net.geant.nmaas.kubernetes.remote;
 
 import io.fabric8.kubernetes.client.KubernetesClientException;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.kubernetes.KubernetesApiClientService;
@@ -59,6 +60,7 @@ public class RemoteClusterMonitor implements RemoteClusterMonitoringService {
 
     private void checkAndUpdate(KCluster cluster) {
         try {
+            log.debug("Updating cluster {}/{} status. All good if no error is printed.", cluster.getId(), cluster.getCodename());
             final String version = kubernetesApiClientService.getKubernetesVersion(cluster);
             log.trace("Received version information for cluster {} -> {}", cluster.getCodename(), version);
             updateStateIfNeeded(cluster, KClusterState.UP);
@@ -108,6 +110,12 @@ public class RemoteClusterMonitor implements RemoteClusterMonitoringService {
     private boolean isFileAvailable(String pathStr) {
         Path path = Paths.get(pathStr);
         return Files.exists(path) && Files.isRegularFile(path) && Files.isReadable(path);
+    }
+
+    @PostConstruct
+    private void createKubeconfigFiles() {
+        log.info("Recreating all kubeconfig files for remote clusters in /tmp");
+        restoreKubeconfigFileIfMissing();
     }
 
 }

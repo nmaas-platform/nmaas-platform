@@ -165,9 +165,10 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
     }
 
     @Override
-    public RemoteClusterView processNewCluster(RemoteClusterView remoteClusterSpec, boolean createNamespace, String namespace, String secretName) {
+    public RemoteClusterView processNewCluster(RemoteClusterView remoteClusterSpec, boolean createNamespace, String secretNamespace, String secretName) {
         try {
-            return saveNewCluster(remoteClusterSpec, createNamespace, kubernetesApiClientService.readClusterConfigBytesFromSecret(namespace, secretName));
+            byte[] configBytesFromSecret = kubernetesApiClientService.readClusterConfigBytesFromSecret(secretNamespace, secretName);
+            return saveNewCluster(remoteClusterSpec, createNamespace, configBytesFromSecret);
         } catch (IOException | NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
@@ -329,7 +330,7 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
 
     @Override
     public void updateClusterStatus(Long id) {
-        log.info("Triggering remote cluster status refresh request");
+        log.info("Triggering remote cluster status refresh");
         monitoringService.updateCluster(id);
     }
 
