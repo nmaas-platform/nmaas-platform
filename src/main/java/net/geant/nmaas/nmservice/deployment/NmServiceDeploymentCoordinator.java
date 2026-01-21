@@ -89,21 +89,21 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
     public void verifyRequest(Identifier deploymentId, AppDeployment appDeployment, AppDeploymentSpec deploymentSpec) {
         try {
             orchestrator.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(deploymentId, appDeployment, deploymentSpec);
-            // Validate against resource limits
-            ValidationResult validation = resourceLimitsValidationService
-                    .validateNewDeployment(appDeployment.getDomain(), 1, deploymentSpec);
-            if (!validation.isAccepted()) {
-                String errorReason = "Request validation failed for the following reasons: "
-                        + validation.getReasons().stream().map(RejectionReason::getDescription).collect(Collectors.joining(","));
-                notifyStateChangeListeners(deploymentId, REQUEST_VERIFICATION_FAILED, errorReason);
-                throw new ServiceRequestVerificationException(errorReason);
-            }
             orchestrator.verifyRequestAndObtainInitialDeploymentDetails(deploymentId);
-            notifyStateChangeListeners(deploymentId, REQUEST_VERIFIED);
         } catch (Exception e) {
             notifyStateChangeListeners(deploymentId, REQUEST_VERIFICATION_FAILED, e.getMessage());
             throw new ServiceRequestVerificationException(e.getMessage());
         }
+        // Validate against resource limits
+        ValidationResult validation = resourceLimitsValidationService
+                .validateNewDeployment(appDeployment.getDomain(), 1, deploymentSpec);
+        if (!validation.isAccepted()) {
+            String errorReason = "Request validation failed for the following reasons: "
+                    + validation.getReasons().stream().map(RejectionReason::getDescription).collect(Collectors.joining(","));
+            notifyStateChangeListeners(deploymentId, REQUEST_VERIFICATION_FAILED, errorReason);
+            throw new ServiceRequestVerificationException(errorReason);
+        }
+        notifyStateChangeListeners(deploymentId, REQUEST_VERIFIED);
     }
 
     @Override
