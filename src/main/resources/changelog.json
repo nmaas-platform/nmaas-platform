@@ -1,6 +1,52 @@
 {
   "versions" : [
     {
+      "verNo": "1.9.0",
+      "date": "(2026/01/28)",
+      "topic": [
+        {
+          "title" : "Webhooks execution history",
+          "tags" : "[New Feature]",
+          "description" : "History of executed webbooks along with their payload and response status is now persisted and can be displayed in the Portal"
+        },
+        {
+          "title": "Enforcing domain limits",
+          "tags": "[New Feature]",
+          "description": "Administrators can define quota limits globally and on a per-domain basis to control cluster resource usage"
+        },
+        {
+          "title": "Support for shared GitLab instance",
+          "tags": "[New Feature]",
+          "description": "Now an already existing, shared instance of GitLab can be used by nmaas that will create all application instance repositories within a dedicated top-level group"
+        },
+        {
+          "title": "Helm charts from OCI registries",
+          "tags": "[New Feature]",
+          "description": "Added support for deploying Helm charts hosted on OCI registries"
+        },
+        {
+          "title": "Default domain assignment for new SSO logins",
+          "tags": "[New Feature]",
+          "description": "Administrator may now configure nmaas to have all new SSO users automatically assigned a user role in a selected domain"
+        },
+        {
+          "title" : "New option for providing remote cluster kubeConfig",
+          "tags" : "[Enhancement]",
+          "description" : "Instead of providing kubeConfig file content in plain text administrators are now able to point to a secret object in the central cluster that contains the configuration of a remote cluster being onboarded"
+        },
+        {
+          "title" : "Improved handling of Helm command execution response",
+          "tags" : "[Enhancement]",
+          "description" : "A Helm install command execution warning is no longer considered as application installation failure"
+        },
+        {
+          "title" : "Option to limit number of returned lines during log viewing",
+          "tags" : "[Enhancement]",
+          "description" : "Running application instance log viewing panel was enhanced with an option to limit the number of displayed log lines to improve performance and readability"
+        }
+      ]
+    },
+    {
       "verNo" : "1.8.1",
       "date" : "(2025/10/24)",
       "topic" : [
