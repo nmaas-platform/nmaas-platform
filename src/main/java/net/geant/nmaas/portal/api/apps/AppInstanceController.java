@@ -217,7 +217,7 @@ public class AppInstanceController extends AppBaseController {
                                                  @RequestParam(required = false) String status,
                                                  @RequestParam(required = false, defaultValue = "") String search) {
         this.logPageable(pageable);
-        pageable = this.pageableValidator(pageable);
+//        pageable = this.pageableValidator(pageable);
         Domain domain = domainService.findDomain(domainId)
                 .orElseThrow(() -> new MissingElementException(String.format(DOMAIN_NOT_FOUND_MESSAGE, domainId)));
         User user = this.userService.findByUsername(principal.getName())
