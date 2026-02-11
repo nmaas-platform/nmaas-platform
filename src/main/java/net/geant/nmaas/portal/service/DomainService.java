@@ -2,13 +2,13 @@ package net.geant.nmaas.portal.service;
 
 import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
-import net.geant.nmaas.portal.domain.DomainAnnotationView;
-import net.geant.nmaas.portal.domain.DomainBase;
-import net.geant.nmaas.portal.domain.DomainGroupView;
-import net.geant.nmaas.portal.domain.DomainRequest;
-import net.geant.nmaas.portal.domain.KeyValueView;
-import net.geant.nmaas.portal.domain.UserView;
-import net.geant.nmaas.portal.domain.UserViewMinimal;
+import net.geant.nmaas.api.dto.domains.DomainAnnotationView;
+import net.geant.nmaas.api.dto.domains.DomainBaseDto;
+import net.geant.nmaas.api.dto.domains.DomainGroupDto;
+import net.geant.nmaas.api.dto.domains.DomainRequest;
+import net.geant.nmaas.api.dto.KeyValueView;
+import net.geant.nmaas.api.dto.users.UserView;
+import net.geant.nmaas.api.dto.users.UserViewMinimal;
 import net.geant.nmaas.portal.persistence.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.entity.DomainAnnotation;
@@ -69,11 +69,11 @@ public interface DomainService {
 	void removeDomainFromAllGroups(Domain domain);
 	void removeAllUsersFromDomain(Domain domain);
 
-	void checkDomainGroupUsers(DomainGroupView view);
+	void checkDomainGroupUsers(DomainGroupDto view);
 
-	void updateRolesInDomainGroupByUsers(DomainGroupView view);
+	void updateRolesInDomainGroupByUsers(DomainGroupDto view);
 
-	DomainGroupView updateMembers(List<UserViewMinimal> newMembers, DomainGroupView view);
+	DomainGroupDto updateMembers(List<UserViewMinimal> newMembers, DomainGroupDto view);
 
 	void addAnnotation(KeyValueView annotation);
 	boolean checkIfAnnotationExist(String key);
@@ -82,7 +82,7 @@ public interface DomainService {
   	void updateAnnotation(Long id,DomainAnnotationView domainAnnotation);
   	void removeAppBaseFromAllDomains(ApplicationBase base);
 
-	List<DomainBase> getDomainsBase(String searchValue);
-	Page<DomainBase> getDomainsBase(Pageable pageable, String searchValue);
-  
+	List<DomainBaseDto> getDomainsBase(String searchValue);
+	Page<DomainBaseDto> getDomainsBase(Pageable pageable, String searchValue);
+
 }

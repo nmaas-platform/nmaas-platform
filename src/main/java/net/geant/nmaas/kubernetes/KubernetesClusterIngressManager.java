@@ -4,7 +4,10 @@ import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import net.geant.nmaas.kubernetes.api.model.KClusterView;
+import net.geant.nmaas.api.dto.kubernetes.IngressCertificateConfigOptionDto;
+import net.geant.nmaas.api.dto.kubernetes.IngressControllerConfigOptionDto;
+import net.geant.nmaas.api.dto.kubernetes.IngressResourceConfigOptionDto;
+import net.geant.nmaas.api.dto.kubernetes.KClusterDto.KClusterIngressView;
 import net.geant.nmaas.kubernetes.remote.entities.IngressCertificateConfigOption;
 import net.geant.nmaas.kubernetes.remote.entities.IngressControllerConfigOption;
 import net.geant.nmaas.kubernetes.remote.entities.IngressResourceConfigOption;
@@ -13,6 +16,8 @@ import org.apache.commons.lang3.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import java.util.Objects;
 
 @Component
 @NoArgsConstructor
@@ -71,21 +76,27 @@ public class KubernetesClusterIngressManager {
         return this.getExternalServiceDomain();
     }
 
-    public KClusterView.KClusterIngressView getKClusterIngressView() {
-        KClusterView.KClusterIngressView kClusterIngressView = new KClusterView.KClusterIngressView();
-        kClusterIngressView.setControllerConfigOption(this.controllerConfigOption);
-        kClusterIngressView.setSupportedIngressClass(this.supportedIngressClass);
-        kClusterIngressView.setPublicIngressClass(this.publicIngressClass);
-        kClusterIngressView.setControllerChartName(this.controllerChartName);
-        kClusterIngressView.setControllerChartArchive(this.controllerChartArchive);
-        kClusterIngressView.setResourceConfigOption(this.resourceConfigOption);
-        kClusterIngressView.setExternalServiceDomain(this.externalServiceDomain);
-        kClusterIngressView.setPublicServiceDomain(this.publicServiceDomain);
-        kClusterIngressView.setTlsSupported(this.tlsSupported);
-        kClusterIngressView.setCertificateConfigOption(this.certificateConfigOption);
-        kClusterIngressView.setIssuerOrWildcardName(this.issuerOrWildcardName);
-        kClusterIngressView.setIngressPerDomain(this.ingressPerDomain);
-        return kClusterIngressView;
+    public KClusterIngressView getKClusterIngressView() {
+        KClusterIngressView view = new KClusterIngressView();
+        if (Objects.nonNull(controllerConfigOption)) {
+            view.setControllerConfigOption(IngressControllerConfigOptionDto.valueOf(this.controllerConfigOption.name()));
+        }
+        view.setSupportedIngressClass(this.supportedIngressClass);
+        view.setPublicIngressClass(this.publicIngressClass);
+        view.setControllerChartName(this.controllerChartName);
+        view.setControllerChartArchive(this.controllerChartArchive);
+        if (Objects.nonNull(resourceConfigOption)) {
+            view.setResourceConfigOption(IngressResourceConfigOptionDto.valueOf(this.resourceConfigOption.name()));
+        }
+        view.setExternalServiceDomain(this.externalServiceDomain);
+        view.setPublicServiceDomain(this.publicServiceDomain);
+        view.setTlsSupported(this.tlsSupported);
+        if (Objects.nonNull(certificateConfigOption)) {
+            view.setCertificateConfigOption(IngressCertificateConfigOptionDto.valueOf(this.certificateConfigOption.name()));
+        }
+        view.setIssuerOrWildcardName(this.issuerOrWildcardName);
+        view.setIngressPerDomain(this.ingressPerDomain);
+        return view;
     }
 
     @PostConstruct
@@ -95,7 +106,7 @@ public class KubernetesClusterIngressManager {
         if (this.getTlsSupported()) {
             Validate.isTrue(this.getCertificateConfigOption() != null, "CertificateConfigOption property can't be null if TLS is supported");
         }
-        KClusterView.KClusterIngressView view = this.getKClusterIngressView();
+        KClusterIngressView view = this.getKClusterIngressView();
         this.getControllerConfigOption().validate(view);
         this.getResourceConfigOption().validate(view);
         if (this.getCertificateConfigOption() != null) {

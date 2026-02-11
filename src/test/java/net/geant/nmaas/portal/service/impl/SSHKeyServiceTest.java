@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.service.impl;
 
-import net.geant.nmaas.portal.domain.SSHKeyRequest;
-import net.geant.nmaas.portal.domain.SSHKeyView;
+import net.geant.nmaas.api.dto.users.SSHKeyRequest;
+import net.geant.nmaas.api.dto.users.SSHKeyView;
 import net.geant.nmaas.portal.persistence.entity.SSHKeyEntity;
 import net.geant.nmaas.portal.persistence.entity.User;
 import net.geant.nmaas.portal.persistence.repositories.SSHKeyRepository;
@@ -48,15 +48,13 @@ class SSHKeyServiceTest {
     @Test
     void ShouldReturnAllKeysForUser() {
         List<SSHKeyView> result = this.sut.findAllByUser(this.owner);
-
         assertEquals(1, result.size());
-        assertEquals("name", result.get(0).getName());
+        assertEquals("name", result.getFirst().name());
     }
 
     @Test
     void shouldDeleteKeyIfValidRequest() {
         this.sut.invalidate(this.owner, 1L);
-
         verify(this.repository, times(1)).deleteById(1L);
     }
 
@@ -91,8 +89,8 @@ class SSHKeyServiceTest {
         SSHKeyView result = sut.create(request, this.owner);
 
         verify(this.repository, times(1)).save(any(SSHKeyEntity.class));
-        assertEquals(result.getName(), res.getName());
-        assertEquals(result.getId(), res.getId());
+        assertEquals(result.name(), res.getName());
+        assertEquals(result.id(), res.getId());
     }
 
     @Test

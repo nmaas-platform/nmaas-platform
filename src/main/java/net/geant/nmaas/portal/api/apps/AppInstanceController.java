@@ -3,6 +3,17 @@ package net.geant.nmaas.portal.api.apps;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.api.dto.applications.AppInstanceBase;
+import net.geant.nmaas.api.dto.applications.AppInstanceRequest;
+import net.geant.nmaas.api.dto.applications.AppInstanceState;
+import net.geant.nmaas.api.dto.applications.AppInstanceStatus;
+import net.geant.nmaas.api.dto.applications.AppInstanceView;
+import net.geant.nmaas.api.dto.applications.AppInstanceViewExtended;
+import net.geant.nmaas.api.dto.applications.AppInstanceViewExtendedDto;
+import net.geant.nmaas.api.dto.applications.ApplicationBaseView;
+import net.geant.nmaas.api.dto.applications.ConfigWizardTemplateView;
+import net.geant.nmaas.api.dto.Id;
+import net.geant.nmaas.api.dto.users.UserBase;
 import net.geant.nmaas.nmservice.configuration.gitlab.events.AddUserToRepositoryGitlabEvent;
 import net.geant.nmaas.nmservice.configuration.gitlab.events.RemoveUserFromRepositoryGitlabEvent;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
@@ -19,17 +30,6 @@ import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
-import net.geant.nmaas.portal.domain.AppInstanceBase;
-import net.geant.nmaas.portal.domain.AppInstanceRequest;
-import net.geant.nmaas.portal.domain.AppInstanceState;
-import net.geant.nmaas.portal.domain.AppInstanceStatus;
-import net.geant.nmaas.portal.domain.AppInstanceView;
-import net.geant.nmaas.portal.domain.AppInstanceViewExtended;
-import net.geant.nmaas.portal.domain.AppInstanceViewExtendedDTO;
-import net.geant.nmaas.portal.domain.ApplicationBaseView;
-import net.geant.nmaas.portal.domain.ConfigWizardTemplateView;
-import net.geant.nmaas.portal.domain.Id;
-import net.geant.nmaas.portal.domain.UserBase;
 import net.geant.nmaas.portal.exceptions.ApplicationSubscriptionNotActiveException;
 import net.geant.nmaas.portal.persistence.entity.AppInstance;
 import net.geant.nmaas.portal.persistence.entity.Application;
@@ -434,11 +434,11 @@ public class AppInstanceController extends AppBaseController {
     @GetMapping("/{appInstanceId}")
     @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'READ')")
     @Transactional
-    public AppInstanceViewExtendedDTO getAppInstance(@PathVariable(value = "appInstanceId") Long appInstanceId,
+    public AppInstanceViewExtendedDto getAppInstance(@PathVariable(value = "appInstanceId") Long appInstanceId,
                                                      @NotNull Principal principal) {
         AppInstance appInstance = instanceService.find(appInstanceId)
                 .orElseThrow(() -> new MissingElementException("App instance not found."));
-        return new AppInstanceViewExtendedDTO(mapAppInstanceExtended(appInstance));
+        return new AppInstanceViewExtendedDto(mapAppInstanceExtended(appInstance));
     }
 
     @PostMapping("/domain/{domainId}")
@@ -449,7 +449,7 @@ public class AppInstanceController extends AppBaseController {
                                 @PathVariable Long domainId,
                                 @RequestParam(name = "clusterId", required = false) Long clusterId) {
         log.info("Processing new application instance request");
-        Application app = getApp(appInstanceRequest.getApplicationId());
+        Application app = getApp(appInstanceRequest.applicationId());
         Domain domain = domainService.findDomain(domainId)
                 .orElseThrow(() -> new MissingElementException("Domain not found"));
         log.info("for application {} in domain {} ({})",
@@ -460,7 +460,7 @@ public class AppInstanceController extends AppBaseController {
 
         AppInstance appInstance;
         try {
-            appInstance = instanceService.create(domain, app, appInstanceRequest.getName(), appInstanceRequest.isAutoUpgradesEnabled());
+            appInstance = instanceService.create(domain, app, appInstanceRequest.name(), appInstanceRequest.autoUpgradesEnabled());
             if (Objects.nonNull(clusterId)) {
                 appInstance.setRemoteClusterId(clusterId);
             }
@@ -497,13 +497,15 @@ public class AppInstanceController extends AppBaseController {
         */
         Set<String> forbiddenNames = instanceService.findAllByDomain(domain).stream() // get all app instances in domain
                 .filter(appInst -> {
-                    AppInstanceState state = mapAppInstanceState(appDeploymentMonitor.state(appInst.getInternalId())); // map their internal state to app instance state
-                    return !(state.equals(AppInstanceState.DONE) || state.equals(AppInstanceState.REMOVED)); // check if it does not equal 'DONE' or 'REMOVED'
+                    // map their internal state to app instance state
+                    AppInstanceState state = mapAppInstanceState(appDeploymentMonitor.state(appInst.getInternalId()));
+                    // check if it does not equal 'DONE' or 'REMOVED'
+                    return !(state.equals(AppInstanceState.DONE) || state.equals(AppInstanceState.REMOVED));
                 })
                 .map(AppInstance::getName) // take names only
                 .map(String::toLowerCase) // set all names to lower case
                 .collect(Collectors.toSet());
-        if (forbiddenNames.contains(appInstanceRequest.getName().toLowerCase())) {
+        if (forbiddenNames.contains(appInstanceRequest.name().toLowerCase())) {
             throw new IllegalArgumentException("Name is already taken");
         }
     }
@@ -750,15 +752,8 @@ public class AppInstanceController extends AppBaseController {
 
     private AppInstanceStatus prepareAppInstanceStatus(Long appInstanceId, AppLifecycleState state, AppLifecycleState previousState) {
         AppInstanceState appInstanceState = mapAppInstanceState(state);
-
-        return AppInstanceStatus.builder()
-                .appInstanceId(appInstanceId)
-                .details(state.name())
-                .userFriendlyDetails(state.getUserFriendlyState())
-                .state(appInstanceState)
-                .previousState(mapAppInstanceState(previousState))
-                .userFriendlyState(appInstanceState.getUserFriendlyState())
-                .build();
+        return new AppInstanceStatus(appInstanceId, appInstanceState, mapAppInstanceState(previousState),
+                state.name(), state.getUserFriendlyState(), appInstanceState.getUserFriendlyState());
     }
 
     public static AppInstanceState mapAppInstanceState(AppLifecycleState state) {

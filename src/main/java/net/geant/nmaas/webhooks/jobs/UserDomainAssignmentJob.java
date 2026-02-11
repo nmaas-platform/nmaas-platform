@@ -1,20 +1,21 @@
 package net.geant.nmaas.webhooks.jobs;
 
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.api.dto.domains.DomainBaseDto;
+import net.geant.nmaas.api.dto.users.RoleDto;
+import net.geant.nmaas.api.dto.users.UserView;
+import net.geant.nmaas.api.dto.webhooks.UserDomainAssignmentWebhookDto;
+import net.geant.nmaas.api.dto.webhooks.WebhookEventDto;
+import net.geant.nmaas.api.dto.webhooks.WebhookEventTypeDto;
 import net.geant.nmaas.orchestration.exceptions.WebServiceCommunicationException;
-import net.geant.nmaas.portal.domain.DomainBase;
-import net.geant.nmaas.portal.service.AutoWebhookTemplateService;
-import net.geant.nmaas.portal.service.WebhookHistoryService;
-import net.geant.nmaas.webhooks.UserDomainAssignmentWebhookDto;
-import net.geant.nmaas.portal.domain.UserView;
-import net.geant.nmaas.portal.domain.WebhookEventDto;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.entity.Role;
 import net.geant.nmaas.portal.persistence.entity.User;
-import net.geant.nmaas.portal.persistence.entity.WebhookEventType;
+import net.geant.nmaas.portal.service.AutoWebhookTemplateService;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
+import net.geant.nmaas.portal.service.WebhookHistoryService;
 import net.geant.nmaas.portal.service.impl.WebhookEventService;
 import org.modelmapper.ModelMapper;
 import org.quartz.JobDataMap;
@@ -51,7 +52,7 @@ public class UserDomainAssignmentJob extends WebhookJob {
 
         try {
             WebhookEventDto webhook = webhookEventService.getById(webhookId);
-            if (!WebhookEventType.USER_ASSIGNMENT.equals(webhook.getEventType())) {
+            if (!WebhookEventTypeDto.USER_ASSIGNMENT.equals(webhook.getEventType())) {
                 log.warn("Webhook's event type with id {} has been updated. UserDomainAssignmentJob is abandoned", webhookId);
                 return;
             }
@@ -60,7 +61,7 @@ public class UserDomainAssignmentJob extends WebhookJob {
             UserView userView = modelMapper.map(user, UserView.class);
             userView.setSshKeys(null);
 
-            UserDomainAssignmentWebhookDto dto = new UserDomainAssignmentWebhookDto(userView, modelMapper.map(domain, DomainBase.class), role, action, WebhookEventType.USER_ASSIGNMENT);
+            UserDomainAssignmentWebhookDto dto = new UserDomainAssignmentWebhookDto(userView, modelMapper.map(domain, DomainBaseDto.class), RoleDto.valueOf(role.name()), action, WebhookEventTypeDto.USER_ASSIGNMENT);
             callWebhook(webhook, dto);
         } catch (GeneralSecurityException e) {
             log.error("Failed to decrypt webhook with id {}", webhookId);

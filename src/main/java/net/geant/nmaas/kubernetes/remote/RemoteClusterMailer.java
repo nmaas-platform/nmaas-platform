@@ -6,7 +6,7 @@ import net.geant.nmaas.kubernetes.remote.entities.KCluster;
 import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
 import net.geant.nmaas.notifications.templates.MailType;
-import net.geant.nmaas.portal.domain.UserView;
+import net.geant.nmaas.api.dto.users.UserView;
 import net.geant.nmaas.portal.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.ApplicationEventPublisher;

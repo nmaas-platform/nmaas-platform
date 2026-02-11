@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppLifecycleState;
-import net.geant.nmaas.portal.domain.AppInstanceBase;
-import net.geant.nmaas.portal.domain.AppInstanceState;
+import net.geant.nmaas.api.dto.applications.AppInstanceBase;
+import net.geant.nmaas.api.dto.applications.AppInstanceState;
 import net.geant.nmaas.portal.persistence.entity.AppInstance;
 import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.entity.User;
@@ -276,7 +276,6 @@ public class ApplicationInstanceBaseServiceImpl implements ApplicationInstanceBa
         }
         checkParam(domain.getId());
     }
-
 
     private Page<AppInstanceBase> getAppInstanceBases(Page<AppInstance> page, Pageable pageable) {
         List<AppInstanceBase> filtered = page.getContent()

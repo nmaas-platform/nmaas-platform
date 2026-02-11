@@ -2,6 +2,7 @@ package net.geant.nmaas.nmservice.configuration.gitlab;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.api.dto.applications.AppConfigRepositoryAccessDetails;
 import net.geant.nmaas.gitlab.GitLabManager;
 import net.geant.nmaas.gitlab.exceptions.GitLabInvalidConfigurationException;
 import net.geant.nmaas.gitlab.exceptions.GitLabNotFoundException;
@@ -15,7 +16,6 @@ import net.geant.nmaas.nmservice.configuration.exceptions.FileTransferException;
 import net.geant.nmaas.nmservice.configuration.exceptions.GitRepositoryOperationException;
 import net.geant.nmaas.nmservice.configuration.repositories.NmServiceConfigFileRepository;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
-import net.geant.nmaas.orchestration.AppConfigRepositoryAccessDetails;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.utils.logging.LogLevel;

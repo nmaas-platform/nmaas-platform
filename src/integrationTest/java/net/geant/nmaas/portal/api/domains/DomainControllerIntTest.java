@@ -1,15 +1,16 @@
 package net.geant.nmaas.portal.api.domains;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import net.geant.nmaas.api.dto.domains.DcnDeploymentTypeDto;
+import net.geant.nmaas.api.dto.domains.DomainGroupDto;
+import net.geant.nmaas.api.dto.domains.DomainRequest;
+import net.geant.nmaas.api.dto.domains.DomainView;
+import net.geant.nmaas.api.dto.users.UserViewMinimal;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 import net.geant.nmaas.dcn.deployment.entities.CustomerNetwork;
 import net.geant.nmaas.dcn.deployment.entities.DomainDcnDetails;
 import net.geant.nmaas.orchestration.entities.DomainTechDetails;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
-import net.geant.nmaas.portal.domain.DomainGroupView;
-import net.geant.nmaas.portal.domain.DomainRequest;
-import net.geant.nmaas.portal.domain.DomainView;
-import net.geant.nmaas.portal.domain.UserViewMinimal;
 import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.entity.Role;
 import net.geant.nmaas.portal.persistence.entity.User;
@@ -358,12 +359,12 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
         user.setRoles(List.of(userRole));
         when(userService.findByUsername(any())).thenReturn(Optional.of(user));
 
-        DomainGroupView group1 = new DomainGroupView();
+        DomainGroupDto group1 = new DomainGroupDto();
         group1.setId(1L);
         User user1 = new User("testUser", true);
         user1.setId(1L);
         group1.setManagers(List.of(modelMapper.map(user1, UserViewMinimal.class)));
-        DomainGroupView group2 = new DomainGroupView();
+        DomainGroupDto group2 = new DomainGroupDto();
         group2.setId(2L);
         User user2 = new User("testUser2", true);
         user2.setId(1L);
@@ -389,13 +390,13 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
         user.setRoles(List.of(userRole));
         when(userService.findByUsername(any())).thenReturn(Optional.of(user));
 
-        DomainGroupView group1 = new DomainGroupView();
+        DomainGroupDto group1 = new DomainGroupDto();
         group1.setId(1L);
         User user1 = new User("gmanager", true);
         user1.setId(1L);
 
         group1.setManagers(List.of(modelMapper.map(user1, UserViewMinimal.class)));
-        DomainGroupView group2 = new DomainGroupView();
+        DomainGroupDto group2 = new DomainGroupDto();
         User user2 = new User("testUser2", true);
         user2.setId(1L);
         group2.setManagers(List.of((modelMapper.map(user2, UserViewMinimal.class))));
@@ -428,7 +429,7 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
 
     private DomainRequest getDefaultDomainRequest(String name) {
         DomainRequest domain = new DomainRequest(name, name, true);
-        domain.getDomainDcnDetails().setDcnDeploymentType(DcnDeploymentType.NONE);
+        domain.getDomainDcnDetails().setDcnDeploymentType(DcnDeploymentTypeDto.NONE);
         domain.getDomainDcnDetails().setDcnConfigured(false);
         return domain;
     }

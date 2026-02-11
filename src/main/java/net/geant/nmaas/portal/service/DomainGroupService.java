@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.service;
 
-import net.geant.nmaas.portal.domain.DomainGroupView;
+import net.geant.nmaas.api.dto.domains.DomainGroupDto;
 import net.geant.nmaas.portal.persistence.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.entity.User;
@@ -11,19 +11,19 @@ public interface DomainGroupService {
 
     Boolean existDomainGroup(String name, String codeName);
 
-    DomainGroupView createDomainGroup(DomainGroupView domainGroup);
+    DomainGroupDto createDomainGroup(DomainGroupDto domainGroup);
 
-    DomainGroupView addDomainsToGroup(List<Domain> domains, String groupCodeName);
+    DomainGroupDto addDomainsToGroup(List<Domain> domains, String groupCodeName);
 
-    DomainGroupView deleteDomainFromGroup(Domain domain, Long domainGroupId);
+    DomainGroupDto deleteDomainFromGroup(Domain domain, Long domainGroupId);
 
     void deleteDomainGroup(Long domainGroupId);
 
-    DomainGroupView getDomainGroup(Long domainGroupId);
+    DomainGroupDto getDomainGroup(Long domainGroupId);
 
-    List<DomainGroupView> getAllDomainGroups();
+    List<DomainGroupDto> getAllDomainGroups();
 
-    DomainGroupView updateDomainGroup(Long domainGroupId, DomainGroupView view);
+    DomainGroupDto updateDomainGroup(Long domainGroupId, DomainGroupDto view);
 
     void deleteAppBaseFromAllAppState(ApplicationBase base);
 

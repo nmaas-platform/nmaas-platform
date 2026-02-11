@@ -6,20 +6,21 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.api.dto.applications.AppRateView;
+import net.geant.nmaas.api.dto.applications.ApplicationBaseView;
+import net.geant.nmaas.api.dto.applications.ApplicationBaseViewS;
+import net.geant.nmaas.api.dto.Id;
+import net.geant.nmaas.api.dto.applications.AppInstanceState;
+import net.geant.nmaas.api.dto.applications.ApplicationStateChangeRequest;
+import net.geant.nmaas.api.dto.applications.ApplicationStateDto;
+import net.geant.nmaas.api.dto.applications.ApplicationView;
+import net.geant.nmaas.api.dto.users.UserView;
 import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
 import net.geant.nmaas.notifications.templates.MailType;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.exceptions.PortalException;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
-import net.geant.nmaas.portal.domain.AppInstanceState;
-import net.geant.nmaas.portal.domain.AppRateView;
-import net.geant.nmaas.portal.domain.ApplicationBaseView;
-import net.geant.nmaas.portal.domain.ApplicationBaseViewS;
-import net.geant.nmaas.portal.domain.ApplicationStateChangeRequest;
-import net.geant.nmaas.portal.domain.ApplicationView;
-import net.geant.nmaas.portal.domain.Id;
-import net.geant.nmaas.portal.domain.UserView;
 import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
 import net.geant.nmaas.portal.persistence.entity.Application;
 import net.geant.nmaas.portal.persistence.entity.ApplicationBase;
@@ -334,7 +335,7 @@ public class ApplicationController extends AppBaseController {
         base.getVersions().add(version);
         appBaseService.update(base);
 
-        this.sendMails(application, new ApplicationStateChangeRequest(application.getState(), "", false));
+        this.sendMails(application, new ApplicationStateChangeRequest(ApplicationStateDto.valueOf(application.getState().name()), "", false));
     }
 
     @PatchMapping(value = "/version")
@@ -396,17 +397,17 @@ public class ApplicationController extends AppBaseController {
     @Transactional
     public void changeApplicationState(@PathVariable long id, @RequestBody ApplicationStateChangeRequest stateChangeRequest, Principal principal) {
         Application app = getApp(id);
-        if (stateChangeRequest.getState().equals(ApplicationState.DELETED)) {
+        if (stateChangeRequest.getState().equals(ApplicationStateDto.DELETED)) {
             long numberOfRunningInstances = applicationInstanceService.findAllByApplication(app).stream()
                     .map(ai -> appInstanceController.getState(ai.getId(), principal))
-                    .filter(s -> !List.of(AppInstanceState.DONE, AppInstanceState.FAILURE, AppInstanceState.REMOVED).contains(s.getState()))
+                    .filter(s -> !List.of(AppInstanceState.DONE, AppInstanceState.FAILURE, AppInstanceState.REMOVED).contains(s.state()))
                     .count();
             if (numberOfRunningInstances > 0) {
-                throw new ProcessingException("Can not set state to DELETED. There is still " + numberOfRunningInstances + " running instances of this version.");
+                throw new ProcessingException("Can't set state to DELETED. There is still " + numberOfRunningInstances + " running instances of this version.");
             }
         }
-        applicationService.changeApplicationState(app, stateChangeRequest.getState());
-        appBaseService.updateApplicationVersionState(app.getName(), app.getVersion(), stateChangeRequest.getState());
+        applicationService.changeApplicationState(app, ApplicationState.valueOf(stateChangeRequest.getState().name()));
+        appBaseService.updateApplicationVersionState(app.getName(), app.getVersion(), ApplicationState.valueOf(stateChangeRequest.getState().name()));
         this.sendMails(app, stateChangeRequest);
     }
 
@@ -438,17 +439,17 @@ public class ApplicationController extends AppBaseController {
                 "app_version", app.getVersion(),
                 "reason", stateChangeRequest.getReason() == null ? "" : stateChangeRequest.getReason(),
                 "message", stateChangeRequest.getNotificationText() == null ? "" : stateChangeRequest.getNotificationText());
-        if (!stateChangeRequest.getState().equals(ApplicationState.ACTIVE)) {
+        if (!stateChangeRequest.getState().equals(ApplicationStateDto.ACTIVE)) {
             ApplicationBase applicationBase = appBaseService.findByName(appBaseName);
             UserView owner = modelMapper.map(userService.findByUsername(applicationBase.getOwner()).orElseThrow(() -> new IllegalArgumentException("Owner not found")), UserView.class);
             MailAttributes mailAttributes = MailAttributes.builder()
-                    .mailType(stateChangeRequest.getState().getMailType())
+                    .mailType(ApplicationState.valueOf(stateChangeRequest.getState().name()).getMailType())
                     .addresses(Collections.singletonList(owner))
                     .otherAttributes(attributes)
                     .build();
             this.eventPublisher.publishEvent(new NotificationEvent(this, mailAttributes));
         }
-        if (stateChangeRequest.getState().equals(ApplicationState.ACTIVE) && stateChangeRequest.shouldSendNotification()) {
+        if (stateChangeRequest.getState().equals(ApplicationStateDto.ACTIVE) && stateChangeRequest.shouldSendNotification()) {
             List<UserView> users = userService.findAll()
                     .stream()
                     .filter(User::isEnabled)

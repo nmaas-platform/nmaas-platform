@@ -2,16 +2,11 @@ package net.geant.nmaas.webhooks;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.api.dto.domains.DomainBaseDto;
+import net.geant.nmaas.api.dto.domains.DomainGroupDto;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
-import net.geant.nmaas.webhooks.jobs.AppDeploymentJob;
-import net.geant.nmaas.webhooks.jobs.AppRemovalJob;
-import net.geant.nmaas.webhooks.jobs.DomainActionJob;
-import net.geant.nmaas.webhooks.jobs.DomainGroupActionJob;
-import net.geant.nmaas.webhooks.jobs.UserDomainAssignmentJob;
-import net.geant.nmaas.portal.domain.DomainBase;
-import net.geant.nmaas.portal.domain.DomainGroupView;
 import net.geant.nmaas.portal.events.ApplicationDeployedEvent;
 import net.geant.nmaas.portal.events.ApplicationRemovedEvent;
 import net.geant.nmaas.portal.events.DomainCreatedEvent;
@@ -24,6 +19,11 @@ import net.geant.nmaas.portal.persistence.repositories.WebhookEventRepository;
 import net.geant.nmaas.scheduling.ScheduleManager;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
+import net.geant.nmaas.webhooks.jobs.AppDeploymentJob;
+import net.geant.nmaas.webhooks.jobs.AppRemovalJob;
+import net.geant.nmaas.webhooks.jobs.DomainActionJob;
+import net.geant.nmaas.webhooks.jobs.DomainGroupActionJob;
+import net.geant.nmaas.webhooks.jobs.UserDomainAssignmentJob;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -47,7 +47,7 @@ public class WebhooksEventListener {
     @Transactional
     public void trigger(DomainCreatedEvent event) {
         final Domain domain = event.getDomainEntity();
-        final DomainBase body = modelMapper.map(domain, DomainBase.class);
+        final DomainBaseDto body = modelMapper.map(domain, DomainBaseDto.class);
         webhookEventRepository.findIdByEventType(WebhookEventType.DOMAIN_ACTION)
                 .forEach(id ->
                         scheduleManager.createOneTimeJob(
@@ -62,7 +62,7 @@ public class WebhooksEventListener {
     @Loggable(LogLevel.INFO)
     @Transactional
     public void trigger(DomainRemovalEvent event) {
-        final DomainBase domain = DomainBase.fromView(event.getDomainView());
+        final DomainBaseDto domain = DomainBaseDto.fromView(event.getDomainView());
         String action = event.isHardRemoval() ? "delete" : "softDelete";
         webhookEventRepository.findIdByEventType(WebhookEventType.DOMAIN_ACTION)
                 .forEach(id ->
@@ -78,7 +78,7 @@ public class WebhooksEventListener {
     @Loggable(LogLevel.INFO)
     @Transactional
     public void trigger(DomainGroupChangedEvent event) {
-        final DomainGroupView domainGroup = event.getDomainGroup();
+        final DomainGroupDto domainGroup = event.getDomainGroup();
         domainGroup.setManagers(null);
         domainGroup.setApplicationStatePerDomain(null);
         webhookEventRepository.findIdByEventType(WebhookEventType.DOMAIN_GROUP_ACTION)

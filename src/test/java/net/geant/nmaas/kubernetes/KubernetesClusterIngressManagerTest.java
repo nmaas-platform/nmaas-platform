@@ -57,51 +57,51 @@ class KubernetesClusterIngressManagerTest {
 
     @Test
     void shouldProceedWithUseExistingControllerConfigOption() {
+        manager.setControllerConfigOption(IngressControllerConfigOption.USE_EXISTING);
+        manager.setSupportedIngressClass("class");
+        manager.setControllerChartName(null);
+        manager.setControllerChartArchive(null);
         assertDoesNotThrow(() -> {
-            manager.setControllerConfigOption(IngressControllerConfigOption.USE_EXISTING);
-            manager.setSupportedIngressClass("class");
-            manager.setControllerChartName(null);
-            manager.setControllerChartArchive(null);
             manager.getControllerConfigOption().validate(manager.getKClusterIngressView());
         });
     }
 
     @Test
     void shouldThrowExceptionDuringIngressControllerConfigValidationExisting() {
+        manager.setControllerConfigOption(IngressControllerConfigOption.DEPLOY_NEW_FROM_REPO);
+        manager.setSupportedIngressClass(null);
+        manager.setControllerChartName(null);
+        manager.setControllerChartArchive(null);
         assertThrows(IllegalArgumentException.class, () -> {
-            manager.setControllerConfigOption(IngressControllerConfigOption.DEPLOY_NEW_FROM_REPO);
-            manager.setSupportedIngressClass(null);
-            manager.setControllerChartName(null);
-            manager.setControllerChartArchive(null);
             manager.getControllerConfigOption().validate(manager.getKClusterIngressView());
         });
     }
 
     @Test
     void shouldThrowExceptionDuringIngressControllerConfigValidationRepo() {
+        manager.setControllerConfigOption(IngressControllerConfigOption.DEPLOY_NEW_FROM_REPO);
+        manager.setControllerChartName(null);
+        manager.setControllerChartArchive("chart");
         assertThrows(IllegalArgumentException.class, () -> {
-            manager.setControllerConfigOption(IngressControllerConfigOption.DEPLOY_NEW_FROM_REPO);
-            manager.setControllerChartName(null);
-            manager.setControllerChartArchive("chart");
             manager.getControllerConfigOption().validate(manager.getKClusterIngressView());
         });
     }
 
     @Test
     void shouldThrowExceptionDuringIngressControllerConfigValidationArchive() {
+        manager.setControllerConfigOption(IngressControllerConfigOption.DEPLOY_NEW_FROM_ARCHIVE);
+        manager.setControllerChartArchive(null);
+        manager.setControllerChartName("chart");
         assertThrows(IllegalArgumentException.class, () -> {
-            manager.setControllerConfigOption(IngressControllerConfigOption.DEPLOY_NEW_FROM_ARCHIVE);
-            manager.setControllerChartArchive(null);
-            manager.setControllerChartName("chart");
             manager.getControllerConfigOption().validate(manager.getKClusterIngressView());
         });
     }
 
     @Test
     void shouldThrowExceptionDuringIngressResourceConfigValidation() {
+        manager.setResourceConfigOption(IngressResourceConfigOption.DEPLOY_FROM_CHART);
+        manager.setExternalServiceDomain(null);
         assertThrows(IllegalArgumentException.class, () -> {
-            manager.setResourceConfigOption(IngressResourceConfigOption.DEPLOY_FROM_CHART);
-            manager.setExternalServiceDomain(null);
             manager.getResourceConfigOption().validate(manager.getKClusterIngressView());
         });
     }

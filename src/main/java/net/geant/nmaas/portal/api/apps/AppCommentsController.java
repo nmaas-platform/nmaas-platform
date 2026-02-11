@@ -1,8 +1,8 @@
 package net.geant.nmaas.portal.api.apps;
 
-import net.geant.nmaas.portal.domain.CommentRequest;
-import net.geant.nmaas.portal.domain.CommentView;
-import net.geant.nmaas.portal.domain.Id;
+import net.geant.nmaas.api.dto.applications.CommentRequest;
+import net.geant.nmaas.api.dto.applications.CommentView;
+import net.geant.nmaas.api.dto.Id;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistence.entity.ApplicationBase;
@@ -29,7 +29,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/apps/{appId}/comments")
@@ -55,22 +54,10 @@ public class AppCommentsController extends AppBaseController {
     public List<CommentView> getComments(@PathVariable(value = "appId") Long appId, Pageable pageable) {
         ApplicationBase app = getBaseApp(appId);
         Page<Comment> page = commentRepository.findByApplication(app, pageable);
-        return page.getContent().stream().map(comment -> {
-                    CommentView c = modelMapper.map(comment, CommentView.class);
-                    if (comment.getParent() != null)
-                        c.setParentId(comment.getParent().getId());
-                    if (comment.isDeleted())
-                        c.setComment("<em>@@@\'COMMENTS.REMOVED\'</em>");
-                    for (CommentView sub : c.getSubComments()) {
-                        if (sub.isDeleted())
-                            sub.setComment("<em>@@@\'COMMENTS.REMOVED\'</em>");
-                    }
-
-                    return c;
-                }
-        ).toList();
+        return page.getContent().stream()
+                .map(comment -> modelMapper.map(comment, CommentView.class))
+                .toList();
     }
-
 
     @PostMapping
     @PreAuthorize("hasPermission(null, 'comment', 'CREATE')")
@@ -78,15 +65,15 @@ public class AppCommentsController extends AppBaseController {
     public Id addComment(@PathVariable(value = "appId") Long appId, @RequestBody CommentRequest comment, Principal principal) {
         ApplicationBase app = getBaseApp(appId);
 
-        if (comment.getComment() == null || comment.getComment().isEmpty()) {
+        if (comment.comment() == null || comment.comment().isEmpty()) {
             throw new IllegalArgumentException("Comment cannot be empty");
         }
 
-        Long parentId = comment.getParentId();
+        Long parentId = comment.parentId();
 
-        //Workaround problem of mapping parentId -> id
-        //This should be fixed in modelmapper configuration
-        comment.setParentId(null);
+        // Workaround problem of mapping parentId -> id
+        // This should be fixed in modelmapper configuration
+        CommentRequest fixedCommentRequest = new CommentRequest(null, comment.comment());
         Comment persistentComment = modelMapper.map(comment, Comment.class);
         if (persistentComment.getId() != null) {
             throw new IllegalStateException("New comment cannot have id.");
@@ -126,7 +113,7 @@ public class AppCommentsController extends AppBaseController {
     @DeleteMapping(value = "/{commentId}")
     @PreAuthorize("hasPermission(#commentId, 'comment', 'DELETE')")
     @Transactional
-    public void deleteComment(@PathVariable(value = "commentId") Long commentId) {
+    public void deleteComment(@PathVariable String appId, @PathVariable(value = "commentId") Long commentId) {
         Comment comment = getComment(commentId);
         comment.setDeleted(true);
         commentRepository.save(comment);

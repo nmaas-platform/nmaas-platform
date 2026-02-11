@@ -1,7 +1,8 @@
 package net.geant.nmaas.webhooks.jobs;
 
-import net.geant.nmaas.portal.domain.DomainView;
-import net.geant.nmaas.portal.domain.WebhookEventDto;
+import net.geant.nmaas.api.dto.domains.DomainView;
+import net.geant.nmaas.api.dto.webhooks.WebhookEventDto;
+import net.geant.nmaas.api.dto.webhooks.WebhookEventTypeDto;
 import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.entity.WebhookEventType;
 import net.geant.nmaas.portal.persistence.entity.WebhookHistory;
@@ -59,7 +60,7 @@ class DomainActionJobTest {
         JobExecutionContext jobExecutionContext = mock(JobExecutionContext.class);
         when(jobExecutionContext.getJobDetail()).thenReturn(jobDetail);
         when(webhookEventService.getById(10L)).thenReturn(
-                new WebhookEventDto(10L, "webhook-name", "https://example.webhook-url.pl", WebhookEventType.DOMAIN_ACTION, null, null, null,
+                new WebhookEventDto(10L, "webhook-name", "https://example.webhook-url.pl", WebhookEventTypeDto.DOMAIN_ACTION, null, null, null,
                         "{\"action\": $ACTION, \"event\": $WEBHOOKEVENTTYPE}"));
         when(domainService.findDomain(1L)).thenReturn(Optional.of(new Domain("name", "codename")));
 

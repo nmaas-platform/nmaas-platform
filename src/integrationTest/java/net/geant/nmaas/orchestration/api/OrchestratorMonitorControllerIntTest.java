@@ -2,8 +2,8 @@ package net.geant.nmaas.orchestration.api;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodView;
+import net.geant.nmaas.api.dto.applications.ServiceAccessMethodDto;
+import net.geant.nmaas.api.dto.applications.ServiceAccessMethodTypeDto;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppLifecycleState;
 import net.geant.nmaas.orchestration.AppUiAccessDetails;
@@ -86,8 +86,8 @@ public class OrchestratorMonitorControllerIntTest {
         deployment3.setState(AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFIED);
 
         deployments = Arrays.asList(deployment1, deployment2, deployment3);
-        accessDetails = new AppUiAccessDetails(new HashSet<ServiceAccessMethodView>() {{
-            ServiceAccessMethodView.builder().type(ServiceAccessMethodType.DEFAULT).name("Default").protocol("Web").url("http://testurl:8080").build();
+        accessDetails = new AppUiAccessDetails(new HashSet<>() {{
+            ServiceAccessMethodDto.builder().type(ServiceAccessMethodTypeDto.DEFAULT).name("Default").protocol("Web").url("http://testurl:8080").build();
         }});
         mvc = MockMvcBuilders.standaloneSetup(new AppDeploymentMonitorRestController(deploymentMonitor, modelMapper)).build();
     }

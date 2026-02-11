@@ -2,7 +2,7 @@ package net.geant.nmaas.portal.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.portal.domain.UserApiTokenView;
+import net.geant.nmaas.api.dto.users.UserApiTokenView;
 import net.geant.nmaas.portal.exceptions.DataConflictException;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistence.entity.User;
@@ -40,7 +40,6 @@ public class CustomAccessTokenServiceImpl implements CustomAccessTokenService {
         } else {
             throw new IllegalArgumentException("Token is still valid, can not delete valid token");
         }
-
     }
 
     @Override
@@ -54,10 +53,9 @@ public class CustomAccessTokenServiceImpl implements CustomAccessTokenService {
         String hashedValued = secretPasswordService.hashSecret(token.getTokenValue());
         UserApiTokenView view = mapToView(token);
         token.setTokenValue(hashedValued);
-        log.warn("Token value is : {}, hashed : {}", view.getTokenValue(), hashedValued);
+        log.warn("Token value is: {}, hashed: {}", view.tokenValue(), hashedValued);
         token = userApiTokenRepository.save(token);
-        view.setId(token.getId());
-        return view;
+        return mapToView(token);
     }
 
     @Override
@@ -79,7 +77,6 @@ public class CustomAccessTokenServiceImpl implements CustomAccessTokenService {
     }
 
     private String generateToken() {
-        // uuid is a placeholder for now
         return UUID.randomUUID().toString();
     }
 
@@ -90,11 +87,8 @@ public class CustomAccessTokenServiceImpl implements CustomAccessTokenService {
     }
 
     private UserApiTokenView mapToView(UserApiToken token) {
-        return UserApiTokenView.builder().id(token.getId())
-                .tokenValue(token.getTokenValue())
-                .valid(token.isValid())
-                .deleted(token.isDeleted())
-                .name(token.getName())
-                .build();
+        return new UserApiTokenView(token.getId(), token.getName(), token.getTokenValue(),
+                token.isValid(), token.isDeleted());
     }
+
 }

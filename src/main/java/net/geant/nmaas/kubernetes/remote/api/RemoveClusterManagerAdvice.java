@@ -1,7 +1,7 @@
 package net.geant.nmaas.kubernetes.remote.api;
 
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.portal.domain.ApiError;
+import net.geant.nmaas.api.dto.ApiError;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -16,7 +16,7 @@ public class RemoveClusterManagerAdvice {
     public ApiError handleValidationExceptions(NoSuchElementException ex) {
         log.warn("Responding with 400 with errors: {}", ex.getMessage());
         long timestamp = System.currentTimeMillis();
-        return new ApiError(ex.getMessage(), timestamp, HttpStatus.BAD_REQUEST);
+        return new ApiError(ex.getMessage(), timestamp, HttpStatus.BAD_REQUEST.getReasonPhrase(), HttpStatus.BAD_REQUEST.value());
     }
 
 }

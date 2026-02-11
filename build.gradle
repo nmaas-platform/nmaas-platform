@@ -9,6 +9,7 @@ plugins {
 }
 
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 
@@ -85,6 +86,8 @@ dependencies {
     implementation('org.modelmapper:modelmapper:3.2.6')
     implementation('org.modelmapper.extensions:modelmapper-spring:3.2.6')
     implementation('org.apache.commons:commons-lang3:3.20.0')
+
+    implementation('net.geant.nmaas:nmaas-platform-dto:1.0.0-SNAPSHOT')
 
     // Database
     runtimeOnly('com.h2database:h2')
@@ -274,3 +277,8 @@ sonarqube {
         property "sonar.coverage.exclusions", ["**/exception/**", "**/exceptions/**"]
     }
 }
+
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs += ['-parameters']
+}
+

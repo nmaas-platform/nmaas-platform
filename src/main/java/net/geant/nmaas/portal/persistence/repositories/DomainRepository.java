@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.persistence.repositories;
 
-import net.geant.nmaas.portal.domain.DomainBase;
+import net.geant.nmaas.api.dto.domains.DomainBaseDto;
 import net.geant.nmaas.portal.persistence.entity.Domain;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,11 +24,11 @@ public interface DomainRepository extends JpaRepository<Domain, Long>, JpaSpecif
 
     Optional<Domain> findByCodename(String name);
 
-    @Query("SELECT new net.geant.nmaas.portal.domain.DomainBase(d.id, d.name, d.codename, d.active, d.deleted) FROM Domain d where d.deleted = false")
-    List<DomainBase> findAllBaseDomains();
+    @Query("SELECT new net.geant.nmaas.api.dto.domains.DomainBaseDto(d.id, d.name, d.codename, d.active, d.deleted) FROM Domain d where d.deleted = false")
+    List<DomainBaseDto> findAllBaseDomains();
 
-    @Query("SELECT new net.geant.nmaas.portal.domain.DomainBase(d.id, d.name, d.codename, d.active, d.deleted) FROM Domain d where d.deleted = false")
-    Page<DomainBase> findAllBaseDomainsPageable(Pageable pageable);
+    @Query("SELECT new net.geant.nmaas.api.dto.domains.DomainBaseDto(d.id, d.name, d.codename, d.active, d.deleted) FROM Domain d where d.deleted = false")
+    Page<DomainBaseDto> findAllBaseDomainsPageable(Pageable pageable);
 
     Page<Domain> findAll(Specification<Domain> spec, Pageable pageable);
 

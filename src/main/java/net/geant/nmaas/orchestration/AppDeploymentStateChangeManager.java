@@ -2,10 +2,10 @@ package net.geant.nmaas.orchestration;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.api.dto.applications.ServiceAccessMethodDto;
+import net.geant.nmaas.api.dto.applications.ServiceAccessMethodTypeDto;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent.EventDetailType;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodView;
 import net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState;
 import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
@@ -144,8 +144,8 @@ public class AppDeploymentStateChangeManager {
     private String prepareDeployUrl(AppDeployment appDeployment) {
         String url = deploymentMonitor.userAccessDetails(appDeployment.getDeploymentId())
                 .getServiceAccessMethods().stream()
-                .filter(m -> !Arrays.asList(ServiceAccessMethodType.INTERNAL, ServiceAccessMethodType.LOCAL).contains(m.getType()))
-                .map(ServiceAccessMethodView::getUrl)
+                .filter(m -> !Arrays.asList(ServiceAccessMethodTypeDto.INTERNAL, ServiceAccessMethodTypeDto.LOCAL).contains(m.getType()))
+                .map(ServiceAccessMethodDto::getUrl)
                 .findFirst()
                 .orElse("");
 

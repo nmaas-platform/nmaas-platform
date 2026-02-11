@@ -2,11 +2,11 @@ package net.geant.nmaas.nmservice.configuration;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import net.geant.nmaas.api.dto.applications.AppConfigRepositoryAccessDetails;
 import net.geant.nmaas.kubernetes.KubernetesApiJanitorService;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.configuration.exceptions.NmServiceConfigurationFailedException;
 import net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState;
-import net.geant.nmaas.orchestration.AppConfigRepositoryAccessDetails;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;

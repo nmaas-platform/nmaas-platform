@@ -2,7 +2,15 @@ package net.geant.nmaas.portal.api.domains;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.api.dto.Id;
+import net.geant.nmaas.api.dto.KeyValueView;
+import net.geant.nmaas.api.dto.domains.DomainAnnotationView;
+import net.geant.nmaas.api.dto.domains.DomainBaseDto;
+import net.geant.nmaas.api.dto.domains.DomainBaseWithState;
+import net.geant.nmaas.api.dto.domains.DomainRequest;
+import net.geant.nmaas.api.dto.domains.DomainView;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentStateChangeEvent;
+import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 import net.geant.nmaas.dcn.deployment.entities.CustomerNetwork;
 import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
 import net.geant.nmaas.orchestration.events.dcn.DcnDeployedEvent;
@@ -11,13 +19,6 @@ import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
 import net.geant.nmaas.portal.api.BaseController;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
-import net.geant.nmaas.portal.domain.DomainAnnotationView;
-import net.geant.nmaas.portal.domain.DomainBase;
-import net.geant.nmaas.portal.domain.DomainBaseWithState;
-import net.geant.nmaas.portal.domain.DomainRequest;
-import net.geant.nmaas.portal.domain.DomainView;
-import net.geant.nmaas.portal.domain.Id;
-import net.geant.nmaas.portal.domain.KeyValueView;
 import net.geant.nmaas.portal.exceptions.DataConflictException;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistence.entity.ApplicationStatePerDomain;
@@ -109,7 +110,7 @@ public class DomainController extends BaseController {
     @GetMapping("/{domainId}")
     @Transactional(readOnly = true)
     @PreAuthorize("hasPermission(#domainId, 'domain', 'READ')")
-    public DomainBase getDomain(@PathVariable(value = "domainId") Long domainId, @NotNull Principal principal) {
+    public DomainBaseDto getDomain(@PathVariable(value = "domainId") Long domainId, @NotNull Principal principal) {
         User user = userService.findByUsername(principal.getName()).orElseThrow(() -> new ProcessingException("User not found."));
         Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND));
         // if is system admin or domain admin than return full view
@@ -130,7 +131,7 @@ public class DomainController extends BaseController {
     @GetMapping("/name/{domainName}")
     @Transactional(readOnly = true)
     @PreAuthorize("hasPermission(#domainId, 'domain', 'READ')")
-    public DomainBase getDomainByName(@PathVariable(value = "domainName") String domainName, @NotNull Principal principal) {
+    public DomainBaseDto getDomainByName(@PathVariable(value = "domainName") String domainName, @NotNull Principal principal) {
         User user = userService.findByUsername(principal.getName()).orElseThrow(() -> new ProcessingException("User not found."));
         Domain domain = domainService.findDomain(domainName).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND));
         // if is system admin or domain admin than return full view
@@ -150,11 +151,11 @@ public class DomainController extends BaseController {
 
     @GetMapping("/my")
     @Transactional(readOnly = true)
-    public List<DomainBase> getMyDomains(@NotNull Principal principal, @RequestParam(required = false) String searchValue) {
+    public List<DomainBaseDto> getMyDomains(@NotNull Principal principal, @RequestParam(required = false) String searchValue) {
         try {
             User user = userService.findByUsername(principal.getName()).orElseThrow(() -> new ProcessingException("User not found"));
             return domainService.getUserDomains(user.getId(), searchValue).stream()
-                    .map(d -> modelMapper.map(d, DomainBase.class))
+                    .map(d -> modelMapper.map(d, DomainBaseDto.class))
                     .toList();
         } catch (ObjectNotFoundException e) {
             throw new MissingElementException(e.getMessage());
@@ -171,7 +172,7 @@ public class DomainController extends BaseController {
 
         try {
             Domain domain = domainService.createDomain(domainRequest);
-            this.domainService.storeDcnInfo(domain.getCodename(), domain.getDomainDcnDetails().getDcnDeploymentType());
+            domainService.storeDcnInfo(domain.getCodename(), domain.getDomainDcnDetails().getDcnDeploymentType());
 
             if (domain.getDomainDcnDetails().isDcnConfigured()) {
                 this.eventPublisher.publishEvent(new DcnDeploymentStateChangeEvent(this, domain.getCodename(), DcnDeploymentState.DEPLOYED));
@@ -196,13 +197,12 @@ public class DomainController extends BaseController {
         }
 
         Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND));
-
         domain.setName(domainUpdate.getName());
         domain.setActive(domainUpdate.isActive());
         domain.getDomainTechDetails().setKubernetesNamespace(domainUpdate.getDomainTechDetails().getKubernetesNamespace());
         domain.getDomainTechDetails().setKubernetesIngressClass(domainUpdate.getDomainTechDetails().getKubernetesIngressClass());
         domain.getDomainTechDetails().setKubernetesStorageClass(domainUpdate.getDomainTechDetails().getKubernetesStorageClass());
-        domain.getDomainDcnDetails().setDcnDeploymentType(domainUpdate.getDomainDcnDetails().getDcnDeploymentType());
+        domain.getDomainDcnDetails().setDcnDeploymentType(DcnDeploymentType.valueOf(domainUpdate.getDomainDcnDetails().getDcnDeploymentType().name()));
         domain.getDomainDcnDetails().getCustomerNetworks().clear();
         domainUpdate.getDomainDcnDetails().getCustomerNetworks().stream().map(CustomerNetwork::of).forEach(net -> domain.getDomainDcnDetails().getCustomerNetworks().add(net));
         if (StringUtils.isEmpty(domainUpdate.getDomainTechDetails().getExternalServiceDomain())) {
@@ -232,10 +232,10 @@ public class DomainController extends BaseController {
         domain.getDomainTechDetails().setKubernetesNamespace(domainUpdate.getDomainTechDetails().getKubernetesNamespace());
         domain.getDomainTechDetails().setKubernetesIngressClass(domainUpdate.getDomainTechDetails().getKubernetesIngressClass());
         domain.getDomainTechDetails().setKubernetesStorageClass(domainUpdate.getDomainTechDetails().getKubernetesStorageClass());
-        domain.getDomainDcnDetails().setDcnDeploymentType(domainUpdate.getDomainDcnDetails().getDcnDeploymentType());
+        domain.getDomainDcnDetails().setDcnDeploymentType(DcnDeploymentType.valueOf(domainUpdate.getDomainDcnDetails().getDcnDeploymentType().name()));
 
         domainService.updateDomain(domain);
-        domainService.updateDcnInfo(domain.getCodename(), domainUpdate.getDomainDcnDetails().getDcnDeploymentType());
+        domainService.updateDcnInfo(domain.getCodename(), DcnDeploymentType.valueOf(domainUpdate.getDomainDcnDetails().getDcnDeploymentType().name()));
 
         return new Id(domainId);
     }

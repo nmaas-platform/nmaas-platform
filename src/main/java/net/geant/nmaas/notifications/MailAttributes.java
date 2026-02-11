@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.geant.nmaas.notifications.templates.MailType;
-import net.geant.nmaas.portal.domain.UserView;
+import net.geant.nmaas.api.dto.users.UserView;
 
 import java.io.Serializable;
 import java.util.HashMap;

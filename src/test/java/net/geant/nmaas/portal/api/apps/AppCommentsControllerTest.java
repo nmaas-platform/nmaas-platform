@@ -1,9 +1,10 @@
 package net.geant.nmaas.portal.api.apps;
 
-import net.geant.nmaas.portal.domain.CommentRequest;
-import net.geant.nmaas.portal.domain.CommentView;
+import net.geant.nmaas.api.dto.applications.CommentRequest;
+import net.geant.nmaas.api.dto.applications.CommentView;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
+import net.geant.nmaas.portal.domain.converters.CommentConverter;
 import net.geant.nmaas.portal.persistence.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistence.entity.Comment;
 import net.geant.nmaas.portal.persistence.entity.User;
@@ -43,7 +44,6 @@ class AppCommentsControllerTest {
     private AppCommentsController appCommentsController;
 
     private ApplicationBase app;
-
     private User user;
 
     @BeforeEach
@@ -55,8 +55,10 @@ class AppCommentsControllerTest {
         user = new User("user");
         when(userRepository.findByUsername("user")).thenReturn(Optional.of(user));
 
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.addConverter(new CommentConverter());
         this.appCommentsController = new AppCommentsController(
-                new ModelMapper(),
+                modelMapper,
                 applicationService,
                 applicationBaseService,
                 userService,
@@ -69,10 +71,7 @@ class AppCommentsControllerTest {
         Principal principal = mock(Principal.class);
         when(principal.getName()).thenReturn(user.getUsername());
 
-        CommentRequest cr = new CommentRequest();
-        cr.setParentId(null);
-        cr.setComment("Test comment");
-
+        CommentRequest cr = new CommentRequest(null, "Test comment");
         appCommentsController.addComment(app.getId(), cr, principal);
 
         verify(commentRepository, times(1)).save(any(Comment.class));
@@ -83,20 +82,14 @@ class AppCommentsControllerTest {
         Principal principal = mock(Principal.class);
         when(principal.getName()).thenReturn(user.getUsername());
 
-        CommentRequest cr = new CommentRequest();
-        cr.setParentId(null);
-        cr.setComment("");
-
+        CommentRequest cr = new CommentRequest(null, "");
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> {
             appCommentsController.addComment(app.getId(), cr, principal);
         });
 
         assertEquals("Comment cannot be empty", e.getMessage());
 
-        CommentRequest cr2 = new CommentRequest();
-        cr2.setParentId(null);
-        cr2.setComment(null);
-
+        CommentRequest cr2 = new CommentRequest(null, null);
         e = assertThrows(IllegalArgumentException.class, () -> {
             appCommentsController.addComment(app.getId(), cr2, principal);
         });
@@ -109,15 +102,12 @@ class AppCommentsControllerTest {
         Principal principal = mock(Principal.class);
         when(principal.getName()).thenReturn(user.getUsername());
 
-        Comment parent = new Comment(app,"Parent", user);
+        Comment parent = new Comment(app, "Parent", user);
         Long parentId = 2137L;
         when(commentRepository.findById(parentId)).thenReturn(Optional.of(parent));
 
-        CommentRequest cr = new CommentRequest();
-        cr.setParentId(parentId);
-        cr.setComment("Child comment");
-
-        this.appCommentsController.addComment(app.getId(), cr, principal);
+        CommentRequest cr = new CommentRequest(parentId, "Child comment");
+        appCommentsController.addComment(app.getId(), cr, principal);
 
         verify(commentRepository, times(1)).save(any(Comment.class));
     }
@@ -130,10 +120,7 @@ class AppCommentsControllerTest {
         Long parentId = 2137L;
         when(commentRepository.findById(parentId)).thenReturn(Optional.empty());
 
-        CommentRequest cr = new CommentRequest();
-        cr.setParentId(parentId);
-        cr.setComment("Child comment");
-
+        CommentRequest cr = new CommentRequest(parentId, "Child comment");
         MissingElementException me = assertThrows(MissingElementException.class, () -> {
             this.appCommentsController.addComment(app.getId(), cr, principal);
         });
@@ -148,14 +135,11 @@ class AppCommentsControllerTest {
 
         ApplicationBase otherApp = new ApplicationBase(14L, "other");
 
-        Comment parent = new Comment(otherApp,"Parent", user);
+        Comment parent = new Comment(otherApp, "Parent", user);
         Long parentId = 2137L;
         when(commentRepository.findById(parentId)).thenReturn(Optional.of(parent));
 
-        CommentRequest cr = new CommentRequest();
-        cr.setParentId(parentId);
-        cr.setComment("Child comment");
-
+        CommentRequest cr = new CommentRequest(parentId, "Child comment");
         ProcessingException me = assertThrows(ProcessingException.class, () -> {
             this.appCommentsController.addComment(app.getId(), cr, principal);
         });

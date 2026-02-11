@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.api.user;
 
-import net.geant.nmaas.portal.domain.SSHKeyRequest;
+import net.geant.nmaas.api.dto.users.SSHKeyRequest;
 import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.entity.Role;
 import net.geant.nmaas.portal.persistence.entity.User;
@@ -16,24 +16,26 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class SSHKeyControllerTest {
 
-    private SSHKeyService sshKeyService = mock(SSHKeyService.class);
-    private UserService userService = mock(UserService.class);
+    private final SSHKeyService sshKeyService = mock(SSHKeyService.class);
+    private final UserService userService = mock(UserService.class);
 
     private SSHKeysController sut;
 
-    private Principal present = mock(Principal.class);
-    private Principal absent = mock(Principal.class);
-
-    private Principal adminPrincipal = mock(Principal.class);
+    private final Principal present = mock(Principal.class);
+    private final Principal absent = mock(Principal.class);
+    private final Principal adminPrincipal = mock(Principal.class);
 
     private User presentUser;
 
     @BeforeEach
-    private void setup() {
+    void setup() {
 
         when(present.getName()).thenReturn("present");
         when(absent.getName()).thenReturn("absent");
@@ -41,8 +43,8 @@ class SSHKeyControllerTest {
 
         this.presentUser = new User("present");
 
-       User admin = new User("admin");
-       admin.setRoles( List.of(new UserRole(new User("admin", true), new Domain("name", "name"), Role.ROLE_SYSTEM_ADMIN)));
+        User admin = new User("admin");
+        admin.setRoles(List.of(new UserRole(new User("admin", true), new Domain("name", "name"), Role.ROLE_SYSTEM_ADMIN)));
 
         when(this.userService.findByUsername("present")).thenReturn(Optional.of(presentUser));
         when(this.userService.findByUsername("absent")).thenReturn(Optional.empty());
@@ -103,7 +105,7 @@ class SSHKeyControllerTest {
 
     @Test
     void shouldInvalidateKeyUser() {
-        this.sut.invalidateUserKey(adminPrincipal,12L, 1L);
+        this.sut.invalidateUserKey(adminPrincipal, 12L, 1L);
 
         verify(sshKeyService, times(1)).invalidate(presentUser, 12L);
     }

@@ -3,10 +3,10 @@ package net.geant.nmaas.portal.api.domains;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import net.geant.nmaas.api.dto.Id;
+import net.geant.nmaas.api.dto.ResourcesLimitDto;
+import net.geant.nmaas.api.dto.ResourcesLimitUpdateDto;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
-import net.geant.nmaas.portal.domain.Id;
-import net.geant.nmaas.portal.domain.ResourcesLimitDto;
-import net.geant.nmaas.portal.domain.ResourcesLimitUpdateDto;
 import net.geant.nmaas.portal.service.ResourcesLimitService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -50,18 +50,18 @@ public class ResourcesLimitController {
     @Transactional
     public ResponseEntity<Id> createResourcesLimit(@RequestBody @Valid ResourcesLimitDto resourcesLimit) {
         resourcesLimit = resourcesLimitService.create(resourcesLimit);
-        return ResponseEntity.ok(new Id(resourcesLimit.getId()));
+        return ResponseEntity.ok(new Id(resourcesLimit.id()));
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @Transactional
     public ResponseEntity<Id> updateResourcesLimit(@PathVariable Long id, @RequestBody @Valid ResourcesLimitUpdateDto resourcesLimit) {
-        if (!id.equals(resourcesLimit.getId())) {
+        if (!id.equals(resourcesLimit.id())) {
             throw new ProcessingException("Path and body id are not equal");
         }
         resourcesLimitService.update(resourcesLimit);
-        return ResponseEntity.ok(new Id(resourcesLimit.getId()));
+        return ResponseEntity.ok(new Id(resourcesLimit.id()));
     }
 
     @DeleteMapping("/{id}")

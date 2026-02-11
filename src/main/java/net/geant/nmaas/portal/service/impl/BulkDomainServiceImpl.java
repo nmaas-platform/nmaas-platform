@@ -1,18 +1,18 @@
 package net.geant.nmaas.portal.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
+import net.geant.nmaas.api.dto.KeyValueView;
+import net.geant.nmaas.api.dto.domains.DcnDeploymentTypeDto;
+import net.geant.nmaas.api.dto.domains.DomainDcnDetailsView;
+import net.geant.nmaas.api.dto.domains.DomainGroupDto;
+import net.geant.nmaas.api.dto.domains.DomainRequest;
+import net.geant.nmaas.api.dto.domains.DomainTechDetailsView;
+import net.geant.nmaas.api.dto.users.UserViewMinimal;
 import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
 import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
 import net.geant.nmaas.kubernetes.KubernetesClusterIngressManager;
 import net.geant.nmaas.portal.api.bulk.CsvDomain;
 import net.geant.nmaas.portal.api.bulk.model.BulkDeploymentViewS;
-import net.geant.nmaas.portal.domain.DomainDcnDetailsView;
-import net.geant.nmaas.portal.domain.DomainGroupView;
-import net.geant.nmaas.portal.domain.DomainRequest;
-import net.geant.nmaas.portal.domain.DomainTechDetailsView;
-import net.geant.nmaas.portal.domain.KeyValueView;
-import net.geant.nmaas.portal.domain.UserViewMinimal;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.persistence.entity.BulkDeployment;
 import net.geant.nmaas.portal.persistence.entity.BulkDeploymentEntry;
@@ -142,7 +142,8 @@ public class BulkDomainServiceImpl implements BulkDomainService {
             } else {
                 domainTechDetails.setKubernetesIngressClass(kubernetesClusterIngressManager.getSupportedIngressClass());
             }
-            DomainDcnDetailsView domainDcnDetails = new DomainDcnDetailsView(null, domainCodename, true, DcnDeploymentType.MANUAL, null);
+            DomainDcnDetailsView domainDcnDetails = new DomainDcnDetailsView(
+                    null, domainCodename, true, DcnDeploymentTypeDto.MANUAL, null);
             DomainRequest domainRequest = new DomainRequest(
                     csvDomain.getDomainName(),
                     domainCodename,
@@ -204,7 +205,7 @@ public class BulkDomainServiceImpl implements BulkDomainService {
         groupNames.forEach(groupName -> {
             log.info("Adding domain {} to group {}", domain.getName(), groupName);
             if (!domainGroupService.existDomainGroup(groupName, groupName)) {
-                domainGroupService.createDomainGroup(new DomainGroupView(null, groupName, groupName, null, null, List.of(creator)));
+                domainGroupService.createDomainGroup(new DomainGroupDto(null, groupName, groupName, null, null, List.of(creator)));
                 domainGroupService.addDomainsToGroup(List.of(domain), groupName);
                 User user = userService.findByUsername(creator.getUsername()).orElseThrow(() -> new MissingElementException("User not found"));
                 userRoleRepository.save(new UserRole(user, domain, ROLE_GROUP_DOMAIN_ADMIN));

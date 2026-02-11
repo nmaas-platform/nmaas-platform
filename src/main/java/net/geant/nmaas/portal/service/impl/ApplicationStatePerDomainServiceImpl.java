@@ -2,8 +2,8 @@ package net.geant.nmaas.portal.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
-import net.geant.nmaas.portal.domain.ApplicationStatePerDomainView;
-import net.geant.nmaas.portal.domain.DomainView;
+import net.geant.nmaas.api.dto.applications.ApplicationStatePerDomainView;
+import net.geant.nmaas.api.dto.domains.DomainView;
 import net.geant.nmaas.portal.persistence.entity.Application;
 import net.geant.nmaas.portal.persistence.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistence.entity.ApplicationStatePerDomain;

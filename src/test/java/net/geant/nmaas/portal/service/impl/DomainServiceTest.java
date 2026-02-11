@@ -1,5 +1,13 @@
 package net.geant.nmaas.portal.service.impl;
 
+import net.geant.nmaas.api.dto.domains.DcnDeploymentTypeDto;
+import net.geant.nmaas.api.dto.domains.DomainBaseDto;
+import net.geant.nmaas.api.dto.domains.DomainDcnDetailsView;
+import net.geant.nmaas.api.dto.domains.DomainGroupDto;
+import net.geant.nmaas.api.dto.domains.DomainRequest;
+import net.geant.nmaas.api.dto.domains.DomainTechDetailsView;
+import net.geant.nmaas.api.dto.users.UserView;
+import net.geant.nmaas.api.dto.users.UserViewMinimal;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 import net.geant.nmaas.dcn.deployment.DcnRepositoryManager;
 import net.geant.nmaas.dcn.deployment.entities.DomainDcnDetails;
@@ -8,13 +16,6 @@ import net.geant.nmaas.kubernetes.remote.entities.KCluster;
 import net.geant.nmaas.kubernetes.remote.repositories.KClusterRepository;
 import net.geant.nmaas.orchestration.entities.DomainTechDetails;
 import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
-import net.geant.nmaas.portal.domain.DomainBase;
-import net.geant.nmaas.portal.domain.DomainDcnDetailsView;
-import net.geant.nmaas.portal.domain.DomainGroupView;
-import net.geant.nmaas.portal.domain.DomainRequest;
-import net.geant.nmaas.portal.domain.DomainTechDetailsView;
-import net.geant.nmaas.portal.domain.UserView;
-import net.geant.nmaas.portal.domain.UserViewMinimal;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.events.DomainCreatedEvent;
 import net.geant.nmaas.portal.events.DomainRemovalEvent;
@@ -86,7 +87,7 @@ class DomainServiceTest {
 
     @BeforeEach
     void setup() {
-        domainGroupService = new DomainGroupServiceImpl(domainGroupRepository, applicationStatePerDomainService, eventPublisher,userRoleRepository, modelMapper);
+        domainGroupService = new DomainGroupServiceImpl(domainGroupRepository, applicationStatePerDomainService, eventPublisher, userRoleRepository, modelMapper);
         domainService = new DomainServiceImpl(validator,
                 namespaceValidator, domainRepository, domainDcnDetailsRepository, domainTechDetailsRepository,
                 userService, userRoleRepo, dcnRepositoryManager,
@@ -182,7 +183,7 @@ class DomainServiceTest {
         domain.setDomainDcnDetails(domainDcnDetails);
         when(domainRepository.save(domain)).thenReturn(domain);
         DomainRequest domainRequest = new DomainRequest(name, codename, false);
-        DomainDcnDetailsView domainDcnDetailsView = new DomainDcnDetailsView(null, codename, false, DcnDeploymentType.NONE, Collections.emptyList());
+        DomainDcnDetailsView domainDcnDetailsView = new DomainDcnDetailsView(null, codename, false, DcnDeploymentTypeDto.NONE, Collections.emptyList());
         DomainTechDetailsView domainTechDetailsView = new DomainTechDetailsView(null, codename, null, kubernetesNamespace, kubernetesStorageClass, null);
         domainRequest.setDomainDcnDetails(domainDcnDetailsView);
         domainRequest.setDomainTechDetails(domainTechDetailsView);
@@ -513,7 +514,7 @@ class DomainServiceTest {
 
     @Test
     void shouldChangeMembersFromGroupView() {
-        DomainBase domain1 = new DomainBase();
+        DomainBaseDto domain1 = new DomainBaseDto();
         domain1.setId(1L);
         domain1.setName("dom1");
         domain1.setCodename("dom1");
@@ -528,7 +529,7 @@ class DomainServiceTest {
 
         UserViewMinimal userView2 = new UserViewMinimal();
         userView2.setId(2L);
-        DomainGroupView domainGroupView = new DomainGroupView(1L, "test", "test1", List.of(domain1), null, List.of(userView));
+        DomainGroupDto domainGroupView = new DomainGroupDto(1L, "test", "test1", List.of(domain1), null, List.of(userView));
 
         User user = new User("user");
         DomainGroup domainGroup = new DomainGroup(1L, "test", "test1");
@@ -536,7 +537,7 @@ class DomainServiceTest {
 
         when(domainGroupRepository.findById(1L)).thenReturn(Optional.of(domainGroup));
 
-        DomainGroupView result = domainService.updateMembers(List.of(userView2), domainGroupView);
+        DomainGroupDto result = domainService.updateMembers(List.of(userView2), domainGroupView);
 
         assertEquals(1, result.getManagers().size());
         assertEquals(2L, result.getManagers().getFirst().getId());
@@ -544,7 +545,7 @@ class DomainServiceTest {
 
     @Test
     void shouldAddMembersFromGroupView() {
-        DomainBase domain1 = new DomainBase();
+        DomainBaseDto domain1 = new DomainBaseDto();
         domain1.setId(1L);
         domain1.setName("dom1");
         domain1.setCodename("dom1");
@@ -560,20 +561,20 @@ class DomainServiceTest {
         UserViewMinimal userView2 = new UserViewMinimal();
         userView2.setId(2L);
 
-        DomainGroupView domainGroupView = new DomainGroupView(1L, "test", "test1", List.of(domain1), null, List.of(userView));
+        DomainGroupDto domainGroupView = new DomainGroupDto(1L, "test", "test1", List.of(domain1), null, List.of(userView));
         User user = new User("user");
         DomainGroup domainGroup = new DomainGroup(1L, "test", "test1");
         domainGroup.setManagers(List.of(user));
         when(domainGroupRepository.findById(1L)).thenReturn(Optional.of(domainGroup));
 
-        DomainGroupView result = domainService.updateMembers(List.of(userView2, userView), domainGroupView);
+        DomainGroupDto result = domainService.updateMembers(List.of(userView2, userView), domainGroupView);
 
         assertEquals(2, result.getManagers().size());
     }
 
     @Test
     void shouldDeleteMembersFromGroupView() {
-        DomainBase domain1 = new DomainBase();
+        DomainBaseDto domain1 = new DomainBaseDto();
         domain1.setId(1L);
         domain1.setName("dom1");
         domain1.setCodename("dom1");
@@ -586,16 +587,13 @@ class DomainServiceTest {
         UserViewMinimal userView = new UserViewMinimal();
         userView.setId(1L);
 
-        UserViewMinimal userView2 = new UserViewMinimal();
-        userView2.setId(2L);
-
-        DomainGroupView domainGroupView = new DomainGroupView(1L, "test", "test1", List.of(domain1), null, List.of(userView));
+        DomainGroupDto domainGroupView = new DomainGroupDto(1L, "test", "test1", List.of(domain1), null, List.of(userView));
         User user = new User("user");
         DomainGroup domainGroup = new DomainGroup(1L, "test", "test1");
         domainGroup.setManagers(List.of(user));
         when(domainGroupRepository.findById(1L)).thenReturn(Optional.of(domainGroup));
 
-        DomainGroupView result = domainService.updateMembers(List.of(), domainGroupView);
+        DomainGroupDto result = domainService.updateMembers(List.of(), domainGroupView);
 
         assertEquals(0, result.getManagers().size());
     }

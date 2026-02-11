@@ -2,6 +2,9 @@ package net.geant.nmaas.portal.api.apps;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import net.geant.nmaas.api.dto.applications.AppDescriptionView;
+import net.geant.nmaas.api.dto.applications.ApplicationBaseView;
+import net.geant.nmaas.api.dto.applications.TagView;
 import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.HelmChartRepositoryEmbeddable;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesChart;
@@ -12,9 +15,6 @@ import net.geant.nmaas.orchestration.entities.AppAccessMethod;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.entities.AppStorageVolume;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
-import net.geant.nmaas.portal.domain.AppDescriptionView;
-import net.geant.nmaas.portal.domain.ApplicationBaseView;
-import net.geant.nmaas.portal.domain.TagView;
 import net.geant.nmaas.portal.persistence.entity.Application;
 import net.geant.nmaas.portal.persistence.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistence.entity.ApplicationState;
@@ -50,27 +50,32 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 public class TagControllerIntTest extends BaseControllerTestSetup {
 
-    @Autowired
-    private ApplicationService applicationService;
+    private final ApplicationService applicationService;
 
-    @Autowired
-    private ApplicationBaseService applicationBaseService;
+    private final ApplicationBaseService applicationBaseService;
 
-    @Autowired
-    private TagRepository tagRepository;
+    private final TagRepository tagRepository;
 
-    @Autowired
-    private ApplicationRepository appRepository;
+    private final ApplicationRepository appRepository;
 
-    @Autowired
-    private ApplicationBaseRepository appBaseRepo;
+    private final ApplicationBaseRepository applicationBaseRepository;
+
+    private final ModelMapper modelMapper;
+
+    public TagControllerIntTest(@Autowired ApplicationService applicationService, @Autowired ApplicationBaseService applicationBaseService,
+                                @Autowired TagRepository tagRepository, @Autowired ApplicationRepository appRepository,
+                                @Autowired ApplicationBaseRepository applicationBaseRepository, @Autowired ModelMapper modelMapper) {
+        this.applicationService = applicationService;
+        this.applicationBaseService = applicationBaseService;
+        this.tagRepository = tagRepository;
+        this.appRepository = appRepository;
+        this.applicationBaseRepository = applicationBaseRepository;
+        this.modelMapper = modelMapper;
+    }
 
     @BeforeEach
     void setup() {
         this.mvc = createMVC();
-
-        ModelMapper modelMapper = new ModelMapper();
-
         ApplicationBase base1 = applicationBaseService.create(
                 modelMapper.map(
                         getDefaultApplicationBaseView("app1"),
@@ -99,7 +104,7 @@ public class TagControllerIntTest extends BaseControllerTestSetup {
     @AfterEach
     void teardown() {
         this.appRepository.deleteAll();
-        this.appBaseRepo.deleteAll();
+        this.applicationBaseRepository.deleteAll();
         this.tagRepository.deleteAll();
     }
 
@@ -116,7 +121,6 @@ public class TagControllerIntTest extends BaseControllerTestSetup {
                 .andReturn();
         Set<String> resultSet = new ObjectMapper().readValue(result.getResponse().getContentAsByteArray(), new TypeReference<Set<String>>() {
         });
-        System.out.println(result.getResponse().getContentAsString());
         assertTrue(resultSet.contains("tag1"));
     }
 
@@ -128,6 +132,7 @@ public class TagControllerIntTest extends BaseControllerTestSetup {
                 .andReturn();
         Set<ApplicationBaseView> resultSet = new ObjectMapper().readValue(result.getResponse().getContentAsByteArray(), new TypeReference<Set<ApplicationBaseView>>() {
         });
+
         assertEquals(2, resultSet.size());
     }
 

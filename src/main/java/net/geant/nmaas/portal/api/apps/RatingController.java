@@ -1,8 +1,8 @@
 package net.geant.nmaas.portal.api.apps;
 
 import jakarta.validation.constraints.NotNull;
-import net.geant.nmaas.portal.domain.ApiResponse;
-import net.geant.nmaas.portal.domain.AppRateView;
+import net.geant.nmaas.api.dto.ApiResponse;
+import net.geant.nmaas.api.dto.applications.AppRateView;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.persistence.entity.AppRate;
 import net.geant.nmaas.portal.persistence.entity.ApplicationBase;

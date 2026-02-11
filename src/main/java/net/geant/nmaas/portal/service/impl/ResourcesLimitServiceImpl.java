@@ -2,11 +2,10 @@ package net.geant.nmaas.portal.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.api.dto.ResourcesLimitDto;
+import net.geant.nmaas.api.dto.ResourcesLimitUpdateDto;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
-import net.geant.nmaas.portal.domain.ResourcesLimitDto;
-import net.geant.nmaas.portal.domain.ResourcesLimitUpdateDto;
 import net.geant.nmaas.portal.persistence.entity.ResourcesLimit;
-import net.geant.nmaas.portal.persistence.entity.ResourcesLimitType;
 import net.geant.nmaas.portal.persistence.repositories.ResourcesLimitRepository;
 import net.geant.nmaas.portal.service.ResourcesLimitService;
 import org.modelmapper.ModelMapper;
@@ -14,6 +13,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+
+import static net.geant.nmaas.portal.persistence.entity.ResourcesLimitType.DOMAIN;
+import static net.geant.nmaas.portal.persistence.entity.ResourcesLimitType.DOMAIN_GROUP;
+import static net.geant.nmaas.portal.persistence.entity.ResourcesLimitType.GLOBAL;
 
 @Service
 @RequiredArgsConstructor
@@ -31,14 +34,14 @@ public class ResourcesLimitServiceImpl implements ResourcesLimitService {
 
     @Override
     public void setGlobalResourcesLimit(ResourcesLimitDto dto) {
-        List<ResourcesLimit> limits = resourcesLimitRepository.findByLimitType(ResourcesLimitType.GLOBAL);
+        List<ResourcesLimit> limits = resourcesLimitRepository.findByLimitType(GLOBAL);
         if (limits.size() == 1) {
             log.info("Updating existing global limit");
             ResourcesLimit limitFromDb = limits.getFirst();
-            limitFromDb.setCpu(dto.getCpu());
-            limitFromDb.setMemory(dto.getMemory());
-            limitFromDb.setContainersNo(dto.getContainersNo());
-            limitFromDb.setInstancesNo(dto.getInstancesNo());
+            limitFromDb.setCpu(dto.cpu());
+            limitFromDb.setMemory(dto.memory());
+            limitFromDb.setContainersNo(dto.containersNo());
+            limitFromDb.setInstancesNo(dto.instancesNo());
             resourcesLimitRepository.save(limitFromDb);
             return;
         }
@@ -51,7 +54,7 @@ public class ResourcesLimitServiceImpl implements ResourcesLimitService {
 
     @Override
     public ResourcesLimitDto getGlobalResourcesLimit() {
-        List<ResourcesLimit> limits = resourcesLimitRepository.findByLimitType(ResourcesLimitType.GLOBAL);
+        List<ResourcesLimit> limits = resourcesLimitRepository.findByLimitType(GLOBAL);
         if (limits.size() == 1) {
             return modelMapper.map(limits.getFirst(), ResourcesLimitDto.class);
         } else {
@@ -61,31 +64,18 @@ public class ResourcesLimitServiceImpl implements ResourcesLimitService {
 
     @Override
     public ResourcesLimitDto create(ResourcesLimitDto dto) {
-        log.info("Creating resources limit of type {}", dto.getLimitType());
+        log.info("Creating resources limit of type {}", dto.limitType());
 
-        if (ResourcesLimitType.GLOBAL.equals(dto.getLimitType()) && resourcesLimitRepository.existsByLimitType(ResourcesLimitType.GLOBAL)) {
+        if (GLOBAL.equals(dto.limitType()) && resourcesLimitRepository.existsByLimitType(GLOBAL)) {
             throw new IllegalArgumentException(GLOBAL_UNIQUE_RESOURCES_LIMIT);
-        } else if (ResourcesLimitType.DOMAIN.equals(dto.getLimitType()) && (dto.getDomain() == null || dto.getDomain().getId() == null)) {
+        } else if (DOMAIN.equals(dto.limitType()) && (dto.domain() == null || dto.domain().getId() == null)) {
             throw new IllegalArgumentException(DOMAIN_RESOURCES_LIMIT);
-        } else if (ResourcesLimitType.DOMAIN.equals(dto.getLimitType()) && dto.getDomain() != null && dto.getDomain().getId() != null && resourcesLimitRepository.existsByDomain_Id(dto.getDomain().getId())) {
+        } else if (DOMAIN.equals(dto.limitType()) && dto.domain() != null && dto.domain().getId() != null && resourcesLimitRepository.existsByDomain_Id(dto.domain().getId())) {
             throw new IllegalArgumentException(DOMAIN_UNIQUE_RESOURCES_LIMIT);
-        } else if (ResourcesLimitType.DOMAIN_GROUP.equals(dto.getLimitType()) && (dto.getDomainGroup() == null || dto.getDomainGroup().getId() == null)) {
+        } else if (DOMAIN_GROUP.equals(dto.limitType()) && (dto.domainGroup() == null || dto.domainGroup().getId() == null)) {
             throw new IllegalArgumentException(DOMAIN_GROUP_RESOURCES_LIMIT);
-        } else if (ResourcesLimitType.DOMAIN_GROUP.equals(dto.getLimitType()) && dto.getDomainGroup() != null && dto.getDomainGroup().getId() != null && resourcesLimitRepository.existsByDomainGroup_Id(dto.getDomainGroup().getId())) {
+        } else if (DOMAIN_GROUP.equals(dto.limitType()) && dto.domainGroup() != null && dto.domainGroup().getId() != null && resourcesLimitRepository.existsByDomainGroup_Id(dto.domainGroup().getId())) {
             throw new IllegalArgumentException(DOMAIN_GROUP_UNIQUE_RESOURCES_LIMIT);
-        }
-
-        switch (dto.getLimitType()) {
-            case GLOBAL:
-                dto.setDomain(null);
-                dto.setDomainGroup(null);
-                break;
-            case DOMAIN:
-                dto.setDomainGroup(null);
-                break;
-            case DOMAIN_GROUP:
-                dto.setDomain(null);
-                break;
         }
 
         ResourcesLimit entity = modelMapper.map(dto, ResourcesLimit.class);
@@ -95,12 +85,12 @@ public class ResourcesLimitServiceImpl implements ResourcesLimitService {
 
     @Override
     public void update(ResourcesLimitUpdateDto dto) {
-        ResourcesLimit entity = resourcesLimitRepository.findById(dto.getId())
+        ResourcesLimit entity = resourcesLimitRepository.findById(dto.id())
                 .orElseThrow(() -> new MissingElementException("Resources Limit not found"));
-        entity.setCpu(dto.getCpu());
-        entity.setMemory(dto.getMemory());
-        entity.setContainersNo(dto.getContainersNo());
-        entity.setInstancesNo(dto.getInstancesNo());
+        entity.setCpu(dto.cpu());
+        entity.setMemory(dto.memory());
+        entity.setContainersNo(dto.containersNo());
+        entity.setInstancesNo(dto.instancesNo());
         resourcesLimitRepository.save(entity);
     }
 

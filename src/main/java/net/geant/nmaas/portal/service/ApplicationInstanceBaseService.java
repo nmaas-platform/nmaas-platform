@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.service;
 
-import net.geant.nmaas.portal.domain.AppInstanceBase;
+import net.geant.nmaas.api.dto.applications.AppInstanceBase;
 import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.entity.User;
 import org.springframework.data.domain.Page;

@@ -1,12 +1,12 @@
 package net.geant.nmaas.webhooks.jobs;
 
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.api.dto.domains.DomainBaseDto;
+import net.geant.nmaas.api.dto.webhooks.DomainActionDto;
+import net.geant.nmaas.api.dto.webhooks.WebhookEventDto;
+import net.geant.nmaas.api.dto.webhooks.WebhookEventTypeDto;
 import net.geant.nmaas.orchestration.exceptions.WebServiceCommunicationException;
-import net.geant.nmaas.portal.domain.DomainActionDto;
-import net.geant.nmaas.portal.domain.DomainBase;
-import net.geant.nmaas.portal.domain.WebhookEventDto;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
-import net.geant.nmaas.portal.persistence.entity.WebhookEventType;
 import net.geant.nmaas.portal.service.AutoWebhookTemplateService;
 import net.geant.nmaas.portal.service.WebhookHistoryService;
 import net.geant.nmaas.portal.service.impl.WebhookEventService;
@@ -35,16 +35,16 @@ public class DomainActionJob extends WebhookJob {
         JobDataMap dataMap = context.getJobDetail().getJobDataMap();
         Long webhookId = dataMap.getLong("webhookId");
         String action = dataMap.getString("action");
-        DomainBase domain = (DomainBase) dataMap.get("domain");
+        DomainBaseDto domain = (DomainBaseDto) dataMap.get("domain");
 
         try {
             WebhookEventDto webhook = webhookEventService.getById(webhookId);
-            if (!WebhookEventType.DOMAIN_ACTION.equals(webhook.getEventType())) {
+            if (!WebhookEventTypeDto.DOMAIN_ACTION.equals(webhook.getEventType())) {
                 log.warn("Webhook's event type with id {} has been updated. DomainActionJob is abandoned", webhookId);
                 return;
             }
 
-            callWebhook(webhook, new DomainActionDto(domain, action, WebhookEventType.DOMAIN_ACTION));
+            callWebhook(webhook, new DomainActionDto(domain, action, WebhookEventTypeDto.DOMAIN_ACTION));
         } catch (GeneralSecurityException e) {
             log.error("Failed to decrypt webhook with id {}", webhookId);
             throw new JobExecutionException("Failed webhook decryption");

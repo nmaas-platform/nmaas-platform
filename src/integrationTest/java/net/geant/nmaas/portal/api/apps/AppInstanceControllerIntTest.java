@@ -1,6 +1,10 @@
 package net.geant.nmaas.portal.api.apps;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import net.geant.nmaas.api.dto.applications.AppInstanceRequest;
+import net.geant.nmaas.api.dto.applications.AppInstanceViewExtendedDto;
+import net.geant.nmaas.api.dto.users.UserBase;
+import net.geant.nmaas.api.dto.users.UserViewMinimal;
 import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
@@ -10,11 +14,6 @@ import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
-import net.geant.nmaas.portal.domain.AppInstanceRequest;
-import net.geant.nmaas.portal.domain.AppInstanceViewExtended;
-import net.geant.nmaas.portal.domain.AppInstanceViewExtendedDTO;
-import net.geant.nmaas.portal.domain.UserBase;
-import net.geant.nmaas.portal.domain.UserViewMinimal;
 import net.geant.nmaas.portal.persistence.entity.AppInstance;
 import net.geant.nmaas.portal.persistence.entity.Application;
 import net.geant.nmaas.portal.persistence.entity.ApplicationBase;
@@ -29,13 +28,14 @@ import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import net.geant.nmaas.portal.service.ApplicationService;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -52,7 +52,6 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.isNotNull;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -74,7 +73,7 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
     @MockitoBean
     private ApplicationService applicationService;
 
-    @MockitoSpyBean
+    @Autowired
     private ModelMapper modelMapper;
 
     @MockitoBean
@@ -104,12 +103,11 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
         Application application = new Application("name with spaces", "version");
         application.setAppDeploymentSpec(new AppDeploymentSpec());
         application.setAppConfigurationSpec(new AppConfigurationSpec());
-        AppInstanceRequest appInstanceRequest = appInstanceRequest();
+        AppInstanceRequest appInstanceRequest = appInstanceRequest(null);
         when(applicationService.findApplication(1L)).thenReturn(Optional.of(application));
         when(domainService.findDomain(domain.getId())).thenReturn(Optional.of(domain));
-        when(applicationInstanceService.create(domain, application, appInstanceRequest.getName(), appInstanceRequest.isAutoUpgradesEnabled()))
-                .thenReturn(new AppInstance(10L, application, domain, appInstanceRequest.getName(), appInstanceRequest.isAutoUpgradesEnabled()));
-        when(modelMapper.map(application.getAppDeploymentSpec(), AppDeploymentSpec.class)).thenReturn(new AppDeploymentSpec());
+        when(applicationInstanceService.create(domain, application, appInstanceRequest.name(), appInstanceRequest.autoUpgradesEnabled()))
+                .thenReturn(new AppInstance(10L, application, domain, appInstanceRequest.name(), appInstanceRequest.autoUpgradesEnabled()));
         mvc.perform(post("/api/apps/instances/domain/{domainId}", domain.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(appInstanceRequest))
@@ -129,12 +127,11 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
         Application application = new Application("name with spaces", "version");
         application.setAppDeploymentSpec(new AppDeploymentSpec());
         application.setAppConfigurationSpec(new AppConfigurationSpec());
-        AppInstanceRequest appInstanceRequest = appInstanceRequest();
+        AppInstanceRequest appInstanceRequest = appInstanceRequest(null);
         when(applicationService.findApplication(1L)).thenReturn(Optional.of(application));
         when(domainService.findDomain(domain.getId())).thenReturn(Optional.of(domain));
-        when(applicationInstanceService.create(domain, application, appInstanceRequest.getName(), appInstanceRequest.isAutoUpgradesEnabled()))
-                .thenReturn(new AppInstance(10L, application, domain, appInstanceRequest.getName(), appInstanceRequest.isAutoUpgradesEnabled()));
-        when(modelMapper.map(application.getAppDeploymentSpec(), AppDeploymentSpec.class)).thenReturn(new AppDeploymentSpec());
+        when(applicationInstanceService.create(domain, application, appInstanceRequest.name(), appInstanceRequest.autoUpgradesEnabled()))
+                .thenReturn(new AppInstance(10L, application, domain, appInstanceRequest.name(), appInstanceRequest.autoUpgradesEnabled()));
         mvc.perform(post("/api/apps/instances/domain/{domainId}", domain.getId())
                         .param("clusterId", "100")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -156,14 +153,13 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
         Application application = new Application("name", "version");
         application.setAppDeploymentSpec(new AppDeploymentSpec());
         application.setAppConfigurationSpec(new AppConfigurationSpec());
-        AppInstanceRequest appInstanceRequest = appInstanceRequest();
+        AppInstanceRequest appInstanceRequest = appInstanceRequest(null);
         when(applicationService.findApplication(1L)).thenReturn(Optional.of(application));
         when(domainService.findDomain(domain.getId())).thenReturn(Optional.of(domain));
         when(userService.findById(user.getId())).thenReturn(Optional.of(user));
         when(userService.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
-        when(applicationInstanceService.create(domain, application, appInstanceRequest.getName(), appInstanceRequest.isAutoUpgradesEnabled()))
-                .thenReturn(new AppInstance(10L, application, domain, appInstanceRequest.getName(), appInstanceRequest.isAutoUpgradesEnabled()));
-        when(modelMapper.map(application.getAppDeploymentSpec(), AppDeploymentSpec.class)).thenReturn(new AppDeploymentSpec());
+        when(applicationInstanceService.create(domain, application, appInstanceRequest.name(), appInstanceRequest.autoUpgradesEnabled()))
+                .thenReturn(new AppInstance(10L, application, domain, appInstanceRequest.name(), appInstanceRequest.autoUpgradesEnabled()));
         assertDoesNotThrow(() -> {
             mvc.perform(post("/api/apps/instances/domain/{domainId}", domain.getId())
                             .contentType(MediaType.APPLICATION_JSON)
@@ -181,8 +177,7 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
         application.setAppDeploymentSpec(new AppDeploymentSpec());
         application.setAppConfigurationSpec(new AppConfigurationSpec());
 
-        AppInstanceRequest appInstanceDeployed = appInstanceRequest();
-        appInstanceDeployed.setName("deployedAppName");
+        AppInstanceRequest appInstanceDeployed = appInstanceRequest("deployedAppName");
 
         AppInstance appInstance = new AppInstance(application, domain, "deployedAppName", true);
         appInstance.setInternalId(new Identifier("1001"));
@@ -191,9 +186,8 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
 
         when(applicationService.findApplication(1L)).thenReturn(Optional.of(application));
         when(domainService.findDomain(domain.getId())).thenReturn(Optional.of(domain));
-        when(applicationInstanceService.create(domain, application, appInstanceDeployed.getName(), appInstanceDeployed.isAutoUpgradesEnabled()))
-                .thenReturn(new AppInstance(10L, application, domain, appInstanceDeployed.getName(), appInstanceDeployed.isAutoUpgradesEnabled()));
-        when(modelMapper.map(application.getAppDeploymentSpec(), AppDeploymentSpec.class)).thenReturn(new AppDeploymentSpec());
+        when(applicationInstanceService.create(domain, application, appInstanceDeployed.name(), appInstanceDeployed.autoUpgradesEnabled()))
+                .thenReturn(new AppInstance(10L, application, domain, appInstanceDeployed.name(), appInstanceDeployed.autoUpgradesEnabled()));
         when(applicationInstanceService.findAllByDomain(domain)).thenReturn(deployedInstances);
         when(appDeploymentMonitor.state(appInstance.getInternalId())).thenReturn(AppLifecycleState.APPLICATION_DEPLOYED);
 
@@ -201,7 +195,7 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(appInstanceDeployed))
                         .header("Authorization", "Bearer " + getValidTokenForUser(user)))
-                .andExpect(status().isInternalServerError());
+                .andExpect(status().isBadRequest());
         verify(appLifecycleManager, times(0)).deployApplication(ArgumentMatchers.any(AppDeployment.class));
     }
 
@@ -213,8 +207,7 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
         application.setAppDeploymentSpec(new AppDeploymentSpec());
         application.setAppConfigurationSpec(new AppConfigurationSpec());
 
-        AppInstanceRequest appInstanceDone = appInstanceRequest();
-        appInstanceDone.setName("doneAppName");
+        AppInstanceRequest appInstanceDone = appInstanceRequest("doneAppName");
 
         AppInstance appInstance = new AppInstance(application, domain, "doneAppName", true);
         appInstance.setInternalId(new Identifier("1002"));
@@ -223,9 +216,9 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
 
         when(applicationService.findApplication(1L)).thenReturn(Optional.of(application));
         when(domainService.findDomain(domain.getId())).thenReturn(Optional.of(domain));
-        when(applicationInstanceService.create(domain, application, appInstanceDone.getName(), appInstance.isAutoUpgradesEnabled()))
-                .thenReturn(new AppInstance(10L, application, domain, appInstanceDone.getName(), appInstance.isAutoUpgradesEnabled()));
-        when(modelMapper.map(application.getAppDeploymentSpec(), AppDeploymentSpec.class)).thenReturn(new AppDeploymentSpec());
+        when(applicationInstanceService.create(domain, application, appInstanceDone.name(), appInstance.isAutoUpgradesEnabled()))
+                .thenReturn(new AppInstance(10L, application, domain, appInstanceDone.name(), appInstance.isAutoUpgradesEnabled()));
+
         when(applicationInstanceService.findAllByDomain(domain)).thenReturn(deployedInstances);
         when(appDeploymentMonitor.state(appInstance.getInternalId())).thenReturn(AppLifecycleState.APPLICATION_REMOVED);
 
@@ -245,8 +238,7 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
         application.setAppDeploymentSpec(new AppDeploymentSpec());
         application.setAppConfigurationSpec(new AppConfigurationSpec());
 
-        AppInstanceRequest appInstanceRemoved = appInstanceRequest();
-        appInstanceRemoved.setName("removedAppName");
+        AppInstanceRequest appInstanceRemoved = appInstanceRequest("removedAppName");
 
         AppInstance appInstance = new AppInstance(application, domain, "removedAppName", true);
         appInstance.setInternalId(new Identifier("1003"));
@@ -255,9 +247,8 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
 
         when(applicationService.findApplication(1L)).thenReturn(Optional.of(application));
         when(domainService.findDomain(domain.getId())).thenReturn(Optional.of(domain));
-        when(applicationInstanceService.create(domain, application, appInstanceRemoved.getName(), appInstanceRemoved.isAutoUpgradesEnabled()))
-                .thenReturn(new AppInstance(10L, application, domain, appInstanceRemoved.getName(), appInstanceRemoved.isAutoUpgradesEnabled()));
-        when(modelMapper.map(application.getAppDeploymentSpec(), AppDeploymentSpec.class)).thenReturn(new AppDeploymentSpec());
+        when(applicationInstanceService.create(domain, application, appInstanceRemoved.name(), appInstanceRemoved.autoUpgradesEnabled()))
+                .thenReturn(new AppInstance(10L, application, domain, appInstanceRemoved.name(), appInstanceRemoved.autoUpgradesEnabled()));
         when(applicationInstanceService.findAllByDomain(domain)).thenReturn(deployedInstances);
         when(appDeploymentMonitor.state(appInstance.getInternalId())).thenReturn(AppLifecycleState.FAILED_APPLICATION_REMOVED);
 
@@ -267,15 +258,10 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
                         .header("Authorization", "Bearer " + getValidTokenForUser(user)))
                 .andExpect(status().isOk());
         verify(appLifecycleManager, times(1)).deployApplication(ArgumentMatchers.any(AppDeployment.class));
-
     }
 
-    private AppInstanceRequest appInstanceRequest() {
-        AppInstanceRequest appInstanceRequest = new AppInstanceRequest();
-        appInstanceRequest.setApplicationId(1L);
-        appInstanceRequest.setName("appInstanceName");
-        appInstanceRequest.setAutoUpgradesEnabled(true);
-        return appInstanceRequest;
+    private AppInstanceRequest appInstanceRequest(String name) {
+        return new AppInstanceRequest(1L, StringUtils.isNoneBlank(name) ? name : "appInstanceName", true);
     }
 
     @Test
@@ -484,7 +470,7 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
                         .header("Authorization", "Bearer " + getValidTokenForUser(user)))
                 .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
 
-        Set<UserViewMinimal> retrieved = objectMapper.readValue(data, AppInstanceViewExtendedDTO.class).getMembers();
+        Set<UserViewMinimal> retrieved = objectMapper.readValue(data, AppInstanceViewExtendedDto.class).getMembers();
         assertEquals(1, retrieved.size());
     }
 

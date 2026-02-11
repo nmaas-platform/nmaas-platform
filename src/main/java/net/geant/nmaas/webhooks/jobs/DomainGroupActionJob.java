@@ -1,14 +1,14 @@
 package net.geant.nmaas.webhooks.jobs;
 
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.api.dto.domains.DomainGroupDto;
+import net.geant.nmaas.api.dto.webhooks.DomainGroupWebhookDto;
+import net.geant.nmaas.api.dto.webhooks.WebhookEventDto;
+import net.geant.nmaas.api.dto.webhooks.WebhookEventTypeDto;
 import net.geant.nmaas.orchestration.exceptions.WebServiceCommunicationException;
-import net.geant.nmaas.portal.domain.DomainGroupView;
+import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.service.AutoWebhookTemplateService;
 import net.geant.nmaas.portal.service.WebhookHistoryService;
-import net.geant.nmaas.webhooks.DomainGroupWebhookDto;
-import net.geant.nmaas.portal.domain.WebhookEventDto;
-import net.geant.nmaas.portal.api.exceptions.MissingElementException;
-import net.geant.nmaas.portal.persistence.entity.WebhookEventType;
 import net.geant.nmaas.portal.service.impl.WebhookEventService;
 import org.modelmapper.ModelMapper;
 import org.quartz.JobDataMap;
@@ -34,15 +34,15 @@ public class DomainGroupActionJob extends WebhookJob {
         JobDataMap dataMap = context.getJobDetail().getJobDataMap();
         Long webhookId = dataMap.getLong("webhookId");
         String action = dataMap.getString("action");
-        DomainGroupView domainGroup = (DomainGroupView) dataMap.get("domainGroup");
+        DomainGroupDto domainGroup = (DomainGroupDto) dataMap.get("domainGroup");
 
         try {
             WebhookEventDto webhook = webhookEventService.getById(webhookId);
-            if (!WebhookEventType.DOMAIN_GROUP_ACTION.equals(webhook.getEventType())) {
+            if (!WebhookEventTypeDto.DOMAIN_GROUP_ACTION.equals(webhook.getEventType())) {
                 log.warn("Webhook's event type with id {} has been updated. DomainGroupJob is abandoned", webhookId);
                 return;
             }
-            DomainGroupWebhookDto view = new DomainGroupWebhookDto(domainGroup, action, WebhookEventType.DOMAIN_GROUP_ACTION);
+            DomainGroupWebhookDto view = new DomainGroupWebhookDto(domainGroup, action, WebhookEventTypeDto.DOMAIN_GROUP_ACTION);
             callWebhook(webhook, view);
         } catch (GeneralSecurityException e) {
             log.error("Failed to decrypt webhook with id {}", webhookId);
