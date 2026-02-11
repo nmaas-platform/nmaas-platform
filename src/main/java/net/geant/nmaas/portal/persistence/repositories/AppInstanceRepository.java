@@ -141,32 +141,27 @@ public interface AppInstanceRepository extends JpaRepository<AppInstance, Long> 
     @Query("""
             SELECT a
             FROM AppInstance a
+            JOIN AppDeployment l ON l.instanceId = a.id
             WHERE a.domain = :domain
             AND a.domain.deleted = false
             AND (:search IS NULL OR LOWER(a.name) LIKE LOWER(CONCAT('%', :search, '%')))
             AND (
-                       (:deployed = true  AND EXISTS (
-                           SELECT 1
-                           FROM net.geant.nmaas.orchestration.entities.AppDeployment l
-                           WHERE l.instanceId = a.id
+                       (:deployed = true
                              AND l.state NOT IN (
                                net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_REMOVED,
                                net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_CONFIGURATION_REMOVAL_IN_PROGRESS,
                                net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_CONFIGURATION_REMOVED,
                                net.geant.nmaas.orchestration.entities.AppDeploymentState.FAILED_APPLICATION_REMOVED
                              )
-                       ))
-                    OR (:deployed = false AND EXISTS (
-                           SELECT 1
-                           FROM net.geant.nmaas.orchestration.entities.AppDeployment l
-                           WHERE l.instanceId = a.id
+                       )
+                    OR (:deployed = false
                              AND l.state IN (
                                net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_REMOVED,
                                net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_CONFIGURATION_REMOVAL_IN_PROGRESS,
                                net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_CONFIGURATION_REMOVED,
                                net.geant.nmaas.orchestration.entities.AppDeploymentState.FAILED_APPLICATION_REMOVED
                              )
-                       ))
+                       )
                   )
             """)
     Page<AppInstance> findAllNotDeletedByDomainAndByDeployAndSearch(@Param("domain") Domain domain,
