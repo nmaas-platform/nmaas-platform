@@ -5,16 +5,18 @@ import net.geant.nmaas.api.dto.applications.ServiceAccessMethodTypeDto;
 import net.geant.nmaas.orchestration.entities.AppAccessMethod;
 import org.modelmapper.AbstractConverter;
 
+import java.util.Objects;
+
 public class AppAccessMethodConverter extends AbstractConverter<AppAccessMethod, AppAccessMethodView> {
 
     @Override
     protected AppAccessMethodView convert(AppAccessMethod source) {
         return new AppAccessMethodView(
                 source.getId(),
-                ServiceAccessMethodTypeDto.valueOf(source.getType().name()),
+                Objects.nonNull(source.getType()) ? ServiceAccessMethodTypeDto.valueOf(source.getType().name()) : null,
                 source.getName(),
                 source.getTag(),
-                AppAccessMethodView.ConditionType.valueOf(source.getConditionType().name()),
+                Objects.nonNull(source.getConditionType()) ? AppAccessMethodView.ConditionType.valueOf(source.getConditionType().name()) : null,
                 source.getDeployParameters()
         );
     }
