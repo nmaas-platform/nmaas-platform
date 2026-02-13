@@ -43,11 +43,24 @@ public class ApplicationInstanceBaseServiceImpl implements ApplicationInstanceBa
 
     @Override
     public Page<AppInstanceBase> findAll(Pageable pageable, boolean deployed, String search) {
+        Sort mapped = Sort.by(
+                pageable.getSort().stream().map(order -> {
+                    String p = order.getProperty();
+                    String mappedProp = switch (p){
+                        case "owner" -> "owner.username";
+                        case "state" -> "l.state";
+                        case "application" -> "application.name";
+                        default -> p;
+                    };
+                    return new Sort.Order(order.getDirection(), mappedProp);
+                }).toList()
+        );
+        Pageable newPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), mapped);
         return getAppInstanceBases(appInstanceRepo.findAllNotDeletedByDeploy(
                         search,
-                        pageable,
+                        newPageable,
                         deployed),
-                pageable);
+                newPageable);
     }
 
     @Override
@@ -155,6 +168,7 @@ public class ApplicationInstanceBaseServiceImpl implements ApplicationInstanceBa
                     String mappedProp = switch (p){
                         case "owner" -> "owner.username";
                         case "state" -> "l.state";
+                        case "application" -> "application.name";
                         default -> p;
                     };
                 return new Sort.Order(order.getDirection(), mappedProp);
