@@ -17,7 +17,9 @@ import org.apache.commons.lang3.Validate;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -147,11 +149,23 @@ public class ApplicationInstanceBaseServiceImpl implements ApplicationInstanceBa
     @Override
     public Page<AppInstanceBase> findAllByDomain(Domain domain, Pageable pageable, boolean deployed, String search) {
         checkParam(domain);
+        Sort mapped = Sort.by(
+                pageable.getSort().stream().map(order -> {
+                    String p = order.getProperty();
+                    String mappedProp = switch (p){
+                        case "owner" -> "owner.username";
+                        case "state" -> "l.state";
+                        default -> p;
+                    };
+                return new Sort.Order(order.getDirection(), mappedProp);
+                }).toList()
+        );
+        Pageable newPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), mapped);
         return getAppInstanceBases(appInstanceRepo.findAllNotDeletedByDomainAndByDeployAndSearch(
                 domain,
                 search,
                 deployed,
-                pageable), pageable
+                newPageable), newPageable
         );
     }
 
