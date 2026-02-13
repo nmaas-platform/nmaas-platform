@@ -9,8 +9,10 @@ plugins {
 }
 
 repositories {
-    mavenLocal()
     mavenCentral()
+    maven {
+       url = uri("https://artifactory.software.geant.org/artifactory/nmaas-snapshot-local")
+    }
 }
 
 version = '1.9.0'
