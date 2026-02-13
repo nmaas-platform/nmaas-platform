@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.api.apps;
 
-import net.geant.nmaas.api.dto.applications.AppRateView;
+import net.geant.nmaas.api.dto.applications.AppRateDto;
 import net.geant.nmaas.api.dto.applications.ApplicationBaseView;
 import net.geant.nmaas.api.dto.applications.ApplicationSubscription;
 import net.geant.nmaas.api.dto.applications.ApplicationSubscriptionBase;
@@ -117,12 +117,12 @@ public class ApplicationSubscriptionController extends AppBaseController {
 
     private ApplicationBaseView setAppRating(ApplicationBaseView baseView) {
         Integer[] rating = this.ratingRepository.getApplicationRating(baseView.getId());
-        baseView.setRate(this.createAppRateView(rating));
+        baseView.setRate(createAppRateView(rating));
         return baseView;
     }
 
-    private AppRateView createAppRateView(Integer[] rating) {
-        return new AppRateView(
+    private static AppRateDto createAppRateView(Integer[] rating) {
+        return new AppRateDto(
                 Arrays.stream(rating).mapToInt(Integer::intValue).average().orElse(0.0),
                 Arrays.stream(rating).collect(Collectors.groupingBy(s -> s, Collectors.counting()))
         );

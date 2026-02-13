@@ -1,8 +1,8 @@
 package net.geant.nmaas.portal.api.apps;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import net.geant.nmaas.api.dto.applications.AppRateDto;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
-import net.geant.nmaas.api.dto.applications.AppRateView;
 import net.geant.nmaas.portal.persistence.entity.AppRate;
 import net.geant.nmaas.portal.persistence.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistence.entity.UsersHelper;
@@ -54,8 +54,8 @@ public class RatingControllerIntTest extends BaseControllerTestSetup {
     @Test
     void shouldSetUserAppRating() throws Exception {
         MvcResult mvcResult = mvc.perform(post("/api/apps/" + TEST_APP_ID + "/rate/my/4")
-                .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                .contentType(MediaType.APPLICATION_JSON))
+                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
         assertTrue(mvcResult.getResponse().getContentAsString().contains("true"));
@@ -64,8 +64,8 @@ public class RatingControllerIntTest extends BaseControllerTestSetup {
     @Test
     void shouldNormalizeNegativeUserAppRating() throws Exception {
         MvcResult mvcResult = mvc.perform(post("/api/apps/" + TEST_APP_ID + "/rate/my/-1")
-                .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                .contentType(MediaType.APPLICATION_JSON))
+                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
         assertTrue(mvcResult.getResponse().getContentAsString().contains("true"));
@@ -74,8 +74,8 @@ public class RatingControllerIntTest extends BaseControllerTestSetup {
     @Test
     void shouldNormalizeUserAppRatingOverMax() throws Exception {
         MvcResult mvcResult = mvc.perform(post("/api/apps/" + TEST_APP_ID + "/rate/my/25")
-                .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                .contentType(MediaType.APPLICATION_JSON))
+                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
         assertTrue(mvcResult.getResponse().getContentAsString().contains("true"));
@@ -90,11 +90,11 @@ public class RatingControllerIntTest extends BaseControllerTestSetup {
         when(ratingRepository.getApplicationRating(TEST_APP_ID)).thenReturn(List.of(1, 4, 4).toArray(Integer[]::new));
 
         MvcResult mvcResult = mvc.perform(get("/api/apps/" + TEST_APP_ID + "/rate/user/" + ADMIN_USER_ID)
-                .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                .contentType(MediaType.APPLICATION_JSON))
+                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
-        AppRateView result = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), AppRateView.class);
+        AppRateDto result = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), AppRateDto.class);
         assertEquals(4, result.getRate());
         assertEquals(3.0, result.getAverageRate(), 0.1);
     }
@@ -108,11 +108,11 @@ public class RatingControllerIntTest extends BaseControllerTestSetup {
         when(ratingRepository.getApplicationRating(TEST_APP_ID)).thenReturn(List.of(1, 2, 3).toArray(Integer[]::new));
 
         MvcResult mvcResult = mvc.perform(get("/api/apps/" + TEST_APP_ID + "/rate/my")
-                .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                .contentType(MediaType.APPLICATION_JSON))
+                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
-        AppRateView result = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), AppRateView.class);
+        AppRateDto result = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), AppRateDto.class);
         assertEquals(4, result.getRate());
         assertEquals(2.0, result.getAverageRate(), 0.1);
     }
@@ -126,11 +126,11 @@ public class RatingControllerIntTest extends BaseControllerTestSetup {
         when(ratingRepository.getApplicationRating(TEST_APP_ID)).thenReturn(List.of(1, 2, 3).toArray(Integer[]::new));
 
         MvcResult mvcResult = mvc.perform(get("/api/apps/" + TEST_APP_ID + "/rate")
-                .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                .contentType(MediaType.APPLICATION_JSON))
+                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
-        AppRateView result = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), AppRateView.class);
+        AppRateDto result = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), AppRateDto.class);
         assertEquals(2.0, result.getAverageRate(), 0.1);
     }
 

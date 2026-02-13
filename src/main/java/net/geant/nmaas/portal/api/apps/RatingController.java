@@ -2,7 +2,7 @@ package net.geant.nmaas.portal.api.apps;
 
 import jakarta.validation.constraints.NotNull;
 import net.geant.nmaas.api.dto.ApiResponse;
-import net.geant.nmaas.api.dto.applications.AppRateView;
+import net.geant.nmaas.api.dto.applications.AppRateDto;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.persistence.entity.AppRate;
 import net.geant.nmaas.portal.persistence.entity.ApplicationBase;
@@ -39,27 +39,27 @@ public class RatingController extends AppBaseController {
     }
 
     @GetMapping
-    public AppRateView getAppRating(@PathVariable("appId") Long appId) {
+    public AppRateDto getAppRating(@PathVariable("appId") Long appId) {
         ApplicationBase app = getBaseApp(appId);
         Integer[] rateList = ratingRepository.getApplicationRating(app.getId());
-        return new AppRateView(getAverageRate(rateList), getRatingMap(rateList));
+        return new AppRateDto(getAverageRate(rateList), getRatingMap(rateList));
     }
 
     @GetMapping(value = "/my")
-    public AppRateView getMyAppRating(@PathVariable("appId") Long appId, @NotNull Principal principal) {
+    public AppRateDto getMyAppRating(@PathVariable("appId") Long appId, @NotNull Principal principal) {
         User user = getUser(principal.getName());
         return getUserAppRating(appId, user.getId());
     }
 
     @GetMapping(value = "/user/{userId}")
-    public AppRateView getUserAppRating(@PathVariable("appId") Long appId, @PathVariable("userId") Long userId) {
+    public AppRateDto getUserAppRating(@PathVariable("appId") Long appId, @PathVariable("userId") Long userId) {
         ApplicationBase app = getBaseApp(appId);
         User user = getUser(userId);
 
         AppRate.AppRateId appRateId = new AppRate.AppRateId(app.getId(), user.getId());
         Optional<AppRate> appRate = ratingRepository.findById(appRateId);
         Integer[] rateList = ratingRepository.getApplicationRating(app.getId());
-        return appRate.map(appRate1 -> new AppRateView(appRate1.getRate(), getAverageRate(rateList), getRatingMap(rateList))).orElseGet(() -> new AppRateView(getAverageRate(rateList), getRatingMap(rateList)));
+        return appRate.map(appRate1 -> new AppRateDto(appRate1.getRate(), getAverageRate(rateList), getRatingMap(rateList))).orElseGet(() -> new AppRateDto(getAverageRate(rateList), getRatingMap(rateList)));
     }
 
     @PostMapping(value = "/my/{rate}")

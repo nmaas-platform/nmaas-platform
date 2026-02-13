@@ -6,11 +6,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.api.dto.applications.AppRateView;
-import net.geant.nmaas.api.dto.applications.ApplicationBaseView;
-import net.geant.nmaas.api.dto.applications.ApplicationBaseViewS;
 import net.geant.nmaas.api.dto.Id;
 import net.geant.nmaas.api.dto.applications.AppInstanceState;
+import net.geant.nmaas.api.dto.applications.AppRateDto;
+import net.geant.nmaas.api.dto.applications.ApplicationBaseView;
+import net.geant.nmaas.api.dto.applications.ApplicationBaseViewS;
 import net.geant.nmaas.api.dto.applications.ApplicationStateChangeRequest;
 import net.geant.nmaas.api.dto.applications.ApplicationStateDto;
 import net.geant.nmaas.api.dto.applications.ApplicationView;
@@ -131,19 +131,19 @@ public class ApplicationController extends AppBaseController {
     }
 
     private ApplicationBaseView setAppRating(ApplicationBaseView baseView) {
-        Integer[] rating = this.ratingRepository.getApplicationRating(baseView.getId());
-        baseView.setRate(this.createAppRateView(rating));
+        Integer[] rating = ratingRepository.getApplicationRating(baseView.getId());
+        baseView.setRate(createAppRateView(rating));
         return baseView;
     }
 
     private ApplicationBaseViewS setAppRating(ApplicationBaseViewS baseView) {
-        Integer[] rating = this.ratingRepository.getApplicationRating(baseView.getId());
-        baseView.setRate(this.createAppRateView(rating));
+        Integer[] rating = ratingRepository.getApplicationRating(baseView.getId());
+        baseView.setRate(createAppRateView(rating));
         return baseView;
     }
 
-    private AppRateView createAppRateView(Integer[] rating) {
-        return new AppRateView(
+    private static AppRateDto createAppRateView(Integer[] rating) {
+        return new AppRateDto(
                 Arrays.stream(rating).mapToInt(Integer::intValue).average().orElse(0.0),
                 Arrays.stream(rating).collect(Collectors.groupingBy(s -> s, Collectors.counting()))
         );
