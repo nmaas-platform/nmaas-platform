@@ -17,9 +17,12 @@ import net.geant.nmaas.portal.persistence.repositories.DomainGroupRepository;
 import net.geant.nmaas.portal.persistence.repositories.UserRoleRepository;
 import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
 import net.geant.nmaas.portal.service.DomainGroupService;
+import net.geant.nmaas.portal.service.UserService;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -40,6 +43,7 @@ public class DomainGroupServiceImpl implements DomainGroupService {
 
 
     private final ModelMapper modelMapper;
+    private final UserService userService;
 
     @Override
     public Boolean existDomainGroup(String name, String codeName) {
@@ -121,6 +125,21 @@ public class DomainGroupServiceImpl implements DomainGroupService {
         return domainGroupRepository.findAll().stream()
                 .map(g -> modelMapper.map(g, DomainGroupView.class))
                 .toList();
+    }
+
+    @Override
+    public Page<DomainGroupView> getPageableAllDomainGroups(Pageable pageable) {
+        return domainGroupRepository.findAll(pageable)
+                .map( g -> modelMapper.map(g, DomainGroupView.class));
+    }
+
+    @Override
+    public Page<DomainGroupView> getPageableAllDomainGroupsWhereManagerIsMember(Pageable pageable, User manager) {
+
+        return domainGroupRepository.findAllByManagers(List.of(manager), pageable)
+                .map( g -> modelMapper.map(g, DomainGroupView.class));
+
+
     }
 
     @Override
