@@ -2,7 +2,7 @@ package net.geant.nmaas.portal.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.api.dto.KeyValueView;
-import net.geant.nmaas.api.dto.domains.DomainAnnotationView;
+import net.geant.nmaas.api.dto.domains.DomainAnnotationDto;
 import net.geant.nmaas.api.dto.domains.DomainBaseDto;
 import net.geant.nmaas.api.dto.domains.DomainGroupDto;
 import net.geant.nmaas.api.dto.domains.DomainRequest;
@@ -637,7 +637,7 @@ public class DomainServiceImpl implements DomainService {
     }
 
     @Override
-    public void updateAnnotation(Long id, DomainAnnotationView annotation) {
+    public void updateAnnotation(Long id, DomainAnnotationDto annotation) {
         Optional<DomainAnnotation> domainFromDb = this.domainAnnotationsRepository.findById(id);
         if (domainFromDb.isPresent() && id.equals(annotation.getId())) {
             DomainAnnotation domainAnnotation = domainFromDb.get();

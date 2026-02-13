@@ -4,14 +4,14 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.api.dto.applications.AppDescriptionView;
-import net.geant.nmaas.portal.persistence.entity.ApplicationBaseS;
+import net.geant.nmaas.api.dto.applications.AppTagDto;
 import net.geant.nmaas.api.dto.applications.ApplicationBaseViewS;
-import net.geant.nmaas.api.dto.applications.TagView;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.events.ApplicationActivatedEvent;
 import net.geant.nmaas.portal.persistence.entity.AppDescription;
 import net.geant.nmaas.portal.persistence.entity.ApplicationBase;
+import net.geant.nmaas.portal.persistence.entity.ApplicationBaseS;
 import net.geant.nmaas.portal.persistence.entity.ApplicationState;
 import net.geant.nmaas.portal.persistence.entity.Tag;
 import net.geant.nmaas.portal.persistence.repositories.ApplicationBaseRepository;
@@ -147,7 +147,7 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
                         id(app.getId())
                         .name(app.getName())
                         .descriptions(mapList(modelMapper, app.getDescriptions(), AppDescriptionView.class))
-                        .tags(mapSet(modelMapper, app.getTags(), TagView.class))
+                        .tags(mapSet(modelMapper, app.getTags(), AppTagDto.class))
                         .build())
                 .collect(Collectors.toList());
         LocalDateTime finish = LocalDateTime.now();

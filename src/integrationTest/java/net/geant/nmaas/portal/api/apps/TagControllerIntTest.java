@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.api.dto.applications.AppDescriptionView;
 import net.geant.nmaas.api.dto.applications.ApplicationBaseView;
-import net.geant.nmaas.api.dto.applications.TagView;
+import net.geant.nmaas.api.dto.applications.AppTagDto;
 import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.HelmChartRepositoryEmbeddable;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesChart;
@@ -156,12 +156,7 @@ public class TagControllerIntTest extends BaseControllerTestSetup {
                                 new AppDescriptionView("en", "description", "full description")
                         )
                 )
-                .tags(
-                        Set.of(
-                                new TagView(null, "tag1"),
-                                new TagView(null, "tag2")
-                        )
-                )
+                .tags(Set.of(new AppTagDto(null, "tag1"), new AppTagDto(null, "tag2")))
                 .build();
     }
 

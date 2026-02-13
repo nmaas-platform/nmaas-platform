@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.api.dto.Id;
 import net.geant.nmaas.api.dto.KeyValueView;
-import net.geant.nmaas.api.dto.domains.DomainAnnotationView;
+import net.geant.nmaas.api.dto.domains.DomainAnnotationDto;
 import net.geant.nmaas.api.dto.domains.DomainBaseDto;
 import net.geant.nmaas.api.dto.domains.DomainBaseWithState;
 import net.geant.nmaas.api.dto.domains.DomainRequest;
@@ -306,7 +306,7 @@ public class DomainController extends BaseController {
     @PutMapping("/annotations/{id}")
     @Transactional
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
-    public void updateAnnotation(@PathVariable Long id, @RequestBody DomainAnnotationView annotation) {
+    public void updateAnnotation(@PathVariable Long id, @RequestBody DomainAnnotationDto annotation) {
         this.domainService.updateAnnotation(id, annotation);
     }
 

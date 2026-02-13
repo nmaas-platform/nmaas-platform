@@ -1,13 +1,13 @@
 package net.geant.nmaas.portal.domain;
 
-import net.geant.nmaas.api.dto.applications.ApplicationBaseView;
-import net.geant.nmaas.api.dto.applications.ApplicationSubscriptionBase;
-import net.geant.nmaas.api.dto.applications.ConfigWizardTemplateView;
 import net.geant.nmaas.api.dto.applications.AppConfigurationSpecView;
 import net.geant.nmaas.api.dto.applications.AppDeploymentSpecView;
+import net.geant.nmaas.api.dto.applications.AppTagDto;
+import net.geant.nmaas.api.dto.applications.ApplicationBaseView;
 import net.geant.nmaas.api.dto.applications.ApplicationStateDto;
+import net.geant.nmaas.api.dto.applications.ApplicationSubscriptionBase;
 import net.geant.nmaas.api.dto.applications.ApplicationView;
-import net.geant.nmaas.api.dto.applications.TagView;
+import net.geant.nmaas.api.dto.applications.ConfigWizardTemplateView;
 import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.portal.persistence.entity.Application;
@@ -109,8 +109,8 @@ public class ConvertersIntTest {
         appDto.setId(1L);
         appDto.setName("myApp");
         appDto.setLicense("GNL");
-        appDto.getTags().add(new TagView(null, "monitoring"));
-        appDto.getTags().add(new TagView(null, "network"));
+        appDto.getTags().add(new AppTagDto(null, "monitoring"));
+        appDto.getTags().add(new AppTagDto(null, "network"));
 
         ApplicationBase appEntity = modelMapper.map(appDto, ApplicationBase.class);
 
@@ -124,8 +124,8 @@ public class ConvertersIntTest {
         appDto = modelMapper.map(appEntity, ApplicationBaseView.class);
         assertEquals(2, appDto.getTags().size());
         assertEquals(appEntity.getTags().size(), appDto.getTags().size());
-        assertTrue(appDto.getTags().contains(new TagView(null, "network")));
-        assertTrue(appDto.getTags().contains(new TagView(null, "monitoring")));
+        assertTrue(appDto.getTags().contains(new AppTagDto(null, "network")));
+        assertTrue(appDto.getTags().contains(new AppTagDto(null, "monitoring")));
     }
 
     @Test
