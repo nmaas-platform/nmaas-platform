@@ -1,8 +1,8 @@
 package net.geant.nmaas.portal.api.apps;
 
-import net.geant.nmaas.api.dto.applications.CommentRequest;
-import net.geant.nmaas.api.dto.applications.CommentView;
 import net.geant.nmaas.api.dto.Id;
+import net.geant.nmaas.api.dto.applications.CommentDto;
+import net.geant.nmaas.api.dto.applications.CommentRequest;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistence.entity.ApplicationBase;
@@ -51,11 +51,11 @@ public class AppCommentsController extends AppBaseController {
 
     @GetMapping
     @PreAuthorize("hasPermission(null, 'comment', 'READ')")
-    public List<CommentView> getComments(@PathVariable(value = "appId") Long appId, Pageable pageable) {
+    public List<CommentDto> getComments(@PathVariable(value = "appId") Long appId, Pageable pageable) {
         ApplicationBase app = getBaseApp(appId);
         Page<Comment> page = commentRepository.findByApplication(app, pageable);
         return page.getContent().stream()
-                .map(comment -> modelMapper.map(comment, CommentView.class))
+                .map(comment -> modelMapper.map(comment, CommentDto.class))
                 .toList();
     }
 

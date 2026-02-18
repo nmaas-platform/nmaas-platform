@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.api.apps;
 
+import net.geant.nmaas.api.dto.applications.CommentDto;
 import net.geant.nmaas.api.dto.applications.CommentRequest;
-import net.geant.nmaas.api.dto.applications.CommentView;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.domain.converters.CommentConverter;
@@ -168,7 +168,7 @@ class AppCommentsControllerTest {
 
         when(commentRepository.findByApplication(app, null)).thenReturn(commentPage);
 
-        List<CommentView> result = this.appCommentsController.getComments(app.getId(), null);
+        List<CommentDto> result = this.appCommentsController.getComments(app.getId(), null);
         assertEquals(3L, result.size());
     }
 

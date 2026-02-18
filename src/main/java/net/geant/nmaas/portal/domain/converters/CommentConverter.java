@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.domain.converters;
 
-import net.geant.nmaas.api.dto.applications.CommentView;
+import net.geant.nmaas.api.dto.applications.CommentDto;
 import net.geant.nmaas.api.dto.users.UserBase;
 import net.geant.nmaas.portal.persistence.entity.Comment;
 import org.modelmapper.AbstractConverter;
@@ -9,12 +9,12 @@ import org.modelmapper.ModelMapper;
 import java.util.Date;
 import java.util.Objects;
 
-public class CommentConverter extends AbstractConverter<Comment, CommentView> {
+public class CommentConverter extends AbstractConverter<Comment, CommentDto> {
 
     ModelMapper modelMapper = new ModelMapper();
 
     @Override
-    protected CommentView convert(Comment source) {
+    protected CommentDto convert(Comment source) {
         Long parentId = null;
         if (source.getParent() != null) {
             parentId = source.getParent().getId();
@@ -23,7 +23,7 @@ public class CommentConverter extends AbstractConverter<Comment, CommentView> {
         if (source.isDeleted()) {
             commentText = "<em>@@@\'COMMENTS.REMOVED\'</em>";
         }
-        return new CommentView(
+        return new CommentDto(
                 source.getId(),
                 parentId,
                 modelMapper.map(source.getOwner(), UserBase.class),
