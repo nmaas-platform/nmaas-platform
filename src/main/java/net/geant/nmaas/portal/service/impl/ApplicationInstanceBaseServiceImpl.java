@@ -43,11 +43,12 @@ public class ApplicationInstanceBaseServiceImpl implements ApplicationInstanceBa
 
     @Override
     public Page<AppInstanceBase> findAll(Pageable pageable, boolean deployed, String search) {
+        Pageable newPageable = mapPageable(pageable);
         return getAppInstanceBases(appInstanceRepo.findAllNotDeletedByDeploy(
                         search,
-                        pageable,
+                        newPageable,
                         deployed),
-                pageable);
+                newPageable);
     }
 
     @Override
@@ -149,18 +150,7 @@ public class ApplicationInstanceBaseServiceImpl implements ApplicationInstanceBa
     @Override
     public Page<AppInstanceBase> findAllByDomain(Domain domain, Pageable pageable, boolean deployed, String search) {
         checkParam(domain);
-        Sort mapped = Sort.by(
-                pageable.getSort().stream().map(order -> {
-                    String p = order.getProperty();
-                    String mappedProp = switch (p){
-                        case "owner" -> "owner.username";
-                        case "state" -> "l.state";
-                        default -> p;
-                    };
-                return new Sort.Order(order.getDirection(), mappedProp);
-                }).toList()
-        );
-        Pageable newPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), mapped);
+        Pageable newPageable = mapPageable(pageable);
         return getAppInstanceBases(appInstanceRepo.findAllNotDeletedByDomainAndByDeployAndSearch(
                 domain,
                 search,
@@ -297,6 +287,21 @@ public class ApplicationInstanceBaseServiceImpl implements ApplicationInstanceBa
                 .map(this::mapAppInstanceBase)
                 .toList();
         return new PageImpl<>(filtered, pageable, page.getTotalElements());
+    }
+    private Pageable mapPageable(Pageable pageable){
+        Sort mapped = Sort.by(
+                pageable.getSort().stream().map(order -> {
+                    String p = order.getProperty();
+                    String mappedProp = switch (p){
+                        case "owner" -> "owner.username";
+                        case "state" -> "l.state";
+                        case "application" -> "application.name";
+                        default -> p;
+                    };
+                    return new Sort.Order(order.getDirection(), mappedProp);
+                }).toList()
+        );
+        return PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), mapped);
     }
 
 }
