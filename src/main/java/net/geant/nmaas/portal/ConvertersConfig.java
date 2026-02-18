@@ -20,6 +20,7 @@ import net.geant.nmaas.portal.domain.converters.TagInverseConverter;
 import net.geant.nmaas.portal.domain.converters.TagStringConverter;
 import net.geant.nmaas.portal.domain.converters.TagStringInverseConverter;
 import net.geant.nmaas.portal.domain.converters.UserConverter;
+import net.geant.nmaas.portal.domain.converters.WebhookHistoryConverter;
 import net.geant.nmaas.portal.persistence.repositories.TagRepository;
 import org.modelmapper.Conditions;
 import org.modelmapper.ModelMapper;
@@ -61,6 +62,7 @@ public class ConvertersConfig {
         modelMapper.addConverter(new CustomerNetworkConverter());
         modelMapper.addConverter(new AppConfigurationSpecConverter());
         modelMapper.addConverter(new AppConfigurationSpecInverseConverter());
+        modelMapper.addConverter(new WebhookHistoryConverter());
         return modelMapper;
     }
 

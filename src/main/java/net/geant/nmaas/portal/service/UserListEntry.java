@@ -97,7 +97,7 @@ public class UserListEntry extends UserBase implements Serializable {
         dto.setFirstLoginDate(firstLoginDate);
         dto.setGlobalRole(globalRole);
         dto.setDomainsName(domainsName);
-        dto.setDomainRole(RoleDto.valueOf(domainRole.name()));
+        dto.setDomainRole(Objects.nonNull(domainRole) ? RoleDto.valueOf(domainRole.name()) : null);
         dto.setEnabled(enabled);
         return dto;
     }
