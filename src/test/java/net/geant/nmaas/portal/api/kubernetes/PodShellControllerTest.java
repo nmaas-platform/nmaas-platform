@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.api.kubernetes;
 
-import net.geant.nmaas.portal.domain.K8sShellCommandRequest;
+import net.geant.nmaas.api.dto.K8sShellCommandRequest;
 import net.geant.nmaas.portal.service.K8sShellService;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;

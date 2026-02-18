@@ -1,17 +1,17 @@
 package net.geant.nmaas.webhooks.jobs;
 
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.api.dto.webhooks.AppDeploymentWebhookDto;
+import net.geant.nmaas.api.dto.webhooks.WebhookEventDto;
+import net.geant.nmaas.api.dto.webhooks.WebhookEventTypeDto;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.orchestration.exceptions.WebServiceCommunicationException;
+import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.service.AutoWebhookTemplateService;
 import net.geant.nmaas.portal.service.WebhookHistoryService;
-import net.geant.nmaas.portal.api.exceptions.MissingElementException;
-import net.geant.nmaas.portal.domain.WebhookEventDto;
-import net.geant.nmaas.portal.persistence.entity.WebhookEventType;
 import net.geant.nmaas.portal.service.impl.WebhookEventService;
-import net.geant.nmaas.webhooks.AppDeploymentWebhookDto;
 import org.modelmapper.ModelMapper;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
@@ -40,7 +40,7 @@ public class AppDeploymentJob extends AppWebhookJob {
 
         try {
             final WebhookEventDto webhook = webhookEventService.getById(webhookId);
-            if (!WebhookEventType.APPLICATION_DEPLOYMENT.equals(webhook.getEventType())) {
+            if (!WebhookEventTypeDto.APPLICATION_DEPLOYMENT.equals(webhook.getEventType())) {
                 log.warn("Webhook's event type with id {} has been updated. AppDeploymentJob is abandoned", webhookId);
                 return;
             }

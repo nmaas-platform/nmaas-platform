@@ -3,7 +3,7 @@ package net.geant.nmaas.kubernetes.shell.observable;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.portal.domain.K8sShellCommandRequest;
+import net.geant.nmaas.api.dto.K8sShellCommandRequest;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;

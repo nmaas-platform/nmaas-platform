@@ -1,8 +1,9 @@
 package net.geant.nmaas.portal.domain.converters;
 
-import net.geant.nmaas.portal.domain.SSHKeyView;
-import net.geant.nmaas.portal.domain.UserRoleView;
-import net.geant.nmaas.portal.domain.UserView;
+import net.geant.nmaas.api.dto.users.SSHKeyView;
+import net.geant.nmaas.api.dto.users.RoleDto;
+import net.geant.nmaas.api.dto.users.UserRoleDto;
+import net.geant.nmaas.api.dto.users.UserView;
 import net.geant.nmaas.portal.persistence.entity.User;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.AbstractConverter;
@@ -29,9 +30,9 @@ public class UserConverter extends AbstractConverter<User, UserView> {
                 .build();
     }
 
-    private Set<UserRoleView> convertUserRole(User source){
+    private Set<UserRoleDto> convertUserRole(User source){
         return source.getRoles().stream()
-                .map(role -> new UserRoleView(role.getRole(), role.getDomain().getId(), role.getDomain().getName()))
+                .map(role -> new UserRoleDto(RoleDto.valueOf(role.getRole().name()), role.getDomain().getId(), role.getDomain().getName()))
                 .collect(Collectors.toSet());
     }
 

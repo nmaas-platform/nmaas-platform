@@ -1,16 +1,14 @@
 package net.geant.nmaas.portal.service;
 
+import net.geant.nmaas.api.dto.webhooks.WebhookEventDto;
+import net.geant.nmaas.api.dto.webhooks.WebhookEventTypeDto;
 import net.geant.nmaas.portal.api.security.EncryptionService;
-import net.geant.nmaas.portal.api.webhooks.WebhookTemplateController;
-import net.geant.nmaas.portal.domain.WebhookEventDto;
 import net.geant.nmaas.portal.persistence.entity.WebhookEvent;
 import net.geant.nmaas.portal.persistence.entity.WebhookEventType;
 import net.geant.nmaas.portal.persistence.repositories.WebhookEventRepository;
 import net.geant.nmaas.portal.service.impl.WebhookEventService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
 import org.modelmapper.ModelMapper;
 
 import java.security.GeneralSecurityException;
@@ -23,8 +21,8 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.isA;
@@ -37,7 +35,7 @@ class WebhookEventServiceTest {
     private final EncryptionService encryptionService = mock(EncryptionService.class);
     private final UserService userService = mock(UserService.class);
     private final ModelMapper modelMapper = new ModelMapper();
-    private final AutoWebhookTemplateService autoWebhookTemplateService =  new AutoWebhookTemplateService();
+    private final AutoWebhookTemplateService autoWebhookTemplateService = new AutoWebhookTemplateService();
 
     private final WebhookEventService webhookEventService = new WebhookEventService(webhookEventRepository, encryptionService, modelMapper, userService, autoWebhookTemplateService);
 
@@ -47,14 +45,14 @@ class WebhookEventServiceTest {
     @BeforeEach
     void setUp() throws GeneralSecurityException {
         autoWebhookTemplateService.init();
-        webhookEventDto = new WebhookEventDto(1L, "webhook", "https://example.com/webhook", WebhookEventType.APPLICATION_DEPLOYMENT);
+        webhookEventDto = new WebhookEventDto(1L, "webhook", "https://example.com/webhook", WebhookEventTypeDto.APPLICATION_DEPLOYMENT);
         webhookEvent = new WebhookEvent(1L, "webhook", "https://example.com/webhook", WebhookEventType.APPLICATION_DEPLOYMENT);
         webhookEventService.create(webhookEventDto);
     }
 
     @Test
     void shouldPerformCrudWebhookEventActions() throws GeneralSecurityException {
-        webhookEventDto = new WebhookEventDto(2L, "webhook2", "https://example.com/webhook2", WebhookEventType.DOMAIN_ACTION, "xxxxyyyy", "Authorization", null, null);
+        webhookEventDto = new WebhookEventDto(2L, "webhook2", "https://example.com/webhook2", WebhookEventTypeDto.DOMAIN_ACTION, "xxxxyyyy", "Authorization", null, null);
         webhookEvent = new WebhookEvent(2L, "webhook2", "https://example.com/webhook2", WebhookEventType.DOMAIN_ACTION, "sjxV/ytRIoHjXy+CtXMzD4T+bntbqzQX25eztXbJ9r4gIZXT", "Authorization", null, null);
         when(webhookEventRepository.save(isA(WebhookEvent.class))).thenReturn(webhookEvent);
         when(encryptionService.encrypt(anyString())).thenAnswer(i -> "sjxV/ytRIoHjXy+CtXMzD4T+bntbqzQX25eztXbJ9r4gIZXT");
@@ -65,7 +63,7 @@ class WebhookEventServiceTest {
         assertEquals(webhookEventDto.getId(), created.getId());
         assertEquals(webhookEventDto.getName(), created.getName());
         assertEquals(webhookEventDto.getTargetUrl(), created.getTargetUrl());
-        assertEquals(webhookEventDto.getEventType(), created.getEventType());
+        assertEquals(WebhookEventType.from(webhookEventDto.getEventType()), created.getEventType());
         assertEquals(webhookEventDto.getAuthorizationHeader(), created.getAuthorizationHeader());
         assertEquals(webhookEventDto.getTokenValue(), encryptionService.decrypt(created.getTokenValue()));
 
@@ -83,8 +81,8 @@ class WebhookEventServiceTest {
 
     @Test
     void failedDueToFalseTemplate() throws GeneralSecurityException {
-        webhookEventDto = new WebhookEventDto(2L, "webhook2", "https://example.com/webhook2", WebhookEventType.DOMAIN_ACTION, null, null, null, "{\"domain\": \"id\": $DOMAINVIEW_ID, \"name22\": $DOMAINVIEW_NAME, \"codename\": $DOMAINVIEW_CODENAME, \"active\": $DOMAINVIEW_ACTIVE}, \"action\": $ACTION, \"type\": $WEBHOOKEVENTTYPE, \"action22\": \"test\"}");
-       // webhookEvent = new WebhookEvent(2L, "webhook2", "https://example.com/webhook2", WebhookEventType.DOMAIN_ACTION, null, null, null, null);
+        webhookEventDto = new WebhookEventDto(2L, "webhook2", "https://example.com/webhook2", WebhookEventTypeDto.DOMAIN_ACTION, null, null, null, "{\"domain\": \"id\": $DOMAINVIEW_ID, \"name22\": $DOMAINVIEW_NAME, \"codename\": $DOMAINVIEW_CODENAME, \"active\": $DOMAINVIEW_ACTIVE}, \"action\": $ACTION, \"type\": $WEBHOOKEVENTTYPE, \"action22\": \"test\"}");
+        // webhookEvent = new WebhookEvent(2L, "webhook2", "https://example.com/webhook2", WebhookEventType.DOMAIN_ACTION, null, null, null, null);
         when(webhookEventRepository.save(isA(WebhookEvent.class))).thenReturn(webhookEvent);
         assertThrows(IllegalArgumentException.class, () -> {
             webhookEventService.create(webhookEventDto);
@@ -93,7 +91,7 @@ class WebhookEventServiceTest {
 
     @Test
     void failedDueToFalseVariable() throws GeneralSecurityException {
-        webhookEventDto = new WebhookEventDto(2L, "webhook2", "https://example.com/webhook2", WebhookEventType.DOMAIN_ACTION, null, null, null, "{\"domain\": {\"id\": $DOMAINVIEW_ID, \"name22\": $DOMAINVIEW_DESCR, \"codename\": $DOMAINVIEW_CODENAME, \"active\": $DOMAINVIEW_ACTIVE}, \"action\": $ACTION, \"type\": $WEBHOOKEVENTTYPE, \"action22\": \"test\"}");
+        webhookEventDto = new WebhookEventDto(2L, "webhook2", "https://example.com/webhook2", WebhookEventTypeDto.DOMAIN_ACTION, null, null, null, "{\"domain\": {\"id\": $DOMAINVIEW_ID, \"name22\": $DOMAINVIEW_DESCR, \"codename\": $DOMAINVIEW_CODENAME, \"active\": $DOMAINVIEW_ACTIVE}, \"action\": $ACTION, \"type\": $WEBHOOKEVENTTYPE, \"action22\": \"test\"}");
         // webhookEvent = new WebhookEvent(2L, "webhook2", "https://example.com/webhook2", WebhookEventType.DOMAIN_ACTION, null, null, null, null);
         when(webhookEventRepository.save(isA(WebhookEvent.class))).thenReturn(webhookEvent);
         assertThrows(IllegalArgumentException.class, () -> {
@@ -147,7 +145,7 @@ class WebhookEventServiceTest {
         assertNotNull(template);
 
         available.forEach(var -> {
-            assertTrue(Stream.of("$APPDEPLOYMENT_DEPLOYMENTID","$APPDEPLOYMENT_DEPLOYMENTNAME","$APPDEPLOYMENT_DOMAIN","$APPDEPLOYMENT_STATE","$APPDEPLOYMENT_OWNER", "$APPDEPLOYMENT_APPNAME", "$WEBHOOKEVENTTYPE", "$APPDATA_KEY", "$LOGICAL_DATE").toList().contains(var), () -> "Missing variable " + var + " for " + eventType);
+            assertTrue(Stream.of("$APPDEPLOYMENT_DEPLOYMENTID", "$APPDEPLOYMENT_DEPLOYMENTNAME", "$APPDEPLOYMENT_DOMAIN", "$APPDEPLOYMENT_STATE", "$APPDEPLOYMENT_OWNER", "$APPDEPLOYMENT_APPNAME", "$WEBHOOKEVENTTYPE", "$APPDATA_KEY", "$LOGICAL_DATE").toList().contains(var), () -> "Missing variable " + var + " for " + eventType);
             assertTrue(template.contains(var), () -> "Variable " + var + " is missing from the template of " + eventType);
         });
     }
@@ -192,7 +190,7 @@ class WebhookEventServiceTest {
         assertNotNull(template);
 
         available.forEach(var -> {
-            assertTrue(Stream.of("$USER", "$DOMAIN_ID", "$DOMAIN_NAME", "$DOMAIN_CODENAME", "$DOMAIN_ACTIVE", "$DOMAIN_DELETED", "$ROLE","$WEBHOOKEVENTTYPE", "$ACTION").toList().contains(var), () -> "Missing variable " + var + " for " + eventType);
+            assertTrue(Stream.of("$USER", "$DOMAIN_ID", "$DOMAIN_NAME", "$DOMAIN_CODENAME", "$DOMAIN_ACTIVE", "$DOMAIN_DELETED", "$ROLE", "$WEBHOOKEVENTTYPE", "$ACTION").toList().contains(var), () -> "Missing variable " + var + " for " + eventType);
             assertTrue(template.contains(var), () -> "Variable " + var + " is missing from the template of " + eventType);
         });
     }

@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.domain.converters;
 
-import net.geant.nmaas.portal.domain.ApplicationSubscriptionBase;
+import net.geant.nmaas.api.dto.applications.ApplicationSubscriptionBase;
 import net.geant.nmaas.portal.persistence.entity.ApplicationSubscription;
 import org.modelmapper.AbstractConverter;
 

@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.service;
 
-import net.geant.nmaas.portal.domain.K8sPodInfo;
-import net.geant.nmaas.portal.domain.K8sShellCommandRequest;
+import net.geant.nmaas.api.dto.K8sPodInfo;
+import net.geant.nmaas.api.dto.K8sShellCommandRequest;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;

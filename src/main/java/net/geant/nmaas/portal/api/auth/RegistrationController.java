@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
 import net.geant.nmaas.notifications.templates.MailType;
-import net.geant.nmaas.portal.domain.DomainBase;
+import net.geant.nmaas.api.dto.domains.DomainBaseDto;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.exceptions.SignupException;
 import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
@@ -91,14 +91,13 @@ public class RegistrationController {
 
     @GetMapping("/domains")
     @Transactional(readOnly = true)
-    public List<DomainBase> getDomains() {
-        final Long globalDomainId = domains.getGlobalDomain().orElseThrow(MissingElementException::new).getId();
-
+    public List<DomainBaseDto> getDomains() {
+        final Long globalDomainId = domains.getGlobalDomain()
+                .orElseThrow(MissingElementException::new).getId();
         return domains.getDomains().stream()
-                .map(domain -> modelMapper.map(domain, DomainBase.class))
+                .map(domain -> modelMapper.map(domain, DomainBaseDto.class))
                 .filter(domain -> !domain.getId().equals(globalDomainId))
                 .collect(Collectors.toList());
-
     }
 
     private void sendMail(User user) {

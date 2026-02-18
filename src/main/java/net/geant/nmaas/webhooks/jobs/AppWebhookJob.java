@@ -1,5 +1,6 @@
 package net.geant.nmaas.webhooks.jobs;
 
+import net.geant.nmaas.api.dto.webhooks.WebhookEventTypeDto;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.Identifier;
@@ -8,7 +9,7 @@ import net.geant.nmaas.portal.persistence.entity.WebhookEventType;
 import net.geant.nmaas.portal.service.AutoWebhookTemplateService;
 import net.geant.nmaas.portal.service.WebhookHistoryService;
 import net.geant.nmaas.portal.service.impl.WebhookEventService;
-import net.geant.nmaas.webhooks.AppDeploymentWebhookDto;
+import net.geant.nmaas.api.dto.webhooks.AppDeploymentWebhookDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.web.client.RestClient;
 
@@ -27,7 +28,7 @@ public abstract class AppWebhookJob extends WebhookJob {
         Identifier identifier = Identifier.newInstance(deploymentId);
         AppDeployment appDeployment = appDeploymentRepositoryManager.load(identifier);
         AppDeploymentWebhookDto.AppDeploymentView appDeploymentView = modelMapper.map(appDeployment, AppDeploymentWebhookDto.AppDeploymentView.class);
-        AppDeploymentWebhookDto webhookDto = new AppDeploymentWebhookDto(appDeploymentView, WebhookEventType.APPLICATION_DEPLOYMENT);
+        AppDeploymentWebhookDto webhookDto = new AppDeploymentWebhookDto(appDeploymentView, WebhookEventTypeDto.APPLICATION_DEPLOYMENT);
         webhookDto.setAppData(serviceInfoRepositoryManager.loadService(identifier).getAdditionalParameters());
         return webhookDto;
     }

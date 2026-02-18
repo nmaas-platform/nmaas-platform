@@ -3,12 +3,12 @@ package net.geant.nmaas.portal.api;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.api.dto.ApiError;
 import net.geant.nmaas.nmservice.configuration.exceptions.InvalidWebhookException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
-import net.geant.nmaas.portal.domain.ApiError;
 import net.geant.nmaas.portal.api.exceptions.AuthenticationException;
-import net.geant.nmaas.portal.api.exceptions.PortalException;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
+import net.geant.nmaas.portal.api.exceptions.PortalException;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.api.exceptions.SignupException;
 import net.geant.nmaas.portal.api.exceptions.StorageException;
@@ -66,6 +66,12 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         return createApiError(ex, HttpStatus.NOT_ACCEPTABLE);
     }
 
+    @ExceptionHandler(value = {IllegalArgumentException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiError handleIllegalArgumentException(WebRequest req, Exception ex) {
+        return createApiError(ex, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(value = {StorageException.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ApiError handleStorageException(WebRequest req, PortalException ex) {
@@ -98,12 +104,12 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     private ApiError createApiErrorAndLogStacktrace(Exception ex, HttpStatus status) {
         long timestamp = System.currentTimeMillis();
         log.error("Error reported at {}", LocalDateTime.now(), ex);
-        return new ApiError(ex.getMessage(), timestamp, status);
+        return new ApiError(ex.getMessage(), timestamp, status.getReasonPhrase(), status.value());
     }
 
     private ApiError createApiError(Exception ex, HttpStatus status) {
         long timestamp = System.currentTimeMillis();
-        return new ApiError(ex.getMessage(), timestamp, status);
+        return new ApiError(ex.getMessage(), timestamp, status.getReasonPhrase(), status.value());
     }
 
 }

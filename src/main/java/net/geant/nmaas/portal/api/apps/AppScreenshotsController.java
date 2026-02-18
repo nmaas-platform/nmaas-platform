@@ -2,8 +2,8 @@ package net.geant.nmaas.portal.api.apps;
 
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
-import net.geant.nmaas.portal.domain.FileInfoView;
-import net.geant.nmaas.portal.domain.UserFile;
+import net.geant.nmaas.api.dto.FileInfoView;
+import net.geant.nmaas.api.dto.users.UserFile;
 import net.geant.nmaas.portal.persistence.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistence.entity.FileInfo;
 import net.geant.nmaas.portal.service.ApplicationBaseService;

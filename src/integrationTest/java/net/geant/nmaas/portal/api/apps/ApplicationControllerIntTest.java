@@ -2,10 +2,25 @@ package net.geant.nmaas.portal.api.apps;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.api.dto.Id;
+import net.geant.nmaas.api.dto.applications.AppAccessMethodView;
+import net.geant.nmaas.api.dto.applications.AppConfigurationSpecView;
+import net.geant.nmaas.api.dto.applications.AppDeploymentSpecView;
+import net.geant.nmaas.api.dto.applications.AppStorageVolumeView;
+import net.geant.nmaas.api.dto.applications.ApplicationBaseView;
+import net.geant.nmaas.api.dto.applications.ApplicationBaseViewS;
+import net.geant.nmaas.api.dto.applications.ApplicationDto;
+import net.geant.nmaas.api.dto.applications.ApplicationStateChangeRequest;
+import net.geant.nmaas.api.dto.applications.ApplicationStateDto;
+import net.geant.nmaas.api.dto.applications.ApplicationView;
+import net.geant.nmaas.api.dto.applications.ConfigFileTemplateView;
+import net.geant.nmaas.api.dto.applications.ConfigWizardTemplateView;
+import net.geant.nmaas.api.dto.applications.HelmChartRepositoryView;
+import net.geant.nmaas.api.dto.applications.KubernetesChartView;
+import net.geant.nmaas.api.dto.applications.KubernetesTemplateView;
+import net.geant.nmaas.api.dto.applications.ServiceAccessMethodTypeDto;
+import net.geant.nmaas.api.dto.applications.ServiceStorageVolumeTypeDto;
 import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.model.HelmChartRepositoryView;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.model.KubernetesChartView;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.model.KubernetesTemplateView;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.HelmChartRepositoryEmbeddable;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesChart;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
@@ -16,18 +31,6 @@ import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.entities.AppStorageVolume;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
 import net.geant.nmaas.portal.api.configuration.TestCacheConfig;
-import net.geant.nmaas.portal.domain.AppAccessMethodView;
-import net.geant.nmaas.portal.domain.AppConfigurationSpecView;
-import net.geant.nmaas.portal.domain.AppDeploymentSpecView;
-import net.geant.nmaas.portal.domain.AppStorageVolumeView;
-import net.geant.nmaas.portal.domain.ApplicationBaseView;
-import net.geant.nmaas.portal.domain.ApplicationBaseViewS;
-import net.geant.nmaas.portal.domain.ApplicationDTO;
-import net.geant.nmaas.portal.domain.ApplicationStateChangeRequest;
-import net.geant.nmaas.portal.domain.ApplicationView;
-import net.geant.nmaas.portal.domain.ConfigFileTemplateView;
-import net.geant.nmaas.portal.domain.ConfigWizardTemplateView;
-import net.geant.nmaas.portal.domain.Id;
 import net.geant.nmaas.portal.persistence.entity.AppDescription;
 import net.geant.nmaas.portal.persistence.entity.Application;
 import net.geant.nmaas.portal.persistence.entity.ApplicationBase;
@@ -73,31 +76,33 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import(TestCacheConfig.class)
 class ApplicationControllerIntTest extends BaseControllerTestSetup {
 
-    @Autowired
-    private ApplicationBaseRepository applicationBaseRepository;
+    private final ApplicationBaseRepository applicationBaseRepository;
 
-    @Autowired
-    private ApplicationRepository applicationRepository;
+    private final ApplicationRepository applicationRepository;
 
-    @Autowired
-    private ApplicationService applicationService;
+    private final ApplicationService applicationService;
 
-    @Autowired
-    private ApplicationBaseService applicationBaseService;
+    private final ApplicationBaseService applicationBaseService;
+
+    private final ModelMapper modelMapper;
+
+    public ApplicationControllerIntTest(@Autowired ApplicationBaseRepository applicationBaseRepository, @Autowired ApplicationRepository applicationRepository,
+                                        @Autowired ApplicationService applicationService, @Autowired ApplicationBaseService applicationBaseService,
+                                        @Autowired ModelMapper modelMapper) {
+        this.applicationBaseRepository = applicationBaseRepository;
+        this.applicationRepository = applicationRepository;
+        this.applicationService = applicationService;
+        this.applicationBaseService = applicationBaseService;
+        this.modelMapper = modelMapper;
+    }
 
     private ObjectMapper objectMapper;
-
-    @Autowired
-    private ModelMapper modelMapper;
 
     private static final String APP_1_NAME = "testApp1";
     private static final String APP_2_NAME = "testApp2";
 
     private ApplicationBase testApp1Base;
     private Application testApp1;
-
-    private ApplicationBase testApp2Base;
-    private Application testApp2;
 
     @BeforeEach
     void setup() {
@@ -109,22 +114,18 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
         this.testApp1Base.getVersions().addAll(
                 List.of(
                         new ApplicationVersion(this.testApp1.getVersion(), this.testApp1.getState(), this.testApp1.getId()),
-                        new ApplicationVersion("1.1.1",
-                                ApplicationState.ACTIVE,
+                        new ApplicationVersion("1.1.1", ApplicationState.ACTIVE,
                                 this.applicationService.create(getDefaultApplication(APP_1_NAME, "1.1.1", ApplicationState.ACTIVE)).getId()),
-                        new ApplicationVersion("1.1.2",
-                                ApplicationState.DISABLED,
+                        new ApplicationVersion("1.1.2", ApplicationState.DISABLED,
                                 this.applicationService.create(getDefaultApplication(APP_1_NAME, "1.1.2", ApplicationState.DISABLED)).getId())
                 )
         );
         this.testApp1Base = this.applicationBaseService.update(this.testApp1Base);
 
-        this.testApp2Base = this.applicationBaseService.create(getDefaultApplicationBase(APP_2_NAME));
-        this.testApp2 = this.applicationService.create(getDefaultApplication(APP_2_NAME, "2.0.0", ApplicationState.DISABLED));
-        this.testApp2Base.getVersions().add(
-                new ApplicationVersion(this.testApp2.getVersion(), this.testApp2.getState(), this.testApp2.getId())
-        );
-        this.testApp2Base = this.applicationBaseService.update(this.testApp2Base);
+        ApplicationBase testApp2Base = this.applicationBaseService.create(getDefaultApplicationBase(APP_2_NAME));
+        Application testApp2 = this.applicationService.create(getDefaultApplication(APP_2_NAME, "2.0.0", ApplicationState.DISABLED));
+        testApp2Base.getVersions().add(new ApplicationVersion(testApp2.getVersion(), testApp2.getState(), testApp2.getId()));
+        testApp2Base = this.applicationBaseService.update(testApp2Base);
     }
 
     @AfterEach
@@ -135,7 +136,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
 
     @Test
     @CacheEvict(value = "applicationBaseS", allEntries = true)
-    void shouldGetActiveApplications() throws Exception {
+    public void shouldGetActiveApplications() throws Exception {
         MvcResult result = mvc.perform(get("/api/apps/base")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .accept(MediaType.APPLICATION_JSON))
@@ -170,7 +171,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
-                                new ApplicationDTO(
+                                new ApplicationDto(
                                         modelMapper.map(newApplicationBase, ApplicationBaseView.class),
                                         modelMapper.map(getNewApplication(newApplicationBase.getName(), "1.2.3"), ApplicationView.class)
                                 )
@@ -180,7 +181,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
                 .andReturn();
         Id appId = objectMapper.readValue(result.getResponse().getContentAsString(), Id.class);
         assertNotNull(appId);
-        assertNotNull(appId.getId());
+        assertNotNull(appId.id());
     }
 
     @Test
@@ -198,15 +199,17 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
                 .andExpect(status().isOk());
 
         // simulate bug from NMAAS-844
-        applicationView.getAppDeploymentSpec().getAccessMethods().iterator().next().getDeployParameters().putIfAbsent("NEW.PARAM", "value");
-        applicationView.getAppDeploymentSpec().getStorageVolumes().iterator().next().getDeployParameters().putIfAbsent("NEW.PARAM", "value");
+        applicationView.getAppDeploymentSpec().getAccessMethods().getFirst().deployParameters().putIfAbsent("NEW.PARAM", "value");
+        applicationView.getAppDeploymentSpec().getStorageVolumes().getFirst().getDeployParameters().putIfAbsent("NEW.PARAM", "value");
 
-        applicationView.getAppDeploymentSpec().getAccessMethods().add(
-                AppAccessMethodView.builder().type(ServiceAccessMethodType.DEFAULT).name("name4").tag("tag4").build());
-        applicationView.getAppDeploymentSpec().getAccessMethods().add(
-                AppAccessMethodView.builder().type(ServiceAccessMethodType.DEFAULT).name("name5").tag("tag5").build());
-        applicationView.getAppDeploymentSpec().getStorageVolumes().add(new AppStorageVolumeView(null, ServiceStorageVolumeType.SHARED, 5, new HashMap<>()));
-        applicationView.getAppDeploymentSpec().getStorageVolumes().add(new AppStorageVolumeView(null, ServiceStorageVolumeType.SHARED, 5, new HashMap<>()));
+        applicationView.getAppDeploymentSpec().getAccessMethods()
+                .add(new AppAccessMethodView(null, ServiceAccessMethodTypeDto.DEFAULT, "name4", "tag4", null, null));
+        applicationView.getAppDeploymentSpec().getAccessMethods()
+                .add(new AppAccessMethodView(null, ServiceAccessMethodTypeDto.DEFAULT, "name5", "tag5", null, null));
+        applicationView.getAppDeploymentSpec().getStorageVolumes()
+                .add(new AppStorageVolumeView(null, ServiceStorageVolumeTypeDto.SHARED, 5, new HashMap<>()));
+        applicationView.getAppDeploymentSpec().getStorageVolumes()
+                .add(new AppStorageVolumeView(null, ServiceStorageVolumeTypeDto.SHARED, 5, new HashMap<>()));
 
         mvc.perform(patch("/api/apps/version")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
@@ -247,7 +250,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-        assertEquals(ApplicationState.DELETED, applicationRepository.findAll().get(0).getState());
+        assertEquals(ApplicationState.DELETED, applicationRepository.findAll().getFirst().getState());
     }
 
     @Test
@@ -283,20 +286,20 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
-        ApplicationDTO app = objectMapper.readValue(result.getResponse().getContentAsString(), ApplicationDTO.class);
+        ApplicationDto app = objectMapper.readValue(result.getResponse().getContentAsString(), ApplicationDto.class);
         assertEquals(APP_1_NAME, app.getApplicationBase().getName());
         assertEquals("1.2.0", app.getApplication().getVersion());
     }
 
     @Test
     void shouldGetApp() throws Exception {
-        long id = applicationRepository.findAll().get(0).getId();
+        long id = applicationRepository.findAll().getFirst().getId();
         MvcResult result = mvc.perform(get("/api/apps/" + id)
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
-        ApplicationDTO app = objectMapper.readValue(result.getResponse().getContentAsString(), ApplicationDTO.class);
+        ApplicationDto app = objectMapper.readValue(result.getResponse().getContentAsString(), ApplicationDto.class);
         assertEquals(APP_1_NAME, app.getApplicationBase().getName());
         assertEquals("1.1.0", app.getApplication().getVersion());
 
@@ -315,7 +318,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
         long id = this.testApp1.getId();
         mvc.perform(patch("/api/apps/state/" + id)
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                        .content(objectMapper.writeValueAsString(new ApplicationStateChangeRequest(ApplicationState.DISABLED, "reason", false)))
+                        .content(objectMapper.writeValueAsString(new ApplicationStateChangeRequest(ApplicationStateDto.DISABLED, "reason", false)))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
@@ -326,12 +329,12 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
                 .andExpect(status().isOk())
                 .andReturn();
         ApplicationView applicationView = objectMapper.readValue(result.getResponse().getContentAsByteArray(), ApplicationView.class);
-        assertEquals(ApplicationState.DISABLED, applicationView.getState());
+        assertEquals(ApplicationStateDto.DISABLED, applicationView.getState());
 
         //reverse state to active again
         mvc.perform(patch("/api/apps/state/" + id)
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                        .content(objectMapper.writeValueAsString(new ApplicationStateChangeRequest(ApplicationState.ACTIVE, "reason", false)))
+                        .content(objectMapper.writeValueAsString(new ApplicationStateChangeRequest(ApplicationStateDto.ACTIVE, "reason", false)))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
@@ -350,14 +353,16 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
                 )
         );
         appDeploymentSpec.setStorageVolumes(new ArrayList<>());
-        appDeploymentSpec.getStorageVolumes().add(new AppStorageVolumeView(null, ServiceStorageVolumeType.MAIN, 5, new HashMap<>()));
+        appDeploymentSpec.getStorageVolumes().add(new AppStorageVolumeView(null, ServiceStorageVolumeTypeDto.MAIN, 5, new HashMap<>()));
         appDeploymentSpec.setAccessMethods(new ArrayList<>());
-        appDeploymentSpec.getAccessMethods().add(AppAccessMethodView.builder().type(ServiceAccessMethodType.DEFAULT).name("name1").tag("tag1").build());
-        appDeploymentSpec.getAccessMethods().add(AppAccessMethodView.builder().type(ServiceAccessMethodType.EXTERNAL).name("name2").tag("tag2").build());
-        appDeploymentSpec.getAccessMethods().add(AppAccessMethodView.builder().type(ServiceAccessMethodType.INTERNAL).name("name3").tag("tag3").build());
+        appDeploymentSpec.getAccessMethods().addAll(List.of(
+                new AppAccessMethodView(null, ServiceAccessMethodTypeDto.DEFAULT, "name1", "tag1", null, null),
+                new AppAccessMethodView(null, ServiceAccessMethodTypeDto.EXTERNAL, "name2", "tag2", null, null),
+                new AppAccessMethodView(null, ServiceAccessMethodTypeDto.INTERNAL, "name3", "tag3", null, null)
+        ));
 
-        AppConfigurationSpecView appConfigurationSpec = new AppConfigurationSpecView();
-        appConfigurationSpec.getTemplates().add(new ConfigFileTemplateView(null, null, "name", "dir", "content"));
+        AppConfigurationSpecView appConfigurationSpec = new AppConfigurationSpecView(null, new ArrayList<>(), true, false, false);
+        appConfigurationSpec.templates().add(new ConfigFileTemplateView(null, null, "name", "dir", "content"));
 
         ApplicationView view = ApplicationView.builder()
                 .name(APP_1_NAME)

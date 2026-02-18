@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.service;
 
-import net.geant.nmaas.portal.domain.SSHKeyRequest;
-import net.geant.nmaas.portal.domain.SSHKeyView;
+import net.geant.nmaas.api.dto.users.SSHKeyRequest;
+import net.geant.nmaas.api.dto.users.SSHKeyView;
 import net.geant.nmaas.portal.persistence.entity.User;
 
 import java.util.List;

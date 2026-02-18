@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.service;
 
-import net.geant.nmaas.portal.domain.WebhookEventDto;
-import net.geant.nmaas.portal.domain.WebhookHistoryDto;
+import net.geant.nmaas.api.dto.webhooks.WebhookEventDto;
+import net.geant.nmaas.api.dto.webhooks.WebhookHistoryDto;
 import net.geant.nmaas.portal.persistence.entity.WebhookEventType;
 
 import java.time.LocalDateTime;

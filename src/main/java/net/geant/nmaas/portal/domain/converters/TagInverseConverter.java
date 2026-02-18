@@ -1,15 +1,15 @@
 package net.geant.nmaas.portal.domain.converters;
 
-import lombok.NoArgsConstructor;
+import net.geant.nmaas.api.dto.applications.AppTagDto;
+import net.geant.nmaas.portal.persistence.entity.Tag;
 import org.modelmapper.AbstractConverter;
 
-import net.geant.nmaas.portal.persistence.entity.Tag;
+public class TagInverseConverter extends AbstractConverter<AppTagDto, Tag> {
 
-@NoArgsConstructor
-public class TagInverseConverter extends AbstractConverter<Tag, String> {
+    @Override
+    protected Tag convert(AppTagDto source) {
+        return new Tag(source.id(), source.name());
+    }
 
-	@Override
-	protected String convert(Tag source) {
-		return (source != null ? source.getName() : null);
-	}
 }
+

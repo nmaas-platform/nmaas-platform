@@ -1,25 +1,25 @@
 package net.geant.nmaas.kubernetes.remote;
 
-import net.geant.nmaas.kubernetes.remote.api.model.RemoteClusterView;
+import net.geant.nmaas.api.dto.kubernetes.RemoteKClusterDto;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface RemoteClusterManagementService extends RemoteClusterInfoService {
 
-    void checkRequest(RemoteClusterView view);
+    void checkRequest(RemoteKClusterDto view);
 
-    RemoteClusterView processNewCluster(RemoteClusterView remoteClusterSpec, MultipartFile kubeConfigFile, boolean createNamespace);
+    RemoteKClusterDto processNewCluster(RemoteKClusterDto remoteClusterSpec, MultipartFile kubeConfigFile, boolean createNamespace);
 
-    RemoteClusterView processNewCluster(RemoteClusterView remoteClusterSpec, boolean createNamespace, String namespace, String secretName);
+    RemoteKClusterDto processNewCluster(RemoteKClusterDto remoteClusterSpec, boolean createNamespace, String namespace, String secretName);
 
-    RemoteClusterView updateCluster(RemoteClusterView cluster, Long id);
+    RemoteKClusterDto updateCluster(RemoteKClusterDto cluster, Long id);
 
     void removeCluster(Long id);
 
     boolean clusterExists(Long id);
 
-    RemoteClusterView mapFile(RemoteClusterView view, MultipartFile file);
+    RemoteKClusterDto mapFile(RemoteKClusterDto view, MultipartFile file);
 
-    RemoteClusterView mapFile(RemoteClusterView view, String secretNamespace, String secretName);
+    RemoteKClusterDto mapFile(RemoteKClusterDto view, String secretNamespace, String secretName);
 
     void updateClusterStatus(Long id);
 }

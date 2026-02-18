@@ -11,7 +11,7 @@ import net.geant.nmaas.orchestration.events.app.AppUpgradeActionEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidApplicationIdException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.orchestration.repositories.AppUpgradeHistoryRepository;
-import net.geant.nmaas.portal.domain.AppInstanceView;
+import net.geant.nmaas.api.dto.applications.AppInstanceView;
 import net.geant.nmaas.portal.events.ApplicationActivatedEvent;
 import net.geant.nmaas.portal.persistence.entity.AppInstance;
 import net.geant.nmaas.portal.persistence.entity.Application;

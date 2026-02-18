@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.geant.nmaas.portal.api.bulk.BulkType;
-import net.geant.nmaas.portal.domain.UserViewMinimal;
+import net.geant.nmaas.api.dto.users.UserViewMinimal;
 import net.geant.nmaas.portal.persistence.entity.BulkDeploymentState;
 
 import java.time.OffsetDateTime;

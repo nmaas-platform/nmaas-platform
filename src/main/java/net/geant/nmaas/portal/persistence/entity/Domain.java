@@ -20,6 +20,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import net.geant.nmaas.api.dto.domains.DomainBaseDto;
 import net.geant.nmaas.dcn.deployment.entities.DomainDcnDetails;
 import net.geant.nmaas.kubernetes.remote.entities.KCluster;
 import net.geant.nmaas.orchestration.entities.DomainTechDetails;
@@ -126,4 +127,13 @@ public class Domain implements Serializable {
         }
     }
 
+    public DomainBaseDto toBaseDto() {
+        DomainBaseDto domainBaseDto = new DomainBaseDto();
+        domainBaseDto.setId(this.id);
+        domainBaseDto.setName(this.name);
+        domainBaseDto.setCodename(this.codename);
+        domainBaseDto.setActive(this.active);
+        domainBaseDto.setDeleted(this.deleted);
+        return domainBaseDto;
+    }
 }

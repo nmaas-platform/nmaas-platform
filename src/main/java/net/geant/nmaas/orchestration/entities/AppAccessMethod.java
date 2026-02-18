@@ -75,9 +75,8 @@ public class AppAccessMethod implements Serializable {
     }
 
     public enum ConditionType {
-
         NONE,
         DEPLOYMENT_PARAMETER;
-
     }
+
 }

@@ -1,16 +1,5 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmChartIngressVariable;
-import net.geant.nmaas.orchestration.entities.AppAccessMethod;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -18,6 +7,18 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import net.geant.nmaas.api.dto.applications.ServiceAccessMethodDto;
+import net.geant.nmaas.api.dto.applications.ServiceAccessMethodTypeDto;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmChartIngressVariable;
+import net.geant.nmaas.orchestration.entities.AppAccessMethod;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -104,4 +105,12 @@ public class ServiceAccessMethod {
         return copy;
     }
 
+    public ServiceAccessMethodDto toDto() {
+        ServiceAccessMethodDto dto = new ServiceAccessMethodDto();
+        dto.setName(this.name);
+        dto.setUrl(this.url);
+        dto.setProtocol(this.protocol);
+        dto.setType(ServiceAccessMethodTypeDto.valueOf(this.type.name()));
+        return dto;
+    }
 }

@@ -2,8 +2,8 @@ package net.geant.nmaas.portal.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.portal.domain.ApplicationStatePerDomainView;
-import net.geant.nmaas.portal.domain.DomainGroupView;
+import net.geant.nmaas.api.dto.applications.ApplicationStatePerDomainView;
+import net.geant.nmaas.api.dto.domains.DomainGroupDto;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.events.DomainGroupChangedEvent;
@@ -50,7 +50,7 @@ public class DomainGroupServiceImpl implements DomainGroupService {
     }
 
     @Override
-    public DomainGroupView createDomainGroup(DomainGroupView domainGroup) {
+    public DomainGroupDto createDomainGroup(DomainGroupDto domainGroup) {
         //validation
         checkParam(domainGroup);
         if (existDomainGroup(domainGroup.getName(), domainGroup.getCodename())) {
@@ -62,13 +62,13 @@ public class DomainGroupServiceImpl implements DomainGroupService {
         domainGroupEntity.setApplicationStatePerDomain(applicationStatePerDomainList);
         domainGroupEntity = domainGroupRepository.save(domainGroupEntity);
 
-        DomainGroupView domainGroupView = modelMapper.map(domainGroupEntity, DomainGroupView.class);
+        DomainGroupDto domainGroupView = modelMapper.map(domainGroupEntity, DomainGroupDto.class);
         eventPublisher.publishEvent(new DomainGroupChangedEvent(this, "create", domainGroupView));
         return domainGroupView;
     }
 
     @Override
-    public DomainGroupView addDomainsToGroup(List<Domain> domains, String groupCodeName) {
+    public DomainGroupDto addDomainsToGroup(List<Domain> domains, String groupCodeName) {
         DomainGroup domainGroup = domainGroupRepository.findByCodename(groupCodeName).orElseThrow();
         domains.forEach(domain -> {
             log.debug("Adding domain {}/{} to group {}", domain.getName(), domain.getCodename(), groupCodeName);
@@ -76,24 +76,24 @@ public class DomainGroupServiceImpl implements DomainGroupService {
                 domainGroup.addDomain(domain);
             }
         });
-        return modelMapper.map(domainGroupRepository.save(domainGroup), DomainGroupView.class);
+        return modelMapper.map(domainGroupRepository.save(domainGroup), DomainGroupDto.class);
     }
 
     @Override
-    public DomainGroupView deleteDomainFromGroup(Domain domain, Long domainGroupId) {
+    public DomainGroupDto deleteDomainFromGroup(Domain domain, Long domainGroupId) {
         DomainGroup domainGroup = domainGroupRepository.findById(domainGroupId).orElseThrow();
         log.debug("Removing domain {} from group {}", domain.getCodename(), domainGroup.getCodename());
         domainGroup.removeDomain(domain);
         domainGroup.getManagers().forEach(manager ->
                 userRoleRepository.deleteBy(manager.getId(), domain.getId(), Role.ROLE_GROUP_DOMAIN_ADMIN)
         );
-        return modelMapper.map(domainGroupRepository.save(domainGroup), DomainGroupView.class);
+        return modelMapper.map(domainGroupRepository.save(domainGroup), DomainGroupDto.class);
     }
 
     @Override
     public void deleteDomainGroup(Long domainGroupId) {
         DomainGroup domainGroup = domainGroupRepository.findById(domainGroupId).orElseThrow();
-        DomainGroupView domainGroupView = modelMapper.map(domainGroup, DomainGroupView.class);
+        DomainGroupDto domainGroupView = modelMapper.map(domainGroup, DomainGroupDto.class);
         List<Domain> toRemove = new ArrayList<>(domainGroup.getDomains());
         Iterator<Domain> iterator = toRemove.iterator();
         while (iterator.hasNext()) {
@@ -107,24 +107,24 @@ public class DomainGroupServiceImpl implements DomainGroupService {
     }
 
     @Override
-    public DomainGroupView getDomainGroup(Long domainGroupId) {
+    public DomainGroupDto getDomainGroup(Long domainGroupId) {
         Optional<DomainGroup> domainGroup = this.domainGroupRepository.findById(domainGroupId);
         if (domainGroup.isPresent()) {
-            return modelMapper.map(domainGroup.get(), DomainGroupView.class);
+            return modelMapper.map(domainGroup.get(), DomainGroupDto.class);
         } else {
             throw new MissingElementException("Domain group not found");
         }
     }
 
     @Override
-    public List<DomainGroupView> getAllDomainGroups() {
+    public List<DomainGroupDto> getAllDomainGroups() {
         return domainGroupRepository.findAll().stream()
-                .map(g -> modelMapper.map(g, DomainGroupView.class))
+                .map(g -> modelMapper.map(g, DomainGroupDto.class))
                 .toList();
     }
 
     @Override
-    public DomainGroupView updateDomainGroup(Long domainGroupId, DomainGroupView view) {
+    public DomainGroupDto updateDomainGroup(Long domainGroupId, DomainGroupDto view) {
         if (!domainGroupId.equals(view.getId())) {
             throw new ProcessingException(String.format("Wrong domain group identifier (%s)", domainGroupId));
         }
@@ -146,12 +146,12 @@ public class DomainGroupServiceImpl implements DomainGroupService {
 
         domainGroupRepository.save(domainGroup);
 
-        DomainGroupView domainGroupView = modelMapper.map(domainGroup, DomainGroupView.class);
+        DomainGroupDto domainGroupView = modelMapper.map(domainGroup, DomainGroupDto.class);
         eventPublisher.publishEvent(new DomainGroupChangedEvent(this, "update", domainGroupView));
         return domainGroupView;
     }
 
-    protected void checkParam(DomainGroupView domainGroup) {
+    protected void checkParam(DomainGroupDto domainGroup) {
         if (StringUtils.isEmpty(domainGroup.getName()) || StringUtils.isEmpty(domainGroup.getCodename())) {
             throw new IllegalArgumentException("Name is null or empty");
         }

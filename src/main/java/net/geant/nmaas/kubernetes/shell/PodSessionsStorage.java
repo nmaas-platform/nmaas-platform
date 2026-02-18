@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import net.geant.nmaas.kubernetes.shell.observable.GenericShellSessionObservable;
 import net.geant.nmaas.kubernetes.shell.observable.SshConnectionShellSessionObservable;
 import net.geant.nmaas.kubernetes.shell.observer.ShellSessionObserver;
-import net.geant.nmaas.portal.domain.K8sShellCommandRequest;
+import net.geant.nmaas.api.dto.K8sShellCommandRequest;
 import net.geant.nmaas.portal.persistence.entity.AppInstance;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import org.apache.commons.lang3.StringUtils;

@@ -1,8 +1,9 @@
 package net.geant.nmaas.portal.api.apps;
 
-import net.geant.nmaas.portal.domain.FileInfoView;
-import net.geant.nmaas.portal.domain.UserFile;
+import net.geant.nmaas.api.dto.FileInfoView;
+import net.geant.nmaas.api.dto.users.UserFile;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
+import net.geant.nmaas.portal.domain.converters.FileInfoConverter;
 import net.geant.nmaas.portal.persistence.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistence.entity.FileInfo;
 import net.geant.nmaas.portal.service.ApplicationBaseService;
@@ -47,8 +48,11 @@ class AppScreenshotsControllerTest {
 
     @BeforeEach
     void setup() {
-        this.appScreenshotsController = new AppScreenshotsController(
-                new ModelMapper(),
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.addConverter(new FileInfoConverter());
+
+        appScreenshotsController = new AppScreenshotsController(
+                modelMapper,
                 applicationService,
                 applicationBaseService,
                 userService,

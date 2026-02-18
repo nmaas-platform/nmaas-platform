@@ -2,6 +2,7 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.api.dto.applications.ServiceAccessMethodDto;
 import net.geant.nmaas.gitlab.GitLabManager;
 import net.geant.nmaas.gitlab.exceptions.GitLabInvalidConfigurationException;
 import net.geant.nmaas.kubernetes.JanitorException;
@@ -19,7 +20,6 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.en
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ParameterType;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethod;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodView;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceStorageVolume;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.exceptions.KServiceManipulationException;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerCheckFailedException;
@@ -467,10 +467,10 @@ public class KubernetesManager implements ContainerOrchestrator {
     public AppUiAccessDetails serviceAccessDetails(Identifier deploymentId) {
         try {
             retrieveOrUpdateInternalServiceIpAddress(repositoryManager.loadService(deploymentId));
-            Set<ServiceAccessMethodView> serviceAccessMethodViewSet = new HashSet<>();
+            Set<ServiceAccessMethodDto> serviceAccessMethodViewSet = new HashSet<>();
             repositoryManager.loadService(deploymentId).getAccessMethods().stream()
                     .filter(ServiceAccessMethod::isEnabled)
-                    .forEach(m -> serviceAccessMethodViewSet.add(ServiceAccessMethodView.fromServiceAccessMethod(m)));
+                    .forEach(m -> serviceAccessMethodViewSet.add(m.toDto()));
             return new AppUiAccessDetails(serviceAccessMethodViewSet);
         } catch (InvalidDeploymentIdException idie) {
             throw new ContainerOrchestratorInternalErrorException(serviceNotFoundMessage(idie.getMessage()));

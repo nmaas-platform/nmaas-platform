@@ -1,9 +1,9 @@
 package net.geant.nmaas.orchestration;
 
+import net.geant.nmaas.api.dto.applications.ServiceAccessMethodDto;
+import net.geant.nmaas.api.dto.applications.ServiceAccessMethodTypeDto;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent.EventDetailType;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodView;
 import net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState;
 import net.geant.nmaas.notifications.NotificationEvent;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
@@ -116,8 +116,8 @@ class AppDeploymentStateChangeManagerTest {
 
         when(monitor.userAccessDetails(deploymentId)).thenReturn(
                 new AppUiAccessDetails(
-                        new HashSet<ServiceAccessMethodView>() {{
-                            add(new ServiceAccessMethodView(ServiceAccessMethodType.DEFAULT, "Default", "Web", "url"));
+                        new HashSet<>() {{
+                            add(new ServiceAccessMethodDto(ServiceAccessMethodTypeDto.DEFAULT, "Default", "Web", "url"));
                         }}
                 )
         );
@@ -167,8 +167,8 @@ class AppDeploymentStateChangeManagerTest {
         when(deployments.load(deploymentId)).thenReturn(stubAppDeployment());
         when(monitor.userAccessDetails(deploymentId)).thenReturn(
                 new AppUiAccessDetails(
-                        new HashSet<ServiceAccessMethodView>() {{
-                            add(new ServiceAccessMethodView(ServiceAccessMethodType.DEFAULT, "Default", "Web", "url"));
+                        new HashSet<>() {{
+                            add(new ServiceAccessMethodDto(ServiceAccessMethodTypeDto.DEFAULT, "Default", "Web", "url"));
                         }}
                 )
         );
@@ -254,8 +254,8 @@ class AppDeploymentStateChangeManagerTest {
         when(deployments.loadState(deploymentId)).thenReturn(APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS);
         when(deployments.loadDomainName(deploymentId)).thenReturn("domainName");
         when(deployments.load(deploymentId)).thenReturn(stubAppDeployment());
-        when(monitor.userAccessDetails(deploymentId)).thenReturn(new AppUiAccessDetails(new HashSet<ServiceAccessMethodView>() {{
-            add(new ServiceAccessMethodView(ServiceAccessMethodType.DEFAULT, "Default", "Web", "url"));
+        when(monitor.userAccessDetails(deploymentId)).thenReturn(new AppUiAccessDetails(new HashSet<>() {{
+            add(new ServiceAccessMethodDto(ServiceAccessMethodTypeDto.DEFAULT, "Default", "Web", "url"));
         }}));
         when(event.getDetail(EventDetailType.NEW_APPLICATION_ID)).thenReturn("10");
         when(event.getState()).thenReturn(ServiceDeploymentState.VERIFIED);
@@ -270,8 +270,8 @@ class AppDeploymentStateChangeManagerTest {
         when(deployments.loadState(deploymentId)).thenReturn(APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS);
         when(deployments.loadDomainName(deploymentId)).thenReturn("domainName");
         when(deployments.load(deploymentId)).thenReturn(stubAppDeployment());
-        when(monitor.userAccessDetails(deploymentId)).thenReturn(new AppUiAccessDetails(new HashSet<ServiceAccessMethodView>() {{
-            add(new ServiceAccessMethodView(ServiceAccessMethodType.DEFAULT, "Default", "Web", "url"));
+        when(monitor.userAccessDetails(deploymentId)).thenReturn(new AppUiAccessDetails(new HashSet<ServiceAccessMethodDto>() {{
+            add(new ServiceAccessMethodDto(ServiceAccessMethodTypeDto.DEFAULT, "Default", "Web", "url"));
         }}));
         AppDeploymentHistory history = new AppDeploymentHistory(1L, stubAppDeployment(), new Date(), APPLICATION_DEPLOYED, APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS);
         AppDeploymentHistory history2 = new AppDeploymentHistory(2L, stubAppDeployment(), new Date(), APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS, APPLICATION_DEPLOYMENT_VERIFIED);

@@ -1,9 +1,9 @@
 package net.geant.nmaas.kubernetes.remote;
 
+import net.geant.nmaas.api.dto.kubernetes.RemoteKClusterDto;
 import net.geant.nmaas.kubernetes.KubernetesApiClientService;
 import net.geant.nmaas.kubernetes.KubernetesClusterDeploymentManager;
 import net.geant.nmaas.kubernetes.KubernetesClusterIngressManager;
-import net.geant.nmaas.kubernetes.remote.api.model.RemoteClusterView;
 import net.geant.nmaas.kubernetes.remote.entities.KCluster;
 import net.geant.nmaas.kubernetes.remote.repositories.KClusterRepository;
 import net.geant.nmaas.portal.persistence.entity.Domain;
@@ -17,6 +17,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import java.nio.file.AccessDeniedException;
 import java.security.Principal;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -83,7 +84,7 @@ class RemoteClusterManagerTest {
         when(kClusterRepository.findById(id)).thenReturn(Optional.of(remoteCluster));
         when(userService.isAdmin(anyString())).thenReturn(true);
 
-        RemoteClusterView result = remoteClusterManager.getCluster(id, mockPrincipal);
+        RemoteKClusterDto result = remoteClusterManager.getCluster(id, mockPrincipal);
 
         assertEquals(remoteCluster.getName(), result.getName());
         verify(kClusterRepository, times(1)).findById(id);
@@ -101,7 +102,7 @@ class RemoteClusterManagerTest {
         when(userService.isAdmin(anyString())).thenReturn(false);
         when(userService.isUserAdminInAnyDomain(anyList(), anyString())).thenReturn(true);
 
-        RemoteClusterView result = remoteClusterManager.getCluster(id, mockPrincipal);
+        RemoteKClusterDto result = remoteClusterManager.getCluster(id, mockPrincipal);
 
         assertEquals(remoteCluster.getName(), result.getName());
         verify(kClusterRepository, times(1)).findById(id);
@@ -142,7 +143,7 @@ class RemoteClusterManagerTest {
 
         when(kClusterRepository.findAll()).thenReturn(List.of(cluster1, cluster2));
 
-        List<RemoteClusterView> result = remoteClusterManager.getAllClusters();
+        List<RemoteKClusterDto> result = remoteClusterManager.getAllClusters();
 
         assertEquals(2, result.size());
         verify(kClusterRepository, times(1)).findAll();
@@ -156,7 +157,7 @@ class RemoteClusterManagerTest {
         when(kClusterRepository.findAll()).thenReturn(Arrays.asList(cluster1, cluster2, cluster3));
 
         // When
-        List<RemoteClusterView> result = remoteClusterManager.getClustersInDomain(globalDomainId);
+        List<RemoteKClusterDto> result = remoteClusterManager.getClustersInDomain(globalDomainId);
 
         // Then
         verify(kClusterRepository, times(1)).findAll();
@@ -175,7 +176,7 @@ class RemoteClusterManagerTest {
         when(kClusterRepository.findByDomains_Id(specificDomainId)).thenReturn(Arrays.asList(cluster1, cluster2));
 
         // When
-        List<RemoteClusterView> result = remoteClusterManager.getClustersInDomain(specificDomainId);
+        List<RemoteKClusterDto> result = remoteClusterManager.getClustersInDomain(specificDomainId);
 
         // Then
         verify(kClusterRepository, times(1)).findByDomains_Id(specificDomainId);
@@ -190,10 +191,10 @@ class RemoteClusterManagerTest {
         // Given
         Long specificDomainId = specificDomain.getId();
         when(domainService.getGlobalDomain()).thenReturn(Optional.empty());
-        when(kClusterRepository.findByDomains_Id(specificDomainId)).thenReturn(Arrays.asList(cluster1));
+        when(kClusterRepository.findByDomains_Id(specificDomainId)).thenReturn(Collections.singletonList(cluster1));
 
         // When
-        List<RemoteClusterView> result = remoteClusterManager.getClustersInDomain(specificDomainId);
+        List<RemoteKClusterDto> result = remoteClusterManager.getClustersInDomain(specificDomainId);
 
         // Then
         verify(kClusterRepository, times(1)).findByDomains_Id(specificDomainId);

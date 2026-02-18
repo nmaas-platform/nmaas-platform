@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.api.exceptions.AuthenticationException;
 import net.geant.nmaas.portal.api.exceptions.SignupException;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
-import net.geant.nmaas.portal.domain.Pong;
+import net.geant.nmaas.api.dto.Pong;
 import net.geant.nmaas.portal.exceptions.UndergoingMaintenanceException;
 import net.geant.nmaas.portal.persistence.entity.Role;
 import net.geant.nmaas.portal.persistence.entity.User;

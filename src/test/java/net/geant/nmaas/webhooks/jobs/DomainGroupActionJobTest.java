@@ -1,7 +1,8 @@
 package net.geant.nmaas.webhooks.jobs;
 
-import net.geant.nmaas.portal.domain.DomainGroupView;
-import net.geant.nmaas.portal.domain.WebhookEventDto;
+import net.geant.nmaas.api.dto.domains.DomainGroupDto;
+import net.geant.nmaas.api.dto.webhooks.WebhookEventDto;
+import net.geant.nmaas.api.dto.webhooks.WebhookEventTypeDto;
 import net.geant.nmaas.portal.persistence.entity.WebhookEventType;
 import net.geant.nmaas.portal.persistence.entity.WebhookHistory;
 import net.geant.nmaas.portal.persistence.repositories.DomainRepository;
@@ -45,14 +46,14 @@ class DomainGroupActionJobTest {
         JobDataMap dataMap = new JobDataMap();
         dataMap.put("webhookId", 10L);
         dataMap.put("domainId", 1L);
-        DomainGroupView group = DomainGroupView.builder().id(50L).codename("g1").name("Group 1").build();
+        DomainGroupDto group = new DomainGroupDto(50L, "Group 1", "g1");
         dataMap.put("domainGroup", group);
         JobDetail jobDetail = mock(JobDetail.class);
         when(jobDetail.getJobDataMap()).thenReturn(dataMap);
         JobExecutionContext jobExecutionContext = mock(JobExecutionContext.class);
         when(jobExecutionContext.getJobDetail()).thenReturn(jobDetail);
         when(webhookEventService.getById(10L)).thenReturn(
-                new WebhookEventDto(10L, "webhook-name", "https://example.webhook-url.pl", WebhookEventType.DOMAIN_GROUP_ACTION, null, null, null,
+                new WebhookEventDto(10L, "webhook-name", "https://example.webhook-url.pl", WebhookEventTypeDto.DOMAIN_GROUP_ACTION, null, null, null,
                         "{\"group\": $DOMAINGROUP_CODENAME, \"event\": $WEBHOOKEVENTTYPE}"));
 
         assertThrows(JobExecutionException.class, () -> {

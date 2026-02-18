@@ -1,21 +1,25 @@
 package net.geant.nmaas.kubernetes.remote.entities;
 
-import net.geant.nmaas.kubernetes.api.model.KClusterView;
+import net.geant.nmaas.api.dto.kubernetes.KClusterDto.KClusterIngressView;
 import org.apache.commons.lang3.Validate;
 
 public enum IngressResourceConfigOption {
 
-    /** Don't deploy or configure ingress resource at all */
+    /**
+     * Don't deploy or configure ingress resource at all
+     */
     NOT_USED {
         @Override
-        public void validate(KClusterView.KClusterIngressView ingress) {
+        public void validate(KClusterIngressView ingress) {
             // no need to check anything
         }
     },
-    /** Use ingress resource definition from the application helm chart */
+    /**
+     * Use ingress resource definition from the application helm chart
+     */
     DEPLOY_FROM_CHART {
         @Override
-        public void validate(KClusterView.KClusterIngressView ingress) {
+        public void validate(KClusterIngressView ingress) {
             Validate.isTrue(ingress.getExternalServiceDomain() != null && !ingress.getExternalServiceDomain().isEmpty()
                     , "When deploying ingress resource the external service domain can't be empty.");
             Validate.isTrue(ingress.getTlsSupported() != null
@@ -23,6 +27,6 @@ public enum IngressResourceConfigOption {
         }
     };
 
-    public abstract void validate(KClusterView.KClusterIngressView ingress);
+    public abstract void validate(KClusterIngressView ingress);
 
 }
