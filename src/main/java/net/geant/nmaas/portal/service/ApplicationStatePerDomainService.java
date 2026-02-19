@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.service;
 
 import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
-import net.geant.nmaas.portal.domain.DomainView;
+import net.geant.nmaas.api.dto.domains.DomainView;
 import net.geant.nmaas.portal.persistence.entity.Application;
 import net.geant.nmaas.portal.persistence.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistence.entity.ApplicationStatePerDomain;

@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.persistence.repositories;
 
-import net.geant.nmaas.portal.domain.UserListEntry;
 import net.geant.nmaas.portal.persistence.entity.User;
+import net.geant.nmaas.portal.service.UserListEntry;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 public interface UserEntryListRepository extends JpaRepository<User, Long> {
 
     @Query("""
-            SELECT new net.geant.nmaas.portal.domain.UserListEntry(
+            SELECT new net.geant.nmaas.portal.service.UserListEntry(
                         user,
                         (SELECT MAX(l.date) FROM UserLoginRegister l WHERE l.userId = user.id ) as lastSuccessfulLoginDate,
                         (SELECT MIN(l.date) FROM UserLoginRegister l WHERE l.userId = user.id ) as firstLoginDate
@@ -28,7 +28,7 @@ public interface UserEntryListRepository extends JpaRepository<User, Long> {
     Page<UserListEntry> findAll(@Param("search") String searchValue, Pageable pageable);
 
     @Query("""
-            SELECT new net.geant.nmaas.portal.domain.UserListEntry(
+            SELECT new net.geant.nmaas.portal.service.UserListEntry(
                         user,
                         :domainId,
                         (SELECT MAX(l.date) FROM UserLoginRegister l WHERE l.userId = user.id ) as lastSuccessfulLoginDate,

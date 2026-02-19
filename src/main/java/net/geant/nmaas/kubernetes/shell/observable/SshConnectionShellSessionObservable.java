@@ -2,8 +2,8 @@ package net.geant.nmaas.kubernetes.shell.observable;
 
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.api.dto.K8sShellCommandRequest;
 import net.geant.nmaas.kubernetes.shell.AsyncConnector;
-import net.geant.nmaas.portal.domain.K8sShellCommandRequest;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -134,7 +134,7 @@ public class SshConnectionShellSessionObservable extends GenericShellSessionObse
      * @param commandRequest command request
      */
     public void executeCommand(K8sShellCommandRequest commandRequest) {
-        String result = this.sshConnector.executeSingleCommand(commandRequest.getCommand());
+        String result = this.sshConnector.executeSingleCommand(commandRequest.command());
         for (String r : result.split("\n")) {
             this.sendMessage(r);
         }
@@ -147,7 +147,7 @@ public class SshConnectionShellSessionObservable extends GenericShellSessionObse
      * @param commandRequest command request
      */
     public void executeCommandAsync(K8sShellCommandRequest commandRequest) {
-        this.sshConnector.executeCommand(commandRequest.getCommand());
+        this.sshConnector.executeCommand(commandRequest.command());
     }
 
     /**

@@ -3,17 +3,19 @@ package net.geant.nmaas.portal.api.user;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import jakarta.transaction.Transactional.TxType;
+import net.geant.nmaas.api.dto.users.RoleDto;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
 import net.geant.nmaas.portal.api.auth.UserToken;
-import net.geant.nmaas.portal.domain.DomainRequest;
-import net.geant.nmaas.portal.domain.PasswordReset;
-import net.geant.nmaas.portal.domain.UserRequest;
-import net.geant.nmaas.portal.domain.UserRoleView;
-import net.geant.nmaas.portal.domain.UserView;
+import net.geant.nmaas.api.dto.domains.DomainRequest;
+import net.geant.nmaas.api.dto.PasswordReset;
+import net.geant.nmaas.api.dto.users.UserRequest;
+import net.geant.nmaas.api.dto.users.UserRoleDto;
+import net.geant.nmaas.api.dto.users.UserView;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
 import net.geant.nmaas.portal.persistence.entity.Domain;
+import net.geant.nmaas.portal.persistence.entity.Role;
 import net.geant.nmaas.portal.persistence.entity.User;
 import net.geant.nmaas.portal.persistence.entity.UserRole;
 import net.geant.nmaas.portal.persistence.entity.UsersHelper;
@@ -39,12 +41,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static net.geant.nmaas.portal.persistence.entity.Role.ROLE_DOMAIN_ADMIN;
-import static net.geant.nmaas.portal.persistence.entity.Role.ROLE_GUEST;
-import static net.geant.nmaas.portal.persistence.entity.Role.ROLE_NOT_ACCEPTED;
-import static net.geant.nmaas.portal.persistence.entity.Role.ROLE_SYSTEM_ADMIN;
-import static net.geant.nmaas.portal.persistence.entity.Role.ROLE_TOOL_MANAGER;
-import static net.geant.nmaas.portal.persistence.entity.Role.ROLE_USER;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -95,24 +91,24 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
         domains.createDomain(new DomainRequest(DOMAIN2, DOMAIN2, true));
 
         //Add extra users, default admin is already there
-        User admin = new User("manager", true, "manager", domains.getGlobalDomain().get(), Collections.singletonList(ROLE_SYSTEM_ADMIN));
+        User admin = new User("manager", true, "manager", domains.getGlobalDomain().get(), Collections.singletonList(Role.ROLE_SYSTEM_ADMIN));
         admin.setEmail("manager@testemail.com");
         userRepo.save(admin);
 
-        User userStub = new User("userEntity", true, "userEntity", domains.findDomain(DOMAIN).get(), Collections.singletonList(ROLE_USER));
+        User userStub = new User("userEntity", true, "userEntity", domains.findDomain(DOMAIN).get(), Collections.singletonList(Role.ROLE_USER));
         userStub.setFirstname("Test");
         userStub.setLastname("Test");
         userStub.setEmail("test@gmail.com");
         userEntity = userRepo.save(userStub);
-        User user2 = new User("user2", true, "user2", domains.findDomain(DOMAIN).get(), Collections.singletonList(ROLE_USER));
+        User user2 = new User("user2", true, "user2", domains.findDomain(DOMAIN).get(), Collections.singletonList(Role.ROLE_USER));
         user2.setEmail("user2@testemail.com");
         userRepo.save(user2);
 
-        user3 = new User("user3", true, "user3", domains.getGlobalDomain().get(), ROLE_NOT_ACCEPTED, false, false);
+        user3 = new User("user3", true, "user3", domains.getGlobalDomain().get(), Role.ROLE_NOT_ACCEPTED, false, false);
         user3.setEmail("user3@testemail.com");
         userRepo.save(user3);
 
-        User domTestAdmin = new User("domAdmin", true, "domAdmin", domains.findDomain(DOMAIN2).get(), ROLE_DOMAIN_ADMIN, false, false);
+        User domTestAdmin = new User("domAdmin", true, "domAdmin", domains.findDomain(DOMAIN2).get(), Role.ROLE_DOMAIN_ADMIN, false, false);
         domTestAdmin.setEmail("domAdmin@testemail.com");
         userRepo.save(domTestAdmin);
 
@@ -255,9 +251,9 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
 
     @Test
     void testGetRolesAsString() {
-        UserRole userRole1 = new UserRole(new User("TEST1"), new Domain("TEST", "TEST"), ROLE_USER);
-        UserRole userRole2 = new UserRole(new User("TEST2"), new Domain("TEST", "TEST"), ROLE_SYSTEM_ADMIN);
-        UserRole userRole3 = new UserRole(new User("TEST3"), new Domain("TEST", "TEST"), ROLE_DOMAIN_ADMIN);
+        UserRole userRole1 = new UserRole(new User("TEST1"), new Domain("TEST", "TEST"), Role.ROLE_USER);
+        UserRole userRole2 = new UserRole(new User("TEST2"), new Domain("TEST", "TEST"), Role.ROLE_SYSTEM_ADMIN);
+        UserRole userRole3 = new UserRole(new User("TEST3"), new Domain("TEST", "TEST"), Role.ROLE_DOMAIN_ADMIN);
 
         List<UserRole> userRoles = new ArrayList<>();
         userRoles.add(userRole1);
@@ -269,18 +265,18 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
 
     @Test
     void testGetMessageWhenUserUpdated() {
-        UserRole userRole1 = new UserRole(new User("user1"), new Domain("TEST", "TEST"), ROLE_USER);
-        UserRole userRole2 = new UserRole(new User("user1"), new Domain("TEST", "TEST"), ROLE_TOOL_MANAGER);
+        UserRole userRole1 = new UserRole(new User("user1"), new Domain("TEST", "TEST"), Role.ROLE_USER);
+        UserRole userRole2 = new UserRole(new User("user1"), new Domain("TEST", "TEST"), Role.ROLE_TOOL_MANAGER);
 
         List<UserRole> userRoles1 = new ArrayList<>();
         userRoles1.add(userRole1);
         userRoles1.add(userRole2);
 
-        UserRoleView userRole3 = new UserRoleView();
-        userRole3.setRole(ROLE_DOMAIN_ADMIN);
+        UserRoleDto userRole3 = new UserRoleDto();
+        userRole3.setRole(RoleDto.ROLE_DOMAIN_ADMIN);
         userRole3.setDomainId(1L);
 
-        Set<UserRoleView> userRoles3 = new HashSet<>();
+        Set<UserRoleDto> userRoles3 = new HashSet<>();
         userRoles3.add(userRole3);
 
         User user = new User("user1");
@@ -305,8 +301,8 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
 
     @Test
     void testGetMessageWhenUserUpdatedWithSameRolesInDifferentOrder() {
-        UserRole userRole1 = new UserRole(new User("user1"), new Domain("TEST", "TEST"), ROLE_USER);
-        UserRole userRole2 = new UserRole(new User("user1"), new Domain("TEST", "TEST"), ROLE_TOOL_MANAGER);
+        UserRole userRole1 = new UserRole(new User("user1"), new Domain("TEST", "TEST"), Role.ROLE_USER);
+        UserRole userRole2 = new UserRole(new User("user1"), new Domain("TEST", "TEST"), Role.ROLE_TOOL_MANAGER);
 
         User user = new User("user1");
         user.setFirstname("FirstName");
@@ -315,8 +311,8 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
         user.setRoles(Stream.of(userRole1, userRole2).collect(Collectors.toList()));
         user.setEnabled(true);
 
-        UserRoleView userRole3 = new UserRoleView(ROLE_TOOL_MANAGER, 1L, "");
-        UserRoleView userRole4 = new UserRoleView(ROLE_USER, 1L, "");
+        UserRoleDto userRole3 = new UserRoleDto(RoleDto.ROLE_TOOL_MANAGER, 1L, "");
+        UserRoleDto userRole4 = new UserRoleDto(RoleDto.ROLE_USER, 1L, "");
 
         UserRequest userRequest = new UserRequest(2L, "user2", "password");
         userRequest.setFirstname("FirstName1");
@@ -333,15 +329,15 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
 
     @Test
     void testGetRoleWithDomainIdAsString() {
-        UserRoleView userRole1 = new UserRoleView();
-        userRole1.setRole(ROLE_USER);
+        UserRoleDto userRole1 = new UserRoleDto();
+        userRole1.setRole(RoleDto.ROLE_USER);
         userRole1.setDomainId(1L);
 
-        UserRoleView userRole2 = new UserRoleView();
-        userRole2.setRole(ROLE_GUEST);
+        UserRoleDto userRole2 = new UserRoleDto();
+        userRole2.setRole(RoleDto.ROLE_GUEST);
         userRole2.setDomainId(2L);
 
-        Set<UserRoleView> userRoles = new LinkedHashSet<>();
+        Set<UserRoleDto> userRoles = new LinkedHashSet<>();
         userRoles.add(userRole1);
         userRoles.add(userRole2);
 

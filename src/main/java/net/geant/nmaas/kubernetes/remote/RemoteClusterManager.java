@@ -4,11 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.api.dto.kubernetes.RemoteKClusterDto;
 import net.geant.nmaas.kubernetes.ClusterConfigView;
 import net.geant.nmaas.kubernetes.KubernetesApiClientService;
 import net.geant.nmaas.kubernetes.KubernetesClusterDeploymentManager;
 import net.geant.nmaas.kubernetes.KubernetesClusterIngressManager;
-import net.geant.nmaas.kubernetes.remote.api.model.RemoteClusterView;
 import net.geant.nmaas.kubernetes.remote.entities.KCluster;
 import net.geant.nmaas.kubernetes.remote.entities.KClusterDeployment;
 import net.geant.nmaas.kubernetes.remote.entities.KClusterIngress;
@@ -57,7 +57,7 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
     private final ModelMapper modelMapper;
 
     @Override
-    public RemoteClusterView getCluster(Long id, Principal principal) {
+    public RemoteKClusterDto getCluster(Long id, Principal principal) {
         Optional<KCluster> cluster = kClusterRepository.findById(id);
         if (cluster.isPresent()) {
             if (userService.isAdmin(principal.getName())
@@ -72,7 +72,7 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
     }
 
     @Override
-    public List<RemoteClusterView> getAllClusters() {
+    public List<RemoteKClusterDto> getAllClusters() {
         List<KCluster> clusters = kClusterRepository.findAll();
         return clusters.stream().map(this::toView).collect(Collectors.toList());
     }
@@ -89,7 +89,7 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
 
     // if domain GLOBAL return all
     @Override
-    public List<RemoteClusterView> getClustersInDomain(Long domainId) {
+    public List<RemoteKClusterDto> getClustersInDomain(Long domainId) {
         Optional<Domain> domainFromDb = domainService.getGlobalDomain();
         List<KCluster> clusters;
         if (domainFromDb.isPresent()) {
@@ -105,7 +105,7 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
     }
 
     @Override
-    public RemoteClusterView mapFile(RemoteClusterView view, MultipartFile file) {
+    public RemoteKClusterDto mapFile(RemoteKClusterDto view, MultipartFile file) {
         try {
             return getRemoteClusterView(view, file.getBytes());
         } catch (IOException e) {
@@ -114,11 +114,11 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
     }
 
     @Override
-    public RemoteClusterView mapFile(RemoteClusterView view, String secretNamespace, String secretName) {
+    public RemoteKClusterDto mapFile(RemoteKClusterDto view, String secretNamespace, String secretName) {
         return getRemoteClusterView(view, kubernetesApiClientService.readClusterConfigBytesFromSecret(secretNamespace, secretName));
     }
 
-    private RemoteClusterView getRemoteClusterView(RemoteClusterView view, byte[] fileBytes) {
+    private RemoteKClusterDto getRemoteClusterView(RemoteKClusterDto view, byte[] fileBytes) {
         checkRequestRead(view);
 
         ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
@@ -156,7 +156,7 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
     }
 
     @Override
-    public RemoteClusterView processNewCluster(RemoteClusterView remoteClusterSpec, MultipartFile kubeConfigFile, boolean createNamespace) {
+    public RemoteKClusterDto processNewCluster(RemoteKClusterDto remoteClusterSpec, MultipartFile kubeConfigFile, boolean createNamespace) {
         try {
             return saveNewCluster(remoteClusterSpec, createNamespace, kubeConfigFile.getBytes());
         } catch (IOException | NoSuchAlgorithmException e) {
@@ -165,7 +165,7 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
     }
 
     @Override
-    public RemoteClusterView processNewCluster(RemoteClusterView remoteClusterSpec, boolean createNamespace, String secretNamespace, String secretName) {
+    public RemoteKClusterDto processNewCluster(RemoteKClusterDto remoteClusterSpec, boolean createNamespace, String secretNamespace, String secretName) {
         try {
             byte[] configBytesFromSecret = kubernetesApiClientService.readClusterConfigBytesFromSecret(secretNamespace, secretName);
             return saveNewCluster(remoteClusterSpec, createNamespace, configBytesFromSecret);
@@ -174,7 +174,7 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
         }
     }
 
-    private RemoteClusterView saveNewCluster(RemoteClusterView remoteClusterSpec, boolean createNamespace, byte[] data) throws IOException, NoSuchAlgorithmException {
+    private RemoteKClusterDto saveNewCluster(RemoteKClusterDto remoteClusterSpec, boolean createNamespace, byte[] data) throws IOException, NoSuchAlgorithmException {
 
         KClusterDeployment deployment;
         KClusterIngress ingress;
@@ -226,7 +226,7 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
 
     }
 
-    private List<Domain> toListOfDomains(RemoteClusterView view) {
+    private List<Domain> toListOfDomains(RemoteKClusterDto view) {
         if (view == null || view.getDomainNames() == null) {
             return Collections.emptyList();
         }
@@ -239,7 +239,7 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
     }
 
     @Override
-    public RemoteClusterView updateCluster(RemoteClusterView cluster, Long id) {
+    public RemoteKClusterDto updateCluster(RemoteKClusterDto cluster, Long id) {
         Optional<KCluster> entity = kClusterRepository.findById(id);
 
         if (entity.isPresent()) {
@@ -273,7 +273,7 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
     }
 
     @Override
-    public void checkRequest(RemoteClusterView view) {
+    public void checkRequest(RemoteKClusterDto view) {
         if (view.getName() == null) {
             throw new IllegalArgumentException(CLUSTER_NAME_NULL_MESSAGE);
         }
@@ -285,13 +285,13 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
         }
     }
 
-    private void checkRequestRead(RemoteClusterView view) {
+    private void checkRequestRead(RemoteKClusterDto view) {
         if (view.getName() == null) {
             throw new IllegalArgumentException(CLUSTER_NAME_NULL_MESSAGE);
         }
     }
 
-    private void checkRequest(KCluster entity, RemoteClusterView view, Long id) {
+    private void checkRequest(KCluster entity, RemoteKClusterDto view, Long id) {
         if (view.getName() == null) {
             throw new IllegalArgumentException(CLUSTER_NAME_NULL_MESSAGE);
         }
@@ -300,8 +300,8 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
         }
     }
 
-    private RemoteClusterView toView(KCluster kCluster) {
-        RemoteClusterView view = modelMapper.map(kCluster, RemoteClusterView.class);
+    private RemoteKClusterDto toView(KCluster kCluster) {
+        RemoteKClusterDto view = modelMapper.map(kCluster, RemoteKClusterDto.class);
         if (Objects.nonNull(kCluster.getDomains())) {
             view.setDomainNames(kCluster.getDomains().stream().map(Domain::getName).toList());
         }

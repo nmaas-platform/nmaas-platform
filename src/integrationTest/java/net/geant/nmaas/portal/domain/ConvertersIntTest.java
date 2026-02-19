@@ -1,14 +1,15 @@
 package net.geant.nmaas.portal.domain;
 
+import net.geant.nmaas.api.dto.applications.AppConfigurationSpecView;
+import net.geant.nmaas.api.dto.applications.AppDeploymentSpecView;
+import net.geant.nmaas.api.dto.applications.AppTagDto;
+import net.geant.nmaas.api.dto.applications.ApplicationBaseView;
+import net.geant.nmaas.api.dto.applications.ApplicationStateDto;
+import net.geant.nmaas.api.dto.applications.ApplicationSubscriptionBase;
+import net.geant.nmaas.api.dto.applications.ApplicationView;
+import net.geant.nmaas.api.dto.applications.ConfigWizardTemplateView;
 import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
-import net.geant.nmaas.portal.domain.AppConfigurationSpecView;
-import net.geant.nmaas.portal.domain.AppDeploymentSpecView;
-import net.geant.nmaas.portal.domain.ApplicationBaseView;
-import net.geant.nmaas.portal.domain.ApplicationSubscriptionBase;
-import net.geant.nmaas.portal.domain.ApplicationView;
-import net.geant.nmaas.portal.domain.ConfigWizardTemplateView;
-import net.geant.nmaas.portal.domain.TagView;
 import net.geant.nmaas.portal.persistence.entity.Application;
 import net.geant.nmaas.portal.persistence.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistence.entity.ApplicationState;
@@ -36,28 +37,31 @@ import java.util.ArrayList;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class ConvertersIntTest {
 
-    @Autowired
-    ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
-    @Autowired
-    TagRepository tagRepo;
+    private final TagRepository tagRepository;
 
-    @Autowired
-    ApplicationBaseRepository appBaseRepo;
+    private final ApplicationBaseRepository applicationBaseRepository;
+
+    public ConvertersIntTest(@Autowired ModelMapper modelMapper, @Autowired TagRepository tagRepository, @Autowired ApplicationBaseRepository applicationBaseRepository) {
+        this.modelMapper = modelMapper;
+        this.tagRepository = tagRepository;
+        this.applicationBaseRepository = applicationBaseRepository;
+    }
 
     @Test
     void testConvertAppToAppView() {
         ApplicationBase defaultAppBase = getDefaultAppBase();
-        appBaseRepo.save(defaultAppBase);
+        applicationBaseRepository.save(defaultAppBase);
         ApplicationView appView = modelMapper.map(getDefaultApp(), ApplicationView.class);
         assertNotNull(appView.getConfigWizardTemplate());
         assertNull(appView.getConfigUpdateWizardTemplate());
@@ -80,15 +84,17 @@ public class ConvertersIntTest {
         assertEquals(appBase.getName(), applicationBaseView.getName());
         assertNotNull(applicationBaseView.getTags());
         assertEquals(1, applicationBaseView.getVersions().size());
-        assertTrue(applicationBaseView.getVersions().stream().anyMatch(version -> version.getVersion().equals("0.0.1")));
-        assertTrue(applicationBaseView.getVersions().stream().anyMatch(version -> version.getState().equals(ApplicationState.ACTIVE)));
+        assertTrue(applicationBaseView.getVersions().stream()
+                .anyMatch(version -> version.getVersion().equals("0.0.1")));
+        assertTrue(applicationBaseView.getVersions().stream()
+                .anyMatch(version -> version.getState().equals(ApplicationStateDto.ACTIVE)));
     }
 
     @Test
     void testConvertAppViewToApp() {
         ApplicationView appView = getDefaultAppView();
         Application app = modelMapper.map(appView, Application.class);
-        assertEquals(appView.getState(), app.getState());
+        assertEquals(appView.getState(), ApplicationStateDto.valueOf(app.getState().name()));
         assertNotNull(app.getConfigWizardTemplate());
         assertNull(app.getConfigUpdateWizardTemplate());
         assertNotNull(app.getAppDeploymentSpec());
@@ -97,14 +103,14 @@ public class ConvertersIntTest {
 
     @Test
     void testConvertAppBaseViewToAppBase() {
-        tagRepo.save(new Tag("network"));
+        tagRepository.save(new Tag("network"));
 
         ApplicationBaseView appDto = new ApplicationBaseView();
         appDto.setId(1L);
         appDto.setName("myApp");
         appDto.setLicense("GNL");
-        appDto.getTags().add(new TagView("monitoring"));
-        appDto.getTags().add(new TagView("network"));
+        appDto.getTags().add(new AppTagDto(null, "monitoring"));
+        appDto.getTags().add(new AppTagDto(null, "network"));
 
         ApplicationBase appEntity = modelMapper.map(appDto, ApplicationBase.class);
 
@@ -113,13 +119,13 @@ public class ConvertersIntTest {
         assertEquals(appDto.getLicense(), appEntity.getLicense());
         assertEquals(2, appEntity.getTags().size());
         assertEquals(appDto.getTags().size(), appEntity.getTags().size());
-        assertTrue((appEntity.getTags().toArray()[0]) instanceof Tag);
+        assertInstanceOf(Tag.class, (appEntity.getTags().toArray()[0]));
 
         appDto = modelMapper.map(appEntity, ApplicationBaseView.class);
         assertEquals(2, appDto.getTags().size());
         assertEquals(appEntity.getTags().size(), appDto.getTags().size());
-        assertTrue(appDto.getTags().contains(new TagView("network")));
-        assertTrue(appDto.getTags().contains(new TagView("monitoring")));
+        assertTrue(appDto.getTags().contains(new AppTagDto(null, "network")));
+        assertTrue(appDto.getTags().contains(new AppTagDto(null, "monitoring")));
     }
 
     @Test
@@ -130,8 +136,8 @@ public class ConvertersIntTest {
         appBase.setId(1L);
         ApplicationSubscription appSub = new ApplicationSubscription(domain, appBase);
         ApplicationSubscriptionBase appSubBase = modelMapper.map(appSub, ApplicationSubscriptionBase.class);
-        assertEquals(appBase.getId(), appSubBase.applicationId);
-        assertEquals(domain.getId(), appSubBase.domainId);
+        assertEquals(appBase.getId(), appSubBase.getApplicationId());
+        assertEquals(domain.getId(), appSubBase.getDomainId());
     }
 
     @Test
@@ -177,10 +183,10 @@ public class ConvertersIntTest {
         app.setName("testApp");
         app.setVersion("0.0.1");
         app.setConfigWizardTemplate(new ConfigWizardTemplateView(2L, "template"));
-        app.setAppConfigurationSpec(new AppConfigurationSpecView());
+        app.setAppConfigurationSpec(new AppConfigurationSpecView(5L, null, false, false, false));
         app.setAppDeploymentSpec(new AppDeploymentSpecView());
         app.getAppDeploymentSpec().setExposesWebUI(true);
-        app.setState(ApplicationState.ACTIVE);
+        app.setState(ApplicationStateDto.ACTIVE);
         return app;
     }
 

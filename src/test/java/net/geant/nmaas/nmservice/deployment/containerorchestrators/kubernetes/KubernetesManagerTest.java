@@ -1,5 +1,6 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
+import net.geant.nmaas.api.dto.applications.ServiceAccessMethodTypeDto;
 import net.geant.nmaas.gitlab.GitLabManager;
 import net.geant.nmaas.kubernetes.JanitorException;
 import net.geant.nmaas.kubernetes.KubernetesApiJanitorService;
@@ -496,13 +497,13 @@ class KubernetesManagerTest {
 
         assertEquals(2, appUiAccessDetails.getServiceAccessMethods().size());
         assertTrue(appUiAccessDetails.getServiceAccessMethods().stream().anyMatch(m ->
-                m.getType().equals(ServiceAccessMethodType.EXTERNAL)
+                m.getType().equals(ServiceAccessMethodTypeDto.EXTERNAL)
                         && m.getName().equals("web-service")
                         && m.getProtocol().equals("Web")
                         && m.getUrl().equals("app1.nmaas.eu")
         ));
         assertTrue(appUiAccessDetails.getServiceAccessMethods().stream().anyMatch(m ->
-                m.getType().equals(ServiceAccessMethodType.INTERNAL)
+                m.getType().equals(ServiceAccessMethodTypeDto.INTERNAL)
                         && m.getName().equals("ssh-service")
                         && m.getProtocol().equals("SSH")
                         && m.getUrl().equals("192.168.1.1")

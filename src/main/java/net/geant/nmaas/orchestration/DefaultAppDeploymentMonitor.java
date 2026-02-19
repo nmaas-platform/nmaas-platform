@@ -1,6 +1,7 @@
 package net.geant.nmaas.orchestration;
 
 import lombok.RequiredArgsConstructor;
+import net.geant.nmaas.api.dto.applications.AppConfigRepositoryAccessDetails;
 import net.geant.nmaas.nmservice.configuration.NmServiceConfigurationProvider;
 import net.geant.nmaas.nmservice.configuration.exceptions.ConfigRepositoryAccessDetailsNotFoundException;
 import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;

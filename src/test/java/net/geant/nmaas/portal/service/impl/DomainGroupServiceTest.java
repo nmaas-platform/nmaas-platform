@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.service.impl;
 
-import net.geant.nmaas.portal.domain.DomainGroupView;
+import net.geant.nmaas.api.dto.domains.DomainGroupDto;
 import net.geant.nmaas.portal.persistence.entity.DomainGroup;
 import net.geant.nmaas.portal.persistence.repositories.DomainGroupRepository;
 import net.geant.nmaas.portal.persistence.repositories.UserRoleRepository;
@@ -47,10 +47,10 @@ class DomainGroupServiceTest {
         when(domainGroupRepository.findById(10L)).thenReturn(Optional.of(domainGroup));
 
         // Create domain group
-        DomainGroupView domainGroupView = new DomainGroupView();
+        DomainGroupDto domainGroupView = new DomainGroupDto();
         domainGroupView.setName(name);
         domainGroupView.setCodename(codename);
-        DomainGroupView result = this.domainGroupService.createDomainGroup(domainGroupView);
+        DomainGroupDto result = this.domainGroupService.createDomainGroup(domainGroupView);
 
         verify(eventPublisher, times(1)).publishEvent(any());
 

@@ -2,7 +2,7 @@ package net.geant.nmaas.portal.api.webhooks;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import net.geant.nmaas.portal.domain.WebhookHistoryDto;
+import net.geant.nmaas.api.dto.webhooks.WebhookHistoryDto;
 import net.geant.nmaas.portal.persistence.entity.WebhookEventType;
 import net.geant.nmaas.portal.service.WebhookHistoryService;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -29,7 +29,7 @@ public class WebhookHistoryController {
     @GetMapping("/{id}")
     @Transactional
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
-    public ResponseEntity<WebhookHistoryDto> getWebhook(@PathVariable Long id) {
+    public ResponseEntity<WebhookHistoryDto> getWebhookHistory(@PathVariable Long id) {
         return ResponseEntity.ok(webhookHistoryService.getById(id));
     }
 

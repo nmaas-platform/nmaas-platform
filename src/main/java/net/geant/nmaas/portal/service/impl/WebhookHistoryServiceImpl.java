@@ -4,9 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.api.dto.webhooks.WebhookEventDto;
+import net.geant.nmaas.api.dto.webhooks.WebhookHistoryDto;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
-import net.geant.nmaas.portal.domain.WebhookEventDto;
-import net.geant.nmaas.portal.domain.WebhookHistoryDto;
 import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.entity.WebhookEventType;
 import net.geant.nmaas.portal.persistence.entity.WebhookHistory;
@@ -36,7 +36,7 @@ public class WebhookHistoryServiceImpl implements WebhookHistoryService {
     public void create(WebhookEventDto webhook, Object payload, Integer responseStatus, String responseBody) {
         WebhookHistory webhookHistory = new WebhookHistory();
         webhookHistory.setWebhookEventId(webhook.getId());
-        webhookHistory.setEventType(webhook.getEventType());
+        webhookHistory.setEventType(WebhookEventType.from(webhook.getEventType()));
         if (webhook.getDomain() != null) {
             webhookHistory.setDomainCodename(webhook.getDomain().getCodename());
         }

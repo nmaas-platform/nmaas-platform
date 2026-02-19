@@ -1,6 +1,14 @@
 package net.geant.nmaas.portal.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.api.dto.KeyValueView;
+import net.geant.nmaas.api.dto.domains.DomainAnnotationDto;
+import net.geant.nmaas.api.dto.domains.DomainBaseDto;
+import net.geant.nmaas.api.dto.domains.DomainGroupDto;
+import net.geant.nmaas.api.dto.domains.DomainRequest;
+import net.geant.nmaas.api.dto.domains.DomainView;
+import net.geant.nmaas.api.dto.users.UserView;
+import net.geant.nmaas.api.dto.users.UserViewMinimal;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 import net.geant.nmaas.dcn.deployment.DcnRepositoryManager;
 import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
@@ -11,14 +19,6 @@ import net.geant.nmaas.kubernetes.remote.repositories.KClusterRepository;
 import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
-import net.geant.nmaas.portal.domain.DomainAnnotationView;
-import net.geant.nmaas.portal.domain.DomainBase;
-import net.geant.nmaas.portal.domain.DomainGroupView;
-import net.geant.nmaas.portal.domain.DomainRequest;
-import net.geant.nmaas.portal.domain.DomainView;
-import net.geant.nmaas.portal.domain.KeyValueView;
-import net.geant.nmaas.portal.domain.UserView;
-import net.geant.nmaas.portal.domain.UserViewMinimal;
 import net.geant.nmaas.portal.events.DomainCreatedEvent;
 import net.geant.nmaas.portal.events.DomainRemovalEvent;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
@@ -159,24 +159,24 @@ public class DomainServiceImpl implements DomainService {
     }
 
     @Override
-    public List<DomainBase> getDomainsBase(String searchValue) {
+    public List<DomainBaseDto> getDomainsBase(String searchValue) {
         if (searchValue == null || searchValue.isEmpty()) {
             return this.domainRepository.findAllBaseDomains();
         } else {
             Specification<Domain> searchSpec = DomainSpecification.containsTextInAttributes(searchValue, "id", "name", "codename");
             List<Domain> domainPage = domainRepository.findAll(searchSpec);
-            return domainPage.stream().map(d -> modelMapper.map(d, DomainBase.class)).toList();
+            return domainPage.stream().map(d -> modelMapper.map(d, DomainBaseDto.class)).toList();
         }
     }
 
     @Override
-    public Page<DomainBase> getDomainsBase(Pageable pageable, String searchValue) {
+    public Page<DomainBaseDto> getDomainsBase(Pageable pageable, String searchValue) {
         if (searchValue == null || searchValue.isEmpty()) {
             return this.domainRepository.findAllBaseDomainsPageable(pageable);
         } else {
             Specification<Domain> searchSpec = DomainSpecification.containsTextInAttributes(searchValue, "id", "name", "codename");
             Page<Domain> domainPage = domainRepository.findAll(searchSpec, pageable);
-            return domainPage.map(DomainBase::fromEntity);
+            return domainPage.map(d -> d.toBaseDto());
         }
     }
 
@@ -512,7 +512,9 @@ public class DomainServiceImpl implements DomainService {
 
         domain.setApplicationStatePerDomain(
                 domain.getApplicationStatePerDomain().stream().map(app -> {
-                    List<ApplicationStatePerDomain> tmp = result.stream().filter(val -> val.getApplicationBase().equals(app.getApplicationBase())).collect(Collectors.toList());
+                    List<ApplicationStatePerDomain> tmp = result.stream()
+                            .filter(val -> val.getApplicationBase().equals(app.getApplicationBase()))
+                            .collect(Collectors.toList());
                     app.setEnabled(tmp.stream().anyMatch(ApplicationStatePerDomain::isEnabled));
                     if (tmp.stream().map(ApplicationStatePerDomain::getPvStorageSizeLimit).max(Long::compareTo).isPresent()) {
                         app.setPvStorageSizeLimit(tmp.stream().map(ApplicationStatePerDomain::getPvStorageSizeLimit).max(Long::compareTo).get());
@@ -566,9 +568,9 @@ public class DomainServiceImpl implements DomainService {
     }
 
     @Override
-    public void checkDomainGroupUsers(DomainGroupView view) {
+    public void checkDomainGroupUsers(DomainGroupDto view) {
         List<Long> userToDelete = new ArrayList<>();
-        DomainGroupView domainGroup = this.domainGroupService.getDomainGroup(view.getId());
+        DomainGroupDto domainGroup = this.domainGroupService.getDomainGroup(view.getId());
         domainGroup.getManagers().forEach(user -> {
             if (view.getManagers().stream().noneMatch(viewUser -> viewUser.getId().equals(user.getId()))) {
                 userToDelete.add(user.getId());
@@ -582,7 +584,7 @@ public class DomainServiceImpl implements DomainService {
     }
 
     @Override
-    public void updateRolesInDomainGroupByUsers(DomainGroupView view) {
+    public void updateRolesInDomainGroupByUsers(DomainGroupDto view) {
         view.getDomains().forEach(domain -> {
             view.getManagers().forEach(user -> {
                 this.addMemberRole(domain.getId(), user.getId(), Role.ROLE_GROUP_DOMAIN_ADMIN);
@@ -591,9 +593,8 @@ public class DomainServiceImpl implements DomainService {
     }
 
     @Override
-    public DomainGroupView updateMembers(List<UserViewMinimal> newMembers, DomainGroupView view) {
+    public DomainGroupDto updateMembers(List<UserViewMinimal> newMembers, DomainGroupDto view) {
         //delete roles
-
         List<UserViewMinimal> toDeleteRole = new ArrayList<>(view.getManagers());
         toDeleteRole.removeAll(newMembers);
 
@@ -613,8 +614,8 @@ public class DomainServiceImpl implements DomainService {
     @Override
     public void addAnnotation(KeyValueView keyValue) {
         ModelMapper modelMapper = new ModelMapper();
-        if (this.domainAnnotationsRepository.existsByKey(keyValue.getKey())) {
-            throw new ProcessingException(String.format("Domain annotation with key (%s) already exist", keyValue.getKey()));
+        if (this.domainAnnotationsRepository.existsByKey(keyValue.key())) {
+            throw new ProcessingException(String.format("Domain annotation with key (%s) already exist", keyValue.key()));
         }
         this.domainAnnotationsRepository.save(modelMapper.map(keyValue, DomainAnnotation.class));
     }
@@ -636,7 +637,7 @@ public class DomainServiceImpl implements DomainService {
     }
 
     @Override
-    public void updateAnnotation(Long id, DomainAnnotationView annotation) {
+    public void updateAnnotation(Long id, DomainAnnotationDto annotation) {
         Optional<DomainAnnotation> domainFromDb = this.domainAnnotationsRepository.findById(id);
         if (domainFromDb.isPresent() && id.equals(annotation.getId())) {
             DomainAnnotation domainAnnotation = domainFromDb.get();

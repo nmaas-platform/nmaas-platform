@@ -3,8 +3,8 @@ package net.geant.nmaas.kubernetes.remote.api;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import net.geant.nmaas.api.dto.kubernetes.RemoteKClusterDto;
 import net.geant.nmaas.kubernetes.remote.RemoteClusterManagementService;
-import net.geant.nmaas.kubernetes.remote.api.model.RemoteClusterView;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -31,32 +31,32 @@ public class RemoteClusterManagerController {
 
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR') || hasRole('ROLE_DOMAIN_ADMIN')")
     @GetMapping("/{id}")
-    public RemoteClusterView getKubernetesCluster(@PathVariable Long id, Principal principal) {
+    public RemoteKClusterDto getKubernetesCluster(@PathVariable Long id, Principal principal) {
         return remoteClusterManager.getCluster(id, principal);
     }
 
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
     @GetMapping("/all")
-    public List<RemoteClusterView> getAllKubernetesClusters() {
+    public List<RemoteKClusterDto> getAllKubernetesClusters() {
         return remoteClusterManager.getAllClusters();
     }
 
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR') || hasPermission(#domainId, 'domain', 'OWNER')")
     @GetMapping("/domain/{domainId}")
-    public List<RemoteClusterView> getKubernetesClustersInDomain(@PathVariable Long domainId) {
+    public List<RemoteKClusterDto> getKubernetesClustersInDomain(@PathVariable Long domainId) {
         return remoteClusterManager.getClustersInDomain(domainId);
     }
 
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR') || hasRole('ROLE_DOMAIN_ADMIN')")
     @PostMapping
-    public RemoteClusterView createKubernetesCluster(@RequestPart(value = "file", required = false) MultipartFile file,
+    public RemoteKClusterDto createKubernetesCluster(@RequestPart(value = "file", required = false) MultipartFile file,
                                                      @RequestPart(value = "secretNamespace", required = false) String secretNamespace,
                                                      @RequestPart(value = "secretName", required = false) String secretName,
                                                      @RequestPart("data") String viewString,
                                                      @RequestPart("createNamespace") String createNamespace) {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            RemoteClusterView cluster = objectMapper.readValue(viewString, RemoteClusterView.class);
+            RemoteKClusterDto cluster = objectMapper.readValue(viewString, RemoteKClusterDto.class);
             final boolean createNamespaceFlag = Objects.isNull(createNamespace) ? Boolean.FALSE : Boolean.valueOf(createNamespace);
             remoteClusterManager.checkRequest(cluster);
             if (file != null && !file.isEmpty()) {
@@ -73,7 +73,7 @@ public class RemoteClusterManagerController {
 
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR') || hasRole('ROLE_DOMAIN_ADMIN')")
     @PutMapping("/{id}")
-    public RemoteClusterView updateKubernetesCluster(@PathVariable Long id, @RequestBody RemoteClusterView view) {
+    public RemoteKClusterDto updateKubernetesCluster(@PathVariable Long id, @RequestBody RemoteKClusterDto view) {
         return remoteClusterManager.updateCluster(view, id);
     }
 
@@ -85,13 +85,13 @@ public class RemoteClusterManagerController {
 
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR') || hasRole('ROLE_DOMAIN_ADMIN')")
     @PostMapping("/read")
-    public RemoteClusterView readKubernetesCluster(@RequestPart(value = "file", required = false) MultipartFile file,
+    public RemoteKClusterDto readKubernetesCluster(@RequestPart(value = "file", required = false) MultipartFile file,
                                                    @RequestPart(value = "secretNamespace", required = false) String secretNamespace,
                                                    @RequestPart(value = "secretName", required = false) String secretName,
                                                    @RequestPart("data") String viewString) {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            RemoteClusterView cluster = objectMapper.readValue(viewString, RemoteClusterView.class);
+            RemoteKClusterDto cluster = objectMapper.readValue(viewString, RemoteKClusterDto.class);
             if (file != null && !file.isEmpty()) {
                 return remoteClusterManager.mapFile(cluster, file);
             } else if (!StringUtils.isBlank(secretNamespace) && !StringUtils.isBlank(secretName)) {

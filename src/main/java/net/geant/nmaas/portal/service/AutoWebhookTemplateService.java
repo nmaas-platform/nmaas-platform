@@ -12,11 +12,11 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.portal.domain.DomainActionDto;
+import net.geant.nmaas.api.dto.webhooks.DomainActionDto;
 import net.geant.nmaas.portal.persistence.entity.WebhookEventType;
-import net.geant.nmaas.webhooks.AppDeploymentWebhookDto;
-import net.geant.nmaas.webhooks.DomainGroupWebhookDto;
-import net.geant.nmaas.webhooks.UserDomainAssignmentWebhookDto;
+import net.geant.nmaas.api.dto.webhooks.AppDeploymentWebhookDto;
+import net.geant.nmaas.api.dto.webhooks.DomainGroupWebhookDto;
+import net.geant.nmaas.api.dto.webhooks.UserDomainAssignmentWebhookDto;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;

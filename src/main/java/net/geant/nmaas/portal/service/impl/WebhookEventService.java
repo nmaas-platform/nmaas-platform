@@ -1,9 +1,9 @@
 package net.geant.nmaas.portal.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import net.geant.nmaas.api.dto.webhooks.WebhookEventDto;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.security.EncryptionService;
-import net.geant.nmaas.portal.domain.WebhookEventDto;
 import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.entity.WebhookEvent;
 import net.geant.nmaas.portal.persistence.entity.WebhookEventType;
@@ -32,7 +32,7 @@ public class WebhookEventService {
 
     public WebhookEvent create(WebhookEventDto webhookEventDto) throws GeneralSecurityException {
         WebhookEvent webhookEvent = new WebhookEvent();
-        templateService.validateTemplate(webhookEventDto.getTemplate(), webhookEventDto.getEventType());
+        templateService.validateTemplate(webhookEventDto.getTemplate(), WebhookEventType.from(webhookEventDto.getEventType()));
         setWebhookEvent(webhookEvent, webhookEventDto);
         return webhookRepository.save(webhookEvent);
     }
@@ -40,7 +40,7 @@ public class WebhookEventService {
     public WebhookEventDto update(WebhookEventDto webhookEventDto) throws GeneralSecurityException {
         WebhookEvent webhookEvent = webhookRepository.findById(webhookEventDto.getId())
                 .orElseThrow(() -> new MissingElementException(WEBHOOK_EVENT_NOT_FOUND));
-        templateService.validateTemplate(webhookEventDto.getTemplate(), webhookEventDto.getEventType());
+        templateService.validateTemplate(webhookEventDto.getTemplate(), WebhookEventType.from(webhookEventDto.getEventType()));
         setWebhookEvent(webhookEvent, webhookEventDto);
         webhookEvent = webhookRepository.save(webhookEvent);
         return getWebhookEventDto(webhookEvent);
@@ -52,7 +52,7 @@ public class WebhookEventService {
         if (Objects.isNull(webhookEvent.getDomain()) || !webhookEventDto.getDomain().getId().equals(webhookEvent.getDomain().getId())) {
             throw new IllegalArgumentException("Can't change webhook domain");
         }
-        templateService.validateTemplate(webhookEventDto.getTemplate(), webhookEventDto.getEventType());
+        templateService.validateTemplate(webhookEventDto.getTemplate(), WebhookEventType.from(webhookEventDto.getEventType()));
         setWebhookEvent(webhookEvent, webhookEventDto);
         webhookEvent = webhookRepository.save(webhookEvent);
         return getWebhookEventDto(webhookEvent);
@@ -60,12 +60,14 @@ public class WebhookEventService {
 
     private void setWebhookEvent(WebhookEvent webhookEvent, WebhookEventDto webhookEventDto) throws GeneralSecurityException {
         //domain is combined only with APPLICATION_DEPLOYMENT, APPLICATION_REMOVAL and USER_ASSIGNMENT
-        if (webhookEventDto.getDomain() != null && Stream.of(WebhookEventType.DOMAIN_ACTION, WebhookEventType.DOMAIN_GROUP_ACTION).anyMatch(x -> webhookEventDto.getEventType().equals(x)))
+        if (webhookEventDto.getDomain() != null
+                && Stream.of(WebhookEventType.DOMAIN_ACTION, WebhookEventType.DOMAIN_GROUP_ACTION).anyMatch(x -> WebhookEventType.from(webhookEventDto.getEventType()).equals(x))) {
             throw new IllegalArgumentException("Domain can not combine with " + webhookEventDto.getEventType());
+        }
 
         webhookEvent.setName(webhookEventDto.getName());
         webhookEvent.setTargetUrl(webhookEventDto.getTargetUrl());
-        webhookEvent.setEventType(webhookEventDto.getEventType());
+        webhookEvent.setEventType(WebhookEventType.from(webhookEventDto.getEventType()));
         webhookEvent.setTokenValue(webhookEventDto.getTokenValue() == null ? null : encryptionService.encrypt(webhookEventDto.getTokenValue()));
         webhookEvent.setAuthorizationHeader(webhookEventDto.getAuthorizationHeader());
         webhookEvent.setDomain(webhookEventDto.getDomain() != null ? new Domain(webhookEventDto.getDomain().getId()) : null);

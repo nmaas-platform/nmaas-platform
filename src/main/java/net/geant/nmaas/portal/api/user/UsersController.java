@@ -4,20 +4,20 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.api.dto.PasswordChange;
+import net.geant.nmaas.api.dto.PasswordReset;
+import net.geant.nmaas.api.dto.users.UserBase;
+import net.geant.nmaas.api.dto.users.UserListEntryDto;
+import net.geant.nmaas.api.dto.users.UserRequest;
+import net.geant.nmaas.api.dto.users.UserRoleDto;
+import net.geant.nmaas.api.dto.users.UserView;
+import net.geant.nmaas.api.dto.users.UserViewMinimal;
 import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
 import net.geant.nmaas.notifications.templates.MailType;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
-import net.geant.nmaas.portal.domain.PasswordChange;
-import net.geant.nmaas.portal.domain.PasswordReset;
-import net.geant.nmaas.portal.domain.UserBase;
-import net.geant.nmaas.portal.domain.UserListEntry;
-import net.geant.nmaas.portal.domain.UserRequest;
-import net.geant.nmaas.portal.domain.UserRoleView;
-import net.geant.nmaas.portal.domain.UserView;
-import net.geant.nmaas.portal.domain.UserViewMinimal;
 import net.geant.nmaas.portal.events.UserDomainAssignmentEvent;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistence.entity.Domain;
@@ -28,6 +28,7 @@ import net.geant.nmaas.portal.persistence.repositories.UserEntryListRepository;
 import net.geant.nmaas.portal.persistence.results.UserLoginDate;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import net.geant.nmaas.portal.service.DomainService;
+import net.geant.nmaas.portal.service.UserListEntry;
 import net.geant.nmaas.portal.service.UserLoginRegisterService;
 import net.geant.nmaas.portal.service.UserService;
 import net.geant.nmaas.utils.captcha.ValidateCaptcha;
@@ -170,18 +171,20 @@ public class UsersController {
     @GetMapping("/users/list")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @Transactional
-    public Page<UserListEntry> getUsersList(@PageableDefault(page = 0, size = 15, sort = "id") Pageable pageable,
-                                            @RequestParam(required = false) String searchValue,
-                                            Principal principal) {
-        return userEntryListRepository.findAll(searchValue, pageable);
+    public Page<UserListEntryDto> getUsersList(@PageableDefault(page = 0, size = 15, sort = "id") Pageable pageable,
+                                               @RequestParam(required = false) String searchValue,
+                                               Principal principal) {
+        return userEntryListRepository.findAll(searchValue, pageable)
+                .map(UserListEntry::toDto);
     }
 
     @GetMapping("/domains/{domainId}/users/list")
     @PreAuthorize("hasPermission(#domainId, 'domain', 'OWNER')")
-    public Page<UserListEntry> getUsersListDomain(@PageableDefault(page = 0, size = 15, sort = "id") Pageable pageable,
-                                                  @RequestParam(required = false) String searchValue,
-                                                  @PathVariable Long domainId) {
-        return userEntryListRepository.findAllByDomainId(domainId, searchValue, pageable);
+    public Page<UserListEntryDto> getUsersListDomain(@PageableDefault(page = 0, size = 15, sort = "id") Pageable pageable,
+                                                     @RequestParam(required = false) String searchValue,
+                                                     @PathVariable Long domainId) {
+        return userEntryListRepository.findAllByDomainId(domainId, searchValue, pageable)
+                .map(UserListEntry::toDto);
     }
 
     @GetMapping(value = "/users/{userId}")
@@ -264,10 +267,10 @@ public class UsersController {
 
     @GetMapping("/users/{userId}/roles")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') or hasRole('ROLE_DOMAIN_ADMIN')")
-    public Set<UserRoleView> getUserRoles(@PathVariable Long userId) {
+    public Set<UserRoleDto> getUserRoles(@PathVariable Long userId) {
         final User user = getUser(userId);
         return user.getRoles().stream()
-                .map(ur -> modelMapper.map(ur, UserRoleView.class))
+                .map(ur -> modelMapper.map(ur, UserRoleDto.class))
                 .collect(Collectors.toSet());
     }
 
@@ -276,7 +279,7 @@ public class UsersController {
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @Transactional
     public void removeUserRole(@PathVariable final Long userId,
-                               @RequestBody final UserRoleView userRole,
+                               @RequestBody final UserRoleDto userRole,
                                final Principal principal) {
         if (userRole == null) {
             throw new MissingElementException("userRole is null");
@@ -294,9 +297,8 @@ public class UsersController {
         }
 
         User user = getUser(userId);
-
         try {
-            domainService.removeMemberRole(domain.getId(), user.getId(), userRole.getRole());
+            domainService.removeMemberRole(domain.getId(), user.getId(), Role.valueOf(userRole.getRole().name()));
             final User adminUser = userService.findByUsername(principal.getName())
                     .orElseThrow(() -> new ObjectNotFoundException(USER_NOT_FOUND_ERROR_MESSAGE));
             final String adminRoles = getRoleAsString(adminUser.getRoles());
@@ -328,7 +330,6 @@ public class UsersController {
             throw new ProcessingException(err.getMessage());
         }
     }
-
 
     @PostMapping("/users/reset/notification")
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -364,10 +365,10 @@ public class UsersController {
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void resetPassword(@RequestBody PasswordReset passwordReset, @RequestParam String token) {
         try {
-            Claims claims = jwtTokenService.getResetClaims(passwordReset.getToken());
+            Claims claims = jwtTokenService.getResetClaims(passwordReset.token());
             User user = userService.findByEmail(claims.getSubject());
             checkSSOUser(user);
-            changePassword(user, passwordReset.getPassword());
+            changePassword(user, passwordReset.password());
         } catch (JwtException | IllegalArgumentException e) {
             throw new ProcessingException("Unable to reset password -> " + e.getMessage());
         }
@@ -379,8 +380,8 @@ public class UsersController {
     public void changePassword(Principal principal, @RequestBody PasswordChange passwordChange) {
         User user = userService.findByUsername(principal.getName()).orElseThrow(() -> new ProcessingException("Internal error. User not found."));
         checkSSOUser(user);
-        checkPassword(user, passwordChange.getPassword());
-        changePassword(user, passwordChange.getNewPassword());
+        checkPassword(user, passwordChange.password());
+        changePassword(user, passwordChange.newPassword());
     }
 
     private void checkPassword(User user, String password) {
@@ -467,7 +468,7 @@ public class UsersController {
     @Transactional
     public void addUserRole(@PathVariable final Long domainId,
                             @PathVariable final Long userId,
-                            @RequestBody final UserRoleView userRole,
+                            @RequestBody final UserRoleDto userRole,
                             final Principal principal) {
 
         if (userRole == null) {
@@ -476,7 +477,7 @@ public class UsersController {
         if (userRole.getRole() == null) {
             throw new MissingElementException("Missing role");
         }
-        Role role = userRole.getRole();
+        Role role = Role.valueOf(userRole.getRole().name());
 
         if (!domainId.equals(userRole.getDomainId())) {
             throw new ProcessingException("Invalid request domain");
@@ -526,10 +527,8 @@ public class UsersController {
                                @PathVariable final String userRole,
                                final Principal principal) {
         final Role role = convertRole(userRole);
-
         final Domain domain = getDomain(domainId);
         final User user = getUser(userId);
-
         try {
             domainService.removeMemberRole(domain.getId(), user.getId(), role);
             final User adminUser = userService.findByUsername(principal.getName()).orElseThrow(() -> new ObjectNotFoundException(USER_NOT_FOUND_ERROR_MESSAGE));
@@ -538,14 +537,8 @@ public class UsersController {
             if (!domain.equals(globalDomain)) {
                 eventPublisher.publishEvent(new UserDomainAssignmentEvent(this, domain.getId(), user.getId(), role.name(), "delete"));
             }
-
-            log.info(String.format("User [%s] with role [%s] removed role [%s] of user name [%s] in domain [%d].",
-                    principal.getName(),
-                    adminRoles,
-                    role.authority(),
-                    user.getUsername(),
-                    domainId)
-            );
+            log.info("User [{}] with role [{}] removed role [{}] of user name [{}] in domain [{}]",
+                    principal.getName(), adminRoles, role.authority(), user.getUsername(), domainId);
             domainService.addGlobalGuestUserRoleIfMissing(userId);
         } catch (ObjectNotFoundException e) {
             throw new MissingElementException(e.getMessage());
@@ -563,9 +556,11 @@ public class UsersController {
             userService.setEnabledFlag(userId, isEnabledFlag);
             User user = userService.findById(userId).orElseThrow(() -> new MissingElementException(USER_NOT_FOUND_ERROR_MESSAGE));
             User adminUser = userService.findByUsername(principal.getName()).orElseThrow(() -> new ObjectNotFoundException(USER_NOT_FOUND_ERROR_MESSAGE));
-            List<Role> rolesList = adminUser.getRoles().stream().map(UserRole::getRole).collect(Collectors.toList());
-            List<String> rolesAsStringList = rolesList.stream().map(Role::authority).collect(Collectors.toList());
-            String roleAsString = String.join(",", rolesAsStringList);
+            List<String> rolesList = adminUser.getRoles().stream()
+                    .map(UserRole::getRole)
+                    .map(Role::authority)
+                    .toList();
+            String roleAsString = String.join(",", rolesList);
             String message = String.format("User [%s] with role [%s] [%s] account of user [%s].",
                     principal.getName(),
                     roleAsString,
@@ -659,12 +654,15 @@ public class UsersController {
         return rolesList.stream().map(Role::authority).collect(Collectors.toList());
     }
 
-    List<String> getRequestedRoleAsList(Set<UserRoleView> userRoles) {
-        final List<Role> rolesList = userRoles.stream().map(UserRoleView::getRole).collect(Collectors.toList());
-        return rolesList.stream().map(Role::authority).collect(Collectors.toList());
+    List<String> getRequestedRoleAsList(Set<UserRoleDto> userRoles) {
+        return userRoles.stream()
+                .map(UserRoleDto::getRole)
+                .map(r -> Role.valueOf(r.name()))
+                .map(Role::authority)
+                .collect(Collectors.toList());
     }
 
-    String getRoleWithDomainIdAsString(Set<UserRoleView> userRoles) {
+    String getRoleWithDomainIdAsString(Set<UserRoleDto> userRoles) {
         return userRoles.stream().map(x -> x.getRole().authority() + "@domain" + x.getDomainId())
                 .collect(Collectors.joining(", "));
     }
@@ -727,7 +725,7 @@ public class UsersController {
         return userViewMinimal;
     }
 
-    private UserListEntry mapUser(UserListEntry entry, final Map<Long, UserLoginDate> userLoginDateMap) {
+    private UserListEntryDto mapUser(UserListEntryDto entry, final Map<Long, UserLoginDate> userLoginDateMap) {
         if (userLoginDateMap.containsKey(entry.getId())) {
             entry.setLastSuccessfulLoginDate(userLoginDateMap.get(entry.getId()).getMaxLoginDate());
             entry.setFirstLoginDate(userLoginDateMap.get(entry.getId()).getMinLoginDate());

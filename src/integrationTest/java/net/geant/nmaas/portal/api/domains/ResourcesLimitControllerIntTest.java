@@ -1,8 +1,9 @@
 package net.geant.nmaas.portal.api.domains;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import net.geant.nmaas.api.dto.ResourcesLimitDto;
+import net.geant.nmaas.api.dto.ResourcesLimitTypeDto;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
-import net.geant.nmaas.portal.domain.ResourcesLimitDto;
 import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.entity.DomainGroup;
 import net.geant.nmaas.portal.persistence.entity.ResourcesLimit;
@@ -79,10 +80,8 @@ public class ResourcesLimitControllerIntTest extends BaseControllerTestSetup {
     }
 
     private ResourcesLimitDto getDefaultGlobalLimitRequest() {
-        ResourcesLimitDto dto = new ResourcesLimitDto();
-        dto.setLimitType(ResourcesLimitType.GLOBAL);
-
-        return dto;
+        return new ResourcesLimitDto(null, 200, 100, 10, 20,
+                ResourcesLimitTypeDto.GLOBAL, null, null);
     }
 
     @Test
@@ -106,8 +105,8 @@ public class ResourcesLimitControllerIntTest extends BaseControllerTestSetup {
                 .andReturn();
         assertThat(result).isNotNull();
         ResourcesLimitDto dto = objectMapper.readValue(result.getResponse().getContentAsByteArray(), ResourcesLimitDto.class);
-        assertThat(dto.getId()).isEqualTo(1L);
-        assertThat(dto.getLimitType()).isEqualTo(ResourcesLimitType.GLOBAL);
+        assertThat(dto.id()).isEqualTo(1L);
+        assertThat(dto.limitType()).isEqualTo(ResourcesLimitTypeDto.GLOBAL);
     }
 
     @Test
@@ -123,8 +122,8 @@ public class ResourcesLimitControllerIntTest extends BaseControllerTestSetup {
                 .andReturn();
         assertThat(result).isNotNull();
         ResourcesLimitDto dto = objectMapper.readValue(result.getResponse().getContentAsByteArray(), ResourcesLimitDto.class);
-        assertThat(dto.getId()).isEqualTo(1L);
-        assertThat(dto.getLimitType()).isEqualTo(ResourcesLimitType.DOMAIN);
+        assertThat(dto.id()).isEqualTo(1L);
+        assertThat(dto.limitType()).isEqualTo(ResourcesLimitTypeDto.DOMAIN);
     }
 
     @Test
@@ -140,8 +139,8 @@ public class ResourcesLimitControllerIntTest extends BaseControllerTestSetup {
                 .andReturn();
         assertThat(result).isNotNull();
         ResourcesLimitDto dto = objectMapper.readValue(result.getResponse().getContentAsByteArray(), ResourcesLimitDto.class);
-        assertThat(dto.getId()).isEqualTo(1L);
-        assertThat(dto.getLimitType()).isEqualTo(ResourcesLimitType.DOMAIN_GROUP);
+        assertThat(dto.id()).isEqualTo(1L);
+        assertThat(dto.limitType()).isEqualTo(ResourcesLimitTypeDto.DOMAIN_GROUP);
     }
 
 }

@@ -11,7 +11,7 @@ import net.geant.nmaas.kubernetes.remote.entities.KCluster;
 import net.geant.nmaas.nmservice.configuration.ConfigFile;
 import net.geant.nmaas.orchestration.AppComponentDetails;
 import net.geant.nmaas.orchestration.Identifier;
-import net.geant.nmaas.portal.domain.KeyValueView;
+import net.geant.nmaas.api.dto.KeyValueView;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -46,7 +46,7 @@ public class KubernetesApiJanitorService {
                 annotations.size(),
                 Objects.nonNull(kCluster) ? kCluster.getId() : "LOCAL");
         Map<String, String> annotationsMap = new HashMap<>();
-        annotations.forEach(a -> annotationsMap.put(a.getKey(), a.getValue()));
+        annotations.forEach(a -> annotationsMap.put(a.key(), a.value()));
         kubernetesApiClientService.createNamespace(kCluster, namespace, annotationsMap);
     }
 

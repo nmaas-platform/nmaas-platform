@@ -1,12 +1,12 @@
 package net.geant.nmaas.portal.service.impl;
 
-import net.geant.nmaas.portal.domain.DomainRequest;
-import net.geant.nmaas.portal.domain.UserListEntry;
+import net.geant.nmaas.api.dto.domains.DomainRequest;
 import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.entity.User;
 import net.geant.nmaas.portal.persistence.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistence.repositories.UserRepository;
 import net.geant.nmaas.portal.service.DomainService;
+import net.geant.nmaas.portal.service.UserListEntry;
 import net.geant.nmaas.portal.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,17 +29,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 public class UserServiceIntTest {
 
-    @Autowired
-    private DomainRepository domainRepository;
+    private final DomainRepository domainRepository;
 
-    @Autowired
-    private DomainService domainService;
+    private final DomainService domainService;
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+
+    public UserServiceIntTest(@Autowired DomainRepository domainRepository, @Autowired DomainService domainService,
+                              @Autowired UserRepository userRepository, @Autowired UserService userService) {
+        this.domainRepository = domainRepository;
+        this.domainService = domainService;
+        this.userRepository = userRepository;
+        this.userService = userService;
+    }
 
     @BeforeEach
     void addDomains() {

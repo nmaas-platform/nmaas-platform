@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import jakarta.validation.constraints.Email;
-import net.geant.nmaas.portal.domain.DomainView;
 
 import java.util.ArrayList;
 import java.util.List;

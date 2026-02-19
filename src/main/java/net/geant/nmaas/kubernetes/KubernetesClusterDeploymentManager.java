@@ -4,7 +4,8 @@ import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import net.geant.nmaas.kubernetes.api.model.KClusterView;
+import net.geant.nmaas.api.dto.kubernetes.KClusterDto.KClusterDeploymentView;
+import net.geant.nmaas.api.dto.kubernetes.NamespaceConfigOptionDto;
 import net.geant.nmaas.kubernetes.remote.entities.NamespaceConfigOption;
 import net.geant.nmaas.orchestration.entities.DomainTechDetails;
 import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @Component
@@ -107,9 +109,11 @@ public class KubernetesClusterDeploymentManager implements KubernetesClusterName
         return smtpFromDefaultDomain;
     }
 
-    public KClusterView.KClusterDeploymentView getKClusterDeploymentView() {
-        KClusterView.KClusterDeploymentView view = new KClusterView.KClusterDeploymentView();
-        view.setNamespaceConfigOption(this.namespaceConfigOption);
+    public KClusterDeploymentView getKClusterDeploymentView() {
+        KClusterDeploymentView view = new KClusterDeploymentView();
+        if (Objects.nonNull(this.getNamespaceConfigOption())) {
+            view.setNamespaceConfigOption(NamespaceConfigOptionDto.valueOf(this.namespaceConfigOption.name()));
+        }
         view.setDefaultNamespace(this.defaultNamespace);
         view.setDefaultStorageClass(this.defaultStorageClass);
         view.setSmtpServerHostname(this.smtpServerHostname);

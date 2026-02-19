@@ -1,9 +1,9 @@
 package net.geant.nmaas.kubernetes.api;
 
 import lombok.RequiredArgsConstructor;
+import net.geant.nmaas.api.dto.kubernetes.KClusterDto;
 import net.geant.nmaas.kubernetes.KubernetesClusterDeploymentManager;
 import net.geant.nmaas.kubernetes.KubernetesClusterIngressManager;
-import net.geant.nmaas.kubernetes.api.model.KClusterView;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,8 +25,8 @@ public class KubernetesClusterController {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
     @GetMapping
-    public KClusterView getKubernetesCluster() {
-        return new KClusterView(kClusterIngressManager.getKClusterIngressView(), kClusterDeploymentManager.getKClusterDeploymentView());
+    public KClusterDto getKubernetesCluster() {
+        return new KClusterDto(kClusterIngressManager.getKClusterIngressView(), kClusterDeploymentManager.getKClusterDeploymentView());
     }
 
 }
