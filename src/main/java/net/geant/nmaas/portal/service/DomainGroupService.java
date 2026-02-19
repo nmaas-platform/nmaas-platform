@@ -25,9 +25,9 @@ public interface DomainGroupService {
 
     List<DomainGroupDto> getAllDomainGroups();
 
-    Page<DomainGroupView> getPageableAllDomainGroups(Pageable pageable);
+    Page<DomainGroupDto> getPageableAllDomainGroups(Pageable pageable);
 
-    Page<DomainGroupView> getPageableAllDomainGroupsWhereManagerIsMember(Pageable pageable, User manager);
+    Page<DomainGroupDto> getPageableAllDomainGroupsWhereManagerIsMember(Pageable pageable, User manager);
 
     DomainGroupDto updateDomainGroup(Long domainGroupId, DomainGroupDto view);
 

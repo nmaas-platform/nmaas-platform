@@ -90,7 +90,7 @@ public class GroupController extends BaseController {
     @GetMapping(params = {"page"})
     @Transactional(readOnly = true)
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
-    public Page<DomainGroupView> getPageDomainGroups(Principal principal, Pageable pageable) {
+    public Page<DomainGroupDto> getPageDomainGroups(Principal principal, Pageable pageable) {
         User user = this.userService.findByUsername(principal.getName()).orElseThrow(() -> new IllegalArgumentException("User not found"));
 //        Sort mapped = Sort.by(
 //                pageable.getSort().stream().map(order -> {
