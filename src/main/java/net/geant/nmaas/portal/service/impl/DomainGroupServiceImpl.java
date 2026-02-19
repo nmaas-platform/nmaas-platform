@@ -43,7 +43,6 @@ public class DomainGroupServiceImpl implements DomainGroupService {
 
 
     private final ModelMapper modelMapper;
-    private final UserService userService;
 
     @Override
     public Boolean existDomainGroup(String name, String codeName) {

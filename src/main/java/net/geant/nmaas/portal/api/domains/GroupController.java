@@ -92,6 +92,17 @@ public class GroupController extends BaseController {
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
     public Page<DomainGroupView> getPageDomainGroups(Principal principal, Pageable pageable) {
         User user = this.userService.findByUsername(principal.getName()).orElseThrow(() -> new IllegalArgumentException("User not found"));
+//        Sort mapped = Sort.by(
+//                pageable.getSort().stream().map(order -> {
+//                    String p = order.getProperty();
+//                    String mappedProp = switch (p){
+//                        case "numberOfDomains" -> "count(dg.domains)";
+//                        default -> p;
+//                    };
+//                    return new Sort.Order(order.getDirection(), mappedProp);
+//                }).toList()
+//        );
+//        Pageable newPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), mapped);
         if (user.getRoles().stream().anyMatch(userRole -> userRole.getRole().equals(Role.ROLE_GROUP_MANAGER))) {
             return domainGroupService.getPageableAllDomainGroupsWhereManagerIsMember(pageable, user);
         }
