@@ -503,7 +503,6 @@ public class UsersController {
             if (!domain.equals(globalDomain)) {
                 eventPublisher.publishEvent(new UserDomainAssignmentEvent(this, domain.getId(), user.getId(), role.name(), "create"));
             }
-
             final User adminUser = userService.findByUsername(principal.getName()).orElseThrow(() -> new ObjectNotFoundException(USER_NOT_FOUND_ERROR_MESSAGE));
             final String adminRoles = getRoleAsString(adminUser.getRoles());
 
@@ -513,6 +512,15 @@ public class UsersController {
                     userRole.getRole().authority(),
                     user.getUsername(),
                     domain.getId());
+            Domain global = domainService.getGlobalDomain().get();
+            if (user.getDefaultDomain() == null && !Objects.equals(domain.getId(), global.getId())) {
+                user.setDefaultDomain(domain.getId());
+                log.info("User [{}] with role [{}] set default domain [{}] to user [{}].",
+                        principal.getName(),
+                        adminRoles,
+                        domain.getId(),
+                        user.getUsername());
+            }
         } catch (ObjectNotFoundException e) {
             throw new MissingElementException(e.getMessage());
         }
