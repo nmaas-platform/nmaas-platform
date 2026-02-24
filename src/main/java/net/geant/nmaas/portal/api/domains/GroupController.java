@@ -15,6 +15,8 @@ import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
@@ -84,6 +86,27 @@ public class GroupController extends BaseController {
                     .anyMatch(groupUser -> groupUser.getId().equals(user.getId()))).collect(Collectors.toList());
         }
         return domainGroupService.getAllDomainGroups();
+    }
+    @GetMapping(params = {"page"})
+    @Transactional(readOnly = true)
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
+    public Page<DomainGroupDto> getPageDomainGroups(Principal principal, Pageable pageable) {
+        User user = this.userService.findByUsername(principal.getName()).orElseThrow(() -> new IllegalArgumentException("User not found"));
+//        Sort mapped = Sort.by(
+//                pageable.getSort().stream().map(order -> {
+//                    String p = order.getProperty();
+//                    String mappedProp = switch (p){
+//                        case "numberOfDomains" -> "count(dg.domains)";
+//                        default -> p;
+//                    };
+//                    return new Sort.Order(order.getDirection(), mappedProp);
+//                }).toList()
+//        );
+//        Pageable newPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), mapped);
+        if (user.getRoles().stream().anyMatch(userRole -> userRole.getRole().equals(Role.ROLE_GROUP_MANAGER))) {
+            return domainGroupService.getPageableAllDomainGroupsWhereManagerIsMember(pageable, user);
+        }
+        return domainGroupService.getPageableAllDomainGroups(pageable);
     }
 
     @GetMapping("/{domainGroupId}")
