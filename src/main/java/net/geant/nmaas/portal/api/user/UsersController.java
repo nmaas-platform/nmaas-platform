@@ -515,6 +515,7 @@ public class UsersController {
             Domain global = domainService.getGlobalDomain().get();
             if (user.getDefaultDomain() == null && !Objects.equals(domain.getId(), global.getId())) {
                 user.setDefaultDomain(domain.getId());
+                userService.update(user);
                 log.info("User [{}] with role [{}] set default domain [{}] to user [{}].",
                         principal.getName(),
                         adminRoles,
