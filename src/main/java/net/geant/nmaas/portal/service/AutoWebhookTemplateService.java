@@ -58,7 +58,7 @@ public class AutoWebhookTemplateService {
     }
 
     /**
-     * produce a json string based on template and payload
+     * produce a JSON string based on template and payload
      * @param template
      * @param payload
      * @return
@@ -136,7 +136,7 @@ public class AutoWebhookTemplateService {
     }
 
     /**
-     * default json if not defined configured
+     * default JSON if not defined configured
      * @param payload
      * @return
      */

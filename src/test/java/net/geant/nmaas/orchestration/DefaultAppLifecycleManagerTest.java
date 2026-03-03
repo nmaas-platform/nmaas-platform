@@ -20,6 +20,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.context.ApplicationEventPublisher;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -53,7 +54,7 @@ class DefaultAppLifecycleManagerTest {
 
     @BeforeEach
     void setup() {
-        appLifecycleManager = new DefaultAppLifecycleManager(repositoryManager, eventPublisher, serviceRepositoryManager, appTermsAcceptanceService, configurationManager);
+        appLifecycleManager = new DefaultAppLifecycleManager(repositoryManager, eventPublisher, serviceRepositoryManager, appTermsAcceptanceService, configurationManager, new JsonMapper());
     }
 
     @Test

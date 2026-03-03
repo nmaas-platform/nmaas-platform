@@ -1,7 +1,5 @@
 package net.geant.nmaas.orchestration;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
@@ -31,8 +29,10 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.json.JsonMapper;
 
-import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -61,6 +61,8 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
 
     private final AppTermsAcceptanceService appTermsAcceptanceService;
     private final ConfigurationManager configurationManager;
+    private final JsonMapper jsonMapper;
+
     @Value("${nmaas.platform.multi-instance}")
     private boolean useDeploymentPrefix;
 
@@ -203,9 +205,8 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
 
     Map<String, String> getMapFromJson(String inputJson) {
         try {
-            return new ObjectMapper().readValue(inputJson, new TypeReference<Map<String, String>>() {
-            });
-        } catch (IOException e) {
+            return jsonMapper.readValue(inputJson, new TypeReference<Map<String, String>>() { });
+        } catch (JacksonException e) {
             throw new UserConfigHandlingException("Wasn't able to map additional parameters to model map -> " + e.getMessage());
         }
     }

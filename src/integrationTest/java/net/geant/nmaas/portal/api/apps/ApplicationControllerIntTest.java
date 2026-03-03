@@ -1,6 +1,5 @@
 package net.geant.nmaas.portal.api.apps;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.api.dto.Id;
 import net.geant.nmaas.api.dto.applications.AppAccessMethodView;
@@ -16,8 +15,8 @@ import net.geant.nmaas.api.dto.applications.ApplicationView;
 import net.geant.nmaas.api.dto.applications.ConfigFileTemplateView;
 import net.geant.nmaas.api.dto.applications.ConfigWizardTemplateView;
 import net.geant.nmaas.api.dto.applications.HelmChartRepositoryView;
-import net.geant.nmaas.api.dto.applications.KubernetesChartView;
-import net.geant.nmaas.api.dto.applications.KubernetesTemplateView;
+import net.geant.nmaas.api.dto.applications.KubernetesChartDto;
+import net.geant.nmaas.api.dto.applications.KubernetesTemplateDto;
 import net.geant.nmaas.api.dto.applications.ServiceAccessMethodTypeDto;
 import net.geant.nmaas.api.dto.applications.ServiceStorageVolumeTypeDto;
 import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
@@ -52,6 +51,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
+import tools.jackson.databind.ObjectMapper;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -86,17 +86,18 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
 
     private final ModelMapper modelMapper;
 
+    private final ObjectMapper objectMapper;
+
     public ApplicationControllerIntTest(@Autowired ApplicationBaseRepository applicationBaseRepository, @Autowired ApplicationRepository applicationRepository,
                                         @Autowired ApplicationService applicationService, @Autowired ApplicationBaseService applicationBaseService,
-                                        @Autowired ModelMapper modelMapper) {
+                                        @Autowired ModelMapper modelMapper, @Autowired ObjectMapper objectMapper) {
         this.applicationBaseRepository = applicationBaseRepository;
         this.applicationRepository = applicationRepository;
         this.applicationService = applicationService;
         this.applicationBaseService = applicationBaseService;
         this.modelMapper = modelMapper;
+        this.objectMapper = objectMapper;
     }
-
-    private ObjectMapper objectMapper;
 
     private static final String APP_1_NAME = "testApp1";
     private static final String APP_2_NAME = "testApp2";
@@ -107,7 +108,6 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
     @BeforeEach
     void setup() {
         this.mvc = createMVC();
-        this.objectMapper = new ObjectMapper();
 
         this.testApp1Base = this.applicationBaseService.create(getDefaultApplicationBase(APP_1_NAME));
         this.testApp1 = this.applicationService.create(getDefaultApplication(APP_1_NAME, "1.1.0", ApplicationState.ACTIVE));
@@ -344,9 +344,9 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
     void shouldAddNewVersion() {
         AppDeploymentSpecView appDeploymentSpec = new AppDeploymentSpecView();
         appDeploymentSpec.setKubernetesTemplate(
-                new KubernetesTemplateView(
+                new KubernetesTemplateDto(
                         null,
-                        new KubernetesChartView(null, "name", "version"),
+                        new KubernetesChartDto(null, "name", "version"),
                         "archive",
                         null,
                         new HelmChartRepositoryView("tooLongNameToMatchTheConstraint", "http://test")

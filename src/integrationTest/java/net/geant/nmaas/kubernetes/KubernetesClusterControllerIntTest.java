@@ -3,10 +3,8 @@ package net.geant.nmaas.kubernetes;
 import net.geant.nmaas.kubernetes.api.KubernetesClusterController;
 import net.geant.nmaas.portal.api.ApiExceptionHandler;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -15,14 +13,23 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class KubernetesClusterControllerIntTest {
 
     private static final String URL_PREFIX = "/api/management/kubernetes";
-
     private static final String KUBERNETES_CLUSTER_JSON =
                 "{" +
+                     "\"deployment\":{\"id\":null," +
+                        "\"namespaceConfigOption\":\"USE_DOMAIN_NAMESPACE\"," +
+                        "\"defaultNamespace\":\"test-namespace\"," +
+                        "\"defaultStorageClass\":\"storageClass\"," +
+                        "\"smtpServerHostname\":\"test-postfix\"," +
+                        "\"smtpServerPort\":587," +
+                        "\"smtpServerUsername\":\"\"," +
+                        "\"smtpServerPassword\":\"\"," +
+                        "\"smtpFromDefaultDomain\":\"\"," +
+                        "\"forceDedicatedWorkers\":false" +
+                        "}," +
                     "\"ingress\":{\"id\":null," +
                         "\"controllerConfigOption\":\"USE_EXISTING\"," +
                         "\"supportedIngressClass\":\"ingress-class\"," +
@@ -36,25 +43,17 @@ public class KubernetesClusterControllerIntTest {
                         "\"certificateConfigOption\":\"USE_LETSENCRYPT\"," +
                         "\"issuerOrWildcardName\":\"test-issuer\"," +
                         "\"ingressPerDomain\":true" +
-                    "}," +
-                    "\"deployment\":{\"id\":null," +
-                        "\"namespaceConfigOption\":\"USE_DOMAIN_NAMESPACE\"," +
-                        "\"defaultNamespace\":\"test-namespace\"," +
-                        "\"defaultStorageClass\":\"storageClass\"," +
-                        "\"smtpServerHostname\":\"test-postfix\"," +
-                        "\"smtpServerPort\":587," +
-                        "\"smtpServerUsername\":\"\"," +
-                        "\"smtpServerPassword\":\"\"," +
-                        "\"smtpFromDefaultDomain\":\"\"," +
-                        "\"forceDedicatedWorkers\":false" +
                     "}" +
                 "}";
 
-    @Autowired
-    private KubernetesClusterDeploymentManager clusterDeploymentManager;
+    private final KubernetesClusterDeploymentManager clusterDeploymentManager;
+    private final KubernetesClusterIngressManager clusterIngressManager;
 
-    @Autowired
-    private KubernetesClusterIngressManager clusterIngressManager;
+    public KubernetesClusterControllerIntTest(@Autowired KubernetesClusterDeploymentManager clusterDeploymentManager,
+                                              @Autowired KubernetesClusterIngressManager clusterIngressManager) {
+        this.clusterDeploymentManager = clusterDeploymentManager;
+        this.clusterIngressManager = clusterIngressManager;
+    }
 
     @Test
     void shouldFetchKubernetesCluster() throws Exception {
