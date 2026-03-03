@@ -112,7 +112,7 @@ dependencies {
     implementation('io.micrometer:micrometer-registry-prometheus:1.16.3')
 
     // Kubernetes API client
-    implementation('io.fabric8:kubernetes-client:7.5.2')
+    implementation('io.fabric8:kubernetes-client:7.6.0')
 
     // GitLab API client
     implementation 'org.gitlab4j:gitlab4j-api:6.2.0'
@@ -121,9 +121,9 @@ dependencies {
     implementation('com.opencsv:opencsv:5.12.0')
 
     // Tests
-    testImplementation('org.mockito:mockito-core:5.21.0')
+    testImplementation('org.mockito:mockito-core:5.22.0')
     testImplementation('org.springframework.boot:spring-boot-starter-test')
-    testImplementation('org.yaml:snakeyaml:2.5')
+    testImplementation('org.yaml:snakeyaml:2.6')
 
     integrationTestImplementation('org.springframework.boot:spring-boot-starter-test')
     integrationTestImplementation('org.springframework.security:spring-security-test')

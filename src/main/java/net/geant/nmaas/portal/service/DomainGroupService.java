@@ -4,6 +4,8 @@ import net.geant.nmaas.api.dto.domains.DomainGroupDto;
 import net.geant.nmaas.portal.persistence.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -22,6 +24,10 @@ public interface DomainGroupService {
     DomainGroupDto getDomainGroup(Long domainGroupId);
 
     List<DomainGroupDto> getAllDomainGroups();
+
+    Page<DomainGroupDto> getPageableAllDomainGroups(Pageable pageable);
+
+    Page<DomainGroupDto> getPageableAllDomainGroupsWhereManagerIsMember(Pageable pageable, User manager);
 
     DomainGroupDto updateDomainGroup(Long domainGroupId, DomainGroupDto view);
 
