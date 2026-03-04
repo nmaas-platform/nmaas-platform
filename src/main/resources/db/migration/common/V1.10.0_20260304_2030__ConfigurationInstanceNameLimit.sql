@@ -1,0 +1,1 @@
+alter table configuration add column app_instance_name_length_limit integer;
