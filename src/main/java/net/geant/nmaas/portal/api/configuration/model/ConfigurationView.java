@@ -60,4 +60,6 @@ public class ConfigurationView {
 
     private Long defaultDomainForSsoUsers;
 
+    private Integer appInstanceNameLengthLimit;
+
 }

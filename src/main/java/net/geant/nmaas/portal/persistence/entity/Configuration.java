@@ -1,9 +1,12 @@
 package net.geant.nmaas.portal.persistence.entity;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,13 +14,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -92,6 +88,9 @@ public class Configuration {
     @JoinColumn(name = "default_domain_for_sso_users")
     private Domain defaultDomainForSsoUsers;
 
+    @Column(name = "app_instance_name_length_limit", nullable = false)
+    private Integer appInstanceNameLengthLimit;
+
     public Configuration(
             boolean maintenance,
             boolean ssoLoginAllowed,
@@ -102,7 +101,7 @@ public class Configuration {
             boolean registrationDomainSelectionEnabled,
             boolean bulkDomainsAllowForSsoAccounts,
             boolean bulkDomainsSendEmailForNewAccounts
-    ){
+    ) {
         this.maintenance = maintenance;
         this.ssoLoginAllowed = ssoLoginAllowed;
         this.defaultLanguage = defaultLanguage;
@@ -113,6 +112,7 @@ public class Configuration {
         this.bulkDomainsAllowForSsoAccounts = bulkDomainsAllowForSsoAccounts;
         this.bulkDomainsSendEmailForNewAccounts = bulkDomainsSendEmailForNewAccounts;
         this.bulkDeploymentQueueRefresh = 60;
+        this.appInstanceNameLengthLimit = 10;
     }
 
     public void setAppInstanceFailureEmailList(List<String> emails) {

@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal;
 
-import net.geant.nmaas.portal.service.impl.DomainServiceImpl.CodenameValidator;
-import net.geant.nmaas.portal.service.impl.domains.DefaultCodenameValidator;
+import net.geant.nmaas.portal.service.CodenameValidator;
+import net.geant.nmaas.portal.service.impl.DefaultCodenameValidator;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,7 +22,7 @@ public class ValidatorsConfig {
     }
 
     @Bean(name = "instanceNameValidator")
-    CodenameValidator defaultInstanceNameValidator(@Value("${nmaas.portal.modals.appinstall.pattern}") String pattern) {
+    CodenameValidator defaultInstanceNameValidator(@Value("${nmaas.portal.appinstance.name.pattern}") String pattern) {
         return new DefaultCodenameValidator(pattern);
     }
 

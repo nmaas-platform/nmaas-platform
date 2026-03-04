@@ -91,7 +91,7 @@ class InternationalizationServiceTest {
 
     @Test
     void shouldChangeLanguageState() {
-        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(1L, false, false, "fr", false, false, new ArrayList<>(), false, false, true, "0 */1 * * * ?", 2, 60, 10, "", "0 */1 * * * ?", null));
+        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(1L, false, false, "fr", false, false, new ArrayList<>(), false, false, true, "0 */1 * * * ?", 2, 60, 10, "", "0 */1 * * * ?", null, 10));
         InternationalizationView internationalization = new InternationalizationView("pl", false, "{\"test\":\"content\"}");
         when(repository.findByLanguageOrderByIdDesc(language.getLanguage())).thenReturn(Optional.of(internationalization.getAsInternationalizationSimple()));
 
@@ -112,7 +112,7 @@ class InternationalizationServiceTest {
     void shouldThrowAnExceptionWhenDisablingDefaultLanguage() {
         InternationalizationView internationalization = new InternationalizationView("pl", false, "{\"test\":\"content\"}");
         when(repository.findByLanguageOrderByIdDesc(language.getLanguage())).thenReturn(Optional.of(internationalization.getAsInternationalizationSimple()));
-        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(1L, false, false, "pl", false, false, new ArrayList<>(), false, false, true, "0 */1 * * * ?", 2, 60, 10, "", "0 */1 * * * ?", null));
+        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(1L, false, false, "pl", false, false, new ArrayList<>(), false, false, true, "0 */1 * * * ?", 2, 60, 10, "", "0 */1 * * * ?", null, 10));
         assertThrows(IllegalStateException.class, () ->
             internationalizationService.changeLanguageState(language)
         );

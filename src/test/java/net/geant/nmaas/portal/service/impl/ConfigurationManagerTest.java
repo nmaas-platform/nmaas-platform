@@ -61,7 +61,7 @@ class ConfigurationManagerTest {
                 .build();
         this.internationalization = new InternationalizationView("pl", true, "{\"test\":\"test\"}");
         this.configView = new ConfigurationView(1L, false, false, "pl",
-                false, false, new ArrayList<>(), true, true, false, "0 */1 * * * ?", 2, 60, 10, "", "0 */1 * * * ?", null);
+                false, false, new ArrayList<>(), true, true, false, "0 */1 * * * ?", 2, 60, 10, "", "0 */1 * * * ?", null, 10);
         this.modelMapper.addConverter(new ConfigurationConverter());
     }
 

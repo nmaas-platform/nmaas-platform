@@ -27,6 +27,7 @@ public class PortalConfigInit implements InitializingBean {
     private final Integer bulkDeploymentPerPeriod;
     private final String bulkDeploymentCron;
     private final String healthCheckJobCron;
+    private final Integer appInstanceNameLengthLimit;
 
     private final ConfigurationManager configurationManager;
     private final ApplicationService applicationService;
@@ -42,6 +43,7 @@ public class PortalConfigInit implements InitializingBean {
                             @Value("${nmaas.service.deployment.parallel.limit}") Integer bulkDeploymentPerPeriod,
                             @Value("${nmaas.service.bulk-deployment.cron}") String bulkDeploymentCron,
                             @Value("${nmaas.service.health-check.cron}") String healthCheckJobCron,
+                            @Value("${portal.config.appInstanceNameLengthLimit}") Integer appInstanceNameLengthLimit,
                             ConfigurationManager configurationManager,
                             ApplicationService applicationService) {
         this.maintenance = maintenance;
@@ -54,6 +56,7 @@ public class PortalConfigInit implements InitializingBean {
         this.bulkDeploymentPerPeriod = bulkDeploymentPerPeriod;
         this.bulkDeploymentCron = bulkDeploymentCron;
         this.healthCheckJobCron = healthCheckJobCron;
+        this.appInstanceNameLengthLimit = appInstanceNameLengthLimit;
         this.configurationManager = configurationManager;
         this.applicationService = applicationService;
     }
@@ -74,6 +77,7 @@ public class PortalConfigInit implements InitializingBean {
                 .bulkDeploymentQueueRefresh(60)
                 .deploymentPrefix(UUID.randomUUID().toString().substring(0, 3))
                 .healthCheckJobCron(healthCheckJobCron)
+                .appInstanceNameLengthLimit(appInstanceNameLengthLimit)
                 .build();
         try {
             log.debug("[Init] Initializing portal configuration");
