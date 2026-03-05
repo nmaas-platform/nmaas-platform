@@ -422,7 +422,8 @@
     "BULK_DEPLOYMENT_QUEUE_REFRESH" : "Bulk deployment queue refresh (seconds)",
     "BULK_DEPLOYMENT_THRESHOLD" : "Bulk deployment time threshold (seconds)",
     "DEPLOYMENT_PREFIX" : "Deployment prefix",
-    "CLUSTER_HEALTH_CHECK" : "Cluster health check job cron"
+    "CLUSTER_HEALTH_CHECK" : "Cluster health check job cron",
+    "APP_INSTANCE_LIMIT": "Limite de longueur du nom de l'instance d'application"
   },
   "DOMAIN_DETAILS": {
     "TITLE": "Détails de l'organisation",
