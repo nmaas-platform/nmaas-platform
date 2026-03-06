@@ -177,9 +177,8 @@ tasks.register('integrationTest', Test) {
     testClassesDirs = sourceSets.integrationTest.output.classesDirs
     classpath = sourceSets.integrationTest.runtimeClasspath
     outputs.upToDateWhen { false }
-    afterTest { desc, result ->
-        println "Executing itest ${desc.name} [${desc.className}] with result: ${result.resultType}"
-    }
+    addTestListener(testLoggingListener)
+
     jacoco {
         destinationFile = layout.buildDirectory.file("jacoco/integrationTest.exec").get().asFile
         excludes = [
@@ -193,7 +192,6 @@ tasks.register('integrationTest', Test) {
 tasks.register('generateOpenApiYaml', Test) {
     group = 'documentation'
     description = 'Runs test that exports OpenAPI YAML from Spring context'
-
     useJUnitPlatform()
 
     // Run only the specific test class and method
