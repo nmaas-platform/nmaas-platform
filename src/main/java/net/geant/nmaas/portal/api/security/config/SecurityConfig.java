@@ -106,6 +106,9 @@ public class SecurityConfig {
         ;
 
         if (ssoEnabled) {
+            if (clientRegistrationRepository == null) {
+                throw new IllegalStateException("SSO is enabled, but no ClientRegistrationRepository bean is configured");
+            }
             DefaultOAuth2AuthorizationRequestResolver resolver = new DefaultOAuth2AuthorizationRequestResolver(
                     clientRegistrationRepository, "/api/oauth2/authorization");
 
