@@ -3,6 +3,7 @@ package net.geant.nmaas.portal.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.api.dto.users.UserViewMinimal;
 import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
 import net.geant.nmaas.nmservice.deployment.bulks.BulkDeploymentQueueEntry;
 import net.geant.nmaas.nmservice.deployment.bulks.BulkDeploymentQueueRepository;
@@ -14,9 +15,8 @@ import net.geant.nmaas.orchestration.AppLifecycleState;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.events.app.AppAutoDeploymentReviewEvent;
 import net.geant.nmaas.orchestration.events.app.AppAutoDeploymentStatusUpdateEvent;
-import net.geant.nmaas.portal.api.bulk.model.BulkQueueDetails;
 import net.geant.nmaas.portal.api.bulk.CsvApplication;
-import net.geant.nmaas.api.dto.users.UserViewMinimal;
+import net.geant.nmaas.portal.api.bulk.model.BulkQueueDetails;
 import net.geant.nmaas.portal.persistence.entity.AppInstance;
 import net.geant.nmaas.portal.persistence.entity.Application;
 import net.geant.nmaas.portal.persistence.entity.ApplicationBase;
@@ -41,6 +41,7 @@ import org.mockito.AdditionalAnswers;
 import org.mockito.ArgumentCaptor;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.ApplicationEvent;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -84,24 +85,22 @@ class BulkApplicationServiceImplTest {
     private final ModelMapper modelMapper = new ModelMapper();
 
     private final BulkDeploymentQueueRepository bulkDeploymentQueueRepository = mock(BulkDeploymentQueueRepository.class);
-
     private final BulkDeploymentQueueService bulkDeploymentQueueService = mock(BulkDeploymentQueueService.class);
-
     private final AppDeploymentRepositoryManager appDeploymentRepositoryManager = mock(AppDeploymentRepositoryManager.class);
-
     private final ConfigurationManager configurationManager = mock(ConfigurationManager.class);
 
     final BulkApplicationService bulkApplicationService = new BulkApplicationServiceImpl(applicationBaseService, applicationService,
             domainService, applicationSubscriptionService, userService, applicationInstanceService, appDeploymentMonitor, appLifecycleManager,
-            bulkDeploymentRepository, bulkDeploymentEntryRepository, modelMapper, bulkDeploymentQueueRepository, appDeploymentRepositoryManager, configurationManager);
+            bulkDeploymentRepository, bulkDeploymentEntryRepository, modelMapper, bulkDeploymentQueueRepository,
+            appDeploymentRepositoryManager, configurationManager, new JsonMapper());
 
     @Test
-    void shouldHandleBulkDeployment() throws JsonProcessingException {
+    void shouldHandleBulkDeployment() {
         HashSetValuedHashMap<String, String> parameters = new HashSetValuedHashMap<>();
         parameters.put("param.key1", "value1");
         CsvApplication csvApplication = new CsvApplication("domain1", "testAppInstance", TEST_APP_VERSION, parameters);
-        Domain domain = new Domain(1L,"domain1", "domain1");
-        Domain global = new Domain(0L,"GLOBAL", "GLOBAL");
+        Domain domain = new Domain(1L, "domain1", "domain1");
+        Domain global = new Domain(0L, "GLOBAL", "GLOBAL");
         ApplicationBase applicationBase = new ApplicationBase(110L, TEST_APP_NAME);
         when(applicationBaseService.exists(TEST_APP_NAME)).thenReturn(true);
         when(applicationBaseService.findByName(TEST_APP_NAME)).thenReturn(applicationBase);
@@ -126,7 +125,7 @@ class BulkApplicationServiceImplTest {
         verify(appLifecycleManager).initApplicationDeployment(any());
         ArgumentCaptor<AppInstance> appInstanceArgumentCaptor = ArgumentCaptor.forClass(AppInstance.class);
         verify(applicationInstanceService, times(2)).update(appInstanceArgumentCaptor.capture());
-        Map<String, String> deploymentParametersMap = new ObjectMapper().readValue(
+        Map<String, String> deploymentParametersMap = new JsonMapper().readValue(
                 appInstanceArgumentCaptor.getAllValues().get(1).getConfiguration(), Map.class
         );
         assertEquals("value1", deploymentParametersMap.get("key1"));
@@ -138,7 +137,7 @@ class BulkApplicationServiceImplTest {
         assertEquals(APPLICATION, bulkDeployment.getType());
         assertEquals(testUser().getId(), bulkDeployment.getCreator().getId());
         assertEquals(1, bulkDeployment.getEntries().size());
-        assertEquals(PENDING, bulkDeployment.getEntries().get(0).getState());
+        assertEquals(PENDING, bulkDeployment.getEntries().getFirst().getState());
     }
 
     @Test
@@ -199,10 +198,10 @@ class BulkApplicationServiceImplTest {
         user.setId(1L);
         BulkDeployment bAppToBeCompleted = new BulkDeployment(
                 1L, user, OffsetDateTime.now(), PROCESSING, APPLICATION,
-                new ArrayList<>(List.of(new BulkDeploymentEntry(10L, APPLICATION, COMPLETED, true, null))), 2, false,null);
+                new ArrayList<>(List.of(new BulkDeploymentEntry(10L, APPLICATION, COMPLETED, true, null))), 2, false, null);
         BulkDeployment bAppProcessing = new BulkDeployment(
                 2L, user, OffsetDateTime.now(), PROCESSING, APPLICATION,
-                new ArrayList<>(List.of(new BulkDeploymentEntry(11L, APPLICATION, PROCESSING, true, null))),2, false,null);
+                new ArrayList<>(List.of(new BulkDeploymentEntry(11L, APPLICATION, PROCESSING, true, null))), 2, false, null);
         when(bulkDeploymentRepository.findByTypeAndState(APPLICATION, PROCESSING))
                 .thenReturn(List.of(bAppToBeCompleted, bAppProcessing));
 
@@ -235,8 +234,8 @@ class BulkApplicationServiceImplTest {
         bulkDeploymentQueueService.handleQueue();
         BulkQueueDetails details = bulkApplicationService.getQueueDetails(1L);
 
-        assertEquals(details.getJobInQueue(), 1);
-        assertEquals(1,details.getJobInProcess());
+        assertEquals(1, details.getJobInQueue());
+        assertEquals(1, details.getJobInProcess());
         assertEquals(1L, details.getJobInProcessId());
         assertEquals(1, details.getBulkJobInQueue());
         assertEquals(0, details.getJobDone());
@@ -260,18 +259,15 @@ class BulkApplicationServiceImplTest {
         when(bulkDeploymentRepository.findBulkIdByBulkEntryId(anyLong())).thenReturn(1L);
         when(bulkDeploymentRepository.findById(1L)).thenReturn(Optional.of(bulkDeployment));
 
-
         bulkDeploymentQueueService.handleQueue();
         BulkQueueDetails details = bulkApplicationService.getQueueDetails(1L);
 
-        assertEquals(details.getJobInQueue(), 1);
-        assertEquals(1,details.getJobInProcess());
+        assertEquals(1, details.getJobInQueue());
+        assertEquals(1, details.getJobInProcess());
         assertEquals(1L, details.getJobInProcessId());
         assertEquals(1, details.getBulkJobInQueue());
         assertEquals(1, details.getJobDone());
     }
-
-
 
     private static UserViewMinimal testUser() {
         UserViewMinimal testUser = new UserViewMinimal();

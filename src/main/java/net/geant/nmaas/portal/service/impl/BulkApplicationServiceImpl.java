@@ -6,6 +6,7 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.api.dto.users.UserViewMinimal;
 import net.geant.nmaas.nmservice.deployment.bulks.BulkDeploymentQueueEntry;
 import net.geant.nmaas.nmservice.deployment.bulks.BulkDeploymentQueueRepository;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
@@ -18,14 +19,13 @@ import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
 import net.geant.nmaas.orchestration.events.app.AppAutoDeploymentReviewEvent;
 import net.geant.nmaas.orchestration.events.app.AppAutoDeploymentStatusUpdateEvent;
+import net.geant.nmaas.portal.api.bulk.BulkType;
+import net.geant.nmaas.portal.api.bulk.CsvApplication;
 import net.geant.nmaas.portal.api.bulk.model.BulkAppDetails;
 import net.geant.nmaas.portal.api.bulk.model.BulkDeploymentEntryView;
 import net.geant.nmaas.portal.api.bulk.model.BulkDeploymentView;
 import net.geant.nmaas.portal.api.bulk.model.BulkDeploymentViewS;
 import net.geant.nmaas.portal.api.bulk.model.BulkQueueDetails;
-import net.geant.nmaas.portal.api.bulk.BulkType;
-import net.geant.nmaas.portal.api.bulk.CsvApplication;
-import net.geant.nmaas.api.dto.users.UserViewMinimal;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistence.entity.AppInstance;
@@ -51,6 +51,7 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -101,6 +102,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
     private final AppDeploymentRepositoryManager appDeploymentRepositoryManager;
 
     private final ConfigurationManager configurationManager;
+    private final JsonMapper jsonMapper;
 
     @Value("${nmaas.platform.multi-instance}")
     private boolean useDeploymentPrefix;
@@ -161,22 +163,22 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                             mapToDeploymentParameters(applicationSpec.getParameters())
                     );
                     instance.setConfiguration(configJson);
-                    appConfigurationView.setJsonInput(configJson);
-                    appConfigurationView.setMandatoryParameters(configJson);
+                    appConfigurationView.setJsonInput(jsonMapper.readTree(configJson));
+                    appConfigurationView.setMandatoryParameters(jsonMapper.readTree(configJson));
                     instanceService.update(instance);
                 } else {
-                    appConfigurationView.setJsonInput("{}");
+                    appConfigurationView.setJsonInput(jsonMapper.readTree("{}"));
                 }
 
-                // add job entry to table
+                // add job entry to the table
                 Identifier internalId = appLifecycleManager.initApplicationDeployment(appDeployment);
 
-                // updating application instance information with assigned deployment identifier
+                // updating application instance information with an assigned deployment identifier
                 instance.setInternalId(internalId);
                 instanceService.update(instance);
 
 
-                // store entry information in database
+                // store entry information in a database
                 BulkDeploymentEntry bulkDeploymentEntry = bulkDeploymentEntryRepository.save(
                         BulkDeploymentEntry.builder()
                                 .type(BulkType.APPLICATION)
@@ -190,11 +192,9 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                                 .deploymentId(internalId)
                                 .bulkEntryId(bulkDeploymentEntry.getId())
                                 .state(BulkDeploymentQueueEntry.QueryEntryState.WAITING)
-                                .appConfigurationJson(appConfigurationView.getJsonInput())
+                                .appConfigurationJson(jsonMapper.writeValueAsString(appConfigurationView.getJsonInput()))
                                 .build()
                 );
-
-
                 bulkDeployment.getEntries().add(bulkDeploymentEntry);
                 bulkDeployment.setParallelDeploymentsLimit(limit);
 
@@ -649,7 +649,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
         header.addAll(details.get(0).getAccessMethod().keySet());
 
         // config parameters header
-        details.get(0).getParameters().keySet().forEach(param -> {
+        details.getFirst().getParameters().keySet().forEach(param -> {
             param = param.replace("\"", "");
             header.add(CSV_HEADER_PARAM_PREFIX + param);
         });

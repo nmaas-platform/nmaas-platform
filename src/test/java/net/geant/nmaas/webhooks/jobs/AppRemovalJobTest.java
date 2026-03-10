@@ -1,12 +1,12 @@
 package net.geant.nmaas.webhooks.jobs;
 
+import net.geant.nmaas.api.dto.webhooks.WebhookEventDto;
 import net.geant.nmaas.api.dto.webhooks.WebhookEventTypeDto;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
-import net.geant.nmaas.api.dto.webhooks.WebhookEventDto;
 import net.geant.nmaas.portal.persistence.entity.WebhookEventType;
 import net.geant.nmaas.portal.persistence.entity.WebhookHistory;
 import net.geant.nmaas.portal.persistence.repositories.DomainRepository;
@@ -23,6 +23,7 @@ import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.web.client.RestClient;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.security.GeneralSecurityException;
 
@@ -45,7 +46,9 @@ class AppRemovalJobTest {
     private final AutoWebhookTemplateService templateService = mock(AutoWebhookTemplateService.class);
 
     private final ModelMapper mapper = new ModelMapper();
-    private final WebhookHistoryService webhookHistoryService = new WebhookHistoryServiceImpl(webhookHistoryRepository, domainRepository, mapper);
+    private final JsonMapper jsonMapper = new JsonMapper();
+
+    private final WebhookHistoryService webhookHistoryService = new WebhookHistoryServiceImpl(webhookHistoryRepository, domainRepository, mapper, jsonMapper);
 
     @Test
     void shouldExecuteSampleJob() throws GeneralSecurityException {

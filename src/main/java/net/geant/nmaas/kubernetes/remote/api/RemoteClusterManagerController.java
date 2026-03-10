@@ -1,7 +1,5 @@
 package net.geant.nmaas.kubernetes.remote.api;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import net.geant.nmaas.api.dto.kubernetes.RemoteKClusterDto;
 import net.geant.nmaas.kubernetes.remote.RemoteClusterManagementService;
@@ -17,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
 import java.security.Principal;
 import java.util.List;
@@ -28,6 +28,7 @@ import java.util.Objects;
 public class RemoteClusterManagerController {
 
     private final RemoteClusterManagementService remoteClusterManager;
+    private final ObjectMapper objectMapper;
 
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR') || hasRole('ROLE_DOMAIN_ADMIN')")
     @GetMapping("/{id}")
@@ -54,7 +55,6 @@ public class RemoteClusterManagerController {
                                                      @RequestPart(value = "secretName", required = false) String secretName,
                                                      @RequestPart("data") String viewString,
                                                      @RequestPart("createNamespace") String createNamespace) {
-        ObjectMapper objectMapper = new ObjectMapper();
         try {
             RemoteKClusterDto cluster = objectMapper.readValue(viewString, RemoteKClusterDto.class);
             final boolean createNamespaceFlag = Objects.isNull(createNamespace) ? Boolean.FALSE : Boolean.valueOf(createNamespace);
@@ -66,7 +66,7 @@ public class RemoteClusterManagerController {
             } else {
                 throw new RuntimeException("You need either to upload the kubeConfig file or name of secret object that holds the respective kubeConfig file in the local cluster");
             }
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new RuntimeException(e);
         }
     }
@@ -99,7 +99,7 @@ public class RemoteClusterManagerController {
             } else {
                 throw new RuntimeException("You need either to upload the kubeConfig file or name of secret object that holds the respective kubeConfig file in the local cluster");
             }
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new RuntimeException(e);
         }
     }

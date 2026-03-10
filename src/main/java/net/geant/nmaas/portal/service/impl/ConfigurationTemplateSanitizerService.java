@@ -1,11 +1,10 @@
 package net.geant.nmaas.portal.service.impl;
 
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
 
 @Service
 @RequiredArgsConstructor
@@ -33,15 +32,15 @@ public class ConfigurationTemplateSanitizerService {
         if (node.isObject()) {
             ObjectNode objNode = (ObjectNode) node;
             if (objNode.has("key")) {
-                String key = objNode.get("key").asText();
+                String key = objNode.get("key").asString();
                 if (key.contains(OLD_KEY)) {
                     objNode.put("key", key.replace(OLD_KEY, NEW_KEY));
                 }
             }
 
-            objNode.fields().forEachRemaining(entry -> {
+            for (var entry : objNode.properties()) {
                 sanitizeKeysRecursively(entry.getValue());
-            });
+            }
 
         } else if (node.isArray()) {
             for (JsonNode item : node) {

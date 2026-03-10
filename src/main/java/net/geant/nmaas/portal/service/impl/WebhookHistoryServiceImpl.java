@@ -1,7 +1,5 @@
 package net.geant.nmaas.portal.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.api.dto.webhooks.WebhookEventDto;
@@ -16,6 +14,8 @@ import net.geant.nmaas.portal.service.WebhookHistoryService;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,8 +29,7 @@ public class WebhookHistoryServiceImpl implements WebhookHistoryService {
     private final WebhookHistoryRepository webhookHistoryRepository;
     private final DomainRepository domainRepository;
     private final ModelMapper modelMapper;
-
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private final JsonMapper jsonMapper;
 
     @Override
     public void create(WebhookEventDto webhook, Object payload, Integer responseStatus, String responseBody) {
@@ -42,8 +41,8 @@ public class WebhookHistoryServiceImpl implements WebhookHistoryService {
         }
         webhookHistory.setUrl(webhook.getTargetUrl());
         try {
-            webhookHistory.setRequestBody(objectMapper.writeValueAsString(payload));
-        } catch (JsonProcessingException e) {
+            webhookHistory.setRequestBody(jsonMapper.writeValueAsString(payload));
+        } catch (JacksonException e) {
             log.warn("Failed to write webhook request body to json String with error: {}", e.getMessage());
         }
         webhookHistory.setResponseStatus(responseStatus);

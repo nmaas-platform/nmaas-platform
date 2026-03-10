@@ -1,14 +1,15 @@
 package net.geant.nmaas.openapi;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.test.web.servlet.client.EntityExchangeResult;
+import org.springframework.test.web.servlet.client.RestTestClient;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,16 +18,19 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@Slf4j
 public class OpenApiExportTest {
 
-    private final TestRestTemplate restTemplate;
+    private final RestTestClient testClient;
 
-    private final ObjectMapper objectMapper;
+    private final JsonMapper jsonMapper;
 
-    public OpenApiExportTest(@Autowired TestRestTemplate restTemplate, @Autowired ObjectMapper objectMapper) {
-        this.restTemplate = restTemplate;
-        this.objectMapper = objectMapper;
+    public OpenApiExportTest(@Autowired JsonMapper jsonMapper) {
+        this.testClient = RestTestClient.bindToServer()
+                .baseUrl("http://localhost:9000")
+                .build();
+        this.jsonMapper = jsonMapper;
     }
 
     @Test
@@ -35,14 +39,18 @@ public class OpenApiExportTest {
         Files.createDirectories(outputPath.getParent());
 
         // Call the standard SpringDoc OpenAPI endpoint
-        ResponseEntity<String> response = restTemplate.getForEntity("/api-docs/spec", String.class);
+        EntityExchangeResult<String> result = testClient.get().uri("/api-docs/spec")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(String.class)
+                .returnResult();
 
         // Verify the response
-        assertEquals(HttpStatus.OK, response.getStatusCode(), "Expected 200 OK from /api-docs/spec endpoint");
-        assertNotNull(response.getBody(), "Response body should not be null");
+        assertEquals(HttpStatus.OK, result.getStatus(), "Expected 200 OK from /api-docs/spec endpoint");
+        assertNotNull(result.getResponseBody(), "Response body should not be null");
 
         // Convert JSON -> Map -> YAML
-        Map<String, Object> openApiMap = objectMapper.readValue(response.getBody(), Map.class);
+        Map<String, Object> openApiMap = jsonMapper.readValue(result.getResponseBody(), Map.class);
 
         // Validate basic OpenAPI structure
         assertNotNull(openApiMap.get("info"), "OpenAPI info section should be present");
@@ -59,6 +67,7 @@ public class OpenApiExportTest {
             yaml.dump(openApiMap, writer);
         }
 
-        System.out.println("✅ OpenAPI YAML written to: " + outputPath);
+        log.info("OpenAPI YAML written to: {}", outputPath);
     }
+
 }

@@ -1,7 +1,5 @@
 package net.geant.nmaas.orchestration.api;
 
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.api.dto.applications.ServiceAccessMethodDto;
 import net.geant.nmaas.api.dto.applications.ServiceAccessMethodTypeDto;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
@@ -15,15 +13,14 @@ import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import tools.jackson.databind.JavaType;
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,19 +32,24 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class OrchestratorMonitorControllerIntTest {
 
-    @Mock
-    private AppDeploymentMonitor deploymentMonitor;
+    private final AppDeploymentMonitor deploymentMonitor;
+    private final ModelMapper modelMapper;
+    private final ObjectMapper objectMapper;
 
-    @Autowired
-    private ModelMapper modelMapper;
+    public OrchestratorMonitorControllerIntTest(@Autowired ModelMapper modelMapper,
+                                                @Autowired ObjectMapper objectMapper) {
+        this.deploymentMonitor = mock(AppDeploymentMonitor.class);
+        this.modelMapper = modelMapper;
+        this.objectMapper = objectMapper;
+    }
 
     private MockMvc mvc;
 
@@ -95,12 +97,11 @@ public class OrchestratorMonitorControllerIntTest {
     @Test
     void shouldRetrieveAllDeployments() throws Exception {
         when(deploymentMonitor.allDeployments()).thenReturn(deployments).thenReturn(deployments);
-        ObjectMapper mapper = new ObjectMapper();
-        JavaType type = mapper.getTypeFactory().constructCollectionType(ArrayList.class, AppDeploymentView.class);
+        JavaType type = objectMapper.getTypeFactory().constructCollectionType(ArrayList.class, AppDeploymentView.class);
         MvcResult result = mvc.perform(get("/api/orchestration/deployments"))
                 .andExpect(status().isOk())
                 .andReturn();
-        List<AppDeploymentView> retrievedDeployments = mapper.readValue(result.getResponse().getContentAsString(), type);
+        List<AppDeploymentView> retrievedDeployments = objectMapper.readValue(result.getResponse().getContentAsString(), type);
         assertThat(retrievedDeployments.size(), equalTo(deployments.size()));
         assertThat(
                 retrievedDeployments.stream().map(AppDeploymentView::getDeploymentId).collect(Collectors.toList()),

@@ -78,14 +78,14 @@ public class AppDeploymentMonitorRestController {
     @ExceptionHandler(InvalidDeploymentIdException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public String handleInvalidDeploymentIdException(InvalidDeploymentIdException ex) {
-        log.warn("Requested deployment not found -> " + ex.getMessage());
+        log.warn("Requested deployment not found -> {}", ex.getMessage());
         return ex.getMessage();
     }
 
     @ExceptionHandler(InvalidAppStateException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public String handleInvalidAppStateException(InvalidAppStateException ex) {
-        log.warn("Requested deployment in invalid state -> " + ex.getMessage());
+        log.warn("Requested deployment in invalid state -> {}", ex.getMessage());
         return ex.getMessage();
     }
 

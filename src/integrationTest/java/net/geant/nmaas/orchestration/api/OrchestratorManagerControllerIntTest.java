@@ -1,6 +1,5 @@
 package net.geant.nmaas.orchestration.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.orchestration.Identifier;
@@ -12,16 +11,16 @@ import net.geant.nmaas.portal.persistence.entity.Application;
 import net.geant.nmaas.portal.persistence.repositories.ApplicationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.security.Principal;
 import java.util.Optional;
@@ -43,71 +42,70 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class OrchestratorManagerControllerIntTest {
 
-    @MockitoBean
-    private AppLifecycleManager lifecycleManager;
+    private static final String DOMAIN = "domain";
+    private static final String DEPLOYMENT_NAME = "deploymentName";
+    private static final Identifier DEPLOYMENT_ID = Identifier.newInstance("deploymentId1");
+    private static final Identifier APPLICATION_ID = Identifier.newInstance(15L);
 
-    @MockitoBean
-    private ApplicationRepository appRepo;
+    @Autowired
+    private JsonMapper jsonMapper;
+
+    private final AppLifecycleManager lifecycleManager = mock(AppLifecycleManager.class);
+    private final ApplicationRepository applicationRepository = mock(ApplicationRepository.class);
+    private final Principal principal = mock(Principal.class);
 
     private MockMvc mvc;
 
-    private static final String DOMAIN = "domain";
-    private static final String DEPLOYMENT_NAME = "deploymentName";
-
-    private Identifier applicationId;
-    private Identifier deploymentId;
     private AppConfiguration appConfiguration;
 
-    private Principal principal;
-
-    private static final String CONFIGURATION_JSON = "" +
-            "{" +
-            "\"jsonInput\":{\"id\":\"testvalue" + "\"}," +
+    private static final String CONFIGURATION_JSON = "{" +
+            "\"jsonInput\":{\"id\":\"testvalue\"}," +
             "\"storageSpace\":null" +
             "}";
 
     @BeforeEach
     void setup() {
-        applicationId = Identifier.newInstance(15L);
-        deploymentId = Identifier.newInstance("deploymentId1");
         String jsonInput = "{\"id\":\"testvalue\"}";
         appConfiguration = new AppConfiguration(jsonInput);
-        mvc = MockMvcBuilders.standaloneSetup(new AppLifecycleManagerRestController(lifecycleManager, appRepo)).build();
+        mvc = MockMvcBuilders.standaloneSetup(new AppLifecycleManagerRestController(lifecycleManager, applicationRepository)).build();
 
         Application application = new Application("testapp", "testversion");
         application.setAppDeploymentSpec(new AppDeploymentSpec());
         application.setAppConfigurationSpec(new AppConfigurationSpec());
         application.getAppConfigurationSpec().setConfigFileRepositoryRequired(true);
-        when(appRepo.findById(any())).thenReturn(Optional.of(application));
+        when(applicationRepository.findById(any())).thenReturn(Optional.of(application));
+        when(principal.getName()).thenReturn("user");
+    }
 
-        this.principal = mock(Principal.class);
-        when(this.principal.getName()).thenReturn("user");
+    @Test
+    void shouldDeserializeAppConfigurationJson() {
+        AppConfigurationView result = jsonMapper.readValue(CONFIGURATION_JSON, AppConfigurationView.class);
+        assertEquals("{\"id\":\"testvalue\"}", jsonMapper.writeValueAsString(result.getJsonInput()));
     }
 
     @Test
     void shouldRequestNewDeploymentAndReceiveNewDeploymentId() {
-        when(lifecycleManager.deployApplication(any())).thenReturn(deploymentId);
+        when(lifecycleManager.deployApplication(any())).thenReturn(DEPLOYMENT_ID);
         ObjectMapper mapper = new ObjectMapper();
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.set("domain", DOMAIN);
-        params.set("applicationid", applicationId.getValue());
+        params.set("applicationid", APPLICATION_ID.getValue());
         params.set("deploymentname", DEPLOYMENT_NAME);
         assertDoesNotThrow(() -> {
             mvc.perform(post("/api/orchestration/deployments")
                             .params(params)
                             .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isCreated())
-                    .andExpect(content().json(mapper.writeValueAsString(deploymentId)));
+                    .andExpect(content().json(mapper.writeValueAsString(DEPLOYMENT_ID)));
         });
     }
 
     @Test
-    void shouldApplyConfigurationForDeploymentWithGivenDeploymentId() throws Throwable {
-        mvc.perform(post("/api/orchestration/deployments/{deploymentId}", deploymentId.toString())
+    void shouldApplyConfigurationForDeploymentWithGivenDeploymentId() throws Exception {
+        mvc.perform(post("/api/orchestration/deployments/{deploymentId}", DEPLOYMENT_ID.toString())
                         .principal(this.principal)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(CONFIGURATION_JSON)
@@ -118,33 +116,34 @@ public class OrchestratorManagerControllerIntTest {
         ArgumentCaptor<AppConfigurationView> appConfigurationCaptor = ArgumentCaptor.forClass(AppConfigurationView.class);
 
         verify(lifecycleManager, times(1)).applyConfiguration(deploymentIdCaptor.capture(), appConfigurationCaptor.capture(), eq("user"));
-        assertThat(deploymentIdCaptor.getValue(), equalTo(deploymentId));
-        assertThat(appConfigurationCaptor.getValue().getJsonInput(), equalTo(appConfiguration.getJsonInput()));
+        assertThat(deploymentIdCaptor.getValue(), equalTo(DEPLOYMENT_ID));
+        assertThat(jsonMapper.writeValueAsString(appConfigurationCaptor.getValue().getJsonInput()), equalTo(appConfiguration.getJsonInput()));
     }
 
     @Test
-    void shouldUpdateConfigurationForDeploymentWithGivenDeploymentId() throws Throwable {
-        mvc.perform(post("/api/orchestration/deployments/{deploymentId}", deploymentId.toString())
+    void shouldUpdateConfigurationForDeploymentWithGivenDeploymentId() throws Exception {
+        mvc.perform(post("/api/orchestration/deployments/{deploymentId}", DEPLOYMENT_ID.toString())
                         .principal(this.principal)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(CONFIGURATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-        mvc.perform(post("/api/orchestration/deployments/{deploymentId}/update", deploymentId.toString())
+        mvc.perform(post("/api/orchestration/deployments/{deploymentId}/update", DEPLOYMENT_ID.toString())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"jsonInput\":{\"id\":\"newtestvalue" + "\"}," + "\"storageSpace\":null" + "}")
+                        .content("{\"jsonInput\":{\"id\":\"newtestvalue\"}," + "\"storageSpace\":null" + "}")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
         ArgumentCaptor<Identifier> deploymentIdCaptor = ArgumentCaptor.forClass(Identifier.class);
         ArgumentCaptor<AppConfigurationView> appDeploymentCaptor = ArgumentCaptor.forClass(AppConfigurationView.class);
         verify(lifecycleManager, times(1)).updateConfiguration(deploymentIdCaptor.capture(), appDeploymentCaptor.capture());
-        assertEquals(deploymentId, deploymentIdCaptor.getValue());
-        assertTrue(appDeploymentCaptor.getValue().getJsonInput().contains("newtestvalue"));
+        assertEquals(DEPLOYMENT_ID, deploymentIdCaptor.getValue());
+        assertTrue(jsonMapper.writeValueAsString(appDeploymentCaptor.getValue().getJsonInput()).contains("newtestvalue"));
     }
 
     @Test
-    void shouldReturnNotFoundOnMissingDeploymentWithGivenDeploymentId() throws Throwable {
-        doThrow(InvalidDeploymentIdException.class).when(lifecycleManager).applyConfiguration(any(), any(), anyString());
+    void shouldReturnNotFoundOnMissingDeploymentWithGivenDeploymentId() {
+        doThrow(InvalidDeploymentIdException.class)
+                .when(lifecycleManager).applyConfiguration(any(), any(), anyString());
         assertDoesNotThrow(() -> {
             mvc.perform(post("/api/orchestration/deployments/{deploymentId}", "anydeploymentid")
                             .principal(this.principal)

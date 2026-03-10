@@ -19,6 +19,7 @@ import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.web.client.RestClient;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.security.GeneralSecurityException;
 
@@ -39,7 +40,9 @@ class DomainGroupActionJobTest {
     private final AutoWebhookTemplateService templateService = new AutoWebhookTemplateService();
 
     private final ModelMapper mapper = new ModelMapper();
-    private final WebhookHistoryService webhookHistoryService = new WebhookHistoryServiceImpl(webhookHistoryRepository, domainRepository, mapper);
+    private final JsonMapper jsonMapper = new JsonMapper();
+
+    private final WebhookHistoryService webhookHistoryService = new WebhookHistoryServiceImpl(webhookHistoryRepository, domainRepository, mapper, jsonMapper);
 
     @Test
     void shouldExecuteSampleJob() throws GeneralSecurityException {
