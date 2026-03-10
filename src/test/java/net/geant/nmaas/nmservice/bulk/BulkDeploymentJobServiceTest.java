@@ -16,6 +16,7 @@ import net.geant.nmaas.portal.service.ConfigurationManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationEventPublisher;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.util.List;
 import java.util.UUID;
@@ -43,7 +44,11 @@ class BulkDeploymentJobServiceTest {
 
     @BeforeEach
     void setup() {
-        underTest = new BulkDeploymentQueueService(appDeploymentMonitor, appDeploymentRepositoryManager, bulkDeploymentQueueRepository, eventPublisher, bulkApplicationService, appLifecycleManager,bulkDeploymentRepository, configurationManager);
+        underTest = new BulkDeploymentQueueService(appDeploymentMonitor, appDeploymentRepositoryManager,
+                bulkDeploymentQueueRepository, eventPublisher,
+                bulkApplicationService, appLifecycleManager,
+                bulkDeploymentRepository, configurationManager,
+                new JsonMapper());
         when(configurationManager.getConfiguration()).thenReturn(ConfigurationView.builder().parallelDeploymentsLimit(2).build());
     }
 
@@ -67,7 +72,7 @@ class BulkDeploymentJobServiceTest {
 
     @Test
     void shouldTriggerDeleteEntryJob() {
-        BulkDeploymentQueueEntry entry = new BulkDeploymentQueueEntry(1L, new Identifier(UUID.randomUUID().toString()), 1L, "params",BulkDeploymentQueueEntry.QueryEntryState.WAITING);
+        BulkDeploymentQueueEntry entry = new BulkDeploymentQueueEntry(1L, new Identifier(UUID.randomUUID().toString()), 1L, "params", BulkDeploymentQueueEntry.QueryEntryState.WAITING);
         BulkDeploymentQueueEntry entry2 = new BulkDeploymentQueueEntry(2L, new Identifier(UUID.randomUUID().toString()), 2L, "params", BulkDeploymentQueueEntry.QueryEntryState.WAITING);
         BulkDeploymentQueueEntry entry3 = new BulkDeploymentQueueEntry(3L, new Identifier(UUID.randomUUID().toString()), 3L, "params", BulkDeploymentQueueEntry.QueryEntryState.WAITING);
         bulkDeploymentQueueRepository.save(entry);

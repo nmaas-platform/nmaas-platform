@@ -1,6 +1,5 @@
 package net.geant.nmaas.portal.api.apps;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,8 +18,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.json.JsonMapper;
 
-import java.io.IOException;
 import java.security.Principal;
 
 @RestController
@@ -33,6 +33,7 @@ public class AppConfigurationController {
 
     private final ApplicationInstanceService instances;
     private final AppLifecycleManager appLifecycleManager;
+    private final JsonMapper jsonMapper;
 
     @PostMapping("/{appInstanceId}/configure")
     @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
@@ -42,7 +43,7 @@ public class AppConfigurationController {
                                    @NotNull Principal principal) {
         AppInstance appInstance = instances.find(appInstanceId).orElseThrow(() -> new MissingElementException(INSTANCE_NOT_FOUND_MESSAGE));
 
-        boolean valid = validJSON(configuration.getJsonInput());
+        boolean valid = validJSON(configuration.getJsonInput().asString());
         log.debug("Provided configuration = {}", configuration.getJsonInput());
         if (!valid) {
             throw new ProcessingException("Configuration is not in a valid JSON format");
@@ -56,7 +57,7 @@ public class AppConfigurationController {
             throw new ProcessingException("Application configuration violates application state per domain rules");
         }
 
-        appInstance.setConfiguration(configuration.getJsonInput());
+        appInstance.setConfiguration(configuration.getJsonInput().asString());
         instances.update(appInstance);
 
         try {
@@ -66,12 +67,11 @@ public class AppConfigurationController {
         }
     }
 
-    private static boolean validJSON(String json) {
+    private boolean validJSON(String json) {
         try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.readTree(json);
+            jsonMapper.readTree(json);
             return true;
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             return false;
         }
     }
@@ -84,7 +84,7 @@ public class AppConfigurationController {
                                     @NotNull Principal principal) {
         AppInstance appInstance = instances.find(appInstanceId).orElseThrow(() -> new MissingElementException(INSTANCE_NOT_FOUND_MESSAGE));
 
-        if (!StringUtils.isEmpty(configuration.getJsonInput())) {
+        if (!StringUtils.isEmpty(configuration.getJsonInput().asString())) {
             throw new ProcessingException("Configuration file content updates from the wizard are not supported");
         }
 

@@ -6,8 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import net.geant.nmaas.JacksonDeserializer;
-import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.JsonNode;
 
 import java.io.Serializable;
 
@@ -19,26 +18,21 @@ import java.io.Serializable;
 public class AppConfigurationView implements Serializable {
 
     @JsonProperty("jsonInput")
-    @JsonDeserialize(using = JacksonDeserializer.class)
-    private String jsonInput;
+    private JsonNode jsonInput;
 
     @JsonProperty("storageSpace")
     private Integer storageSpace;
 
     @JsonProperty("additionalParameters")
-    @JsonDeserialize(using = JacksonDeserializer.class)
-    private String additionalParameters;
+    private JsonNode additionalParameters;
 
     @JsonProperty("mandatoryParameters")
-    @JsonDeserialize(using = JacksonDeserializer.class)
-    private String mandatoryParameters;
+    private JsonNode mandatoryParameters;
 
     @JsonProperty("accessCredentials")
-    @JsonDeserialize(using = JacksonDeserializer.class)
-    private String accessCredentials;
+    private JsonNode accessCredentials;
 
     @JsonProperty("termsAcceptance")
-    @JsonDeserialize(using = JacksonDeserializer.class)
-    private String termsAcceptance;
+    private JsonNode termsAcceptance;
 
 }

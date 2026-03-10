@@ -48,6 +48,7 @@ public class OrchestratorManagerControllerIntTest {
     private static final String DOMAIN = "domain";
     private static final String DEPLOYMENT_NAME = "deploymentName";
     private static final Identifier DEPLOYMENT_ID = Identifier.newInstance("deploymentId1");
+    private static final Identifier APPLICATION_ID = Identifier.newInstance(15L);
 
     @Autowired
     private JsonMapper jsonMapper;
@@ -58,7 +59,6 @@ public class OrchestratorManagerControllerIntTest {
 
     private MockMvc mvc;
 
-    private Identifier applicationId;
     private AppConfiguration appConfiguration;
 
     private static final String CONFIGURATION_JSON = "{" +
@@ -68,7 +68,6 @@ public class OrchestratorManagerControllerIntTest {
 
     @BeforeEach
     void setup() {
-        applicationId = Identifier.newInstance(15L);
         String jsonInput = "{\"id\":\"testvalue\"}";
         appConfiguration = new AppConfiguration(jsonInput);
         mvc = MockMvcBuilders.standaloneSetup(new AppLifecycleManagerRestController(lifecycleManager, applicationRepository)).build();
@@ -84,7 +83,7 @@ public class OrchestratorManagerControllerIntTest {
     @Test
     void shouldDeserializeAppConfigurationJson() {
         AppConfigurationView result = jsonMapper.readValue(CONFIGURATION_JSON, AppConfigurationView.class);
-        assertEquals("", result.getJsonInput());
+        assertEquals("{\"id\":\"testvalue\"}", jsonMapper.writeValueAsString(result.getJsonInput()));
     }
 
     @Test
@@ -93,7 +92,7 @@ public class OrchestratorManagerControllerIntTest {
         ObjectMapper mapper = new ObjectMapper();
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.set("domain", DOMAIN);
-        params.set("applicationid", applicationId.getValue());
+        params.set("applicationid", APPLICATION_ID.getValue());
         params.set("deploymentname", DEPLOYMENT_NAME);
         assertDoesNotThrow(() -> {
             mvc.perform(post("/api/orchestration/deployments")
@@ -118,7 +117,7 @@ public class OrchestratorManagerControllerIntTest {
 
         verify(lifecycleManager, times(1)).applyConfiguration(deploymentIdCaptor.capture(), appConfigurationCaptor.capture(), eq("user"));
         assertThat(deploymentIdCaptor.getValue(), equalTo(DEPLOYMENT_ID));
-        assertThat(appConfigurationCaptor.getValue().getJsonInput(), equalTo(appConfiguration.getJsonInput()));
+        assertThat(jsonMapper.writeValueAsString(appConfigurationCaptor.getValue().getJsonInput()), equalTo(appConfiguration.getJsonInput()));
     }
 
     @Test
@@ -138,7 +137,7 @@ public class OrchestratorManagerControllerIntTest {
         ArgumentCaptor<AppConfigurationView> appDeploymentCaptor = ArgumentCaptor.forClass(AppConfigurationView.class);
         verify(lifecycleManager, times(1)).updateConfiguration(deploymentIdCaptor.capture(), appDeploymentCaptor.capture());
         assertEquals(DEPLOYMENT_ID, deploymentIdCaptor.getValue());
-        assertTrue(appDeploymentCaptor.getValue().getJsonInput().contains("newtestvalue"));
+        assertTrue(jsonMapper.writeValueAsString(appDeploymentCaptor.getValue().getJsonInput()).contains("newtestvalue"));
     }
 
     @Test

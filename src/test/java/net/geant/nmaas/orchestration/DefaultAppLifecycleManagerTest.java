@@ -50,6 +50,8 @@ class DefaultAppLifecycleManagerTest {
     private final AppTermsAcceptanceService appTermsAcceptanceService = mock(AppTermsAcceptanceService.class);
     private final ConfigurationManager configurationManager = mock(ConfigurationManager.class);
 
+    private final JsonMapper jsonMapper = new JsonMapper();
+
     private DefaultAppLifecycleManager appLifecycleManager;
 
     @BeforeEach
@@ -77,12 +79,12 @@ class DefaultAppLifecycleManagerTest {
     }
 
     @Test
-    void shouldNotTriggerAppInstanceConfiguration() throws Throwable {
+    void shouldNotTriggerAppInstanceConfiguration() {
         when(repositoryManager.load(any())).thenReturn(new AppDeployment());
         when(serviceRepositoryManager.loadService(any())).thenReturn(new KubernetesNmServiceInfo());
         AppConfigurationView configurationView = mock(AppConfigurationView.class);
         when(configurationView.getStorageSpace()).thenReturn(null);
-        when(configurationView.getJsonInput()).thenReturn("");
+        when(configurationView.getJsonInput()).thenReturn(jsonMapper.readTree(""));
         appLifecycleManager.applyConfiguration(new Identifier(), configurationView, "TEST");
         verify(repositoryManager, times(1)).update(any());
         verify(serviceRepositoryManager, times(0)).updateStorageSpace(any(), anyInt());
@@ -96,9 +98,9 @@ class DefaultAppLifecycleManagerTest {
         when(serviceRepositoryManager.loadService(any())).thenReturn(new KubernetesNmServiceInfo());
         AppConfigurationView configurationView = mock(AppConfigurationView.class);
         when(configurationView.getStorageSpace()).thenReturn(10);
-        when(configurationView.getAdditionalParameters()).thenReturn("{\"keyadd1\": \"valadd1\"}");
-        when(configurationView.getMandatoryParameters()).thenReturn("{\"keyman1\": \"valman1\", \"keyman2\": \"valman2\"}");
-        when(configurationView.getJsonInput()).thenReturn("");
+        when(configurationView.getAdditionalParameters()).thenReturn(jsonMapper.readTree("{\"keyadd1\": \"valadd1\"}"));
+        when(configurationView.getMandatoryParameters()).thenReturn(jsonMapper.readTree("{\"keyman1\": \"valman1\", \"keyman2\": \"valman2\"}"));
+        when(configurationView.getJsonInput()).thenReturn(jsonMapper.readTree(""));
         appLifecycleManager.applyConfiguration(Identifier.newInstance(1L), configurationView, "TEST");
         ArgumentCaptor<Identifier> idArg = ArgumentCaptor.forClass(Identifier.class);
         ArgumentCaptor<Map<String, String>> mapArg = ArgumentCaptor.forClass(Map.class);
@@ -113,7 +115,7 @@ class DefaultAppLifecycleManagerTest {
         when(repositoryManager.load(any())).thenReturn(AppDeployment.builder().state(AppDeploymentState.MANAGEMENT_VPN_CONFIGURED).build());
         when(serviceRepositoryManager.loadService(any())).thenReturn(new KubernetesNmServiceInfo());
         AppConfigurationView configurationView = mock(AppConfigurationView.class);
-        when(configurationView.getJsonInput()).thenReturn("");
+        when(configurationView.getJsonInput()).thenReturn(jsonMapper.readTree(""));
         appLifecycleManager.applyConfiguration(new Identifier(), configurationView, "TEST");
         verify(eventPublisher, times(1)).publishEvent(any(AppApplyConfigurationActionEvent.class));
     }
@@ -122,7 +124,7 @@ class DefaultAppLifecycleManagerTest {
     void shouldNotTriggerAppInstanceConfigurationUpdate() {
         when(repositoryManager.load(any())).thenReturn(AppDeployment.builder().configuration(new AppConfiguration()).build());
         AppConfigurationView configurationView = mock(AppConfigurationView.class);
-        when(configurationView.getJsonInput()).thenReturn("{config}");
+        when(configurationView.getJsonInput()).thenReturn(null);
         appLifecycleManager.updateConfiguration(new Identifier(), configurationView);
         verifyNoMoreInteractions(eventPublisher);
     }
@@ -139,7 +141,7 @@ class DefaultAppLifecycleManagerTest {
                         .build()
         );
         AppConfigurationView configurationView = mock(AppConfigurationView.class);
-        when(configurationView.getAccessCredentials()).thenReturn("{\"accessUsername\":\"username\", \"accessPassword\":\"password\"}");
+        when(configurationView.getAccessCredentials()).thenReturn(jsonMapper.readTree("{\"accessUsername\":\"username\", \"accessPassword\":\"password\"}"));
         appLifecycleManager.updateConfiguration(deploymentId, configurationView);
         verify(eventPublisher, times(1))
                 .publishEvent(
@@ -229,9 +231,15 @@ class DefaultAppLifecycleManagerTest {
     }
 
     @Test
+    void shouldReturnEmptyMapForNullParameters() {
+        Map<String, String> output = DefaultAppLifecycleManager.preprocessParameters((Map<String, String>) null);
+        assertThat(output.isEmpty(), is(true));
+    }
+
+    @Test
     void shouldGetMapFromJson() {
         Map<String, String> map = appLifecycleManager.getMapFromJson("{\"key1\": \"val1\", \"key2\": \"val2\"}");
-        assertThat(map.keySet().size(), is(2));
+        assertThat(map.size(), is(2));
         assertThat(map.get("key1"), allOf(is(notNullValue()), is(equalTo("val1"))));
         assertThat(map.get("key2"), allOf(is(notNullValue()), is(equalTo("val2"))));
     }

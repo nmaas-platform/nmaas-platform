@@ -17,6 +17,7 @@ import net.geant.nmaas.portal.service.BulkApplicationService;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.time.Duration;
 import java.time.OffsetDateTime;
@@ -38,6 +39,7 @@ public class BulkDeploymentQueueService {
     private final AppLifecycleManager appLifecycleManager;
     private final BulkDeploymentRepository bulkDeploymentRepository;
     private final ConfigurationManager configurationManager;
+    private final JsonMapper jsonMapper;
 
     public void handleQueue() {
         List<BulkDeploymentQueueEntry> queue = queueRepository.findAll();
@@ -97,8 +99,9 @@ public class BulkDeploymentQueueService {
                 .forEach(e -> {
                     log.debug("Configuration task triggered for {}", e.getDeploymentId());
                     appLifecycleManager.applyConfiguration(e.getDeploymentId(), AppConfigurationView.builder()
-                            .jsonInput(e.getAppConfigurationJson())
-                            .mandatoryParameters(e.getAppConfigurationJson()).build(), null);
+                            .jsonInput(jsonMapper.readTree(e.getAppConfigurationJson()))
+                            .mandatoryParameters(jsonMapper.readTree(e.getAppConfigurationJson()))
+                            .build(), null);
                     try {
                         Thread.sleep(2000);
                     } catch (InterruptedException ex) {

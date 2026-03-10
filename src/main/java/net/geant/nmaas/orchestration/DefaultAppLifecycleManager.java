@@ -31,10 +31,12 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.core.JacksonException;
 import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -128,27 +130,26 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     public void applyConfiguration(Identifier deploymentId, AppConfigurationView configuration, String initiator) {
         final AppDeployment appDeployment = deploymentRepositoryManager.load(deploymentId);
         verifyTermsAcceptanceIfRequired(configuration, initiator, appDeployment);
+        Map<String, String> additionalParameters = preprocessParameters(configuration.getAdditionalParameters());
+        Map<String, String> mandatoryParameters = preprocessParameters(configuration.getMandatoryParameters());
+        Map<String, String> accessCredentials = preprocessParameters(configuration.getAccessCredentials());
 
         if (appDeployment.getConfiguration() != null) {
-            appDeployment.getConfiguration().setJsonInput(configuration.getJsonInput());
+            appDeployment.getConfiguration().setJsonInput(jsonMapper.writeValueAsString(configuration.getJsonInput()));
         } else {
-            appDeployment.setConfiguration(new AppConfiguration(configuration.getJsonInput()));
+            appDeployment.setConfiguration(new AppConfiguration(jsonMapper.writeValueAsString(configuration.getJsonInput())));
         }
         if (configuration.getStorageSpace() != null) {
             serviceRepositoryManager.updateStorageSpace(deploymentId, configuration.getStorageSpace());
         }
-        if (isNotEmpty(configuration.getAdditionalParameters())) {
-            serviceRepositoryManager.addAdditionalParameters(
-                    deploymentId,
-                    preprocessParameters(getMapFromJson(configuration.getAdditionalParameters())));
+        if (!additionalParameters.isEmpty()) {
+            serviceRepositoryManager.addAdditionalParameters(deploymentId, additionalParameters);
         }
-        if (isNotEmpty(configuration.getMandatoryParameters())) {
-            serviceRepositoryManager.addAdditionalParameters(
-                    deploymentId,
-                    preprocessParameters(getMapFromJson(configuration.getMandatoryParameters())));
+        if (!mandatoryParameters.isEmpty()) {
+            serviceRepositoryManager.addAdditionalParameters(deploymentId, mandatoryParameters);
         }
-        if (isNotEmpty(configuration.getAccessCredentials())) {
-            triggerBasicAuthUpdate(deploymentId, configuration);
+        if (!accessCredentials.isEmpty()) {
+            triggerBasicAuthUpdate(deploymentId, accessCredentials);
         }
         deploymentRepositoryManager.update(appDeployment);
 
@@ -159,11 +160,11 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
 
     private void verifyTermsAcceptanceIfRequired(AppConfigurationView configuration, String initiator, AppDeployment appDeployment) {
         if (appDeployment.isTermsAcceptanceRequired()) {
-            if (isEmpty(configuration.getTermsAcceptance())) {
+            if (configuration.getTermsAcceptance() == null || configuration.getTermsAcceptance().isNull()) {
                 log.error("Terms acceptance is required for this application, however terms are not present in user configuration data");
                 throw new ProcessingException("Terms acceptance is required, however terms are not present");
             }
-            Map<String, String> termsAcceptanceMap = preprocessParameters(getMapFromJson(configuration.getTermsAcceptance()));
+            Map<String, String> termsAcceptanceMap = preprocessParameters(configuration.getTermsAcceptance());
             String termsContent = termsAcceptanceMap.get("termsContent");
 
             // TODO validate terms content
@@ -192,8 +193,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
         }
     }
 
-    private void triggerBasicAuthUpdate(Identifier deploymentId, AppConfigurationView configuration) {
-        Map<String, String> accessCredentialsMap = this.getMapFromJson(configuration.getAccessCredentials());
+    private void triggerBasicAuthUpdate(Identifier deploymentId, Map<String, String> accessCredentialsMap) {
         final String basicAuthUsername = accessCredentialsMap.get("accessUsername");
         final String basicAuthPassword = accessCredentialsMap.get("accessPassword");
         if (isNotEmpty(basicAuthUsername) && isNotEmpty(basicAuthPassword)) {
@@ -204,14 +204,29 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     }
 
     Map<String, String> getMapFromJson(String inputJson) {
+        if (isEmpty(inputJson) || "null".equals(inputJson)) {
+            return Collections.emptyMap();
+        }
         try {
-            return jsonMapper.readValue(inputJson, new TypeReference<Map<String, String>>() { });
+            Map<String, String> mappedParameters = jsonMapper.readValue(inputJson, new TypeReference<Map<String, String>>() {
+            });
+            return mappedParameters != null ? mappedParameters : Collections.emptyMap();
         } catch (JacksonException e) {
             throw new UserConfigHandlingException("Wasn't able to map additional parameters to model map -> " + e.getMessage());
         }
     }
 
+    Map<String, String> preprocessParameters(JsonNode parameters) {
+        if (parameters == null || parameters.isNull()) {
+            return Collections.emptyMap();
+        }
+        return preprocessParameters(getMapFromJson(jsonMapper.writeValueAsString(parameters)));
+    }
+
     static Map<String, String> preprocessParameters(Map<String, String> parameters) {
+        if (parameters == null || parameters.isEmpty()) {
+            return Collections.emptyMap();
+        }
         Map<String, String> newMap = new HashMap<>();
         for (Map.Entry<String, String> entry : parameters.entrySet()) {
             if (StringUtils.isNotEmpty(entry.getValue())) {
@@ -285,8 +300,9 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void updateConfiguration(Identifier deploymentId, AppConfigurationView configuration) {
         // only access credentials update is currently supported
-        if (isNotEmpty(configuration.getAccessCredentials())) {
-            triggerBasicAuthUpdate(deploymentId, configuration);
+        Map<String, String> accessCredentials = preprocessParameters(configuration.getAccessCredentials());
+        if (!accessCredentials.isEmpty()) {
+            triggerBasicAuthUpdate(deploymentId, accessCredentials);
         }
     }
 

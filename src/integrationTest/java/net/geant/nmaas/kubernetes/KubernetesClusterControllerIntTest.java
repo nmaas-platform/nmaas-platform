@@ -5,9 +5,11 @@ import net.geant.nmaas.portal.api.ApiExceptionHandler;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import tools.jackson.databind.json.JsonMapper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -19,18 +21,7 @@ public class KubernetesClusterControllerIntTest {
     private static final String URL_PREFIX = "/api/management/kubernetes";
     private static final String KUBERNETES_CLUSTER_JSON =
                 "{" +
-                     "\"deployment\":{\"id\":null," +
-                        "\"namespaceConfigOption\":\"USE_DOMAIN_NAMESPACE\"," +
-                        "\"defaultNamespace\":\"test-namespace\"," +
-                        "\"defaultStorageClass\":\"storageClass\"," +
-                        "\"smtpServerHostname\":\"test-postfix\"," +
-                        "\"smtpServerPort\":587," +
-                        "\"smtpServerUsername\":\"\"," +
-                        "\"smtpServerPassword\":\"\"," +
-                        "\"smtpFromDefaultDomain\":\"\"," +
-                        "\"forceDedicatedWorkers\":false" +
-                        "}," +
-                    "\"ingress\":{\"id\":null," +
+                      "\"ingress\":{\"id\":null," +
                         "\"controllerConfigOption\":\"USE_EXISTING\"," +
                         "\"supportedIngressClass\":\"ingress-class\"," +
                         "\"publicIngressClass\":\"public\"," +
@@ -43,16 +34,30 @@ public class KubernetesClusterControllerIntTest {
                         "\"certificateConfigOption\":\"USE_LETSENCRYPT\"," +
                         "\"issuerOrWildcardName\":\"test-issuer\"," +
                         "\"ingressPerDomain\":true" +
-                    "}" +
+                        "}," +
+                     "\"deployment\":{\"id\":null," +
+                        "\"namespaceConfigOption\":\"USE_DOMAIN_NAMESPACE\"," +
+                        "\"defaultNamespace\":\"test-namespace\"," +
+                        "\"defaultStorageClass\":\"storageClass\"," +
+                        "\"smtpServerHostname\":\"test-postfix\"," +
+                        "\"smtpServerPort\":587," +
+                        "\"smtpServerUsername\":\"\"," +
+                        "\"smtpServerPassword\":\"\"," +
+                        "\"smtpFromDefaultDomain\":\"\"," +
+                        "\"forceDedicatedWorkers\":false" +
+                        "}" +
                 "}";
 
     private final KubernetesClusterDeploymentManager clusterDeploymentManager;
     private final KubernetesClusterIngressManager clusterIngressManager;
+    private final JsonMapper jsonMapper;
 
     public KubernetesClusterControllerIntTest(@Autowired KubernetesClusterDeploymentManager clusterDeploymentManager,
-                                              @Autowired KubernetesClusterIngressManager clusterIngressManager) {
+                                              @Autowired KubernetesClusterIngressManager clusterIngressManager,
+                                              @Autowired JsonMapper jsonMapper) {
         this.clusterDeploymentManager = clusterDeploymentManager;
         this.clusterIngressManager = clusterIngressManager;
+        this.jsonMapper = jsonMapper;
     }
 
     @Test
@@ -60,6 +65,7 @@ public class KubernetesClusterControllerIntTest {
         MockMvc mvc = MockMvcBuilders
                 .standaloneSetup(new KubernetesClusterController(clusterIngressManager, clusterDeploymentManager))
                 .setControllerAdvice(new ApiExceptionHandler())
+                .setMessageConverters(new JacksonJsonHttpMessageConverter(jsonMapper))
                 .build();
 
         MvcResult result = mvc.perform(get(URL_PREFIX))
