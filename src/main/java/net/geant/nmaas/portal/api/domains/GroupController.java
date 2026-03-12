@@ -228,7 +228,7 @@ public class GroupController extends BaseController {
                 .toList();
     }
 
-    @PutMapping("/{domainGroupId}/application")
+    @PutMapping("/{domainGroupId}/applications")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
     public List<ApplicationStatePerDomainView> enableGroupApplication(@PathVariable Long domainGroupId,
                                                                       @RequestBody List<Long> applicationBaseIds,
@@ -251,7 +251,7 @@ public class GroupController extends BaseController {
 
     }
 
-    @DeleteMapping("/{domainGroupId}/application")
+    @DeleteMapping("/{domainGroupId}/applications")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
     public List<ApplicationStatePerDomainView> disableGroupApplication(@PathVariable Long domainGroupId,
                                                                        @RequestBody List<Long> applicationBaseIds,
