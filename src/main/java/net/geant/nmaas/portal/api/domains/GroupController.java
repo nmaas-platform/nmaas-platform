@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.api.domains;
 
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.api.dto.applications.ApplicationStatePerDomainView;
 import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
 import net.geant.nmaas.portal.api.BaseController;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
@@ -34,7 +35,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.nio.file.AccessDeniedException;
 import java.security.Principal;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -87,6 +90,7 @@ public class GroupController extends BaseController {
         }
         return domainGroupService.getAllDomainGroups();
     }
+
     @GetMapping(params = {"page"})
     @Transactional(readOnly = true)
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
@@ -126,7 +130,7 @@ public class GroupController extends BaseController {
     @Transactional
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
     public DomainGroupDto addDomainsToGroup(@PathVariable String domainGroupCodeName,
-                                             @RequestBody List<Long> domainIds) {
+                                            @RequestBody List<Long> domainIds) {
         return domainGroupService.addDomainsToGroup(
                 domainService.getDomains().stream().filter(d -> domainIds.contains(d.getId())).collect(Collectors.toList()),
                 domainGroupCodeName);
@@ -167,6 +171,103 @@ public class GroupController extends BaseController {
         } else {
             throw new AccessDeniedException(ACCESS_DENIED_MESSAGE);
         }
+    }
+
+    @PutMapping("/{domainGroupId}/members/{userId}")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
+    public List<UserViewMinimal> addGroupMember(@PathVariable Long userId,
+                                                @PathVariable Long domainGroupId,
+                                                Principal principal) throws AccessDeniedException {
+        DomainGroupDto domainGroup = domainGroupService.getDomainGroup(domainGroupId);
+        if (getUser(principal.getName()).getRoles().stream().anyMatch(
+                userRole -> userRole.getRole().equals(Role.ROLE_SYSTEM_ADMIN)) ||
+                domainGroup.getManagers().stream().anyMatch(
+                        user -> user.getUsername().equalsIgnoreCase(principal.getName()))) {
+
+            Set<UserViewMinimal> members = new HashSet<>(domainGroup.getManagers());
+            members.add(modelMapper.map(getUser(userId), UserViewMinimal.class));
+            List<UserViewMinimal> userViewMinimals = members.stream().map(
+                    user -> modelMapper.map(user, UserViewMinimal.class)
+            ).toList();
+
+            domainService.updateMembers(userViewMinimals, domainGroup);
+        } else {
+            throw new AccessDeniedException(ACCESS_DENIED_MESSAGE);
+        }
+
+        return domainService.getMembers(domainGroupId).stream().map(
+                        user -> modelMapper.map(user, UserViewMinimal.class))
+                .toList();
+    }
+
+    @DeleteMapping("/{domainGroupId}/members/{userId}")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
+    public List<UserViewMinimal> removeGroupMember(@PathVariable Long userId,
+                                                   @PathVariable Long domainGroupId,
+                                                   Principal principal) throws AccessDeniedException {
+        DomainGroupDto domainGroup = domainGroupService.getDomainGroup(domainGroupId);
+        if (getUser(principal.getName()).getRoles().stream().anyMatch(
+                userRole -> userRole.getRole().equals(Role.ROLE_SYSTEM_ADMIN)) ||
+                domainGroup.getManagers().stream().anyMatch(
+                        user -> user.getUsername().equalsIgnoreCase(principal.getName()))) {
+
+            Set<UserViewMinimal> members = new HashSet<>(domainGroup.getManagers());
+            members.removeIf(user -> user.getId().equals(userId));
+            List<UserViewMinimal> userViewMinimals = members.stream().map(
+                    user -> modelMapper.map(user, UserViewMinimal.class)
+            ).toList();
+
+
+            domainService.updateMembers(userViewMinimals, domainGroup);
+        } else {
+            throw new AccessDeniedException(ACCESS_DENIED_MESSAGE);
+        }
+
+        return domainService.getMembers(domainGroupId).stream().map(
+                        user -> modelMapper.map(user, UserViewMinimal.class))
+                .toList();
+    }
+
+    @PutMapping("/{domainGroupId}/application/{applicationBaseId}")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
+    public List<ApplicationStatePerDomainView> enableGroupApplication(@PathVariable Long domainGroupId,
+                                                                      @PathVariable Long applicationBaseId,
+                                                                      Principal principal) throws AccessDeniedException {
+        DomainGroupDto domainGroup = domainGroupService.getDomainGroup(domainGroupId);
+        if (getUser(principal.getName()).getRoles().stream().anyMatch(userRole -> userRole.getRole().equals(Role.ROLE_SYSTEM_ADMIN)) ||
+                domainGroup.getManagers().stream().anyMatch(user -> user.getUsername().equalsIgnoreCase(principal.getName()))) {
+            domainGroup.getApplicationStatePerDomain().forEach(application -> {
+                if(application.getApplicationBaseId().equals(applicationBaseId)){
+                    application.setEnabled(true);
+                }
+            });
+            DomainGroupDto result = domainGroupService.updateDomainGroup(domainGroupId, domainGroup);
+            return result.getApplicationStatePerDomain();
+        } else {
+            throw new AccessDeniedException(ACCESS_DENIED_MESSAGE);
+        }
+
+    }
+
+    @DeleteMapping("/{domainGroupId}/application/{applicationBaseId}")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
+    public List<ApplicationStatePerDomainView> disableGroupApplication(@PathVariable Long domainGroupId,
+                                        @PathVariable Long applicationBaseId,
+                                        Principal principal) throws AccessDeniedException {
+        DomainGroupDto domainGroup = domainGroupService.getDomainGroup(domainGroupId);
+        if (getUser(principal.getName()).getRoles().stream().anyMatch(userRole -> userRole.getRole().equals(Role.ROLE_SYSTEM_ADMIN)) ||
+                domainGroup.getManagers().stream().anyMatch(user -> user.getUsername().equalsIgnoreCase(principal.getName()))) {
+            domainGroup.getApplicationStatePerDomain().forEach(application -> {
+                if(application.getApplicationBaseId().equals(applicationBaseId)){
+                    application.setEnabled(false);
+                }
+            });
+            DomainGroupDto result = domainGroupService.updateDomainGroup(domainGroupId, domainGroup);
+            return result.getApplicationStatePerDomain();
+        } else {
+            throw new AccessDeniedException(ACCESS_DENIED_MESSAGE);
+        }
+
     }
 
     @ExceptionHandler(DataConflictException.class)
