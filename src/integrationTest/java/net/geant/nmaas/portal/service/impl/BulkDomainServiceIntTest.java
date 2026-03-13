@@ -83,7 +83,7 @@ public class BulkDomainServiceIntTest {
         assertEquals(BulkDeploymentState.COMPLETED, result.getState());
         List<BulkDeployment> bulkDeployments = bulkDeploymentRepository.findAll();
         assertEquals(1, bulkDeployments.size());
-        BulkDeployment bulkDeployment = bulkDeployments.get(0);
+        BulkDeployment bulkDeployment = bulkDeployments.getFirst();
         assertEquals(1, bulkDeployment.getCreator().getId());
         assertEquals(BulkType.DOMAIN, bulkDeployment.getType());
         assertEquals(6, bulkDeployment.getEntries().size());
@@ -106,7 +106,8 @@ public class BulkDomainServiceIntTest {
                         .bulkDeploymentJobCron("* * * *")
                         .bulkDeploymentQueueRefresh(60)
                         .bulkDeploymentTimeThreshold(10)
-                        .healthCheckJobCron(" 0 */1 * * * ?").build(),
+                        .healthCheckJobCron(" 0 */1 * * * ?")
+                        .appInstanceNameLengthLimit(10).build(),
                 Configuration.class));
         UserViewMinimal creator = new UserViewMinimal();
         creator.setId(1L);
@@ -117,7 +118,7 @@ public class BulkDomainServiceIntTest {
         assertEquals(BulkDeploymentState.COMPLETED, result.getState());
         List<BulkDeployment> bulkDeployments = bulkDeploymentRepository.findAll();
         assertEquals(1, bulkDeployments.size());
-        BulkDeployment bulkDeployment = bulkDeployments.get(0);
+        BulkDeployment bulkDeployment = bulkDeployments.getFirst();
         assertEquals(1, bulkDeployment.getCreator().getId());
         assertEquals(BulkType.DOMAIN, bulkDeployment.getType());
         assertEquals(4, bulkDeployment.getEntries().size());
@@ -140,7 +141,7 @@ public class BulkDomainServiceIntTest {
         assertEquals(BulkDeploymentState.COMPLETED, result.getState());
         List<BulkDeployment> bulkDeployments = bulkDeploymentRepository.findAll();
         assertEquals(1, bulkDeployments.size());
-        BulkDeployment bulkDeployment = bulkDeployments.get(0);
+        BulkDeployment bulkDeployment = bulkDeployments.getFirst();
         assertEquals(1, bulkDeployment.getCreator().getId());
         assertEquals(BulkType.DOMAIN, bulkDeployment.getType());
         assertEquals(6, bulkDeployment.getEntries().size());

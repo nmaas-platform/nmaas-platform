@@ -14,11 +14,9 @@ import net.geant.nmaas.portal.service.ConfigurationManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.ArrayList;
@@ -30,23 +28,25 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class ConfigurationControllerTest extends BaseControllerTestSetup {
 
     private static final String URL_PREFIX = "/api/configuration";
 
-    @Autowired
-    private ConfigurationRepository repository;
+    private final ConfigurationRepository repository;
+    private final ConfigurationManager configManager;
+    private final InternationalizationSimpleRepository intRepo;
+    private final DomainRepository domainRepository;
 
-    @Autowired
-    private ConfigurationManager configManager;
-
-    @Autowired
-    private InternationalizationSimpleRepository intRepo;
-
-    @Autowired
-    private DomainRepository domainRepository;
+    public ConfigurationControllerTest(@Autowired ConfigurationRepository repository,
+                                       @Autowired ConfigurationManager configManager,
+                                       @Autowired InternationalizationSimpleRepository intRepo,
+                                       @Autowired DomainRepository domainRepository) {
+        this.repository = repository;
+        this.configManager = configManager;
+        this.intRepo = intRepo;
+        this.domainRepository = domainRepository;
+    }
 
     private User user;
 
@@ -71,7 +71,7 @@ public class ConfigurationControllerTest extends BaseControllerTestSetup {
     @Test
     void shouldAddNewConfiguration() throws Exception {
         repository.deleteAll();
-        ConfigurationView configuration = new ConfigurationView(null, true, false, "en", false, false, new ArrayList<>(), true, true, true, "0 */1 * * * ?", 2, 60, 10, "", "0 */1 * * * ?", null);
+        ConfigurationView configuration = new ConfigurationView(null, true, false, "en", false, false, new ArrayList<>(), true, true, true, "0 */1 * * * ?", 2, 60, 10, "", "0 */1 * * * ?", null, 10);
         mvc.perform(post(URL_PREFIX)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + getValidTokenForUser(user))
@@ -86,8 +86,8 @@ public class ConfigurationControllerTest extends BaseControllerTestSetup {
 
     @Test
     void shouldUpdateConfiguration() throws Exception {
-        Long id = repository.findAll().get(0).getId();
-        ConfigurationView configuration = new ConfigurationView(null, true, false, "en", false, false, new ArrayList<>(), true, true, true, "0 */1 * * * ?", 2, 60, 10, "", "0 */1 * * * ?", null);
+        Long id = repository.findAll().getFirst().getId();
+        ConfigurationView configuration = new ConfigurationView(null, true, false, "en", false, false, new ArrayList<>(), true, true, true, "0 */1 * * * ?", 2, 60, 10, "", "0 */1 * * * ?", null, 10);
         configuration.setId(id);
         mvc.perform(put(URL_PREFIX + "/{id}", id)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -105,8 +105,8 @@ public class ConfigurationControllerTest extends BaseControllerTestSetup {
     @Test
     void shouldUpdateConfigurationWithDefaultSsoUserDomain() throws Exception {
         Domain domain = domainRepository.save(new Domain("name", "codename"));
-        Long id = repository.findAll().get(0).getId();
-        ConfigurationView configuration = new ConfigurationView(null, true, false, "en", false, false, new ArrayList<>(), true, true, true, "0 */1 * * * ?", 2, 60, 10, "", "0 */1 * * * ?", null);
+        Long id = repository.findAll().getFirst().getId();
+        ConfigurationView configuration = new ConfigurationView(null, true, false, "en", false, false, new ArrayList<>(), true, true, true, "0 */1 * * * ?", 2, 60, 10, "", "0 */1 * * * ?", null, 10);
         configuration.setId(id);
         configuration.setDefaultDomainForSsoUsers(domain.getId());
         mvc.perform(put(URL_PREFIX + "/{id}", id)

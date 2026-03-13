@@ -31,10 +31,10 @@ import net.geant.nmaas.portal.persistence.repositories.DomainGroupRepository;
 import net.geant.nmaas.portal.persistence.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistence.repositories.UserRoleRepository;
 import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
+import net.geant.nmaas.portal.service.CodenameValidator;
 import net.geant.nmaas.portal.service.DomainGroupService;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
-import net.geant.nmaas.portal.service.impl.domains.DefaultCodenameValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
@@ -63,8 +63,8 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 class DomainServiceTest {
 
-    private final DomainServiceImpl.CodenameValidator validator = new DefaultCodenameValidator("[a-z-]{2,12}");
-    private final DomainServiceImpl.CodenameValidator namespaceValidator = new DefaultCodenameValidator("[a-z-]{0,64}");
+    private final CodenameValidator validator = new DefaultCodenameValidator("[a-z-]{2,12}");
+    private final CodenameValidator namespaceValidator = new DefaultCodenameValidator("[a-z-]{0,64}");
     private final DomainRepository domainRepository = mock(DomainRepository.class);
 
     private final DomainDcnDetailsRepository domainDcnDetailsRepository = mock(DomainDcnDetailsRepository.class);

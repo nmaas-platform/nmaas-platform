@@ -269,18 +269,18 @@ class UserServiceImplTest {
         when(userRepository.existsByUsername(anyString())).thenReturn(false);
         Registration registration = new Registration("test", "testpass", "test@test.com", "name", "surname", 1L, true, true);
         Domain domain = new Domain("GLOBAL", "GLOBAL");
-        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(1L, false, false, "en", false, false, new ArrayList<>(), true, true, false, "0 */1 * * * ?", 2, 60, 10, "", "0 */1 * * * ?", null));
+        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(1L, false, false, "en", false, false, new ArrayList<>(), true, true, false, "0 */1 * * * ?", 2, 60, 10, "", "0 */1 * * * ?", null, 10));
         User user = userService.register(registration, domain, null);
         verify(userRepository, times(1)).save(any());
         assertEquals(1, user.getRoles().size());
-        assertEquals(Role.ROLE_GUEST, user.getRoles().get(0).getRole());
-        assertEquals(domain, user.getRoles().get(0).getDomain());
+        assertEquals(Role.ROLE_GUEST, user.getRoles().getFirst().getRole());
+        assertEquals(domain, user.getRoles().getFirst().getDomain());
     }
 
     @Test
     void shouldRegisterUserWithGlobalGuestRoleAndRoleInDomain() {
         when(userRepository.existsByUsername(anyString())).thenReturn(false);
-        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(1L, false, false, "en", false, false, new ArrayList<>(), true, false, true, "0 */1 * * * ?", 2, 60, 10, "", "0 */1 * * * ?", null));
+        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(1L, false, false, "en", false, false, new ArrayList<>(), true, false, true, "0 */1 * * * ?", 2, 60, 10, "", "0 */1 * * * ?", null, 10));
         Registration registration = new Registration("test", "testpass", "test@test.com", "name", "surname", 1L, true, true);
         Domain globalDomain = new Domain("GLOBAL", "GLOBAL");
         Domain domain = new Domain("Non Global", "NONGLO");
@@ -427,12 +427,12 @@ class UserServiceImplTest {
         users.add(user);
         when(userRepository.findAll()).thenReturn(users);
         assertEquals(1, userService.findAllUsersWithAdminRole().size());
-        assertEquals(userService.findAllUsersWithAdminRole().get(0).getEmail(), user.getEmail());
+        assertEquals(userService.findAllUsersWithAdminRole().getFirst().getEmail(), user.getEmail());
     }
 
     @Test
     void registerBulkTestSSOEnable() {
-        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(1L, false, false, "en", false, false, new ArrayList<>(), true, true, true, "0 */1 * * * ?", 2, 60, 10, "", "0 */1 * * * ?", null));
+        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(1L, false, false, "en", false, false, new ArrayList<>(), true, true, true, "0 */1 * * * ?", 2, 60, 10, "", "0 */1 * * * ?", null, 10));
 
         CsvDomain csvUser = new CsvDomain();
         csvUser.setAdminUserName("test");
@@ -448,7 +448,7 @@ class UserServiceImplTest {
 
     @Test
     void registerBulkTestSSODisable() {
-        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(1L, false, false, "en", false, false, new ArrayList<>(), true, true, true, "0 */1 * * * ?", 2, 60, 10, "", "0 */1 * * * ?", null));
+        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(1L, false, false, "en", false, false, new ArrayList<>(), true, true, true, "0 */1 * * * ?", 2, 60, 10, "", "0 */1 * * * ?", null, 10));
 
         CsvDomain csvUser = new CsvDomain();
         csvUser.setAdminUserName("test");
@@ -464,7 +464,7 @@ class UserServiceImplTest {
 
     @Test
     void registerBulkTestSSODisableGlobally() {
-        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(1L, false, false, "en", false, false, new ArrayList<>(), true, false, true, "0 */1 * * * ?", 2, 60, 10, "", "0 */1 * * * ?", null));
+        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(1L, false, false, "en", false, false, new ArrayList<>(), true, false, true, "0 */1 * * * ?", 2, 60, 10, "", "0 */1 * * * ?", null, 10));
 
         CsvDomain csvUser = new CsvDomain();
         csvUser.setAdminUserName("test");
@@ -480,7 +480,7 @@ class UserServiceImplTest {
 
     @Test
     void registerBulkTestSSODisableGloballyMailOff() {
-        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(1L, false, false, "en", false, false, new ArrayList<>(), true, false, false, "0 */1 * * * ?", 2, 60, 10, "", "0 */1 * * * ?", null));
+        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(1L, false, false, "en", false, false, new ArrayList<>(), true, false, false, "0 */1 * * * ?", 2, 60, 10, "", "0 */1 * * * ?", null, 10));
 
         CsvDomain csvUser = new CsvDomain();
         csvUser.setAdminUserName("test");

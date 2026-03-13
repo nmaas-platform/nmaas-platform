@@ -27,6 +27,7 @@ public class ConfigurationConverter extends AbstractConverter<Configuration, Con
                 .deploymentPrefix(source.getDeploymentPrefix())
                 .healthCheckJobCron(source.getHealthCheckJobCron())
                 .defaultDomainForSsoUsers(convertDomain(source.getDefaultDomainForSsoUsers()))
+                .appInstanceNameLengthLimit(source.getAppInstanceNameLengthLimit())
                 .build();
     }
 

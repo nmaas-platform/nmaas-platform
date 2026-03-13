@@ -1,11 +1,12 @@
 package net.geant.nmaas.portal.service.impl;
 
+import net.geant.nmaas.api.dto.applications.AppInstanceView;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesChart;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
-import net.geant.nmaas.api.dto.applications.AppInstanceView;
+import net.geant.nmaas.portal.api.configuration.model.ConfigurationView;
 import net.geant.nmaas.portal.exceptions.ApplicationSubscriptionNotActiveException;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistence.entity.AppInstance;
@@ -19,8 +20,11 @@ import net.geant.nmaas.portal.service.ApplicationInstanceUpgradeService;
 import net.geant.nmaas.portal.service.ApplicationService;
 import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
 import net.geant.nmaas.portal.service.ApplicationSubscriptionService;
+import net.geant.nmaas.portal.service.CodenameValidator;
+import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -35,6 +39,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -51,10 +56,11 @@ class ApplicationInstanceServiceTest {
     private final DomainService domains = mock(DomainService.class);
     private final UserService users = mock(UserService.class);
     private final ApplicationSubscriptionService applicationSubscriptions = mock(ApplicationSubscriptionService.class);
-    private final DomainServiceImpl.CodenameValidator validator = mock(DomainServiceImpl.CodenameValidator.class);
+    private final CodenameValidator validator = mock(CodenameValidator.class);
     private final ApplicationStatePerDomainService applicationStatePerDomainService = mock(ApplicationStatePerDomainService.class);
     private final ApplicationInstanceUpgradeService applicationInstanceUpgradeService = mock(ApplicationInstanceUpgradeService.class);
     private final AppLifecycleManager appLifecycleManager = mock(AppLifecycleManager.class);
+    private final ConfigurationManager configurationManager = mock(ConfigurationManager.class);
 
     ApplicationInstanceServiceImpl applicationInstanceService = new ApplicationInstanceServiceImpl(
             appInstanceRepo,
@@ -65,8 +71,14 @@ class ApplicationInstanceServiceTest {
             validator,
             applicationStatePerDomainService,
             applicationInstanceUpgradeService,
-            appLifecycleManager
+            appLifecycleManager,
+            configurationManager
     );
+
+    @BeforeEach
+    void setUp() {
+        when(configurationManager.getConfiguration()).thenReturn(ConfigurationView.builder().appInstanceNameLengthLimit(10).build());
+    }
 
     @Test
     void createByIdsMethodShouldThrowObjectNotFoundExceptionDueToApplicationObjectDoNotExists() {
@@ -124,7 +136,7 @@ class ApplicationInstanceServiceTest {
     void createMethodShouldThrowIllegalArgumentExceptionDueToNameIsInvalid() {
         Domain domain = new Domain((long) 1, "test", "test");
         Application application = new Application((long) 1, "test", "testVersion");
-        when(validator.valid(anyString())).thenReturn(false);
+        when(validator.valid(anyString(), anyInt())).thenReturn(false);
         assertThrows(IllegalArgumentException.class, () -> {
             applicationInstanceService.create(domain, application, "test", true);
         });
@@ -135,7 +147,7 @@ class ApplicationInstanceServiceTest {
         Domain domain = new Domain((long) 1, "test", "test");
         domain.setApplicationStatePerDomain(new ArrayList<>());
         Application application = new Application((long) 1, "test", "testVersion");
-        when(validator.valid(anyString())).thenReturn(true);
+        when(validator.valid(anyString(), anyInt())).thenReturn(true);
         when(applicationSubscriptions.isActive(anyString(), isA(Domain.class))).thenReturn(false);
         when(applicationStatePerDomainService.isApplicationEnabledInDomain(domain, application)).thenReturn(true);
         assertThrows(ApplicationSubscriptionNotActiveException.class, () -> {
@@ -152,7 +164,7 @@ class ApplicationInstanceServiceTest {
         appStateList.add(appState);
         domain.setApplicationStatePerDomain(appStateList);
         Application application = new Application((long) 1, "test", "testVersion");
-        when(validator.valid(anyString())).thenReturn(true);
+        when(validator.valid(anyString(), anyInt())).thenReturn(true);
         assertThrows(IllegalArgumentException.class, () -> {
             applicationInstanceService.create(domain, application, "test", true);
         });
@@ -163,7 +175,7 @@ class ApplicationInstanceServiceTest {
         Domain domain = new Domain((long) 1, "test", "test");
         domain.setApplicationStatePerDomain(new ArrayList<>());
         Application application = new Application((long) 1, "test", "testversion");
-        when(validator.valid(anyString())).thenReturn(true);
+        when(validator.valid(anyString(), anyInt())).thenReturn(true);
         when(applicationSubscriptions.isActive(anyString(), isA(Domain.class))).thenReturn(true);
         AppInstance appInstance = new AppInstance(application, domain, "test", true);
         when(appInstanceRepo.save(isA(AppInstance.class))).thenReturn(appInstance);
@@ -178,7 +190,7 @@ class ApplicationInstanceServiceTest {
         Application application = new Application((long) 0, "test", "testversion");
         when(applications.findApplication(anyLong())).thenReturn(Optional.of(application));
         when(domains.findDomain(anyLong())).thenReturn(Optional.of(domain));
-        when(validator.valid(anyString())).thenReturn(true);
+        when(validator.valid(anyString(), anyInt())).thenReturn(true);
         when(applicationSubscriptions.isActive(anyString(), isA(Domain.class))).thenReturn(true);
         AppInstance appInstance = new AppInstance(application, domain, "test", true);
         when(appInstanceRepo.save(isA(AppInstance.class))).thenReturn(appInstance);

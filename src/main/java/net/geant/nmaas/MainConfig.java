@@ -4,7 +4,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.event.ApplicationEventMulticaster;
 import org.springframework.context.event.SimpleApplicationEventMulticaster;
@@ -13,11 +12,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.client.RestClient;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "net.geant.nmaas")
 @EnableScheduling
 @EnableAspectJAutoProxy
 @EnableCaching
-@ComponentScan("net.geant.nmaas")
 public class MainConfig {
 
     public static void main(String[] args) {

@@ -35,6 +35,7 @@ import net.geant.nmaas.portal.persistence.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistence.repositories.UserRoleRepository;
 import net.geant.nmaas.portal.persistence.spec.DomainSpecification;
 import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
+import net.geant.nmaas.portal.service.CodenameValidator;
 import net.geant.nmaas.portal.service.DomainGroupService;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
@@ -70,10 +71,6 @@ import static net.geant.nmaas.portal.persistence.entity.Role.ROLE_GUEST;
 public class DomainServiceImpl implements DomainService {
 
     private static final String DOMAIN_NOT_FOUND_MESSAGE = "Domain not found";
-
-    public interface CodenameValidator {
-        boolean valid(String codename);
-    }
 
     private final CodenameValidator validator;
     private final CodenameValidator namespaceValidator;
@@ -176,7 +173,7 @@ public class DomainServiceImpl implements DomainService {
         } else {
             Specification<Domain> searchSpec = DomainSpecification.containsTextInAttributes(searchValue, "id", "name", "codename");
             Page<Domain> domainPage = domainRepository.findAll(searchSpec, pageable);
-            return domainPage.map(d -> d.toBaseDto());
+            return domainPage.map(Domain::toBaseDto);
         }
     }
 
@@ -214,7 +211,7 @@ public class DomainServiceImpl implements DomainService {
         checkParam(request.getName());
         checkParam(request.getCodename());
 
-        if (Optional.ofNullable(validator).map(v -> v.valid(request.getCodename())).filter(result -> result).isEmpty()) {
+        if (Optional.ofNullable(validator).map(v -> v.valid(request.getCodename(), null)).filter(result -> result).isEmpty()) {
             throw new ProcessingException(String.format("Domain codename is not valid (%s / %s)", request.getName(), request.getCodename()));
         }
         Validate.isTrue(!existsDomainByCodename(request.getCodename()),
@@ -222,7 +219,7 @@ public class DomainServiceImpl implements DomainService {
         if (StringUtils.isEmpty(request.getDomainTechDetails().getKubernetesNamespace())) {
             request.getDomainTechDetails().setKubernetesNamespace(request.getCodename());
         }
-        if (!namespaceValidator.valid(request.getDomainTechDetails().getKubernetesNamespace())) {
+        if (!namespaceValidator.valid(request.getDomainTechDetails().getKubernetesNamespace(), null)) {
             throw new ProcessingException("Kubernetes namespace is not valid");
         }
         if (StringUtils.isEmpty(request.getDomainTechDetails().getKubernetesIngressClass())) {
@@ -301,7 +298,7 @@ public class DomainServiceImpl implements DomainService {
         if (StringUtils.isEmpty(domain.getDomainTechDetails().getKubernetesNamespace())) {
             domain.getDomainTechDetails().setKubernetesNamespace(domain.getCodename());
         }
-        if (!namespaceValidator.valid(domain.getDomainTechDetails().getKubernetesNamespace())) {
+        if (!namespaceValidator.valid(domain.getDomainTechDetails().getKubernetesNamespace(), null)) {
             throw new ProcessingException("Kubernetes namespace is not valid.");
         }
         domainRepository.save(domain);

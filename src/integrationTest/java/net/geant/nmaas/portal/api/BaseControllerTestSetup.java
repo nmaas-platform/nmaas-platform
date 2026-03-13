@@ -21,9 +21,9 @@ import java.util.List;
 @ContextConfiguration
 public class BaseControllerTestSetup {
 
-	protected final static String ADMIN_USERNAME = "admin";
-	protected final static String ADMIN_PASSWORD = "admin";
-	
+    protected final static String ADMIN_USERNAME = "admin";
+    protected final static String ADMIN_PASSWORD = "admin";
+
     @Autowired
     protected WebApplicationContext context;
 
@@ -31,39 +31,39 @@ public class BaseControllerTestSetup {
     protected Filter springSecurityFilterChain;
 
     protected MockMvc mvc;
-	
+
     @Autowired
-	protected JWTTokenService tokenService;
-    
+    protected JWTTokenService tokenService;
+
     @Autowired
     protected DomainService domains;
-    
-	public BaseControllerTestSetup() {
-	}
-	
-	protected MockMvc createMVC() {
-		mvc = MockMvcBuilders
+
+    public BaseControllerTestSetup() {
+    }
+
+    protected MockMvc createMVC() {
+        mvc = MockMvcBuilders
                 .webAppContextSetup(context)
                 .addFilters(springSecurityFilterChain)
                 .build();
-		return mvc;
-	}
-	
-	protected void prepareSecurity() {
-		SecurityContext context = SecurityContextHolder.createEmptyContext();		
-		context.setAuthentication(new UsernamePasswordAuthenticationToken(ADMIN_USERNAME, null, List.of(new SimpleGrantedAuthority(Role.ROLE_SYSTEM_ADMIN.authority()))));
-		SecurityContextHolder.setContext(context);
-	}
-	
-    protected String getValidUserTokenFor(Role role) {
-		List<Role> roles = new ArrayList<>();
-		roles.add(role);
-		User admin = new User(ADMIN_USERNAME, true, ADMIN_PASSWORD, domains.getGlobalDomain().get(), roles);
-		return tokenService.getToken(admin);
+        return mvc;
     }
 
-    protected String getValidTokenForUser(User user){
-		return tokenService.getToken(user);
-	}
-	
+    protected void prepareSecurity() {
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(new UsernamePasswordAuthenticationToken(ADMIN_USERNAME, null, List.of(new SimpleGrantedAuthority(Role.ROLE_SYSTEM_ADMIN.authority()))));
+        SecurityContextHolder.setContext(context);
+    }
+
+    protected String getValidUserTokenFor(Role role) {
+        List<Role> roles = new ArrayList<>();
+        roles.add(role);
+        User admin = new User(ADMIN_USERNAME, true, ADMIN_PASSWORD, domains.getGlobalDomain().get(), roles);
+        return tokenService.getToken(admin);
+    }
+
+    protected String getValidTokenForUser(User user) {
+        return tokenService.getToken(user);
+    }
+
 }

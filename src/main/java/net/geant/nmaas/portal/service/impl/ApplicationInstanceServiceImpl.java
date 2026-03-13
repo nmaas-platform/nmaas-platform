@@ -1,12 +1,12 @@
 package net.geant.nmaas.portal.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.api.dto.applications.AppInstanceView;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.orchestration.exceptions.InvalidApplicationIdException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
-import net.geant.nmaas.api.dto.applications.AppInstanceView;
 import net.geant.nmaas.portal.exceptions.ApplicationSubscriptionNotActiveException;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistence.entity.AppInstance;
@@ -20,6 +20,8 @@ import net.geant.nmaas.portal.service.ApplicationInstanceUpgradeService;
 import net.geant.nmaas.portal.service.ApplicationService;
 import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
 import net.geant.nmaas.portal.service.ApplicationSubscriptionService;
+import net.geant.nmaas.portal.service.CodenameValidator;
+import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 import net.geant.nmaas.utils.logging.LogLevel;
@@ -49,10 +51,11 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
     private final DomainService domains;
     private final UserService users;
     private final ApplicationSubscriptionService applicationSubscriptions;
-    private final DomainServiceImpl.CodenameValidator validator;
+    private final CodenameValidator validator;
     private final ApplicationStatePerDomainService applicationStatePerDomainService;
     private final ApplicationInstanceUpgradeService instanceUpgradeService;
     private final AppLifecycleManager appLifecycleManager;
+    private final ConfigurationManager configurationManager;
 
     @Autowired
     public ApplicationInstanceServiceImpl(
@@ -61,10 +64,11 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
             DomainService domains,
             UserService users,
             ApplicationSubscriptionService applicationSubscriptions,
-            @Qualifier("instanceNameValidator") DomainServiceImpl.CodenameValidator validator,
+            @Qualifier("instanceNameValidator") CodenameValidator validator,
             ApplicationStatePerDomainService applicationStatePerDomainService,
             ApplicationInstanceUpgradeService instanceUpgradeService,
-            AppLifecycleManager appLifecycleManager
+            AppLifecycleManager appLifecycleManager,
+            ConfigurationManager configurationManager
     ) {
         this.appInstanceRepo = appInstanceRepo;
         this.applications = applications;
@@ -75,6 +79,7 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
         this.applicationStatePerDomainService = applicationStatePerDomainService;
         this.instanceUpgradeService = instanceUpgradeService;
         this.appLifecycleManager = appLifecycleManager;
+        this.configurationManager = configurationManager;
     }
 
     @Override
@@ -93,7 +98,7 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
         checkParam(application);
         checkNameCharacters(name);
 
-        if (!this.applicationStatePerDomainService.isApplicationEnabledInDomain(domain, application)) {
+        if (!applicationStatePerDomainService.isApplicationEnabledInDomain(domain, application)) {
             throw new IllegalArgumentException("Application is disabled in domain settings");
         }
 
@@ -358,7 +363,7 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
     }
 
     private void checkNameCharacters(String name) {
-        Validate.isTrue(validator.valid(name), "Instance name is not valid");
+        Validate.isTrue(validator.valid(name, configurationManager.getConfiguration().getAppInstanceNameLengthLimit()), "Instance name is not valid");
     }
 
     protected Domain getDomain(Long domainId) {
