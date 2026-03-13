@@ -117,10 +117,9 @@ public class GroupController extends BaseController {
     @Transactional(readOnly = true)
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
     public DomainGroupDto getDomainGroup(@PathVariable Long domainGroupId, Principal principal) throws AccessDeniedException {
-        DomainGroupDto domainGroupView = domainGroupService.getDomainGroup(domainGroupId);
-        if (getUser(principal.getName()).getRoles().stream().anyMatch(userRole -> userRole.getRole().equals(Role.ROLE_SYSTEM_ADMIN)) ||
-                domainGroupView.getManagers().stream().anyMatch(user -> user.getUsername().equalsIgnoreCase(principal.getName()))) {
-            return domainGroupView;
+        DomainGroupDto domainGroup = domainGroupService.getDomainGroup(domainGroupId);
+        if (checkManagerPrivileges(principal, domainGroup)) {
+            return domainGroup;
         } else {
             throw new AccessDeniedException(ACCESS_DENIED_MESSAGE);
         }
@@ -150,8 +149,7 @@ public class GroupController extends BaseController {
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
     public Id updateDomainGroup(@PathVariable Long domainGroupId, @RequestBody DomainGroupDto domainGroupView, Principal principal) throws AccessDeniedException {
         DomainGroupDto domainGroup = domainGroupService.getDomainGroup(domainGroupId);
-        if (getUser(principal.getName()).getRoles().stream().anyMatch(userRole -> userRole.getRole().equals(Role.ROLE_SYSTEM_ADMIN)) ||
-                domainGroup.getManagers().stream().anyMatch(user -> user.getUsername().equalsIgnoreCase(principal.getName()))) {
+        if (checkManagerPrivileges(principal, domainGroup)) {
             domainService.checkDomainGroupUsers(domainGroupView);
             domainService.updateRolesInDomainGroupByUsers(domainGroupView);
             return new Id(domainGroupService.updateDomainGroup(domainGroupId, domainGroupView).getId());
@@ -165,8 +163,7 @@ public class GroupController extends BaseController {
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
     public DomainGroupDto updateDomainGroupMembers(@PathVariable Long domainGroupId, @RequestBody List<UserViewMinimal> members, Principal principal) throws AccessDeniedException {
         DomainGroupDto domainGroup = domainGroupService.getDomainGroup(domainGroupId);
-        if (getUser(principal.getName()).getRoles().stream().anyMatch(userRole -> userRole.getRole().equals(Role.ROLE_SYSTEM_ADMIN)) ||
-                domainGroup.getManagers().stream().anyMatch(user -> user.getUsername().equalsIgnoreCase(principal.getName()))) {
+        if (checkManagerPrivileges(principal, domainGroup)) {
             return domainService.updateMembers(members, domainGroup);
         } else {
             throw new AccessDeniedException(ACCESS_DENIED_MESSAGE);
@@ -179,10 +176,7 @@ public class GroupController extends BaseController {
                                                 @PathVariable Long domainGroupId,
                                                 Principal principal) throws AccessDeniedException {
         DomainGroupDto domainGroup = domainGroupService.getDomainGroup(domainGroupId);
-        if (getUser(principal.getName()).getRoles().stream().anyMatch(
-                userRole -> userRole.getRole().equals(Role.ROLE_SYSTEM_ADMIN)) ||
-                domainGroup.getManagers().stream().anyMatch(
-                        user -> user.getUsername().equalsIgnoreCase(principal.getName()))) {
+        if (checkManagerPrivileges(principal, domainGroup)) {
 
             Set<UserViewMinimal> members = new HashSet<>(domainGroup.getManagers());
             userIds.forEach(userId -> members.add(modelMapper.map(getUser(userId), UserViewMinimal.class)));
@@ -206,11 +200,7 @@ public class GroupController extends BaseController {
                                                    @PathVariable Long domainGroupId,
                                                    Principal principal) throws AccessDeniedException {
         DomainGroupDto domainGroup = domainGroupService.getDomainGroup(domainGroupId);
-        if (getUser(principal.getName()).getRoles().stream().anyMatch(
-                userRole -> userRole.getRole().equals(Role.ROLE_SYSTEM_ADMIN)) ||
-                domainGroup.getManagers().stream().anyMatch(
-                        user -> user.getUsername().equalsIgnoreCase(principal.getName()))) {
-
+        if (checkManagerPrivileges(principal, domainGroup)) {
             Set<UserViewMinimal> members = new HashSet<>(domainGroup.getManagers());
             userIds.forEach(userId -> members.removeIf(user -> user.getId().equals(userId)));
             List<UserViewMinimal> userViewMinimals = members.stream().map(
@@ -234,15 +224,13 @@ public class GroupController extends BaseController {
                                                                       @RequestBody List<Long> applicationBaseIds,
                                                                       Principal principal) throws AccessDeniedException {
         DomainGroupDto domainGroup = domainGroupService.getDomainGroup(domainGroupId);
-        if (getUser(principal.getName()).getRoles().stream().anyMatch(userRole -> userRole.getRole().equals(Role.ROLE_SYSTEM_ADMIN)) ||
-                domainGroup.getManagers().stream().anyMatch(user -> user.getUsername().equalsIgnoreCase(principal.getName()))) {
-            domainGroup.getApplicationStatePerDomain().forEach(application -> {
-                applicationBaseIds.forEach(applicationBaseId -> {
-                    if (application.getApplicationBaseId().equals(applicationBaseId)) {
-                        application.setEnabled(true);
-                    }
-                });
-            });
+        if (checkManagerPrivileges(principal, domainGroup)) {
+            domainGroup.getApplicationStatePerDomain().forEach(application ->
+                    applicationBaseIds.forEach(applicationBaseId -> {
+                        if (application.getApplicationBaseId().equals(applicationBaseId)) {
+                            application.setEnabled(true);
+                        }
+                    }));
             DomainGroupDto result = domainGroupService.updateDomainGroup(domainGroupId, domainGroup);
             return result.getApplicationStatePerDomain();
         } else {
@@ -257,29 +245,39 @@ public class GroupController extends BaseController {
                                                                        @RequestBody List<Long> applicationBaseIds,
                                                                        Principal principal) throws AccessDeniedException {
         DomainGroupDto domainGroup = domainGroupService.getDomainGroup(domainGroupId);
-        if (getUser(principal.getName()).getRoles().stream().anyMatch(userRole -> userRole.getRole().equals(Role.ROLE_SYSTEM_ADMIN)) ||
-                domainGroup.getManagers().stream().anyMatch(user -> user.getUsername().equalsIgnoreCase(principal.getName()))) {
-            domainGroup.getApplicationStatePerDomain().forEach(application -> {
-                applicationBaseIds.forEach(applicationBaseId -> {
-                    if (application.getApplicationBaseId().equals(applicationBaseId)) {
-                        application.setEnabled(false);
-                    }
-                });
-            });
-        DomainGroupDto result = domainGroupService.updateDomainGroup(domainGroupId, domainGroup);
-        return result.getApplicationStatePerDomain();
-    } else
+        if (checkManagerPrivileges(principal, domainGroup)) {
+            domainGroup.getApplicationStatePerDomain().forEach(application ->
+                    applicationBaseIds.forEach(applicationBaseId -> {
+                        if (application.getApplicationBaseId().equals(applicationBaseId)) {
+                            application.setEnabled(false);
+                        }
+                    }));
+            DomainGroupDto result = domainGroupService.updateDomainGroup(domainGroupId, domainGroup);
+            return result.getApplicationStatePerDomain();
+        } else {
+            throw new AccessDeniedException(ACCESS_DENIED_MESSAGE);
+        }
 
-    {
-        throw new AccessDeniedException(ACCESS_DENIED_MESSAGE);
+
     }
 
-}
+    private boolean checkManagerPrivileges(Principal principal, DomainGroupDto domainGroup) {
+        return getUser(principal.getName())
+                .getRoles()
+                .stream()
+                .anyMatch(userRole ->
+                        userRole.getRole().equals(Role.ROLE_SYSTEM_ADMIN)
+                ) || domainGroup.getManagers()
+                .stream()
+                .anyMatch(user ->
+                        user.getUsername().equalsIgnoreCase(principal.getName())
+                );
+    }
 
-@ExceptionHandler(DataConflictException.class)
-@ResponseStatus(code = HttpStatus.CONFLICT)
-public String handleDataConfigException(DataConflictException e) {
-    return e.getMessage();
-}
+    @ExceptionHandler(DataConflictException.class)
+    @ResponseStatus(code = HttpStatus.CONFLICT)
+    public String handleDataConfigException(DataConflictException e) {
+        return e.getMessage();
+    }
 
 }
