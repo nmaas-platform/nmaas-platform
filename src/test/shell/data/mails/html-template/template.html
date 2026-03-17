@@ -7,7 +7,7 @@
     <style>
         @media only screen and (max-width: 620px) {
             table[class=body] h1 {
-                font-size: 28px !important;
+                font-size: 24px !important;
                 margin-bottom: 10px !important;
             }
 
@@ -84,15 +84,26 @@
 
             .btn-primary a:hover {
                 background-color: #34495e !important;
-                border-color: #34495e !important;
+                border-color: #142548 !important;
             }
 
             .message-text {
                 padding-right: 10px;
                 padding-left: 10px;
                 color: #4a4a4a;
-
             }
+        }
+
+        .preheader {
+            display: none !important;
+            font-size: 1px;
+            line-height: 1px;
+            max-height: 0;
+            max-width: 0;
+            opacity: 0;
+            overflow: hidden;
+            mso-hide: all;
+            color: #f6f6f6;
         }
 
         .nmaas {
@@ -103,6 +114,7 @@
             background-size: contain;
             background-repeat: no-repeat;
             margin-bottom: 20px;
+            display: block;
         }
 
         .geant {
@@ -113,74 +125,133 @@
             background-size: contain;
             background-repeat: no-repeat;
             margin-bottom: 20px;
+            display: block;
         }
     </style>
 </head>
-<body class=""
-      style="background-color: #f6f6f6; font-family: sans-serif; -webkit-font-smoothing: antialiased; font-size: 14px; line-height: 1.4; margin: 0; padding: 0; -ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%;">
+<body style="background-color: #f6f6f6; font-family: Arial, Helvetica, sans-serif; -webkit-font-smoothing: antialiased; font-size: 14px; line-height: 1.4; margin: 0; padding: 0; -ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%;">
+<div class="preheader">${TITLE} - ${HEADER}</div>
 <table border="0" cellpadding="0" cellspacing="0" class="body"
        style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; background-color: #f6f6f6;">
     <tr>
-        <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;">&nbsp;</td>
-        <td class="container"
-            style="font-family: sans-serif; font-size: 14px; vertical-align: top; display: block; Margin: 0 auto; max-width: 580px; padding: 10px; width: 580px;">
-            <div class="content"
-                 style="box-sizing: border-box; display: block; Margin: 0 auto; max-width: 580px; padding: 10px;">
-                <table class="main"
-                       style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; background: #ffffff; border-radius: 3px;">
-                    <tr style="text-align: center;">
-                        <a href="${PORTAL_LINK}" target="_blank">
-                            <div class="nmaas"></div>
-                        </a>
-                    </tr>
-                    <tr>
-                        <td class="wrapper"
-                            style="font-family: sans-serif; font-size: 14px; vertical-align: top; box-sizing: border-box; padding: 15px 15px 5px 15px;">
-                            <h3>${HEADER}</h3>
-                            <table border="0" cellpadding="0" cellspacing="0"
-                                   style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%;">
-                                <tr>
-                                    <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;">
-                                        <p>
-                                            ${CONTENT}
-                                        </p>
-                                        <p>
-                                            ${ADDITIONAL}
-                                        </p>
-                                        <p style="text-align: right;">
-                                            ${SENDER}
-                                        </p>
-                                        <p style="text-align: center; color: lightgray; font-size: 11px;">
-                                            <br>${NOREPLY}
-                                        </p>
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                </table>
-                <div class="footer" style="clear: both; Margin-top: 10px; text-align: center; width: 100%;">
-                    <table border="0" cellpadding="0" cellspacing="0"
-                           style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%;">
-                        <tr>
-                            <td class="content-block"
-                                style="font-family: sans-serif; vertical-align: top; padding-bottom: 10px; padding-top: 10px; font-size: 12px; color: #999999; text-align: center;">
-                                <span class="apple-link" style="color: gray; font-size: 11px; text-align: center;">
-                                    ${SENDER_INFO}<br>
-                                    <p>
-                                        ${SENDER_POLICY}
-                                    </p>
-                                    <a href="https://www.geant.org/" target="_blank" rel="nofollow" >
-                                        <div class="geant"></div>
+        <td align="center" style="font-family: Arial, Helvetica, sans-serif; font-size: 14px; vertical-align: top; padding: 24px 12px;">
+            <!--[if mso]>
+            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="600">
+                <tr>
+                    <td>
+            <![endif]-->
+            <table border="0" cellpadding="0" cellspacing="0" class="container"
+                   style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; max-width: 600px;">
+                <tr>
+                    <td style="padding: 0 0 16px 0;">
+                        <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                            <tr>
+                                <td style="padding: 0 32px;">
+                                    <a href="${PORTAL_LINK}" target="_blank" style="text-decoration: none; color: #111827;">
+                                        <div class="nmaas" aria-label="nmaas logo" role="img"></div>
                                     </a>
-                                </span>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="background-color: #ffffff; border: 1px solid #dbe3ee; border-radius: 12px;">
+                        <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                            <tr>
+                                <td style="height: 6px; line-height: 6px; font-size: 0; background-color: #142548; border-radius: 12px 12px 0 0;">
+                                    &nbsp;
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 32px 40px 12px 40px; font-family: Arial, Helvetica, sans-serif; font-size: 12px; line-height: 18px; color: #142548; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
+                                    ${TITLE}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0 40px 8px 40px; font-family: Arial, Helvetica, sans-serif; font-size: 24px; line-height: 36px; color: #111827; font-weight: 700;">
+                                    ${HEADER}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0 40px 32px 40px;">
+                                    <table border="0" cellpadding="0" cellspacing="0" width="100%"
+                                           style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px;">
+                                        <tr>
+                                            <td style="padding: 24px; font-family: Arial, Helvetica, sans-serif; font-size: 16px; line-height: 26px; color: #334155;">
+                                                ${CONTENT}
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <#if ADDITIONAL?? && ADDITIONAL?has_content>
+                            <tr>
+                                <td style="padding: 0 40px 24px 40px;">
+                                    <table border="0" cellpadding="0" cellspacing="0" width="100%"
+                                           style="background-color: #ffffff; border: 1px solid #142548; border-left: 4px solid #142548; border-radius: 10px;">
+                                        <tr>
+                                            <td style="padding: 20px 24px; font-family: Arial, Helvetica, sans-serif; font-size: 15px; line-height: 24px; color: #475569;">
+                                                ${ADDITIONAL}
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            </#if>
+                            <tr>
+                                <td style="padding: 0 40px 32px 40px;">
+                                    <table border="0" cellpadding="0" cellspacing="0" width="100%"
+                                           style="border-top: 1px solid #e2e8f0;">
+                                        <tr>
+                                            <td style="padding-top: 24px; font-family: Arial, Helvetica, sans-serif; font-size: 15px; line-height: 24px; color: #334155;">
+                                                ${SENDER}
+                                            </td>
+                                        </tr>
+                                        <#if NOREPLY?? && NOREPLY?has_content>
+                                        <tr>
+                                            <td style="padding-top: 16px; font-family: Arial, Helvetica, sans-serif; font-size: 12px; line-height: 18px; color: #64748b;">
+                                                ${NOREPLY}
+                                            </td>
+                                        </tr>
+                                        </#if>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding: 20px 32px 0 32px; text-align: center;">
+                        <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                            <tr>
+                                <td class="apple-link"
+                                    style="font-family: Arial, Helvetica, sans-serif; font-size: 12px; line-height: 18px; color: #64748b; text-align: center;">
+                                    <#if SENDER_INFO?? && SENDER_INFO?has_content>
+                                    <p style="margin: 0;">${SENDER_INFO}</p>
+                                    </#if>
+                                    <#if SENDER_POLICY?? && SENDER_POLICY?has_content>
+                                    <p style="margin: 8px 0 0 0;">${SENDER_POLICY}</p>
+                                    </#if>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding-top: 16px; text-align: center;">
+                                    <a href="https://www.geant.org/" target="_blank" rel="nofollow" style="text-decoration: none; color: #6b7280;">
+                                        <div class="geant" aria-label="GEANT logo" role="img"></div>
+                                    </a>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+            <!--[if mso]>
+                    </td>
+                </tr>
+            </table>
+            <![endif]-->
         </td>
-        <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;">&nbsp;</td>
     </tr>
 </table>
 </body>
