@@ -3,9 +3,9 @@ package net.geant.nmaas.portal.api.webhooks;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.api.dto.Id;
 import net.geant.nmaas.api.dto.webhooks.WebhookEventDto;
+import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistence.entity.WebhookEvent;
 import net.geant.nmaas.portal.service.impl.WebhookEventService;
 import org.springframework.http.ResponseEntity;
@@ -80,6 +80,7 @@ public class WebhookEventController {
     public ResponseEntity<List<WebhookEventDto>> getAllWebhooks() {
         return ResponseEntity.ok(webhookEventService.getAllWebhooks());
     }
+
     @GetMapping(params = "page")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @Transactional
@@ -135,6 +136,7 @@ public class WebhookEventController {
     public ResponseEntity<List<WebhookEventDto>> getWebhooksInDomain(@PathVariable Long domainId) {
         return ResponseEntity.ok(webhookEventService.getAllWebhooks(domainId));
     }
+
     @GetMapping(value = "/domain/{domainId}", params = "page")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasPermission(#domainId, 'domain', 'OWNER')")
     public ResponseEntity<List<WebhookEventDto>> getWebhooksInDomainPageable(@PathVariable Long domainId) {
