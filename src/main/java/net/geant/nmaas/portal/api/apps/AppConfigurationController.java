@@ -43,7 +43,7 @@ public class AppConfigurationController {
                                    @NotNull Principal principal) {
         AppInstance appInstance = instances.find(appInstanceId).orElseThrow(() -> new MissingElementException(INSTANCE_NOT_FOUND_MESSAGE));
 
-        boolean valid = validJSON(configuration.getJsonInput().asString());
+        boolean valid = validJSON(jsonMapper.writeValueAsString(configuration.getJsonInput()));
         log.debug("Provided configuration = {}", configuration.getJsonInput());
         if (!valid) {
             throw new ProcessingException("Configuration is not in a valid JSON format");
@@ -57,7 +57,7 @@ public class AppConfigurationController {
             throw new ProcessingException("Application configuration violates application state per domain rules");
         }
 
-        appInstance.setConfiguration(configuration.getJsonInput().asString());
+        appInstance.setConfiguration(jsonMapper.writeValueAsString(configuration.getJsonInput()));
         instances.update(appInstance);
 
         try {
@@ -84,7 +84,7 @@ public class AppConfigurationController {
                                     @NotNull Principal principal) {
         AppInstance appInstance = instances.find(appInstanceId).orElseThrow(() -> new MissingElementException(INSTANCE_NOT_FOUND_MESSAGE));
 
-        if (!StringUtils.isEmpty(configuration.getJsonInput().asString())) {
+        if (!StringUtils.isEmpty(jsonMapper.writeValueAsString(configuration.getJsonInput()))) {
             throw new ProcessingException("Configuration file content updates from the wizard are not supported");
         }
 
@@ -103,7 +103,8 @@ public class AppConfigurationController {
     @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
     @Transactional
     public String getConfiguration(@PathVariable(value = "appInstanceId") Long appInstanceId) {
-        return instances.find(appInstanceId).orElseThrow(() -> new MissingElementException(INSTANCE_NOT_FOUND_MESSAGE)).getConfiguration();
+        return instances.find(appInstanceId)
+                .orElseThrow(() -> new MissingElementException(INSTANCE_NOT_FOUND_MESSAGE)).getConfiguration();
     }
 
 }
