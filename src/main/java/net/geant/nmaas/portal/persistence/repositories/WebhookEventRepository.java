@@ -2,6 +2,8 @@ package net.geant.nmaas.portal.persistence.repositories;
 
 import net.geant.nmaas.portal.persistence.entity.WebhookEvent;
 import net.geant.nmaas.portal.persistence.entity.WebhookEventType;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,6 +23,8 @@ public interface WebhookEventRepository extends JpaRepository<WebhookEvent, Long
     List<WebhookEvent> findByDomain_Id(Long domainId);
 
     Optional<WebhookEvent> findByIdAndDomain_Id(Long id, Long domainId);
+
+    Page<WebhookEvent> findByNameContaining(String name, Pageable pageable);
 
     @Query("""
             select w.id

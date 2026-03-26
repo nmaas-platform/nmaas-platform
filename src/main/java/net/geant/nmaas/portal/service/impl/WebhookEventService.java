@@ -11,6 +11,8 @@ import net.geant.nmaas.portal.persistence.repositories.WebhookEventRepository;
 import net.geant.nmaas.portal.service.AutoWebhookTemplateService;
 import net.geant.nmaas.portal.service.UserService;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.security.GeneralSecurityException;
@@ -95,6 +97,25 @@ public class WebhookEventService {
                         throw new RuntimeException(e);
                     }
                 }).toList();
+    }
+    public Page<WebhookEventDto> getAllWebhooks(Pageable pageable, String searchValue) {
+        if (searchValue == null || searchValue.isEmpty()) {
+            return webhookRepository.findAll(pageable).map(x -> {
+                try {
+                    return getWebhookEventDto(x);
+                } catch (GeneralSecurityException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        }else {
+            return webhookRepository.findByNameContaining(searchValue, pageable).map(x -> {
+                try {
+                    return getWebhookEventDto(x);
+                } catch (GeneralSecurityException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        }
     }
 
     public List<WebhookEventDto> getAllWebhooks(Long domainId) {
