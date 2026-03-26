@@ -12,6 +12,7 @@ import net.geant.nmaas.portal.persistence.entity.User;
 import net.geant.nmaas.portal.persistence.entity.UserRole;
 import net.geant.nmaas.portal.persistence.repositories.UserRepository;
 import net.geant.nmaas.portal.persistence.repositories.UserRoleRepository;
+import net.geant.nmaas.portal.persistence.results.UserLoginDate;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.DomainGroupService;
 import net.geant.nmaas.portal.service.UserLoginRegisterService;
@@ -22,17 +23,23 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -492,6 +499,116 @@ class UserServiceImplTest {
 
         verify(userRepository, times(1)).save(any());
         verify(eventPublisher, times(0)).publishEvent(any());
+    }
+
+    @Test
+    void findByEmailShouldReturnUserAndThrowWhenMissing() {
+        User user = new User("mailuser", true);
+        when(userRepository.findByEmail("mail@test.com")).thenReturn(Optional.of(user));
+        assertEquals(user, userService.findByEmail("mail@test.com"));
+
+        when(userRepository.findByEmail("missing@test.com")).thenReturn(Optional.empty());
+        assertThrows(IllegalArgumentException.class, () -> userService.findByEmail("missing@test.com"));
+    }
+
+    @Test
+    void existsBySamlTokenShouldValidateInputAndDelegate() {
+        assertThrows(IllegalArgumentException.class, () -> userService.existsBySamlToken(null));
+
+        when(userRepository.existsBySamlToken("token")).thenReturn(true);
+        assertTrue(userService.existsBySamlToken("token"));
+    }
+
+    @Test
+    void isAdminShouldThrowForMissingUserAndReturnForSystemAdmin() {
+        when(userRepository.findByUsername("missing")).thenReturn(Optional.empty());
+        assertThrows(Exception.class, () -> userService.isAdmin("missing"));
+
+        User admin = new User("admin", true);
+        Domain domain = new Domain("GLOBAL", "GLOBAL");
+        admin.setRoles(List.of(new UserRole(admin, domain, Role.ROLE_SYSTEM_ADMIN)));
+        when(userRepository.findByUsername("admin")).thenReturn(Optional.of(admin));
+
+        assertTrue(userService.isAdmin("admin"));
+    }
+
+    @Test
+    void setTermsAndPrivacyByUsernameShouldUseResolvedUserIdAndThrowIfMissing() {
+        User user = new User("u", true);
+        user.setId(44L);
+        when(userRepository.findByUsername("u")).thenReturn(Optional.of(user));
+
+        userService.setTermsOfUseAcceptedFlagByUsername("u", true);
+        userService.setPrivacyPolicyAcceptedFlagByUsername("u", false);
+
+        verify(userRepository).setTermsOfUseAcceptedFlag(44L, true);
+        verify(userRepository).setPrivacyPolicyAcceptedFlag(44L, false);
+
+        when(userRepository.findByUsername("missing")).thenReturn(Optional.empty());
+        assertThrows(UsernameNotFoundException.class, () -> userService.setTermsOfUseAcceptedFlagByUsername("missing", true));
+        assertThrows(UsernameNotFoundException.class, () -> userService.setPrivacyPolicyAcceptedFlagByUsername("missing", false));
+    }
+
+    @Test
+    void shouldSetLanguageAndTheme() {
+        userService.setUserLanguage(1L, "pl");
+        userService.setUserTheme(1L, "dark");
+
+        verify(userRepository).setUserLanguage(1L, "pl");
+        verify(userRepository).setUserThemeMode(1L, "dark");
+    }
+
+    @Test
+    void isUserAdminInAnyDomainChecksShouldWorkForIdAndDomainObjects() {
+        when(userRoleRepository.findRolesByDomainAndUser(1L, "john")).thenReturn(Set.of(Role.ROLE_USER));
+        when(userRoleRepository.findRolesByDomainAndUser(2L, "john")).thenReturn(Set.of(Role.ROLE_DOMAIN_ADMIN));
+
+        assertTrue(userService.isUserAdminInAnyDomainById(List.of(1L, 2L), "john"));
+
+        Domain d1 = new Domain(1L, "d1", "d1");
+        Domain d2 = new Domain(2L, "d2", "d2");
+        assertTrue(userService.isUserAdminInAnyDomain(List.of(d1, d2), "john"));
+    }
+
+    @Test
+    void findAllListEntryShouldMapLoginDatesForSearchAndNonSearch() {
+        User user = new User("viewer", true);
+        user.setId(101L);
+        user.setFirstname("V");
+        user.setLastname("I");
+        user.setRoles(List.of());
+        Page<User> page = new PageImpl<>(List.of(user), PageRequest.of(0, 10), 1);
+        UserLoginDate loginDate = new UserLoginDate(101L, java.time.OffsetDateTime.now().minusDays(3), java.time.OffsetDateTime.now().minusDays(1));
+        when(userLoginService.getAllFirstAndLastSuccessfulLoginDate()).thenReturn(List.of(loginDate));
+        when(userRepository.findAll(PageRequest.of(0, 10))).thenReturn(page);
+        when(userRepository.findAll(any(org.springframework.data.jpa.domain.Specification.class), eq(PageRequest.of(0, 10))))
+                .thenReturn(page);
+
+        Page<?> resultNoSearch = userService.findAllListEntry(PageRequest.of(0, 10), null);
+        Page<?> resultSearch = userService.findAllListEntry(PageRequest.of(0, 10), "view");
+
+        assertEquals(1, resultNoSearch.getTotalElements());
+        assertEquals(1, resultSearch.getTotalElements());
+    }
+
+    @Test
+    void findAllInDomainListEntryAndGetUserRoleInDomainShouldDelegate() {
+        User user = new User("domain-user", true);
+        user.setId(202L);
+        user.setRoles(List.of());
+        Page<User> page = new PageImpl<>(List.of(user), PageRequest.of(0, 5), 1);
+        when(userLoginService.getAllFirstAndLastSuccessfulLoginDate()).thenReturn(List.of());
+        when(userRepository.findAllInDomain(55L, PageRequest.of(0, 5))).thenReturn(page);
+        when(userRepository.findAll(any(org.springframework.data.jpa.domain.Specification.class), eq(PageRequest.of(0, 5))))
+                .thenReturn(page);
+        when(userRoleRepository.findRolesByDomainAndUser(55L, 202L)).thenReturn(Set.of(Role.ROLE_USER));
+
+        Page<?> resultNoSearch = userService.findAllInDomainListEntry(55L, PageRequest.of(0, 5), null);
+        Page<?> resultSearch = userService.findAllInDomainListEntry(55L, PageRequest.of(0, 5), "domain");
+
+        assertEquals(1, resultNoSearch.getTotalElements());
+        assertEquals(1, resultSearch.getTotalElements());
+        assertEquals(Role.ROLE_USER, userService.getUserRoleInDomain(202L, 55L).orElseThrow());
     }
 
 }
