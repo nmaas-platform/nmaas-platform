@@ -1,16 +1,14 @@
 package net.geant.nmaas.portal.domain.converters;
 
-import net.geant.nmaas.api.dto.domains.CustomerNetworkView;
+import net.geant.nmaas.api.dto.domains.CustomerNetworkDto;
 import net.geant.nmaas.dcn.deployment.entities.CustomerNetwork;
 import org.modelmapper.AbstractConverter;
 
-public class CustomerNetworkConverter extends AbstractConverter<CustomerNetwork, CustomerNetworkView> {
+public class CustomerNetworkConverter extends AbstractConverter<CustomerNetwork, CustomerNetworkDto> {
 
     @Override
-    protected CustomerNetworkView convert(CustomerNetwork source) {
-        return new CustomerNetworkView(source.getId(), source.getCustomerIp(), source.getMaskLength());
+    protected CustomerNetworkDto convert(CustomerNetwork source) {
+        return new CustomerNetworkDto(source.getId(), source.getCustomerIp(), source.getMaskLength());
     }
 
 }
-
-

@@ -1,9 +1,9 @@
 package net.geant.nmaas.portal.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.api.dto.applications.ApplicationStatePerDomainView;
-import net.geant.nmaas.api.dto.domains.DomainView;
+import net.geant.nmaas.api.dto.domains.DomainDto;
+import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.portal.persistence.entity.Application;
 import net.geant.nmaas.portal.persistence.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistence.entity.ApplicationStatePerDomain;
@@ -70,12 +70,12 @@ public class ApplicationStatePerDomainServiceImpl implements ApplicationStatePer
     }
 
     @Override
-    public List<ApplicationStatePerDomain> updateDomain(DomainView changes) {
+    public List<ApplicationStatePerDomain> updateDomain(DomainDto changes) {
         Domain updatedDomain = domainRepository.getReferenceById(changes.getId());
         List<ApplicationStatePerDomain> list = updatedDomain.getApplicationStatePerDomain();
-        for(ApplicationStatePerDomain appState: list){
-            for(ApplicationStatePerDomainView appStateView: changes.getApplicationStatePerDomain()){
-                if(appState.getApplicationBase().getId().equals(appStateView.getApplicationBaseId())){
+        for (ApplicationStatePerDomain appState : list) {
+            for (ApplicationStatePerDomainView appStateView : changes.getApplicationStatePerDomain()) {
+                if (appState.getApplicationBase().getId().equals(appStateView.getApplicationBaseId())) {
                     // rewrite state
                     appState.applyChangedState(appStateView);
                 }
@@ -95,7 +95,7 @@ public class ApplicationStatePerDomainServiceImpl implements ApplicationStatePer
 
     @Override
     public boolean isApplicationEnabledInDomain(Domain domain, ApplicationBase appBase) {
-        for(ApplicationStatePerDomain a: domain.getApplicationStatePerDomain()) {
+        for (ApplicationStatePerDomain a : domain.getApplicationStatePerDomain()) {
             if (a.getApplicationBase().getId().equals(appBase.getId())) {
                 if (a.isEnabled()) {
                     return true;

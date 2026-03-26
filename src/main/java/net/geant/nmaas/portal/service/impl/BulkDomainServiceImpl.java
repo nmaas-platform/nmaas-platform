@@ -3,10 +3,10 @@ package net.geant.nmaas.portal.service.impl;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.api.dto.KeyValueView;
 import net.geant.nmaas.api.dto.domains.DcnDeploymentTypeDto;
-import net.geant.nmaas.api.dto.domains.DomainDcnDetailsView;
+import net.geant.nmaas.api.dto.domains.DomainDcnDetailsDto;
 import net.geant.nmaas.api.dto.domains.DomainGroupDto;
 import net.geant.nmaas.api.dto.domains.DomainRequest;
-import net.geant.nmaas.api.dto.domains.DomainTechDetailsView;
+import net.geant.nmaas.api.dto.domains.DomainTechDetailsDto;
 import net.geant.nmaas.api.dto.users.UserViewMinimal;
 import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
 import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
@@ -132,7 +132,7 @@ public class BulkDomainServiceImpl implements BulkDomainService {
             );
         } else {
             String domainCodename = prepareCorrectAndUniqueDomainCodename(csvDomain.getDomainName());
-            DomainTechDetailsView domainTechDetails = DomainTechDetailsView.builder()
+            DomainTechDetailsDto domainTechDetails = DomainTechDetailsDto.builder()
                     .domainCodename(domainCodename)
                     .kubernetesNamespace(domainCodename)
                     .externalServiceDomain(domainCodename + "." + kubernetesClusterIngressManager.getExternalServiceDomain())
@@ -142,7 +142,7 @@ public class BulkDomainServiceImpl implements BulkDomainService {
             } else {
                 domainTechDetails.setKubernetesIngressClass(kubernetesClusterIngressManager.getSupportedIngressClass());
             }
-            DomainDcnDetailsView domainDcnDetails = new DomainDcnDetailsView(
+            DomainDcnDetailsDto domainDcnDetails = new DomainDcnDetailsDto(
                     null, domainCodename, true, DcnDeploymentTypeDto.MANUAL, null);
             DomainRequest domainRequest = new DomainRequest(
                     csvDomain.getDomainName(),

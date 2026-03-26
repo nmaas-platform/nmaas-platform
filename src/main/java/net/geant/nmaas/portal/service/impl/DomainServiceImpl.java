@@ -4,9 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.api.dto.KeyValueView;
 import net.geant.nmaas.api.dto.domains.DomainAnnotationDto;
 import net.geant.nmaas.api.dto.domains.DomainBaseDto;
+import net.geant.nmaas.api.dto.domains.DomainDto;
 import net.geant.nmaas.api.dto.domains.DomainGroupDto;
 import net.geant.nmaas.api.dto.domains.DomainRequest;
-import net.geant.nmaas.api.dto.domains.DomainView;
 import net.geant.nmaas.api.dto.users.UserView;
 import net.geant.nmaas.api.dto.users.UserViewMinimal;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
@@ -327,7 +327,7 @@ public class DomainServiceImpl implements DomainService {
         return findDomain(id).map(toRemove -> {
             dcnRepositoryManager.removeDcnInfo(toRemove.getCodename());
             checkGlobal(toRemove);
-            DomainView domainView = modelMapper.map(toRemove, DomainView.class);
+            DomainDto domainView = modelMapper.map(toRemove, DomainDto.class);
             domainRepository.delete(toRemove);
             eventPublisher.publishEvent(new DomainRemovalEvent(this, domainView, true));
             return true;
@@ -340,7 +340,7 @@ public class DomainServiceImpl implements DomainService {
         String removedSuffix = "_DELETED_" + OffsetDateTime.now();
         return findDomain(domainId).map(domain -> {
             checkGlobal(domain);
-            final DomainView domainViewForEvent = modelMapper.map(domain, DomainView.class);
+            final DomainDto domainViewForEvent = modelMapper.map(domain, DomainDto.class);
 
             dcnRepositoryManager.removeDcnInfo(domain.getCodename());
             domain.setDeleted(true);

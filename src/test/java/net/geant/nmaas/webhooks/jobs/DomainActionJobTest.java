@@ -1,6 +1,6 @@
 package net.geant.nmaas.webhooks.jobs;
 
-import net.geant.nmaas.api.dto.domains.DomainView;
+import net.geant.nmaas.api.dto.domains.DomainDto;
 import net.geant.nmaas.api.dto.webhooks.WebhookEventDto;
 import net.geant.nmaas.api.dto.webhooks.WebhookEventTypeDto;
 import net.geant.nmaas.portal.persistence.entity.Domain;
@@ -52,7 +52,7 @@ class DomainActionJobTest {
     void shouldExecuteSampleJob() throws GeneralSecurityException {
         JobDataMap dataMap = new JobDataMap();
         dataMap.put("webhookId", 10L);
-        DomainView domain = new DomainView();
+        DomainDto domain = new DomainDto();
         domain.setId(1L);
         domain.setName("name");
         domain.setCodename("codename");

@@ -2,9 +2,9 @@ package net.geant.nmaas.portal.api.domains;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.api.dto.domains.DcnDeploymentTypeDto;
+import net.geant.nmaas.api.dto.domains.DomainDto;
 import net.geant.nmaas.api.dto.domains.DomainGroupDto;
 import net.geant.nmaas.api.dto.domains.DomainRequest;
-import net.geant.nmaas.api.dto.domains.DomainView;
 import net.geant.nmaas.api.dto.users.UserViewMinimal;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 import net.geant.nmaas.dcn.deployment.entities.CustomerNetwork;
@@ -131,7 +131,7 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
         MvcResult result = mvc.perform(put("/api/domains/" + request.getId())
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(modelMapper.map(request, DomainView.class)))
+                        .content(objectMapper.writeValueAsString(modelMapper.map(request, DomainDto.class)))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -146,7 +146,7 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
         mvc.perform(put("/api/domains/" + request.getId())
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(modelMapper.map(request, DomainView.class)))
+                        .content(objectMapper.writeValueAsString(modelMapper.map(request, DomainDto.class)))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
         verify(domainService).updateDomain(any());
@@ -154,7 +154,7 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
 
     @Test
     void shouldNotUpdateDomainWhenIdIsIncorrect() {
-        DomainView request = modelMapper.map(getDefaultDomainRequest("test"), DomainView.class);
+        DomainDto request = modelMapper.map(getDefaultDomainRequest("test"), DomainDto.class);
         request.setId(999L);
         assertDoesNotThrow(() -> {
             mvc.perform(put("/api/domains/" + TEST_DOMAIN_ID)
@@ -217,7 +217,7 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
     void shouldNotUpdateTechDetailsWithCorruptedId() {
         Domain domain = getDefaultDomain();
         domain.setApplicationStatePerDomain(new ArrayList<>());
-        DomainView request = modelMapper.map(domain, DomainView.class);
+        DomainDto request = modelMapper.map(domain, DomainDto.class);
         long id = request.getId();
         request.setId(123L);
         assertDoesNotThrow(() -> {
@@ -294,7 +294,7 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
-        DomainView domain = objectMapper.readValue(result.getResponse().getContentAsString(), DomainView.class);
+        DomainDto domain = objectMapper.readValue(result.getResponse().getContentAsString(), DomainDto.class);
         assertEquals(TEST_DOMAIN_NAME, domain.getName());
     }
 
@@ -307,7 +307,7 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
-        DomainView domain = objectMapper.readValue(result.getResponse().getContentAsString(), DomainView.class);
+        DomainDto domain = objectMapper.readValue(result.getResponse().getContentAsString(), DomainDto.class);
         assertEquals(TEST_DOMAIN_NAME, domain.getName());
     }
 

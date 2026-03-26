@@ -2,10 +2,10 @@ package net.geant.nmaas.portal.service.impl;
 
 import net.geant.nmaas.api.dto.domains.DcnDeploymentTypeDto;
 import net.geant.nmaas.api.dto.domains.DomainBaseDto;
-import net.geant.nmaas.api.dto.domains.DomainDcnDetailsView;
+import net.geant.nmaas.api.dto.domains.DomainDcnDetailsDto;
 import net.geant.nmaas.api.dto.domains.DomainGroupDto;
 import net.geant.nmaas.api.dto.domains.DomainRequest;
-import net.geant.nmaas.api.dto.domains.DomainTechDetailsView;
+import net.geant.nmaas.api.dto.domains.DomainTechDetailsDto;
 import net.geant.nmaas.api.dto.users.UserView;
 import net.geant.nmaas.api.dto.users.UserViewMinimal;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
@@ -183,8 +183,8 @@ class DomainServiceTest {
         domain.setDomainDcnDetails(domainDcnDetails);
         when(domainRepository.save(domain)).thenReturn(domain);
         DomainRequest domainRequest = new DomainRequest(name, codename, false);
-        DomainDcnDetailsView domainDcnDetailsView = new DomainDcnDetailsView(null, codename, false, DcnDeploymentTypeDto.NONE, Collections.emptyList());
-        DomainTechDetailsView domainTechDetailsView = new DomainTechDetailsView(null, codename, null, kubernetesNamespace, kubernetesStorageClass, null);
+        DomainDcnDetailsDto domainDcnDetailsView = new DomainDcnDetailsDto(null, codename, false, DcnDeploymentTypeDto.NONE, Collections.emptyList());
+        DomainTechDetailsDto domainTechDetailsView = new DomainTechDetailsDto(null, codename, null, kubernetesNamespace, kubernetesStorageClass, null);
         domainRequest.setDomainDcnDetails(domainDcnDetailsView);
         domainRequest.setDomainTechDetails(domainTechDetailsView);
 
