@@ -93,13 +93,6 @@ public class WebhookEventController {
         return webhookEventService.getAllWebhooks(pageable, searchValue);
     }
 
-    @GetMapping(params = "page")
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
-    @Transactional
-    public ResponseEntity<List<WebhookEventDto>> getAllWebhooksPageable() {
-        return ResponseEntity.ok(webhookEventService.getAllWebhooks());
-    }
-
     @PostMapping("/domain/{domainId}")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasPermission(#domainId, 'domain', 'OWNER')")
     @Transactional
