@@ -17,6 +17,9 @@ import net.geant.nmaas.utils.Utils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -31,25 +34,36 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@SpringBootTest
 public class ResourcesLimitValidationTest {
-
-    private final ResourcesLimitRepository resourcesLimitRepository = mock(ResourcesLimitRepository.class);
-    private final AppInstanceRepository appInstanceRepository = mock(AppInstanceRepository.class);
-    private final KubernetesApiClientService kubernetesApiClientService = mock(KubernetesApiClientService.class);
-    private final KubernetesClusterDeploymentManager clusterDeploymentManager = mock(KubernetesClusterDeploymentManager.class);
-    private final DomainRepository domainRepository = mock(DomainRepository.class);
-    private final KClusterRepository kClusterRepository = mock(KClusterRepository.class);
 
     private static final String DOMAIN_CODENAME = "test-domain";
 
+    @MockitoBean
+    private ResourcesLimitRepository resourcesLimitRepository;
+
+    @MockitoBean
+    private AppInstanceRepository appInstanceRepository;
+
+    @Autowired
+    private DomainRepository domainRepository;
+
+    @MockitoBean
+    private KClusterRepository kClusterRepository;
+
+    @MockitoBean
+    private KubernetesApiClientService kubernetesApiClientService;
+
+    @MockitoBean
+    private KubernetesClusterDeploymentManager clusterDeploymentManager;
+
+    @Autowired
     private ResourcesLimitValidationService resourcesLimitValidationService;
 
     @BeforeEach
     void setUp() {
-        resourcesLimitValidationService = new ResourcesLimitValidationService(resourcesLimitRepository, appInstanceRepository, kubernetesApiClientService, clusterDeploymentManager, domainRepository, kClusterRepository);
         ResourcesLimit resourcesLimit = new ResourcesLimit(1L, 500, 100, 10, 50, new Domain(1L));
         when(resourcesLimitRepository.save(isA(ResourcesLimit.class))).thenReturn(resourcesLimit);
     }
@@ -67,13 +81,13 @@ public class ResourcesLimitValidationTest {
                 createAppInstance(100, 512)
         );
 
-        when(appInstanceRepository.findAllActiveInDomain(DOMAIN_CODENAME)).thenReturn(runningDeployments);
+        when(appInstanceRepository.findAllActiveInDomain(DOMAIN_CODENAME))
+                .thenReturn(runningDeployments);
 
         Domain domain = Mockito.mock(Domain.class);
         when(domain.getId()).thenReturn(1L);
         when(domainRepository.findByCodename(DOMAIN_CODENAME)).thenReturn(Optional.of(domain));
         when(kClusterRepository.findByDomains_Id(1L)).thenReturn(List.of());
-
         when(clusterDeploymentManager.namespace(DOMAIN_CODENAME)).thenReturn("nmaas-test-domain");
         when(kubernetesApiClientService.getPods(any(), eq("nmaas-test-domain"))).thenReturn(null);
 

@@ -158,18 +158,21 @@ public class DomainServiceImpl implements DomainService {
     @Override
     public List<DomainBaseDto> getDomainsBase(String searchValue) {
         if (searchValue == null || searchValue.isEmpty()) {
-            return this.domainRepository.findAllBaseDomains();
+            return domainRepository.findAll().stream()
+                    .map(d -> modelMapper.map(d, DomainBaseDto.class)).toList();
         } else {
             Specification<Domain> searchSpec = DomainSpecification.containsTextInAttributes(searchValue, "id", "name", "codename");
             List<Domain> domainPage = domainRepository.findAll(searchSpec);
-            return domainPage.stream().map(d -> modelMapper.map(d, DomainBaseDto.class)).toList();
+            return domainPage.stream()
+                    .map(d -> modelMapper.map(d, DomainBaseDto.class)).toList();
         }
     }
 
     @Override
     public Page<DomainBaseDto> getDomainsBase(Pageable pageable, String searchValue) {
         if (searchValue == null || searchValue.isEmpty()) {
-            return this.domainRepository.findAllBaseDomainsPageable(pageable);
+            return this.domainRepository.findAll(pageable)
+                    .map(d -> modelMapper.map(d, DomainBaseDto.class));
         } else {
             Specification<Domain> searchSpec = DomainSpecification.containsTextInAttributes(searchValue, "id", "name", "codename");
             Page<Domain> domainPage = domainRepository.findAll(searchSpec, pageable);
