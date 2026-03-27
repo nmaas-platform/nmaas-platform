@@ -17,6 +17,7 @@ import net.geant.nmaas.orchestration.events.app.AppAutoDeploymentReviewEvent;
 import net.geant.nmaas.orchestration.events.app.AppAutoDeploymentStatusUpdateEvent;
 import net.geant.nmaas.portal.api.bulk.CsvApplication;
 import net.geant.nmaas.portal.api.bulk.model.BulkQueueDetails;
+import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.persistence.entity.AppInstance;
 import net.geant.nmaas.portal.persistence.entity.Application;
 import net.geant.nmaas.portal.persistence.entity.ApplicationBase;
@@ -48,6 +49,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import static net.geant.nmaas.portal.api.bulk.BulkType.APPLICATION;
 import static net.geant.nmaas.portal.persistence.entity.BulkDeploymentState.COMPLETED;
@@ -56,6 +58,8 @@ import static net.geant.nmaas.portal.persistence.entity.BulkDeploymentState.PROC
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -274,6 +278,62 @@ class BulkApplicationServiceImplTest {
         testUser.setId(1L);
         testUser.setUsername("username");
         return testUser;
+    }
+
+    @Test
+    void shouldValidateDomainsList() {
+        when(domainService.existsDomain("d1")).thenReturn(true);
+        when(domainService.existsDomain("d2")).thenReturn(false);
+
+        assertTrue(!bulkApplicationService.validateDomainsList(Set.of("d1", "d2")));
+        assertTrue(bulkApplicationService.validateDomainsList(Set.of("d1")));
+    }
+
+    @Test
+    void handleBulkDeploymentShouldThrowWhenApplicationDoesNotExist() {
+        when(applicationBaseService.exists(TEST_APP_NAME)).thenReturn(false);
+
+        assertThrows(IllegalArgumentException.class, () ->
+                bulkApplicationService.handleBulkDeployment(TEST_APP_NAME, List.of(), testUser(), 1));
+    }
+
+    @Test
+    void getBulkEntryShouldDelegateToRepository() {
+        BulkDeploymentEntry entry = BulkDeploymentEntry.builder().id(12L).build();
+        when(bulkDeploymentEntryRepository.findById(12L)).thenReturn(Optional.of(entry));
+
+        Optional<BulkDeploymentEntry> result = bulkApplicationService.getBulkEntry(12L);
+
+        assertTrue(result.isPresent());
+        assertEquals(12L, result.get().getId());
+    }
+
+    @Test
+    void updateStateShouldThrowWhenBulkIsMissing() {
+        when(bulkDeploymentRepository.findById(99L)).thenReturn(Optional.empty());
+
+        assertThrows(MissingElementException.class, () -> bulkApplicationService.updateState(99L));
+    }
+
+    @Test
+    void setBulkEntryToProcessingShouldUpdateStateAndProcessingTime() {
+        BulkDeploymentEntry entry = BulkDeploymentEntry.builder().id(88L).state(PENDING).details(new java.util.HashMap<>()).build();
+        when(bulkDeploymentEntryRepository.findById(88L)).thenReturn(Optional.of(entry));
+
+        bulkApplicationService.setBulkEntryToProcessing(88L);
+
+        verify(bulkDeploymentEntryRepository).save(entry);
+        assertEquals(BulkDeploymentState.PROCESSING, entry.getState());
+        assertTrue(entry.getDetails().containsKey("START_PROCESSING_TIME"));
+    }
+
+    @Test
+    void setBulkEntryToProcessingShouldDoNothingForMissingEntry() {
+        when(bulkDeploymentEntryRepository.findById(89L)).thenReturn(Optional.empty());
+
+        bulkApplicationService.setBulkEntryToProcessing(89L);
+
+        verify(bulkDeploymentEntryRepository, times(0)).save(any(BulkDeploymentEntry.class));
     }
 
 }

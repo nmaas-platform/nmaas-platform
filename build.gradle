@@ -97,7 +97,7 @@ dependencies {
     runtimeOnly('org.postgresql:postgresql')
 
     // Database audit trail
-    implementation 'org.hibernate.orm:hibernate-envers:7.2.7.Final'
+    implementation 'org.hibernate.orm:hibernate-envers:7.2.8.Final'
 
     // Database migrations
     implementation("org.springframework.boot:spring-boot-starter-flyway")
@@ -246,7 +246,6 @@ jacocoTestCoverageVerification {
                     'net.geant.nmaas.portal.**'
             ]
             excludes = [
-                    '**.model*',
                     '**.exceptions**',
                     'net.geant.nmaas.portal.api.webhooks',
                     'net.geant.nmaas.portal.persistence.spec'
@@ -254,7 +253,7 @@ jacocoTestCoverageVerification {
             limit {
                 counter = 'INSTRUCTION'
                 value = 'COVEREDRATIO'
-                minimum = 0.4 // temporarily solution
+                minimum = 0.5
             }
         }
         rule {
@@ -263,7 +262,6 @@ jacocoTestCoverageVerification {
                     'net.geant.nmaas.orchestration.**'
             ]
             excludes = [
-                    '**.model*',
                     '**.exceptions**'
             ]
             limit {

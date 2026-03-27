@@ -8,6 +8,9 @@ import net.geant.nmaas.api.dto.webhooks.WebhookEventDto;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistence.entity.WebhookEvent;
 import net.geant.nmaas.portal.service.impl.WebhookEventService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.security.GeneralSecurityException;
@@ -80,12 +84,13 @@ public class WebhookEventController {
     public ResponseEntity<List<WebhookEventDto>> getAllWebhooks() {
         return ResponseEntity.ok(webhookEventService.getAllWebhooks());
     }
-
-    @GetMapping(params = "page")
+    @GetMapping(params = {"page"})
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @Transactional
-    public ResponseEntity<List<WebhookEventDto>> getAllWebhooksPageable() {
-        return ResponseEntity.ok(webhookEventService.getAllWebhooks());
+    public Page<WebhookEventDto> getAllWebhooksPageable(
+            @PageableDefault(page = 0, size = 15, sort = "id") Pageable pageable,
+            @RequestParam(required = false) String searchValue) {
+        return webhookEventService.getAllWebhooks(pageable, searchValue);
     }
 
     @PostMapping("/domain/{domainId}")
