@@ -9,6 +9,7 @@ import net.geant.nmaas.api.dto.users.UserViewMinimal;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 import net.geant.nmaas.dcn.deployment.entities.CustomerNetwork;
 import net.geant.nmaas.dcn.deployment.entities.DomainDcnDetails;
+import net.geant.nmaas.nmservice.deployment.limits.ResourcesLimitUsageService;
 import net.geant.nmaas.orchestration.entities.DomainTechDetails;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
 import net.geant.nmaas.portal.persistence.entity.Domain;
@@ -71,6 +72,9 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
 
     @MockitoBean
     private ApplicationStatePerDomainService applicationStatePerDomainService;
+
+    @MockitoBean
+    private ResourcesLimitUsageService resourcesLimitUsageService;
 
     @MockitoBean
     private ApplicationEventPublisher eventPublisher;

@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.stream.DoubleStream;
 
 @Service
 @RequiredArgsConstructor
@@ -43,10 +45,10 @@ public class ResourcesLimitUsageService {
         ResourceLimitUsage usage = new ResourceLimitUsage();
         ResourcesLimit limit = domainLimit.orElseGet(() -> globalLimit.orElse(null));
         if (limit != null) {
-            usage.setMemoryLimit(limit.getMemory());
-            usage.setCpuLimit(limit.getCpu());
-            usage.setInstancesNoLimit(limit.getInstancesNo());
-            usage.setContainersNoLimit(limit.getContainersNo());
+            usage.setMemoryLimit(limit.getMemory() + groupLimits.stream().mapToInt(ResourcesLimit::getMemory).sum());
+            usage.setCpuLimit(limit.getCpu() + groupLimits.stream().mapToInt(ResourcesLimit::getCpu).sum());
+            usage.setInstancesNoLimit(limit.getInstancesNo() + groupLimits.stream().mapToInt(ResourcesLimit::getInstancesNo).sum());
+            usage.setContainersNoLimit(limit.getContainersNo() + groupLimits.stream().mapToInt(ResourcesLimit::getContainersNo).sum());
             usage.setGlobalLimit(domainLimit.isEmpty());
         }
         return usage;
@@ -57,11 +59,11 @@ public class ResourcesLimitUsageService {
         usage.setInstancesNoUsed(runningInstances.size());
         usage.setContainersNoUsed(countRunningContainersInDomain(domainCodename));
         usage.setCpuUsed(runningInstances.stream()
-                    .mapToInt(x -> x.getApplication().getAppDeploymentSpec().getConsumedCpu())
-                    .sum());
+                .mapToInt(x -> x.getApplication().getAppDeploymentSpec().getConsumedCpu())
+                .sum());
         usage.setMemoryUsed(runningInstances.stream()
-                    .mapToInt(x -> x.getApplication().getAppDeploymentSpec().getConsumedMemory())
-                    .sum());
+                .mapToInt(x -> x.getApplication().getAppDeploymentSpec().getConsumedMemory())
+                .sum());
     }
 
     private int countRunningContainersInDomain(String domainCodename) {
@@ -83,6 +85,16 @@ public class ResourcesLimitUsageService {
         } catch (Exception e) {
             return 0;
         }
+    }
+
+    public int calculateDomainLimitUsageValue(String domainCodename) {
+        final ResourceLimitUsage usage = calculateDomainLimitUsage(domainCodename);
+        final OptionalDouble max = DoubleStream.of((double) usage.getCpuUsed() / usage.getCpuLimit(),
+                        (double) usage.getMemoryUsed() / usage.getMemoryLimit(),
+                        (double) usage.getInstancesNoUsed() / usage.getInstancesNoLimit(),
+                        (double) usage.getContainersNoUsed() / usage.getContainersNoLimit())
+                .max();
+        return (int) max.getAsDouble() * 100;
     }
 
 }
