@@ -3,7 +3,7 @@ package net.geant.nmaas.portal.api.kubernetes;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.api.dto.K8sPodInfo;
+import net.geant.nmaas.api.dto.K8sPodInfoDto;
 import net.geant.nmaas.api.dto.K8sShellCommandRequest;
 import net.geant.nmaas.portal.service.K8sShellService;
 import org.springframework.http.MediaType;
@@ -96,7 +96,7 @@ public class PodShellController {
      */
     @GetMapping(value = "/{appInstanceId}/podnames")
     @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
-    public List<K8sPodInfo> getPodNames(Principal principal, @PathVariable Long appInstanceId) {
+    public List<K8sPodInfoDto> getPodNames(Principal principal, @PathVariable Long appInstanceId) {
         log.debug("Retrieving list of pods for application instance {}", appInstanceId);
         return k8sShellService.getPodNames(appInstanceId);
     }

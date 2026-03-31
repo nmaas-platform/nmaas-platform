@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.service.impl;
 
 import net.geant.nmaas.api.dto.applications.ApplicationStatePerDomainView;
-import net.geant.nmaas.api.dto.domains.DomainView;
+import net.geant.nmaas.api.dto.domains.DomainDto;
 import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.portal.persistence.entity.Application;
 import net.geant.nmaas.portal.persistence.entity.ApplicationBase;
@@ -54,7 +54,7 @@ class ApplicationStatePerDomainServiceImplTest {
         List<ApplicationStatePerDomain> result = appState.generateListOfDefaultApplicationStatesPerDomain();
 
         assertEquals(1, result.size());
-        for(ApplicationStatePerDomain a: result){
+        for (ApplicationStatePerDomain a : result) {
             assertTrue(a.isEnabled());
             assertEquals(ApplicationStatePerDomainServiceImpl.DEFAULT_PV_STORAGE_SIZE_LIMIT, a.getPvStorageSizeLimit());
         }
@@ -92,7 +92,7 @@ class ApplicationStatePerDomainServiceImplTest {
 
     @Test
     void shouldReturnTrueIfApplicationIsEnabledInDomain() {
-        String mockName="test";
+        String mockName = "test";
         Application app = mock(Application.class);
         when(app.getName()).thenReturn(mockName);
         when(applications.findByName(mockName)).thenReturn(Optional.of(app1));
@@ -110,7 +110,7 @@ class ApplicationStatePerDomainServiceImplTest {
 
     @Test
     void shouldReturnFalseIfApplicationIsEnabledInDomain() {
-        String mockName="test";
+        String mockName = "test";
         Application app = mock(Application.class);
         when(app.getName()).thenReturn(mockName);
         when(applications.findByName(mockName)).thenReturn(Optional.of(app1));
@@ -128,7 +128,7 @@ class ApplicationStatePerDomainServiceImplTest {
 
     @Test
     void shouldThrowExceptionWhereThereIsNoAppBaseMatchingApplication() {
-        String mockName="test";
+        String mockName = "test";
         Application app = mock(Application.class);
         when(app.getName()).thenReturn(mockName);
         when(applications.findByName(mockName)).thenReturn(Optional.empty());
@@ -147,7 +147,7 @@ class ApplicationStatePerDomainServiceImplTest {
         ApplicationStatePerDomain state = new ApplicationStatePerDomain(base, true, 20);
         updatedDomain.setApplicationStatePerDomain(new ArrayList<>(List.of(state)));
 
-        DomainView changes = mock(DomainView.class);
+        DomainDto changes = mock(DomainDto.class);
         ApplicationStatePerDomainView changeView = mock(ApplicationStatePerDomainView.class);
         when(changes.getId()).thenReturn(10L);
         when(changes.getApplicationStatePerDomain()).thenReturn(List.of(changeView));

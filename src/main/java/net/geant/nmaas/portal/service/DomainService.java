@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.service;
 
-import net.geant.nmaas.api.dto.KeyValueView;
+import net.geant.nmaas.api.dto.KeyValueDto;
 import net.geant.nmaas.api.dto.domains.DomainAnnotationDto;
 import net.geant.nmaas.api.dto.domains.DomainBaseDto;
 import net.geant.nmaas.api.dto.domains.DomainGroupDto;
@@ -93,7 +93,7 @@ public interface DomainService {
 
     DomainGroupDto updateMembers(List<UserViewMinimal> newMembers, DomainGroupDto view);
 
-    void addAnnotation(KeyValueView annotation);
+    void addAnnotation(KeyValueDto annotation);
 
     boolean checkIfAnnotationExist(String key);
 

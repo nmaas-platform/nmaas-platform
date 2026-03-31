@@ -7,11 +7,11 @@ import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.api.model.apps.StatefulSet;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.api.dto.KeyValueDto;
 import net.geant.nmaas.kubernetes.remote.entities.KCluster;
 import net.geant.nmaas.nmservice.configuration.ConfigFile;
 import net.geant.nmaas.orchestration.AppComponentDetails;
 import net.geant.nmaas.orchestration.Identifier;
-import net.geant.nmaas.api.dto.KeyValueView;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -36,11 +36,11 @@ public class KubernetesApiJanitorService {
         return kubernetesApiClientService.checkIfNamespaceExists(kCluster, namespace);
     }
 
-    public void createNamespace(String namespace, List<KeyValueView> annotations) {
+    public void createNamespace(String namespace, List<KeyValueDto> annotations) {
         createNamespace(null, namespace, annotations);
     }
 
-    public void createNamespace(KCluster kCluster, String namespace, List<KeyValueView> annotations) {
+    public void createNamespace(KCluster kCluster, String namespace, List<KeyValueDto> annotations) {
         log.info("Creating namespace {} with {} annotations on cluster {}",
                 namespace,
                 annotations.size(),

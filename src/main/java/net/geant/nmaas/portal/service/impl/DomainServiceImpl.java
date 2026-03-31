@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.api.dto.KeyValueView;
+import net.geant.nmaas.api.dto.KeyValueDto;
 import net.geant.nmaas.api.dto.domains.DomainAnnotationDto;
 import net.geant.nmaas.api.dto.domains.DomainBaseDto;
 import net.geant.nmaas.api.dto.domains.DomainDto;
@@ -612,7 +612,7 @@ public class DomainServiceImpl implements DomainService {
     // Domain annotations
 
     @Override
-    public void addAnnotation(KeyValueView keyValue) {
+    public void addAnnotation(KeyValueDto keyValue) {
         ModelMapper modelMapper = new ModelMapper();
         if (this.domainAnnotationsRepository.existsByKey(keyValue.key())) {
             throw new ProcessingException(String.format("Domain annotation with key (%s) already exist", keyValue.key()));

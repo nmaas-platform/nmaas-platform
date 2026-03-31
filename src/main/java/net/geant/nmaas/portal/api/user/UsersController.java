@@ -4,8 +4,8 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.api.dto.PasswordChange;
-import net.geant.nmaas.api.dto.PasswordReset;
+import net.geant.nmaas.api.dto.PasswordChangeRequest;
+import net.geant.nmaas.api.dto.PasswordResetRequest;
 import net.geant.nmaas.api.dto.users.UserBase;
 import net.geant.nmaas.api.dto.users.UserListEntryDto;
 import net.geant.nmaas.api.dto.users.UserRequest;
@@ -363,7 +363,7 @@ public class UsersController {
     @PostMapping("/users/reset")
     @ValidateCaptcha
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void resetPassword(@RequestBody PasswordReset passwordReset, @RequestParam String token) {
+    public void resetPassword(@RequestBody PasswordResetRequest passwordReset, @RequestParam String token) {
         try {
             Claims claims = jwtTokenService.getResetClaims(passwordReset.token());
             User user = userService.findByEmail(claims.getSubject());
@@ -377,7 +377,7 @@ public class UsersController {
     @PostMapping("/users/my/auth/basic/password")
     @ResponseStatus(HttpStatus.ACCEPTED)
     @Transactional
-    public void changePassword(Principal principal, @RequestBody PasswordChange passwordChange) {
+    public void changePassword(Principal principal, @RequestBody PasswordChangeRequest passwordChange) {
         User user = userService.findByUsername(principal.getName()).orElseThrow(() -> new ProcessingException("Internal error. User not found."));
         checkSSOUser(user);
         checkPassword(user, passwordChange.password());
@@ -659,8 +659,10 @@ public class UsersController {
     }
 
     List<String> getRoleAsList(List<UserRole> userRoles) {
-        final List<Role> rolesList = userRoles.stream().map(UserRole::getRole).collect(Collectors.toList());
-        return rolesList.stream().map(Role::authority).collect(Collectors.toList());
+        return userRoles.stream()
+                .map(UserRole::getRole)
+                .map(Role::authority)
+                .toList();
     }
 
     List<String> getRequestedRoleAsList(Set<UserRoleDto> userRoles) {

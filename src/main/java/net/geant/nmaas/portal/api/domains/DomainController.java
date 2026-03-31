@@ -3,7 +3,7 @@ package net.geant.nmaas.portal.api.domains;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.api.dto.Id;
-import net.geant.nmaas.api.dto.KeyValueView;
+import net.geant.nmaas.api.dto.KeyValueDto;
 import net.geant.nmaas.api.dto.domains.DomainAnnotationDto;
 import net.geant.nmaas.api.dto.domains.DomainBaseDto;
 import net.geant.nmaas.api.dto.domains.DomainBaseWithStateDto;
@@ -292,7 +292,7 @@ public class DomainController extends BaseController {
     @PostMapping("/annotations")
     @Transactional
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
-    public void addAnnotation(@RequestBody KeyValueView annotation) {
+    public void addAnnotation(@RequestBody KeyValueDto annotation) {
         this.domainService.addAnnotation(annotation);
     }
 

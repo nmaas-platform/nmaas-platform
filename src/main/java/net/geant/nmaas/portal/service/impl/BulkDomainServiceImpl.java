@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.api.dto.KeyValueView;
+import net.geant.nmaas.api.dto.KeyValueDto;
 import net.geant.nmaas.api.dto.domains.DcnDeploymentTypeDto;
 import net.geant.nmaas.api.dto.domains.DomainDcnDetailsDto;
 import net.geant.nmaas.api.dto.domains.DomainGroupDto;
@@ -151,7 +151,7 @@ public class BulkDomainServiceImpl implements BulkDomainService {
                     domainTechDetails,
                     true,
                     domainService.getAnnotations().stream()
-                            .map(a -> new KeyValueView(a.getKey(), a.getValue()))
+                            .map(a -> new KeyValueDto(a.getKey(), a.getValue()))
                             .collect(Collectors.toList()));
             domain = domainService.createDomain(domainRequest);
             domainService.storeDcnInfo(prepareDcnInfo(domain));
