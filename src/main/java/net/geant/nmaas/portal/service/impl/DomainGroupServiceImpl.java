@@ -134,11 +134,8 @@ public class DomainGroupServiceImpl implements DomainGroupService {
 
     @Override
     public Page<DomainGroupDto> getPageableAllDomainGroupsWhereManagerIsMember(Pageable pageable, User manager) {
-
         return domainGroupRepository.findAllByManagers(manager, pageable)
-                .map( g -> modelMapper.map(g, DomainGroupDto.class));
-
-
+                .map(g -> modelMapper.map(g, DomainGroupDto.class));
     }
 
     @Override

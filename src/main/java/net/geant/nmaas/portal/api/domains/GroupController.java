@@ -59,13 +59,13 @@ public class GroupController extends BaseController {
     @PostMapping
     @Transactional
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
-    public Id createDomainGroup(@RequestBody DomainGroupDto domainGroup) {
-        if (domainGroupService.existDomainGroup(domainGroup.getName(), domainGroup.getCodename())) {
+    public Id createDomainGroup(@RequestBody DomainGroupDto dto) {
+        if (domainGroupService.existDomainGroup(dto.getName(), dto.getCodename())) {
             throw new ProcessingException("Domain group already exists.");
         }
         try {
-            DomainGroupDto domainGroupView = domainGroupService.createDomainGroup(domainGroup);
-            this.domainService.updateRolesInDomainGroupByUsers(domainGroupView);
+            DomainGroupDto domainGroupView = domainGroupService.createDomainGroup(dto);
+            domainService.updateRolesInDomainGroupByUsers(domainGroupView);
             return new Id(domainGroupView.getId());
         } catch (InvalidDomainException e) {
             throw new ProcessingException(e.getMessage());
@@ -76,17 +76,20 @@ public class GroupController extends BaseController {
     @Transactional
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
     public void deleteDomainGroup(@PathVariable Long domainGroupId) {
-        this.domainGroupService.deleteDomainGroup(domainGroupId);
+        domainGroupService.deleteDomainGroup(domainGroupId);
     }
 
     @GetMapping
     @Transactional(readOnly = true)
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
     public List<DomainGroupDto> getDomainGroups(Principal principal) {
-        User user = this.userService.findByUsername(principal.getName()).orElseThrow(() -> new IllegalArgumentException("User not found"));
+        final User user = userService.findByUsername(principal.getName())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
         if (user.getRoles().stream().anyMatch(userRole -> userRole.getRole().equals(Role.ROLE_GROUP_MANAGER))) {
-            return domainGroupService.getAllDomainGroups().stream().filter(group -> group.getManagers().stream()
-                    .anyMatch(groupUser -> groupUser.getId().equals(user.getId()))).collect(Collectors.toList());
+            return domainGroupService.getAllDomainGroups().stream()
+                    .filter(group -> group.getManagers().stream()
+                    .anyMatch(groupUser -> groupUser.getId().equals(user.getId())))
+                    .collect(Collectors.toList());
         }
         return domainGroupService.getAllDomainGroups();
     }
@@ -95,18 +98,8 @@ public class GroupController extends BaseController {
     @Transactional(readOnly = true)
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
     public Page<DomainGroupDto> getPageDomainGroups(Principal principal, Pageable pageable) {
-        User user = this.userService.findByUsername(principal.getName()).orElseThrow(() -> new IllegalArgumentException("User not found"));
-//        Sort mapped = Sort.by(
-//                pageable.getSort().stream().map(order -> {
-//                    String p = order.getProperty();
-//                    String mappedProp = switch (p){
-//                        case "numberOfDomains" -> "count(dg.domains)";
-//                        default -> p;
-//                    };
-//                    return new Sort.Order(order.getDirection(), mappedProp);
-//                }).toList()
-//        );
-//        Pageable newPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), mapped);
+        final User user = userService.findByUsername(principal.getName())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
         if (user.getRoles().stream().anyMatch(userRole -> userRole.getRole().equals(Role.ROLE_GROUP_MANAGER))) {
             return domainGroupService.getPageableAllDomainGroupsWhereManagerIsMember(pageable, user);
         }
@@ -131,7 +124,9 @@ public class GroupController extends BaseController {
     public DomainGroupDto addDomainsToGroup(@PathVariable String domainGroupCodeName,
                                             @RequestBody List<Long> domainIds) {
         return domainGroupService.addDomainsToGroup(
-                domainService.getDomains().stream().filter(d -> domainIds.contains(d.getId())).collect(Collectors.toList()),
+                domainService.getDomains().stream()
+                        .filter(d -> domainIds.contains(d.getId()))
+                        .collect(Collectors.toList()),
                 domainGroupCodeName);
     }
 
@@ -177,20 +172,17 @@ public class GroupController extends BaseController {
                                                 Principal principal) throws AccessDeniedException {
         DomainGroupDto domainGroup = domainGroupService.getDomainGroup(domainGroupId);
         if (checkManagerPrivileges(principal, domainGroup)) {
-
             Set<UserViewMinimal> members = new HashSet<>(domainGroup.getManagers());
             userIds.forEach(userId -> members.add(modelMapper.map(getUser(userId), UserViewMinimal.class)));
-            List<UserViewMinimal> userViewMinimals = members.stream().map(
-                    user -> modelMapper.map(user, UserViewMinimal.class)
-            ).toList();
-
+            List<UserViewMinimal> userViewMinimals = members.stream()
+                    .map(user -> modelMapper.map(user, UserViewMinimal.class))
+                    .toList();
             domainService.updateMembers(userViewMinimals, domainGroup);
         } else {
             throw new AccessDeniedException(ACCESS_DENIED_MESSAGE);
         }
-
-        return domainService.getMembers(domainGroupId).stream().map(
-                        user -> modelMapper.map(user, UserViewMinimal.class))
+        return domainService.getMembers(domainGroupId).stream()
+                .map(user -> modelMapper.map(user, UserViewMinimal.class))
                 .toList();
     }
 
@@ -203,18 +195,15 @@ public class GroupController extends BaseController {
         if (checkManagerPrivileges(principal, domainGroup)) {
             Set<UserViewMinimal> members = new HashSet<>(domainGroup.getManagers());
             userIds.forEach(userId -> members.removeIf(user -> user.getId().equals(userId)));
-            List<UserViewMinimal> userViewMinimals = members.stream().map(
-                    user -> modelMapper.map(user, UserViewMinimal.class)
-            ).toList();
-
-
+            List<UserViewMinimal> userViewMinimals = members.stream()
+                    .map(user -> modelMapper.map(user, UserViewMinimal.class))
+                    .toList();
             domainService.updateMembers(userViewMinimals, domainGroup);
         } else {
             throw new AccessDeniedException(ACCESS_DENIED_MESSAGE);
         }
-
-        return domainService.getMembers(domainGroupId).stream().map(
-                        user -> modelMapper.map(user, UserViewMinimal.class))
+        return domainService.getMembers(domainGroupId).stream()
+                .map(user -> modelMapper.map(user, UserViewMinimal.class))
                 .toList();
     }
 
@@ -236,7 +225,6 @@ public class GroupController extends BaseController {
         } else {
             throw new AccessDeniedException(ACCESS_DENIED_MESSAGE);
         }
-
     }
 
     @DeleteMapping("/{domainGroupId}/applications")
@@ -257,19 +245,12 @@ public class GroupController extends BaseController {
         } else {
             throw new AccessDeniedException(ACCESS_DENIED_MESSAGE);
         }
-
-
     }
 
     private boolean checkManagerPrivileges(Principal principal, DomainGroupDto domainGroup) {
-        return getUser(principal.getName())
-                .getRoles()
-                .stream()
-                .anyMatch(userRole ->
-                        userRole.getRole().equals(Role.ROLE_SYSTEM_ADMIN)
-                ) || domainGroup.getManagers()
-                .stream()
-                .anyMatch(user ->
+        return getUser(principal.getName()).getRoles().stream()
+                .anyMatch(userRole -> userRole.getRole().equals(Role.ROLE_SYSTEM_ADMIN))
+                    || domainGroup.getManagers().stream().anyMatch(user ->
                         user.getUsername().equalsIgnoreCase(principal.getName())
                 );
     }
