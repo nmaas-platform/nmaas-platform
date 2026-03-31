@@ -1,9 +1,9 @@
 package net.geant.nmaas.portal.service.impl;
 
 import net.geant.nmaas.api.dto.domains.DcnDeploymentTypeDto;
-import net.geant.nmaas.api.dto.domains.DomainDcnDetailsView;
+import net.geant.nmaas.api.dto.domains.DomainDcnDetailsDto;
 import net.geant.nmaas.api.dto.domains.DomainRequest;
-import net.geant.nmaas.api.dto.domains.DomainTechDetailsView;
+import net.geant.nmaas.api.dto.domains.DomainTechDetailsDto;
 import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.repositories.WebhookEventRepository;
 import net.geant.nmaas.portal.service.DomainService;
@@ -34,15 +34,15 @@ public class DomainServiceIntTest {
         DomainRequest domainRequest1 = new DomainRequest(
                 "domainName",
                 "domain",
-                new DomainDcnDetailsView(null, null, true, DcnDeploymentTypeDto.MANUAL, null),
-                new DomainTechDetailsView(null, null, "external@domain", null, null, null),
+                new DomainDcnDetailsDto(null, null, true, DcnDeploymentTypeDto.MANUAL, null),
+                new DomainTechDetailsDto(null, null, "external@domain", null, null, null),
                 true,
                 new ArrayList<>());
         DomainRequest domainRequest2 = new DomainRequest(
                 "domainName",
                 "domain",
-                new DomainDcnDetailsView(null, null, true, DcnDeploymentTypeDto.MANUAL, null),
-                new DomainTechDetailsView(null, null, "external@domain", null, null, null),
+                new DomainDcnDetailsDto(null, null, true, DcnDeploymentTypeDto.MANUAL, null),
+                new DomainTechDetailsDto(null, null, "external@domain", null, null, null),
                 true,
                 new ArrayList<>());
 

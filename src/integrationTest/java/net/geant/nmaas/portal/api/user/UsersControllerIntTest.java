@@ -7,7 +7,7 @@ import net.geant.nmaas.api.dto.users.RoleDto;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
 import net.geant.nmaas.portal.api.auth.UserToken;
 import net.geant.nmaas.api.dto.domains.DomainRequest;
-import net.geant.nmaas.api.dto.PasswordReset;
+import net.geant.nmaas.api.dto.PasswordResetRequest;
 import net.geant.nmaas.api.dto.users.UserRequest;
 import net.geant.nmaas.api.dto.users.UserRoleDto;
 import net.geant.nmaas.api.dto.users.UserView;
@@ -370,7 +370,7 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
 
     @Test
     void shouldResetPassword() {
-        PasswordReset passwordReset = new PasswordReset(jwtTokenService.getResetToken(user3.getEmail()), "test");
+        PasswordResetRequest passwordReset = new PasswordResetRequest(jwtTokenService.getResetToken(user3.getEmail()), "test");
         assertDoesNotThrow(() -> {
             mvc.perform(post("/api/users/reset?token=test-token")
                             .content(new ObjectMapper().writeValueAsString(passwordReset))
@@ -383,7 +383,7 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
 
     @Test
     void shouldNotResetPassword() {
-        PasswordReset passwordReset = new PasswordReset(jwtTokenService.getResetToken("notexistingemail@mail.com"), "test");
+        PasswordResetRequest passwordReset = new PasswordResetRequest(jwtTokenService.getResetToken("notexistingemail@mail.com"), "test");
         assertDoesNotThrow(() -> {
             mvc.perform(post("/api/users/reset?token=test-token")
                             .content(new ObjectMapper().writeValueAsString(passwordReset))

@@ -2,9 +2,9 @@ package net.geant.nmaas.portal.api.domains;
 
 import net.geant.nmaas.api.dto.Id;
 import net.geant.nmaas.api.dto.domains.DomainBaseDto;
-import net.geant.nmaas.api.dto.domains.DomainBaseWithState;
+import net.geant.nmaas.api.dto.domains.DomainBaseWithStateDto;
+import net.geant.nmaas.api.dto.domains.DomainDto;
 import net.geant.nmaas.api.dto.domains.DomainRequest;
-import net.geant.nmaas.api.dto.domains.DomainView;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 import net.geant.nmaas.dcn.deployment.entities.DomainDcnDetails;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
@@ -58,12 +58,12 @@ class DomainControllerTest {
     @Test
     void shouldGetDomainsAndMapWithGroupState() {
         Domain domain = new Domain(1L, "d1", "d1", true);
-        DomainView mapped = new DomainView();
+        DomainDto mapped = new DomainDto();
         when(domainService.getDomains()).thenReturn(List.of(domain));
         when(domainService.getAppStatesFromGroups(domain)).thenReturn(domain);
-        when(modelMapper.map(domain, DomainView.class)).thenReturn(mapped);
+        when(modelMapper.map(domain, DomainDto.class)).thenReturn(mapped);
 
-        List<DomainView> result = controller.getDomains(org.springframework.data.domain.PageRequest.of(0, 10), null, false);
+        List<DomainDto> result = controller.getDomains(org.springframework.data.domain.PageRequest.of(0, 10), null, false);
 
         assertEquals(1, result.size());
         assertEquals(mapped, result.getFirst());
@@ -92,11 +92,11 @@ class DomainControllerTest {
         Domain global = new Domain(1L, "global", "global", true);
         admin.setRoles(List.of(new UserRole(admin, global, Role.ROLE_SYSTEM_ADMIN)));
         Domain domain = new Domain(2L, "domain", "domain", true);
-        DomainView full = new DomainView();
+        DomainDto full = new DomainDto();
         when(userService.findByUsername("admin")).thenReturn(Optional.of(admin));
         when(domainService.findDomain(2L)).thenReturn(Optional.of(domain));
         when(domainService.getAppStatesFromGroups(domain)).thenReturn(domain);
-        when(modelMapper.map(domain, DomainView.class)).thenReturn(full);
+        when(modelMapper.map(domain, DomainDto.class)).thenReturn(full);
 
         DomainBaseDto result = controller.getDomain(2L, principal);
 
@@ -110,11 +110,11 @@ class DomainControllerTest {
         Domain domainUser = new Domain(10L, "d10", "d10", true);
         user.setRoles(List.of(new UserRole(user, domainUser, Role.ROLE_USER)));
         Domain domain = new Domain(2L, "domain", "domain", true);
-        DomainBaseWithState base = new DomainBaseWithState();
+        DomainBaseWithStateDto base = new DomainBaseWithStateDto();
         when(userService.findByUsername("user")).thenReturn(Optional.of(user));
         when(domainService.findDomain(2L)).thenReturn(Optional.of(domain));
         when(domainService.getAppStatesFromGroups(domain)).thenReturn(domain);
-        when(modelMapper.map(domain, DomainBaseWithState.class)).thenReturn(base);
+        when(modelMapper.map(domain, DomainBaseWithStateDto.class)).thenReturn(base);
 
         DomainBaseDto result = controller.getDomain(2L, principal);
 
@@ -192,7 +192,7 @@ class DomainControllerTest {
 
     @Test
     void shouldThrowOnUpdateDomainWhenIdMismatch() {
-        DomainView update = new DomainView();
+        DomainDto update = new DomainDto();
         update.setId(2L);
 
         assertThrows(ProcessingException.class, () -> controller.updateDomain(1L, update));

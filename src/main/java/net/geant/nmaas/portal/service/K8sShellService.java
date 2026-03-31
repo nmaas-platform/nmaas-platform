@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.service;
 
-import net.geant.nmaas.api.dto.K8sPodInfo;
+import net.geant.nmaas.api.dto.K8sPodInfoDto;
 import net.geant.nmaas.api.dto.K8sShellCommandRequest;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface K8sShellService {
 
-    List<K8sPodInfo> getPodNames(Long appInstanceId);
+    List<K8sPodInfoDto> getPodNames(Long appInstanceId);
 
     String createNewShellSession(Long appInstanceId, String podName);
 

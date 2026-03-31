@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.api.info;
 
-import net.geant.nmaas.api.dto.ContentView;
+import net.geant.nmaas.api.dto.ContentDto;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistence.entity.Content;
 import net.geant.nmaas.portal.persistence.repositories.ContentRepository;
@@ -24,16 +24,16 @@ class ContentControllerTest {
     private final ContentController contentController = new ContentController(repository, modelMapper);
 
     @Test
-    void shouldGetContent(){
+    void shouldGetContent() {
         when(repository.findByName(CONTENT.getName())).thenReturn(Optional.of(CONTENT));
-        ContentView contentView = this.contentController.getContent(CONTENT.getName());
+        ContentDto contentView = this.contentController.getContent(CONTENT.getName());
         assertEquals(CONTENT.getName(), contentView.getName());
         assertEquals(CONTENT.getContent(), contentView.getContent());
         assertEquals(CONTENT.getTitle(), contentView.getTitle());
     }
 
     @Test
-    void shouldThrowAnExceptionWhenContentNotFound(){
+    void shouldThrowAnExceptionWhenContentNotFound() {
         assertThrows(ProcessingException.class, () -> {
             when(repository.findByName(CONTENT.getName())).thenReturn(Optional.empty());
             contentController.getContent(CONTENT.getName());

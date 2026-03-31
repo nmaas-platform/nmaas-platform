@@ -3,7 +3,7 @@ package net.geant.nmaas.portal.domain.converters;
 import net.geant.nmaas.api.dto.ResourcesLimitDto;
 import net.geant.nmaas.api.dto.ResourcesLimitTypeDto;
 import net.geant.nmaas.api.dto.domains.DomainBaseDto;
-import net.geant.nmaas.api.dto.domains.DomainGroupViewS;
+import net.geant.nmaas.api.dto.domains.DomainGroupBaseDto;
 import net.geant.nmaas.portal.persistence.entity.ResourcesLimit;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
@@ -23,7 +23,7 @@ public class ResourceLimitConverter extends AbstractConverter<ResourcesLimit, Re
                 source.getInstancesNo(),
                 source.getContainersNo(),
                 ResourcesLimitTypeDto.valueOf(source.getLimitType().name()),
-                Objects.nonNull(source.getDomainGroup()) ? modelMapper.map(source.getDomainGroup(), DomainGroupViewS.class) : null,
+                Objects.nonNull(source.getDomainGroup()) ? modelMapper.map(source.getDomainGroup(), DomainGroupBaseDto.class) : null,
                 Objects.nonNull(source.getDomain()) ? modelMapper.map(source.getDomain(), DomainBaseDto.class) : null);
     }
 

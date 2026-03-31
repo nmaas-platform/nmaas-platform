@@ -1,12 +1,12 @@
 package net.geant.nmaas.portal.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.api.dto.KeyValueView;
+import net.geant.nmaas.api.dto.KeyValueDto;
 import net.geant.nmaas.api.dto.domains.DomainAnnotationDto;
 import net.geant.nmaas.api.dto.domains.DomainBaseDto;
+import net.geant.nmaas.api.dto.domains.DomainDto;
 import net.geant.nmaas.api.dto.domains.DomainGroupDto;
 import net.geant.nmaas.api.dto.domains.DomainRequest;
-import net.geant.nmaas.api.dto.domains.DomainView;
 import net.geant.nmaas.api.dto.users.UserView;
 import net.geant.nmaas.api.dto.users.UserViewMinimal;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
@@ -158,18 +158,21 @@ public class DomainServiceImpl implements DomainService {
     @Override
     public List<DomainBaseDto> getDomainsBase(String searchValue) {
         if (searchValue == null || searchValue.isEmpty()) {
-            return this.domainRepository.findAllBaseDomains();
+            return domainRepository.findAll().stream()
+                    .map(d -> modelMapper.map(d, DomainBaseDto.class)).toList();
         } else {
             Specification<Domain> searchSpec = DomainSpecification.containsTextInAttributes(searchValue, "id", "name", "codename");
             List<Domain> domainPage = domainRepository.findAll(searchSpec);
-            return domainPage.stream().map(d -> modelMapper.map(d, DomainBaseDto.class)).toList();
+            return domainPage.stream()
+                    .map(d -> modelMapper.map(d, DomainBaseDto.class)).toList();
         }
     }
 
     @Override
     public Page<DomainBaseDto> getDomainsBase(Pageable pageable, String searchValue) {
         if (searchValue == null || searchValue.isEmpty()) {
-            return this.domainRepository.findAllBaseDomainsPageable(pageable);
+            return this.domainRepository.findAll(pageable)
+                    .map(d -> modelMapper.map(d, DomainBaseDto.class));
         } else {
             Specification<Domain> searchSpec = DomainSpecification.containsTextInAttributes(searchValue, "id", "name", "codename");
             Page<Domain> domainPage = domainRepository.findAll(searchSpec, pageable);
@@ -327,7 +330,7 @@ public class DomainServiceImpl implements DomainService {
         return findDomain(id).map(toRemove -> {
             dcnRepositoryManager.removeDcnInfo(toRemove.getCodename());
             checkGlobal(toRemove);
-            DomainView domainView = modelMapper.map(toRemove, DomainView.class);
+            DomainDto domainView = modelMapper.map(toRemove, DomainDto.class);
             domainRepository.delete(toRemove);
             eventPublisher.publishEvent(new DomainRemovalEvent(this, domainView, true));
             return true;
@@ -340,7 +343,7 @@ public class DomainServiceImpl implements DomainService {
         String removedSuffix = "_DELETED_" + OffsetDateTime.now();
         return findDomain(domainId).map(domain -> {
             checkGlobal(domain);
-            final DomainView domainViewForEvent = modelMapper.map(domain, DomainView.class);
+            final DomainDto domainViewForEvent = modelMapper.map(domain, DomainDto.class);
 
             dcnRepositoryManager.removeDcnInfo(domain.getCodename());
             domain.setDeleted(true);
@@ -609,7 +612,7 @@ public class DomainServiceImpl implements DomainService {
     // Domain annotations
 
     @Override
-    public void addAnnotation(KeyValueView keyValue) {
+    public void addAnnotation(KeyValueDto keyValue) {
         ModelMapper modelMapper = new ModelMapper();
         if (this.domainAnnotationsRepository.existsByKey(keyValue.key())) {
             throw new ProcessingException(String.format("Domain annotation with key (%s) already exist", keyValue.key()));

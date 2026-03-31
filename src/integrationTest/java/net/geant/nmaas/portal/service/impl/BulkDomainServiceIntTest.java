@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.service.impl;
 
 import jakarta.transaction.Transactional;
+import net.geant.nmaas.nmservice.deployment.limits.ResourcesLimitUsageService;
 import net.geant.nmaas.portal.api.bulk.BulkType;
 import net.geant.nmaas.portal.api.bulk.CsvDomain;
 import net.geant.nmaas.portal.api.bulk.model.BulkDeploymentViewS;
@@ -60,6 +61,9 @@ public class BulkDomainServiceIntTest {
 
     @MockitoBean
     private UserRoleRepository userRoleRepository;
+
+    @MockitoBean
+    private ResourcesLimitUsageService resourcesLimitUsageService;
 
     @AfterEach
     void cleanup() {

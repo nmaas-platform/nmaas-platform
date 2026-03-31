@@ -3,12 +3,12 @@ package net.geant.nmaas.portal.api.domains;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.api.dto.Id;
-import net.geant.nmaas.api.dto.KeyValueView;
+import net.geant.nmaas.api.dto.KeyValueDto;
 import net.geant.nmaas.api.dto.domains.DomainAnnotationDto;
 import net.geant.nmaas.api.dto.domains.DomainBaseDto;
-import net.geant.nmaas.api.dto.domains.DomainBaseWithState;
+import net.geant.nmaas.api.dto.domains.DomainBaseWithStateDto;
+import net.geant.nmaas.api.dto.domains.DomainDto;
 import net.geant.nmaas.api.dto.domains.DomainRequest;
-import net.geant.nmaas.api.dto.domains.DomainView;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentStateChangeEvent;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 import net.geant.nmaas.dcn.deployment.entities.CustomerNetwork;
@@ -82,13 +82,13 @@ public class DomainController extends BaseController {
     @GetMapping
     @Transactional(readOnly = true)
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
-    public List<DomainView> getDomains(@PageableDefault(page = 0, size = 15, sort = "id") Pageable pageable,
-                                       @RequestParam(required = false) String searchValue,
-                                       @RequestParam(required = false, defaultValue = "false") boolean paginate) {
+    public List<DomainDto> getDomains(@PageableDefault(page = 0, size = 15, sort = "id") Pageable pageable,
+                                      @RequestParam(required = false) String searchValue,
+                                      @RequestParam(required = false, defaultValue = "false") boolean paginate) {
         return domainService.getDomains().stream()
                 .map(d -> {
                     d = domainService.getAppStatesFromGroups(d);
-                    return modelMapper.map(d, DomainView.class);
+                    return modelMapper.map(d, DomainDto.class);
                 })
                 .toList();
     }
@@ -122,10 +122,10 @@ public class DomainController extends BaseController {
                 || user.getRoles().stream().anyMatch(role -> role.getDomain().getId().equals(domainId)
                 && (role.getRole() == Role.ROLE_DOMAIN_ADMIN) || (role.getRole() == Role.ROLE_GROUP_DOMAIN_ADMIN))) {
 
-            return modelMapper.map(domain, DomainView.class);
+            return modelMapper.map(domain, DomainDto.class);
         }
         //otherwise base view
-        return modelMapper.map(domain, DomainBaseWithState.class);
+        return modelMapper.map(domain, DomainBaseWithStateDto.class);
     }
 
     @GetMapping("/name/{domainName}")
@@ -143,10 +143,10 @@ public class DomainController extends BaseController {
                 || user.getRoles().stream().anyMatch(role -> role.getDomain().getId().equals(domainId)
                 && (role.getRole() == Role.ROLE_DOMAIN_ADMIN) || (role.getRole() == Role.ROLE_GROUP_DOMAIN_ADMIN))) {
 
-            return modelMapper.map(domain, DomainView.class);
+            return modelMapper.map(domain, DomainDto.class);
         }
         //otherwise base view
-        return modelMapper.map(domain, DomainBaseWithState.class);
+        return modelMapper.map(domain, DomainBaseWithStateDto.class);
     }
 
     @GetMapping("/my")
@@ -191,14 +191,14 @@ public class DomainController extends BaseController {
     @PutMapping("/{domainId}")
     @Transactional
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
-    public Id updateDomain(@PathVariable Long domainId, @RequestBody(required = true) DomainView domainUpdate) {
+    public Id updateDomain(@PathVariable Long domainId, @RequestBody(required = true) DomainDto domainUpdate) {
         if (!domainId.equals(domainUpdate.getId())) {
             throw new ProcessingException(UNABLE_TO_CHANGE_DOMAIN_ID);
         }
 
         Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND));
         domain.setName(domainUpdate.getName());
-        domain.setActive(domainUpdate.isActive());
+        domain.setActive(domainUpdate.getActive());
         domain.getDomainTechDetails().setKubernetesNamespace(domainUpdate.getDomainTechDetails().getKubernetesNamespace());
         domain.getDomainTechDetails().setKubernetesIngressClass(domainUpdate.getDomainTechDetails().getKubernetesIngressClass());
         domain.getDomainTechDetails().setKubernetesStorageClass(domainUpdate.getDomainTechDetails().getKubernetesStorageClass());
@@ -224,7 +224,7 @@ public class DomainController extends BaseController {
     @PatchMapping("/{domainId}")
     @Transactional
     @PreAuthorize("hasRole('ROLE_OPERATOR')")
-    public Id updateDomainTechDetails(@PathVariable Long domainId, @RequestBody DomainView domainUpdate) {
+    public Id updateDomainTechDetails(@PathVariable Long domainId, @RequestBody DomainDto domainUpdate) {
         if (!domainId.equals(domainUpdate.getId())) {
             throw new ProcessingException(UNABLE_TO_CHANGE_DOMAIN_ID);
         }
@@ -292,7 +292,7 @@ public class DomainController extends BaseController {
     @PostMapping("/annotations")
     @Transactional
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
-    public void addAnnotation(@RequestBody KeyValueView annotation) {
+    public void addAnnotation(@RequestBody KeyValueDto annotation) {
         this.domainService.addAnnotation(annotation);
     }
 

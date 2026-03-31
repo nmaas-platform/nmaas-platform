@@ -2,7 +2,7 @@ package net.geant.nmaas.portal.events;
 
 import lombok.Getter;
 import lombok.ToString;
-import net.geant.nmaas.api.dto.KeyValueView;
+import net.geant.nmaas.api.dto.KeyValueDto;
 import net.geant.nmaas.portal.persistence.entity.Domain;
 import org.springframework.context.ApplicationEvent;
 
@@ -21,7 +21,7 @@ public class DomainCreatedEvent extends ApplicationEvent {
         this.domainEntity = domainEntity;
     }
 
-    public record DomainSpec(Long domainId, String domainName, String domainCodename, List<KeyValueView> annotations) {
+    public record DomainSpec(Long domainId, String domainName, String domainCodename, List<KeyValueDto> annotations) {
     }
 
 }

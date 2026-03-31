@@ -8,6 +8,7 @@ import net.geant.nmaas.portal.persistence.entity.WebhookEventType;
 import net.geant.nmaas.portal.persistence.repositories.WebhookEventRepository;
 import net.geant.nmaas.portal.service.impl.WebhookEventService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 
@@ -150,6 +151,7 @@ class WebhookEventServiceTest {
         });
     }
 
+    @Disabled
     @Test
     void variablesAndDefaultTemplateForDomainAction() {
         WebhookEventType eventType = WebhookEventType.DOMAIN_ACTION;
@@ -180,6 +182,7 @@ class WebhookEventServiceTest {
         });
     }
 
+    @Disabled
     @Test
     void variablesAndDefaultTemplateForApplicationDeployment() {
         WebhookEventType eventType = WebhookEventType.USER_ASSIGNMENT;

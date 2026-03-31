@@ -9,7 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import net.geant.nmaas.api.dto.domains.CustomerNetworkView;
+import net.geant.nmaas.api.dto.domains.CustomerNetworkDto;
 import org.apache.commons.lang3.Validate;
 
 import java.io.Serializable;
@@ -33,7 +33,7 @@ public class CustomerNetwork implements Serializable {
     @Column(nullable = false)
     private Integer maskLength;
 
-    public static CustomerNetwork of(CustomerNetworkView network) {
+    public static CustomerNetwork of(CustomerNetworkDto network) {
         Validate.isTrue(network.maskLength() >= 0 && network.maskLength() <= 32, "Invalid mask");
         return new CustomerNetwork(network.id(), Objects.requireNonNull(network.customerIp(), "IP address must be specified"), network.maskLength());
     }

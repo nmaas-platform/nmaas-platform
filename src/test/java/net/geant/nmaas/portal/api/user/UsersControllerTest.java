@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.api.user;
 
-import net.geant.nmaas.api.dto.PasswordChange;
+import net.geant.nmaas.api.dto.PasswordChangeRequest;
 import net.geant.nmaas.api.dto.users.RoleDto;
 import net.geant.nmaas.api.dto.users.UserRequest;
 import net.geant.nmaas.api.dto.users.UserRoleDto;
@@ -264,8 +264,8 @@ class UsersControllerTest {
     @Test
     void shouldChangePassword() {
         when(principal.getName()).thenReturn(userList.getFirst().getUsername());
-        when(userService.findByUsername(userList.getFirst().getUsername())).thenReturn(Optional.of(userList.get(0)));
-        PasswordChange passwordChange = new PasswordChange(userList.getFirst().getPassword(), "test1234");
+        when(userService.findByUsername(userList.getFirst().getUsername())).thenReturn(Optional.of(userList.getFirst()));
+        PasswordChangeRequest passwordChange = new PasswordChangeRequest(userList.getFirst().getPassword(), "test1234");
         when(passwordEncoder.matches(userList.getFirst().getPassword(), passwordChange.password())).thenReturn(true);
         usersController.changePassword(principal, passwordChange);
         verify(userService, times(1)).update(userList.getFirst());
@@ -276,7 +276,7 @@ class UsersControllerTest {
         assertThrows(ProcessingException.class, () -> {
             when(principal.getName()).thenReturn(userList.getFirst().getUsername());
             when(userService.findByUsername(userList.getFirst().getUsername())).thenReturn(Optional.of(userList.get(0)));
-            PasswordChange passwordChange = new PasswordChange("wrongpass", "test1234");
+            PasswordChangeRequest passwordChange = new PasswordChangeRequest("wrongpass", "test1234");
             when(passwordEncoder.matches(userList.getFirst().getPassword(), passwordChange.password())).thenReturn(false);
             usersController.changePassword(principal, passwordChange);
             verify(userService, times(1)).update(userList.getFirst());

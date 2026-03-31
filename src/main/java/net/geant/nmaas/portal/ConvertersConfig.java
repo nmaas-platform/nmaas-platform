@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal;
 
+import net.geant.nmaas.nmservice.deployment.limits.ResourcesLimitUsageService;
 import net.geant.nmaas.portal.domain.converters.AppAccessMethodConverter;
 import net.geant.nmaas.portal.domain.converters.AppConfigurationSpecConverter;
 import net.geant.nmaas.portal.domain.converters.AppConfigurationSpecInverseConverter;
@@ -9,6 +10,7 @@ import net.geant.nmaas.portal.domain.converters.ApplicationSubscriptionConverter
 import net.geant.nmaas.portal.domain.converters.CommentConverter;
 import net.geant.nmaas.portal.domain.converters.ConfigurationConverter;
 import net.geant.nmaas.portal.domain.converters.CustomerNetworkConverter;
+import net.geant.nmaas.portal.domain.converters.DomainBaseConverter;
 import net.geant.nmaas.portal.domain.converters.FileInfoConverter;
 import net.geant.nmaas.portal.domain.converters.InetAddressConverter;
 import net.geant.nmaas.portal.domain.converters.InetAddressInverseConverter;
@@ -32,10 +34,12 @@ import org.springframework.context.annotation.Configuration;
 public class ConvertersConfig {
 
     private final TagRepository tagRepository;
+    private final ResourcesLimitUsageService resourcesLimitUsageService;
 
     @Autowired
-    public ConvertersConfig(TagRepository tagRepository) {
+    public ConvertersConfig(TagRepository tagRepository, ResourcesLimitUsageService resourcesLimitUsageService) {
         this.tagRepository = tagRepository;
+        this.resourcesLimitUsageService = resourcesLimitUsageService;
     }
 
     @Bean
@@ -63,6 +67,7 @@ public class ConvertersConfig {
         modelMapper.addConverter(new AppConfigurationSpecConverter());
         modelMapper.addConverter(new AppConfigurationSpecInverseConverter());
         modelMapper.addConverter(new WebhookHistoryConverter());
+        modelMapper.addConverter(new DomainBaseConverter(resourcesLimitUsageService));
         return modelMapper;
     }
 

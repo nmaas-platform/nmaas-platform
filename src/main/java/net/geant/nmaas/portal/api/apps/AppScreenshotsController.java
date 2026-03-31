@@ -1,9 +1,9 @@
 package net.geant.nmaas.portal.api.apps;
 
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.portal.api.exceptions.MissingElementException;
-import net.geant.nmaas.api.dto.FileInfoView;
+import net.geant.nmaas.api.dto.FileInfoDto;
 import net.geant.nmaas.api.dto.users.UserFile;
+import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.persistence.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistence.entity.FileInfo;
 import net.geant.nmaas.portal.service.ApplicationBaseService;
@@ -58,7 +58,7 @@ public class AppScreenshotsController extends AppBaseController {
     @PostMapping("/logo")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
     @Transactional
-    public FileInfoView uploadLogo(@PathVariable("appId") Long appId, @RequestParam("file") MultipartFile file) {
+    public FileInfoDto uploadLogo(@PathVariable("appId") Long appId, @RequestParam("file") MultipartFile file) {
         ApplicationBase app = getBaseApp(appId);
 
         if (app.getLogo() != null) {
@@ -71,7 +71,7 @@ public class AppScreenshotsController extends AppBaseController {
         app.setLogo(fileInfo);
         appBaseService.update(app);
 
-        return modelMapper.map(fileInfo, FileInfoView.class);
+        return modelMapper.map(fileInfo, FileInfoDto.class);
     }
 
     @DeleteMapping("/logo")
@@ -97,14 +97,14 @@ public class AppScreenshotsController extends AppBaseController {
     @PostMapping("/screenshots")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
     @Transactional
-    public FileInfoView uploadScreenshot(@PathVariable("appId") Long appId, @RequestParam("file") MultipartFile file) {
+    public FileInfoDto uploadScreenshot(@PathVariable("appId") Long appId, @RequestParam("file") MultipartFile file) {
         ApplicationBase app = getBaseApp(appId);
 
         FileInfo fileInfo = fileStorage.store(file);
         app.getScreenshots().add(fileInfo);
         appBaseService.update(app);
 
-        return modelMapper.map(fileInfo, FileInfoView.class);
+        return modelMapper.map(fileInfo, FileInfoDto.class);
     }
 
     @GetMapping("/screenshots/{screenshotId}")

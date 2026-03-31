@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.api.apps;
 
-import net.geant.nmaas.api.dto.FileInfoView;
+import net.geant.nmaas.api.dto.FileInfoDto;
 import net.geant.nmaas.api.dto.users.UserFile;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.domain.converters.FileInfoConverter;
@@ -103,7 +103,7 @@ class AppScreenshotsControllerTest {
         FileInfo newLogo = new FileInfo("newLogo", "image/png");
         when(fileStorageService.store(mf)).thenReturn(newLogo);
 
-        FileInfoView fiv = this.appScreenshotsController.uploadLogo(appWithLogo.getId(), mf);
+        FileInfoDto fiv = this.appScreenshotsController.uploadLogo(appWithLogo.getId(), mf);
 
         assertEquals(newLogo.getFilename(), fiv.getFilename());
         verify(applicationBaseService, times(2)).update(any(ApplicationBase.class));
@@ -116,7 +116,7 @@ class AppScreenshotsControllerTest {
         FileInfo newLogo = new FileInfo("newLogo", "image/png");
         when(fileStorageService.store(mf)).thenReturn(newLogo);
 
-        FileInfoView fiv = this.appScreenshotsController.uploadLogo(app.getId(), mf);
+        FileInfoDto fiv = this.appScreenshotsController.uploadLogo(app.getId(), mf);
 
         assertEquals(newLogo.getFilename(), fiv.getFilename());
         verify(applicationBaseService, times(1)).update(any(ApplicationBase.class));
@@ -151,7 +151,7 @@ class AppScreenshotsControllerTest {
         FileInfo newScreenshot = new FileInfo("newScreenshot", "image/png");
         when(fileStorageService.store(mf)).thenReturn(newScreenshot);
 
-        FileInfoView fiv = this.appScreenshotsController.uploadScreenshot(app.getId(), mf);
+        FileInfoDto fiv = this.appScreenshotsController.uploadScreenshot(app.getId(), mf);
 
         assertEquals(newScreenshot.getFilename(), fiv.getFilename());
         verify(applicationBaseService, times(1)).update(any(ApplicationBase.class));
