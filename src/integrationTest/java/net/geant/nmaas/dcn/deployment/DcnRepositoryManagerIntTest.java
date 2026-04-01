@@ -4,6 +4,7 @@ import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
 import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
 import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
 import net.geant.nmaas.dcn.deployment.repositories.DcnInfoRepository;
+import net.geant.nmaas.nmservice.deployment.limits.ResourcesLimitUsageService;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
@@ -11,10 +12,9 @@ import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -22,19 +22,23 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class DcnRepositoryManagerIntTest {
 
-    @Autowired
-    private DcnRepositoryManager dcnRepositoryManager;
-    @Autowired
-    private DcnInfoRepository dcnInfoRepository;
-    @Autowired
-    private AppDeploymentRepository appDeploymentRepository;
-
     private static final Identifier DEPLOYMENT_ID = Identifier.newInstance("did");
     private static final String DOMAIN = "domain";
+
+    @MockitoBean
+    private ResourcesLimitUsageService resourcesLimitUsageService;
+
+    @Autowired
+    private DcnRepositoryManager dcnRepositoryManager;
+
+    @Autowired
+    private DcnInfoRepository dcnInfoRepository;
+
+    @Autowired
+    private AppDeploymentRepository appDeploymentRepository;
 
     @BeforeEach
     void populateRepositories() {
@@ -67,7 +71,7 @@ public class DcnRepositoryManagerIntTest {
     }
 
     @Test
-    void shouldThrowExceptionOnMissingDeployment(){
+    void shouldThrowExceptionOnMissingDeployment() {
         assertThrows(InvalidDomainException.class, () -> {
             appDeploymentRepository.deleteAll();
             dcnRepositoryManager.loadNetwork(DOMAIN);
@@ -75,7 +79,7 @@ public class DcnRepositoryManagerIntTest {
     }
 
     @Test
-    void shouldThrowExceptionOnMissingDcnForGivenClient(){
+    void shouldThrowExceptionOnMissingDcnForGivenClient() {
         assertThrows(InvalidDomainException.class, () -> {
             dcnRepositoryManager.loadNetwork(DOMAIN);
         });

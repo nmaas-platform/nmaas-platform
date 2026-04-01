@@ -16,6 +16,7 @@ import net.geant.nmaas.portal.persistence.repositories.ResourcesLimitRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.stream.DoubleStream;
@@ -89,12 +90,17 @@ public class ResourcesLimitUsageService {
 
     public int calculateDomainLimitUsageValue(String domainCodename) {
         final ResourceLimitUsage usage = calculateDomainLimitUsage(domainCodename);
-        final OptionalDouble max = DoubleStream.of((double) usage.getCpuUsed() / usage.getCpuLimit(),
-                        (double) usage.getMemoryUsed() / usage.getMemoryLimit(),
-                        (double) usage.getInstancesNoUsed() / usage.getInstancesNoLimit(),
-                        (double) usage.getContainersNoUsed() / usage.getContainersNoLimit())
+        double cpuLimitRatio = Objects.nonNull(usage.getCpuLimit()) ?
+                (double) usage.getCpuUsed() / usage.getCpuLimit() : 0;
+        double memoryLimitRatio = Objects.nonNull(usage.getMemoryLimit()) ?
+                (double) usage.getMemoryUsed() / usage.getMemoryLimit() : 0;
+        double instancesLimitRatio = Objects.nonNull(usage.getInstancesNoLimit()) ?
+                (double) usage.getInstancesNoUsed() / usage.getInstancesNoLimit() : 0;
+        double containersLimitRatio = Objects.nonNull(usage.getContainersNoLimit()) ?
+                (double) usage.getContainersNoUsed() / usage.getContainersNoLimit() : 0;
+        final OptionalDouble max = DoubleStream.of(cpuLimitRatio, memoryLimitRatio, instancesLimitRatio, containersLimitRatio)
                 .max();
-        return (int) max.getAsDouble() * 100;
+        return (int) (max.getAsDouble() * 100);
     }
 
 }

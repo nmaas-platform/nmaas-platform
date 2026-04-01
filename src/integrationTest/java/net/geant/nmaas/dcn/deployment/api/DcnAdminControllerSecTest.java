@@ -49,7 +49,7 @@ public class DcnAdminControllerSecTest extends BaseControllerTestSetup {
                 result.getResponse().getContentAsString(),
                 new TypeReference<List<DcnView>>() {});
         assertThat(dcnRepositoryManager.loadAllNetworks().size(), equalTo(content.size()));
-        assertThat(dcnInfo().getDomain(), equalTo(content.get(0).getDomain()));
+        assertThat(dcnInfo().getDomain(), equalTo(content.getFirst().getDomain()));
     }
 
     private DcnInfo dcnInfo() {
@@ -60,7 +60,7 @@ public class DcnAdminControllerSecTest extends BaseControllerTestSetup {
     }
 
     @Test
-    void shouldAuthAndForbidSimpleGet() throws Exception {
+    void shouldAuthAndForbidSimpleGet() {
         String token = getValidUserTokenFor(Role.ROLE_USER);
         assertDoesNotThrow(() -> {
             mvc.perform(get("/api/management/dcns")

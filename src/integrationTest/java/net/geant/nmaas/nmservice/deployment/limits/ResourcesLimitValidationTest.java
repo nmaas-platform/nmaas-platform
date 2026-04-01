@@ -1,9 +1,9 @@
 package net.geant.nmaas.nmservice.deployment.limits;
 
-import net.geant.nmaas.kubernetes.KubernetesApiClientService;
+import net.geant.nmaas.kubernetes.DummyKubernetesApiClientService;
+import net.geant.nmaas.kubernetes.DummyKubernetesApiClientServiceConfig;
 import net.geant.nmaas.kubernetes.KubernetesClusterDeploymentManager;
 import net.geant.nmaas.kubernetes.remote.repositories.KClusterRepository;
-import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.portal.persistence.entity.AppInstance;
 import net.geant.nmaas.portal.persistence.entity.Application;
@@ -11,14 +11,13 @@ import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.entity.ResourcesLimit;
 import net.geant.nmaas.portal.persistence.entity.ResourcesLimitType;
 import net.geant.nmaas.portal.persistence.repositories.AppInstanceRepository;
-import net.geant.nmaas.portal.persistence.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistence.repositories.ResourcesLimitRepository;
 import net.geant.nmaas.utils.Utils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.Arrays;
@@ -31,12 +30,11 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
+@Import(DummyKubernetesApiClientServiceConfig.class)
 public class ResourcesLimitValidationTest {
 
     private static final String DOMAIN_CODENAME = "test-domain";
@@ -51,24 +49,23 @@ public class ResourcesLimitValidationTest {
     private KClusterRepository kClusterRepository;
 
     @MockitoBean
-    private KubernetesApiClientService kubernetesApiClientService;
-
-    @MockitoBean
     private KubernetesClusterDeploymentManager clusterDeploymentManager;
 
     @Autowired
     private ResourcesLimitValidationService resourcesLimitValidationService;
 
+    @Autowired
+    private DummyKubernetesApiClientService kubernetesApiClientService;
+
     @BeforeEach
     void setUp() {
+        kubernetesApiClientService.reset();
         ResourcesLimit resourcesLimit = new ResourcesLimit(1L, 500, 100, 10, 50, new Domain(1L));
         when(resourcesLimitRepository.save(isA(ResourcesLimit.class))).thenReturn(resourcesLimit);
     }
 
     @Test
     void validateNewDeploymentPasses() {
-        Identifier applicationId = Mockito.mock(Identifier.class);
-
         ResourcesLimit domainLimit = ResourcesLimit.builder().instancesNo(5).containersNo(10).memory(4028).cpu(1000).build();
         when(resourcesLimitRepository.findByDomain_Codename(DOMAIN_CODENAME)).thenReturn(Optional.of(domainLimit));
         when(resourcesLimitRepository.findForGroupsBasedOnDomain(DOMAIN_CODENAME)).thenReturn(Collections.emptyList());
@@ -83,7 +80,6 @@ public class ResourcesLimitValidationTest {
 
         when(kClusterRepository.findByDomains_Id(1L)).thenReturn(List.of());
         when(clusterDeploymentManager.namespace(DOMAIN_CODENAME)).thenReturn("nmaas-test-domain");
-        when(kubernetesApiClientService.getPods(any(), eq("nmaas-test-domain"))).thenReturn(null);
 
         ValidationResult result = resourcesLimitValidationService.validateNewDeployment(DOMAIN_CODENAME, 1, new AppDeploymentSpec());
         assertTrue(result.isAccepted());
@@ -133,7 +129,6 @@ public class ResourcesLimitValidationTest {
         when(kClusterRepository.findByDomains_Id(1L)).thenReturn(List.of());
 
         when(clusterDeploymentManager.namespace(DOMAIN_CODENAME)).thenReturn("nmaas-test-domain");
-        when(kubernetesApiClientService.getPods(any(), eq("nmaas-test-domain"))).thenReturn(null);
 
         ValidationResult result = resourcesLimitValidationService.validateNewDeployment(DOMAIN_CODENAME, 1, new AppDeploymentSpec());
         assertTrue(result.isAccepted());

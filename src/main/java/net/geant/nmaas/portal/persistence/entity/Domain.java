@@ -24,6 +24,7 @@ import net.geant.nmaas.api.dto.domains.DomainBaseDto;
 import net.geant.nmaas.dcn.deployment.entities.DomainDcnDetails;
 import net.geant.nmaas.kubernetes.remote.entities.KCluster;
 import net.geant.nmaas.orchestration.entities.DomainTechDetails;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -37,6 +38,7 @@ import java.util.List;
 @Getter
 @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@SQLRestriction("deleted = false")
 public class Domain implements Serializable {
 
     @Id

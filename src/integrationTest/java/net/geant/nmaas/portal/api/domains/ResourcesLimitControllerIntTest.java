@@ -37,9 +37,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 public class ResourcesLimitControllerIntTest extends BaseControllerTestSetup {
 
-    private static final Long TEST_DOMAIN_ID = 15L;
-    private static final String TEST_DOMAIN_NAME = "defdom";
-
     @MockitoBean
     private DomainService domainService;
 

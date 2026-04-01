@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.service.impl;
 
 import net.geant.nmaas.api.dto.domains.DomainRequest;
+import net.geant.nmaas.kubernetes.DummyKubernetesApiClientServiceConfig;
 import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.entity.User;
 import net.geant.nmaas.portal.persistence.repositories.DomainRepository;
@@ -10,13 +11,12 @@ import net.geant.nmaas.portal.service.UserListEntry;
 import net.geant.nmaas.portal.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Collections;
 import java.util.List;
@@ -25,8 +25,8 @@ import java.util.Objects;
 import static net.geant.nmaas.portal.persistence.entity.Role.ROLE_USER;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ExtendWith(SpringExtension.class)
 @SpringBootTest
+@Import(DummyKubernetesApiClientServiceConfig.class)
 public class UserServiceIntTest {
 
     private final DomainRepository domainRepository;

@@ -6,11 +6,9 @@ import net.geant.nmaas.portal.api.BaseControllerTestSetup;
 import net.geant.nmaas.portal.persistence.entity.UsersHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.HashMap;
@@ -21,7 +19,6 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class PodShellControllerIntTest extends BaseControllerTestSetup {
 
@@ -43,24 +40,14 @@ public class PodShellControllerIntTest extends BaseControllerTestSetup {
     @Test
     void shouldRetrievePodNames() throws Exception {
         when(connectorHelper.checkAppInstanceSupportsSshAccess(1L)).thenReturn(true);
-        MvcResult result = mvc.perform(get("/api/pods/shell/{id}/podnames", 1L)
-                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andReturn();
+        MvcResult result = mvc.perform(get("/api/pods/shell/{id}/podnames", 1L).header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN)).contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
         assertTrue(result.getResponse().getContentAsString().contains("name1"));
     }
 
     @Test
     void shouldNotRetrievePodNames() throws Exception {
         when(connectorHelper.checkAppInstanceSupportsSshAccess(1L)).thenReturn(false);
-        mvc.perform(get("/api/pods/shell/{id}/podnames", 1L)
-                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotAcceptable())
-                .andReturn();
+        mvc.perform(get("/api/pods/shell/{id}/podnames", 1L).header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN)).contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotAcceptable()).andReturn();
     }
 
 }

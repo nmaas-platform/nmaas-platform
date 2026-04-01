@@ -3,14 +3,14 @@ package net.geant.nmaas.portal.api.user;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import jakarta.transaction.Transactional.TxType;
-import net.geant.nmaas.api.dto.users.RoleDto;
-import net.geant.nmaas.portal.api.BaseControllerTestSetup;
-import net.geant.nmaas.portal.api.auth.UserToken;
-import net.geant.nmaas.api.dto.domains.DomainRequest;
 import net.geant.nmaas.api.dto.PasswordResetRequest;
+import net.geant.nmaas.api.dto.domains.DomainRequest;
+import net.geant.nmaas.api.dto.users.RoleDto;
 import net.geant.nmaas.api.dto.users.UserRequest;
 import net.geant.nmaas.api.dto.users.UserRoleDto;
 import net.geant.nmaas.api.dto.users.UserView;
+import net.geant.nmaas.portal.api.BaseControllerTestSetup;
+import net.geant.nmaas.portal.api.auth.UserToken;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
@@ -24,11 +24,13 @@ import net.geant.nmaas.utils.captcha.CaptchaValidator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.security.Principal;
@@ -53,6 +55,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 @Transactional(value = TxType.REQUIRES_NEW)
 public class UsersControllerIntTest extends BaseControllerTestSetup {
