@@ -82,7 +82,9 @@ public class ResourcesLimitUsageService {
 
     private int countRunningContainersInNamespace(KCluster cluster, String namespace) {
         try {
-            return kubernetesApiClientService.getPods(cluster, namespace).getItems().size();
+            // temporary fix
+            // return kubernetesApiClientService.getPods(cluster, namespace).getItems().size();
+            return 0;
         } catch (Exception e) {
             return 0;
         }

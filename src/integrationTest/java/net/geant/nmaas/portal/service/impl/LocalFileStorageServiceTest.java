@@ -38,10 +38,8 @@ public class LocalFileStorageServiceTest {
 	
 	@Value("${upload.dir}")
 	private String uploadDir;
-	
-	private final String content = "FAKE SCREENSHOT";
-	
-	private Path path;
+
+    private Path path;
 	
 	@BeforeEach
 	void setUp() {
@@ -57,6 +55,7 @@ public class LocalFileStorageServiceTest {
 	@Disabled
 	@Test
 	void testStoreGetRemove() throws StorageException, MissingElementException, IOException {
+        String content = "FAKE SCREENSHOT";
         MockMultipartFile multipartFile = new MockMultipartFile("file", "test.txt", "text/plain", content.getBytes());
         
         FileInfo fileInfo = storage.store(multipartFile);
@@ -66,7 +65,7 @@ public class LocalFileStorageServiceTest {
         path = Paths.get(uploadDir + File.separatorChar + fileInfo.getId());
         assertTrue(Files.exists(path));
 
-        assertEquals(content, Files.readAllLines(path).get(0));
+        assertEquals(content, Files.readAllLines(path).getFirst());
 
         boolean deleted = storage.remove(fileInfo);
 
