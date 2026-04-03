@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.service.impl;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.api.dto.webhooks.WebhookEventDto;
@@ -12,6 +13,8 @@ import net.geant.nmaas.portal.persistence.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistence.repositories.WebhookHistoryRepository;
 import net.geant.nmaas.portal.service.WebhookHistoryService;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import tools.jackson.core.JacksonException;
@@ -69,6 +72,23 @@ public class WebhookHistoryServiceImpl implements WebhookHistoryService {
                 .stream()
                 .map(entity -> modelMapper.map(entity, WebhookHistoryDto.class))
                 .toList();
+    }
+
+    @Override
+    @Transactional
+    public Page<WebhookHistoryDto> search(
+            Long webhookEventId,
+            WebhookEventType eventType,
+            String domainCodename,
+            LocalDateTime from,
+            LocalDateTime to,
+            Pageable pageable
+    ) {
+        final Specification<WebhookHistory> spec =
+                prepareQuerySpec(webhookEventId, eventType, domainCodename, from, to);
+
+        return webhookHistoryRepository.findAll(spec, pageable)
+                .map(entity -> modelMapper.map(entity, WebhookHistoryDto.class));
     }
 
     @Override

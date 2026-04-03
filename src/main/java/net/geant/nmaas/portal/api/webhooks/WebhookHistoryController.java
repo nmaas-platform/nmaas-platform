@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import net.geant.nmaas.api.dto.webhooks.WebhookHistoryDto;
 import net.geant.nmaas.portal.persistence.entity.WebhookEventType;
 import net.geant.nmaas.portal.service.WebhookHistoryService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -44,6 +46,20 @@ public class WebhookHistoryController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to
     ) {
         return ResponseEntity.ok(webhookHistoryService.search(eventId, eventType, domainCodename, from, to));
+    }
+
+    @GetMapping(params = "page")
+    @Transactional
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
+    public Page<WebhookHistoryDto> search(
+            @RequestParam(required = false) Long eventId,
+            @RequestParam(required = false) WebhookEventType eventType,
+            @RequestParam(required = false) String domainCodename,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to,
+            Pageable pageable
+    ) {
+        return webhookHistoryService.search(eventId, eventType, domainCodename, from, to, pageable);
     }
 
     @GetMapping("/domain/{domainId}")
