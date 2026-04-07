@@ -44,4 +44,13 @@ public interface WebhookHistoryService {
             LocalDateTime from,
             LocalDateTime to
     );
+
+    Page<WebhookHistoryDto> search(
+            Long webhookEventId,
+            WebhookEventType eventType,
+            Long domainId,
+            LocalDateTime from,
+            LocalDateTime to,
+            Pageable pageable
+    );
 }

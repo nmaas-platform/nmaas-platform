@@ -70,9 +70,22 @@ public class WebhookHistoryController {
             @RequestParam(required = false) Long eventId,
             @RequestParam(required = false) WebhookEventType eventType,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to
-    ) {
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to) {
         return ResponseEntity.ok(webhookHistoryService.search(eventId, eventType, domainId, from, to));
+    }
+
+    @GetMapping("/domain/{domainId}/page")
+    @Transactional
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR') || hasPermission(#domainId, 'domain', 'OWNER')")
+    public Page<WebhookHistoryDto> searchInDomain(
+            @PathVariable Long domainId,
+            @RequestParam(required = false) Long eventId,
+            @RequestParam(required = false) WebhookEventType eventType,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to,
+            Pageable pageable
+    ) {
+        return webhookHistoryService.search(eventId, eventType, domainId, from, to, pageable);
     }
 
 }

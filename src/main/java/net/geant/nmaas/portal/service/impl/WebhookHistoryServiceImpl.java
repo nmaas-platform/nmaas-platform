@@ -103,6 +103,15 @@ public class WebhookHistoryServiceImpl implements WebhookHistoryService {
                 .toList();
     }
 
+    @Override
+    public Page<WebhookHistoryDto> search(Long webhookEventId, WebhookEventType eventType, Long domainId, LocalDateTime from, LocalDateTime to, Pageable pageable) {
+        final Domain domain = domainRepository.findById(domainId).orElseThrow();
+        final Specification<WebhookHistory> spec = prepareQuerySpec(webhookEventId, eventType, domain.getCodename(), from, to);
+
+        return webhookHistoryRepository.findAll(spec, pageable)
+                .map(entity -> modelMapper.map(entity, WebhookHistoryDto.class));
+    }
+
     private static Specification<WebhookHistory> prepareQuerySpec(Long eventId, WebhookEventType eventType, String domainCodename, LocalDateTime from, LocalDateTime to) {
         Specification<WebhookHistory> spec = (root, query, cb) -> cb.conjunction();
 
