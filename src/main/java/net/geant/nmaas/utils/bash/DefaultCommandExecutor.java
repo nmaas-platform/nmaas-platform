@@ -29,10 +29,13 @@ public class DefaultCommandExecutor implements CommandExecutor {
             final String errorOutput = new String(process.getErrorStream().readAllBytes(), StandardCharsets.UTF_8);
             if (Strings.isNotEmpty(errorOutput)) {
                 // warnings should not be considered as errors
-                log.warn("Some command execution information present in the error output. Will continue anyway.");
+                log.warn("Some command execution information present in the error output");
                 log.debug(errorOutput);
+                log.warn("Verifying error output");
+                validateOutput(errorOutput, command.isOutputCorrect());
             }
             final String output = new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+            log.warn("Verifying standard output");
             validateOutput(output, command.isOutputCorrect());
             return output;
         } catch (IOException e) {
