@@ -3,8 +3,8 @@ package net.geant.nmaas.portal.api.user;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import net.geant.nmaas.api.dto.users.UserDto;
 import net.geant.nmaas.api.dto.users.UserRoleDto;
-import net.geant.nmaas.api.dto.users.UserView;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistence.entity.User;
 import net.geant.nmaas.portal.service.UserService;
@@ -27,15 +27,15 @@ public class ProfileController {
     private final ModelMapper modelMapper;
 
     @GetMapping("/user")
-    public UserView retrieveLoggedUser(@NotNull Principal principal) {
+    public UserDto retrieveLoggedUser(@NotNull Principal principal) {
         User user = this.getUser(principal.getName());
-        return this.modelMapper.map(user, UserView.class);
+        return this.modelMapper.map(user, UserDto.class);
     }
 
     @GetMapping("/user/roles")
     public List<UserRoleDto> retrieveLoggedUsersRoles(@NotNull Principal principal) {
         User user = this.getUser(principal.getName());
-        UserView userView = this.modelMapper.map(user, UserView.class);
+        UserDto userView = this.modelMapper.map(user, UserDto.class);
         return new ArrayList<>(userView.getRoles());
     }
 

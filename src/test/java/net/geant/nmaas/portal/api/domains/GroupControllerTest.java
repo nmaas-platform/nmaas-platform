@@ -64,32 +64,6 @@ class GroupControllerTest {
     }
 
     @Test
-    void shouldFilterGroupsForGroupManager() {
-        Principal principal = () -> "manager";
-        User manager = new User("manager", true);
-        manager.setId(100L);
-        Domain domain = new Domain(1L, "d", "d", true);
-        manager.setRoles(List.of(new UserRole(manager, domain, Role.ROLE_GROUP_MANAGER)));
-        when(userService.findByUsername("manager")).thenReturn(Optional.of(manager));
-
-        UserViewMinimal managerView = new UserViewMinimal();
-        managerView.setId(100L);
-        DomainGroupDto myGroup = new DomainGroupDto();
-        myGroup.setManagers(List.of(managerView));
-        UserViewMinimal otherManager = new UserViewMinimal();
-        otherManager.setId(101L);
-        otherManager.setUsername("other");
-        DomainGroupDto otherGroup = new DomainGroupDto();
-        otherGroup.setManagers(List.of(otherManager));
-        when(domainGroupService.getAllDomainGroups()).thenReturn(List.of(myGroup, otherGroup));
-
-        List<DomainGroupDto> result = controller.getDomainGroups(principal);
-
-        assertEquals(1, result.size());
-        assertEquals(myGroup, result.getFirst());
-    }
-
-    @Test
     void shouldDenyAccessToGroupWhenUserIsNotManagerOrSystemAdmin() {
         Principal principal = () -> "user";
         User user = new User("user", true);

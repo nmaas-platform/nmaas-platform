@@ -24,5 +24,7 @@ public interface DomainGroupRepository extends JpaRepository<DomainGroup, Long> 
     @Query("SELECT DISTINCT dg.id FROM DomainGroup dg JOIN dg.domains d WHERE d.codename = :codename")
     List<String> findDomainGroupIdsByDomainCodename(@Param("codename") String codename);
 
+    List<DomainGroup> findAllByManagers(User manager);
+
     Page<DomainGroup> findAllByManagers(User manager, Pageable pageable);
 }

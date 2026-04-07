@@ -1,13 +1,14 @@
 package net.geant.nmaas.portal.api.domains;
 
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.api.dto.Id;
 import net.geant.nmaas.api.dto.applications.ApplicationStatePerDomainView;
+import net.geant.nmaas.api.dto.domains.DomainGroupBaseDto;
+import net.geant.nmaas.api.dto.domains.DomainGroupDto;
+import net.geant.nmaas.api.dto.users.UserViewMinimal;
 import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
 import net.geant.nmaas.portal.api.BaseController;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
-import net.geant.nmaas.api.dto.domains.DomainGroupDto;
-import net.geant.nmaas.api.dto.Id;
-import net.geant.nmaas.api.dto.users.UserViewMinimal;
 import net.geant.nmaas.portal.exceptions.DataConflictException;
 import net.geant.nmaas.portal.persistence.entity.Role;
 import net.geant.nmaas.portal.persistence.entity.User;
@@ -82,14 +83,11 @@ public class GroupController extends BaseController {
     @GetMapping
     @Transactional(readOnly = true)
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
-    public List<DomainGroupDto> getDomainGroups(Principal principal) {
+    public List<DomainGroupBaseDto> getDomainGroups(Principal principal) {
         final User user = userService.findByUsername(principal.getName())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
         if (user.getRoles().stream().anyMatch(userRole -> userRole.getRole().equals(Role.ROLE_GROUP_MANAGER))) {
-            return domainGroupService.getAllDomainGroups().stream()
-                    .filter(group -> group.getManagers().stream()
-                    .anyMatch(groupUser -> groupUser.getId().equals(user.getId())))
-                    .collect(Collectors.toList());
+            return domainGroupService.getAllDomainGroupsWhereManagerIsMember(user);
         }
         return domainGroupService.getAllDomainGroups();
     }
@@ -97,7 +95,7 @@ public class GroupController extends BaseController {
     @GetMapping(params = {"page"})
     @Transactional(readOnly = true)
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
-    public Page<DomainGroupDto> getPageDomainGroups(Principal principal, Pageable pageable) {
+    public Page<DomainGroupBaseDto> getPageDomainGroups(Principal principal, Pageable pageable) {
         final User user = userService.findByUsername(principal.getName())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
         if (user.getRoles().stream().anyMatch(userRole -> userRole.getRole().equals(Role.ROLE_GROUP_MANAGER))) {
@@ -250,9 +248,9 @@ public class GroupController extends BaseController {
     private boolean checkManagerPrivileges(Principal principal, DomainGroupDto domainGroup) {
         return getUser(principal.getName()).getRoles().stream()
                 .anyMatch(userRole -> userRole.getRole().equals(Role.ROLE_SYSTEM_ADMIN))
-                    || domainGroup.getManagers().stream().anyMatch(user ->
-                        user.getUsername().equalsIgnoreCase(principal.getName())
-                );
+                || domainGroup.getManagers().stream().anyMatch(user ->
+                user.getUsername().equalsIgnoreCase(principal.getName())
+        );
     }
 
     @ExceptionHandler(DataConflictException.class)

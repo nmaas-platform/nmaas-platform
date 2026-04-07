@@ -7,10 +7,10 @@ import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.api.dto.PasswordChangeRequest;
 import net.geant.nmaas.api.dto.PasswordResetRequest;
 import net.geant.nmaas.api.dto.users.UserBase;
+import net.geant.nmaas.api.dto.users.UserDto;
 import net.geant.nmaas.api.dto.users.UserListEntryDto;
 import net.geant.nmaas.api.dto.users.UserRequest;
 import net.geant.nmaas.api.dto.users.UserRoleDto;
-import net.geant.nmaas.api.dto.users.UserView;
 import net.geant.nmaas.api.dto.users.UserViewMinimal;
 import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
@@ -200,7 +200,7 @@ public class UsersController {
         if (common.isEmpty()) {
             return modelMapper.map(user, UserViewMinimal.class);
         }
-        UserView uv = modelMapper.map(user, UserView.class);
+        UserDto uv = modelMapper.map(user, UserDto.class);
         /* updates user view with first and last login date */
         userLoginService.getUserFirstAndLastSuccessfulLoginDate(user).ifPresent(userLoginDate -> {
             uv.setFirstLoginDate(userLoginDate.getMinLoginDate());
@@ -336,7 +336,7 @@ public class UsersController {
     public void sendResetPasswordNotification(@RequestBody String email) {
         User user = userService.findByEmail(email);
         checkSSOUser(user);
-        this.sendMail(modelMapper.map(user, UserView.class), MailType.PASSWORD_RESET, Map.of("accessURL", generateResetPasswordUrl(this.jwtTokenService.getResetToken(email))));
+        this.sendMail(modelMapper.map(user, UserDto.class), MailType.PASSWORD_RESET, Map.of("accessURL", generateResetPasswordUrl(this.jwtTokenService.getResetToken(email))));
     }
 
     private String generateResetPasswordUrl(String token) {
@@ -349,12 +349,12 @@ public class UsersController {
 
     @PostMapping("/users/reset/validate")
     @ResponseStatus(HttpStatus.OK)
-    public UserView validateResetRequest(@RequestBody String token) {
+    public UserDto validateResetRequest(@RequestBody String token) {
         try {
             Claims claims = jwtTokenService.getResetClaims(token);
             User user = userService.findByEmail(claims.getSubject());
             checkSSOUser(user);
-            return modelMapper.map(user, UserView.class);
+            return modelMapper.map(user, UserDto.class);
         } catch (JwtException | IllegalArgumentException e) {
             throw new ProcessingException("Validation of reset request failed -> " + e.getMessage());
         }
@@ -411,7 +411,7 @@ public class UsersController {
 
     @GetMapping("/domains/{domainId}/users/admin")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
-    public List<UserView> getDomainUsersAsAdmin(@PathVariable Long domainId) {
+    public List<UserDto> getDomainUsersAsAdmin(@PathVariable Long domainId) {
         /* reads all users first and last successful login, transforms it to map*/
         Map<Long, UserLoginDate> userLoginDateMap = this.userLoginService.getAllFirstAndLastSuccessfulLoginDate().stream()
                 .map(x -> new AbstractMap.SimpleEntry<>(x.getUserId(), x))
@@ -423,10 +423,10 @@ public class UsersController {
 
     @GetMapping("/domains/{domainId}/users/{userId}")
     @PreAuthorize("hasPermission(#domainId, 'domain', 'OWNER')")
-    public UserView getDomainUser(@PathVariable Long domainId, @PathVariable Long userId) {
+    public UserDto getDomainUser(@PathVariable Long domainId, @PathVariable Long userId) {
         try {
             User user = domainService.getMember(domainId, userId);
-            UserView uv = modelMapper.map(user, UserView.class);
+            UserDto uv = modelMapper.map(user, UserDto.class);
             userLoginService.getUserFirstAndLastSuccessfulLoginDate(user).ifPresent(userLoginDate -> {
                 uv.setFirstLoginDate(userLoginDate.getMinLoginDate());
                 uv.setLastSuccessfulLoginDate(userLoginDate.getMaxLoginDate());
@@ -576,9 +576,9 @@ public class UsersController {
                     isEnabledFlag ? "activated" : "deactivated",
                     getUser(userId).getUsername());
             if (isEnabledFlag) {
-                this.sendMail(modelMapper.map(user, UserView.class), MailType.ACCOUNT_ACTIVATED, Map.of("portalURL", portalAddress != null ? portalAddress : ""));
+                this.sendMail(modelMapper.map(user, UserDto.class), MailType.ACCOUNT_ACTIVATED, Map.of("portalURL", portalAddress != null ? portalAddress : ""));
             } else {
-                this.sendMail(modelMapper.map(user, UserView.class), MailType.ACCOUNT_BLOCKED, Collections.emptyMap());
+                this.sendMail(modelMapper.map(user, UserDto.class), MailType.ACCOUNT_BLOCKED, Collections.emptyMap());
             }
             log.info(message);
         } catch (ObjectNotFoundException err) {
@@ -712,17 +712,17 @@ public class UsersController {
         return requestRoleList.containsAll(userRoleList) && userRoleList.containsAll(requestRoleList);
     }
 
-    private void sendMail(UserView user, MailType mailType, Map<String, Object> other) {
+    private void sendMail(UserDto user, MailType mailType, Map<String, Object> other) {
         MailAttributes mailAttributes = MailAttributes.builder()
                 .mailType(mailType)
                 .otherAttributes(other)
-                .addresses(Collections.singletonList(modelMapper.map(user, UserView.class)))
+                .addresses(Collections.singletonList(modelMapper.map(user, UserDto.class)))
                 .build();
         this.eventPublisher.publishEvent(new NotificationEvent(this, mailAttributes));
     }
 
-    private UserView mapUser(User user, final Map<Long, UserLoginDate> userLoginDateMap) {
-        UserView uv = modelMapper.map(user, UserView.class);
+    private UserDto mapUser(User user, final Map<Long, UserLoginDate> userLoginDateMap) {
+        UserDto uv = modelMapper.map(user, UserDto.class);
         if (userLoginDateMap.containsKey(uv.getId())) {
             uv.setLastSuccessfulLoginDate(userLoginDateMap.get(uv.getId()).getMaxLoginDate());
             uv.setFirstLoginDate(userLoginDateMap.get(uv.getId()).getMinLoginDate());

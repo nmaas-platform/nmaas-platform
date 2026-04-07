@@ -1,9 +1,9 @@
 package net.geant.nmaas.portal.api.security;
 
 import lombok.RequiredArgsConstructor;
-import net.geant.nmaas.api.dto.users.UserApiTokenView;
-import net.geant.nmaas.portal.exceptions.DataConflictException;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.api.dto.users.UserApiTokenDto;
+import net.geant.nmaas.portal.exceptions.DataConflictException;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistence.entity.User;
 import net.geant.nmaas.portal.service.CustomAccessTokenService;
@@ -32,13 +32,13 @@ public class CustomAccessTokenController {
     private final UserService userService;
 
     @GetMapping()
-    public List<UserApiTokenView> getAll(Principal principal) {
+    public List<UserApiTokenDto> getAll(Principal principal) {
         User user = getUser(principal);
         return accessTokenService.getAll(user.getId());
     }
 
     @PostMapping()
-    public UserApiTokenView createNewToken(Principal principal, @RequestBody String name) {
+    public UserApiTokenDto createNewToken(Principal principal, @RequestBody String name) {
         User user = getUser(principal);
         return accessTokenService.createToken(user, name);
     }

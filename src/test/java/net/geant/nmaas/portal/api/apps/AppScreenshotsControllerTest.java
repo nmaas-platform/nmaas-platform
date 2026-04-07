@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.api.apps;
 
 import net.geant.nmaas.api.dto.FileInfoDto;
-import net.geant.nmaas.api.dto.users.UserFile;
+import net.geant.nmaas.api.dto.users.UserFileDto;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.domain.converters.FileInfoConverter;
 import net.geant.nmaas.portal.persistence.entity.ApplicationBase;
@@ -141,7 +141,7 @@ class AppScreenshotsControllerTest {
 
     @Test
     void shouldGetScreenshotsInfo() {
-        List<UserFile> result = this.appScreenshotsController.getScreenshotsInfo(appWithLogo.getId());
+        List<UserFileDto> result = this.appScreenshotsController.getScreenshotsInfo(appWithLogo.getId());
         assertEquals(2, result.size());
     }
 

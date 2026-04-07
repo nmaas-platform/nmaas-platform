@@ -6,9 +6,9 @@ import jakarta.transaction.Transactional.TxType;
 import net.geant.nmaas.api.dto.PasswordResetRequest;
 import net.geant.nmaas.api.dto.domains.DomainRequest;
 import net.geant.nmaas.api.dto.users.RoleDto;
+import net.geant.nmaas.api.dto.users.UserDto;
 import net.geant.nmaas.api.dto.users.UserRequest;
 import net.geant.nmaas.api.dto.users.UserRoleDto;
-import net.geant.nmaas.api.dto.users.UserView;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
 import net.geant.nmaas.portal.api.auth.UserToken;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
@@ -172,7 +172,7 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
     @Test
     void testGetUser() throws MissingElementException {
         long id = userRepo.findByUsername("admin").get().getId();
-        UserView user = (UserView) userController.getUser(id, principal);
+        UserDto user = (UserDto) userController.getUser(id, principal);
         assertEquals(Long.valueOf(id), user.getId());
         assertEquals("admin", user.getUsername());
     }

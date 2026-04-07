@@ -8,6 +8,8 @@ import freemarker.template.TemplateException;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.api.dto.GroupAppListElement;
+import net.geant.nmaas.api.dto.users.UserDto;
 import net.geant.nmaas.notifications.templates.MailType;
 import net.geant.nmaas.notifications.templates.TemplateService;
 import net.geant.nmaas.notifications.templates.api.LanguageMailContentView;
@@ -17,8 +19,6 @@ import net.geant.nmaas.notifications.types.service.FormTypeService;
 import net.geant.nmaas.portal.api.configuration.model.ConfigurationView;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
-import net.geant.nmaas.api.dto.GroupAppListElement;
-import net.geant.nmaas.api.dto.users.UserView;
 import net.geant.nmaas.portal.persistence.entity.Role;
 import net.geant.nmaas.portal.persistence.entity.User;
 import net.geant.nmaas.portal.service.ConfigurationManager;
@@ -81,7 +81,7 @@ public class NotificationManager {
 
         this.getAllAddressees(mailAttributes);
 
-        for (UserView user : mailAttributes.getAddresses()) {
+        for (UserDto user : mailAttributes.getAddresses()) {
             try {
                 LanguageMailContentView mailContent = getTemplateInSelectedLanguage(mailTemplate.getTemplates(), user.getSelectedLanguage());
                 customizeMessage(mailContent, mailAttributes);
@@ -116,7 +116,7 @@ public class NotificationManager {
         if (mailAttributes.getMailType().equals(MailType.APP_DEPLOYMENT_FAILED)) {
             ConfigurationView configuration = this.configurationManager.getConfiguration();
             if (configuration.isSendAppInstanceFailureEmails()) {
-                List<UserView> users = configuration.getAppInstanceFailureEmailList().stream()
+                List<UserDto> users = configuration.getAppInstanceFailureEmailList().stream()
                         .map(this::convertEmailToUserView)
                         .collect(Collectors.toList());
                 mailAttributes.setAddresses(users);
@@ -137,7 +137,7 @@ public class NotificationManager {
             mailAttributes.setAddresses(new ArrayList<>(domainService.findUsersWithDomainAdminRole((String) mailAttributes.getOtherAttributes().get("domainName"))));
             if (mailAttributes.getAddresses().stream().noneMatch(user -> user.getUsername().equals(mailAttributes.getOtherAttributes().get("owner")))) {
                 userService.findByUsername((String) mailAttributes.getOtherAttributes().get("owner"))
-                        .ifPresent(user -> mailAttributes.getAddresses().add(modelMapper.map(user, UserView.class)));
+                        .ifPresent(user -> mailAttributes.getAddresses().add(modelMapper.map(user, UserDto.class)));
             }
         }
         if (mailAttributes.getMailType().equals(MailType.BROADCAST)) {
@@ -145,7 +145,7 @@ public class NotificationManager {
                     .filter(User::isEnabled)
                     .filter(u -> !StringUtils.isEmpty(u.getEmail()))
                     .filter(u -> u.getRoles().stream().noneMatch(r -> r.getRole().equals(Role.ROLE_INCOMPLETE)))
-                    .map(u -> modelMapper.map(u, UserView.class))
+                    .map(u -> modelMapper.map(u, UserDto.class))
                     .collect(Collectors.toList()));
         }
         if (List.of(MailType.CONTACT_FORM, MailType.ISSUE_REPORT, MailType.NEW_DOMAIN_REQUEST, MailType.VLAB_REQUEST)
@@ -164,10 +164,11 @@ public class NotificationManager {
                     mailAttributes.getOtherAttributes().put(k, offsetDateTime.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
                 });
 
-                List<GroupAppListElement> appList = objectMapper.convertValue(mailAttributes.getOtherAttributes().get("appList"), new TypeReference<List<GroupAppListElement>>() {});
+                List<GroupAppListElement> appList = objectMapper.convertValue(mailAttributes.getOtherAttributes().get("appList"), new TypeReference<List<GroupAppListElement>>() {
+                });
                 mailAttributes.getOtherAttributes().put("appList", appList.stream().map(GroupAppListElement::getAppListName).collect(Collectors.joining(", ")));
             }
-            List<UserView> targetUsers = new ArrayList<>(userService.findAllUsersWithAdminRole());
+            List<UserDto> targetUsers = new ArrayList<>(userService.findAllUsersWithAdminRole());
             if (contactFormKey.isEmpty()) {
                 log.error("Invalid contact form request, subType is null");
             } else {
@@ -179,7 +180,7 @@ public class NotificationManager {
                         )
                         .getEmailsList()
                         .forEach(email -> {
-                            UserView userView = UserView.builder()
+                            UserDto userView = UserDto.builder()
                                     .email(email)
                                     .username(email)
                                     .selectedLanguage("en")
@@ -213,7 +214,7 @@ public class NotificationManager {
         }
     }
 
-    private String getFilledTemplate(Template template, LanguageMailContentView langContent, UserView user, MailAttributes mailAttributes, MailTemplateView mailTemplate) throws IOException, TemplateException {
+    private String getFilledTemplate(Template template, LanguageMailContentView langContent, UserDto user, MailAttributes mailAttributes, MailTemplateView mailTemplate) throws IOException, TemplateException {
         boolean showAdditional = mailAttributes.getMailType() == MailType.NEW_ACTIVE_APP && mailAttributes.getOtherAttributes().get("message") != null;
         Map<String, Object> map = new HashMap<>(mailTemplate.getGlobalInformation());
         map.put(MailTemplateElements.PORTAL_LINK, this.portalAddress == null ? "" : this.portalAddress);
@@ -227,7 +228,7 @@ public class NotificationManager {
         return FreeMarkerTemplateUtils.processTemplateIntoString(template, map);
     }
 
-    private String getHeader(String header, UserView user) throws IOException, TemplateException {
+    private String getHeader(String header, UserDto user) throws IOException, TemplateException {
         return FreeMarkerTemplateUtils.processTemplateIntoString(
                 new Template(MailTemplateElements.HEADER, new StringReader(header), new Configuration(Configuration.VERSION_2_3_28)),
                 Map.of("username", user.getFirstname() == null || user.getFirstname().isEmpty() ? user.getUsername() : user.getFirstname()));
@@ -244,17 +245,17 @@ public class NotificationManager {
                 .replace("\n", "<br/>"); // replace end line characters with html break
     }
 
-    private List<String> getListOfMails(List<UserView> users) {
+    private List<String> getListOfMails(List<UserDto> users) {
         return users.stream()
-                .map(UserView::getEmail)
+                .map(UserDto::getEmail)
                 .collect(Collectors.toList());
     }
 
-    private UserView convertEmailToUserView(String email) {
+    private UserDto convertEmailToUserView(String email) {
         try {
-            return modelMapper.map(this.userService.findByEmail(email), UserView.class);
+            return modelMapper.map(this.userService.findByEmail(email), UserDto.class);
         } catch (IllegalArgumentException e) {
-            UserView uv = new UserView(-1L, email, false);
+            UserDto uv = new UserDto(-1L, email, false);
             uv.setEmail(email);
             uv.setSelectedLanguage("en");
             return uv;

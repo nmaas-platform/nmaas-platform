@@ -3,12 +3,12 @@ package net.geant.nmaas.portal.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.api.dto.users.UserDto;
 import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
 import net.geant.nmaas.notifications.templates.MailType;
 import net.geant.nmaas.portal.api.auth.Registration;
 import net.geant.nmaas.portal.api.bulk.CsvDomain;
-import net.geant.nmaas.api.dto.users.UserView;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.api.exceptions.SignupException;
@@ -303,19 +303,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public List<UserView> findAllUsersWithAdminRole() {
+    public List<UserDto> findAllUsersWithAdminRole() {
         return findAll().stream()
                 .filter(user -> user.getRoles().stream().anyMatch(role -> role.getRole().name().equalsIgnoreCase(Role.ROLE_SYSTEM_ADMIN.name())))
-                .map(user -> modelMapper.map(user, UserView.class))
+                .map(user -> modelMapper.map(user, UserDto.class))
                 .toList();
     }
 
     @Override
     @Transactional
-    public List<UserView> findUsersWithRoleSystemAdminAndOperator() {
+    public List<UserDto> findUsersWithRoleSystemAdminAndOperator() {
         return findAll().stream()
                 .filter(user -> user.getRoles().stream().anyMatch(role -> role.getRole().name().equalsIgnoreCase(Role.ROLE_SYSTEM_ADMIN.name()) || role.getRole().name().equalsIgnoreCase(Role.ROLE_OPERATOR.name())))
-                .map(user -> modelMapper.map(user, UserView.class))
+                .map(user -> modelMapper.map(user, UserDto.class))
                 .toList();
     }
 

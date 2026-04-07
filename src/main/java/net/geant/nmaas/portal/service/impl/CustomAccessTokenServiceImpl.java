@@ -2,7 +2,7 @@ package net.geant.nmaas.portal.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.api.dto.users.UserApiTokenView;
+import net.geant.nmaas.api.dto.users.UserApiTokenDto;
 import net.geant.nmaas.portal.exceptions.DataConflictException;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistence.entity.User;
@@ -43,7 +43,7 @@ public class CustomAccessTokenServiceImpl implements CustomAccessTokenService {
     }
 
     @Override
-    public UserApiTokenView createToken(User user, String name) {
+    public UserApiTokenDto createToken(User user, String name) {
         List<UserApiToken> tokens = userApiTokenRepository.findAllByUserIdAndName(user.getId(), name);
         if (!tokens.isEmpty() && tokens.stream().anyMatch(c -> !c.isDeleted())) {
             throw new DataConflictException("Token name is already in use.");
@@ -51,7 +51,7 @@ public class CustomAccessTokenServiceImpl implements CustomAccessTokenService {
 
         UserApiToken token = createNewToken(user, name);
         String hashedValued = secretPasswordService.hashSecret(token.getTokenValue());
-        UserApiTokenView view = mapToView(token);
+        UserApiTokenDto view = mapToView(token);
         token.setTokenValue(hashedValued);
         log.warn("Token value is: {}, hashed: {}", view.tokenValue(), hashedValued);
         token = userApiTokenRepository.save(token);
@@ -59,7 +59,7 @@ public class CustomAccessTokenServiceImpl implements CustomAccessTokenService {
     }
 
     @Override
-    public List<UserApiTokenView> getAll(Long userId) {
+    public List<UserApiTokenDto> getAll(Long userId) {
         return userApiTokenRepository.findAllByUserId(userId).stream()
                 .filter(userApiToken -> !userApiToken.isDeleted())
                 .map(this::mapToView)
@@ -86,8 +86,8 @@ public class CustomAccessTokenServiceImpl implements CustomAccessTokenService {
                 .orElseThrow(() -> new ObjectNotFoundException("Could not find access token with id: " + id));
     }
 
-    private UserApiTokenView mapToView(UserApiToken token) {
-        return new UserApiTokenView(token.getId(), token.getName(), token.getTokenValue(),
+    private UserApiTokenDto mapToView(UserApiToken token) {
+        return new UserApiTokenDto(token.getId(), token.getName(), token.getTokenValue(),
                 token.isValid(), token.isDeleted());
     }
 

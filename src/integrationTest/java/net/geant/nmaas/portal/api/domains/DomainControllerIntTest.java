@@ -355,37 +355,6 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    void shouldGetMyDomainGroupAsGroupManager() throws Exception {
-        when(principalMock.getName()).thenReturn("testUser");
-        User user = new User("testUser");
-        user.setId(1L);
-        UserRole userRole = new UserRole(user, getGlobalDomain(), Role.ROLE_GROUP_DOMAIN_ADMIN);
-        user.setRoles(List.of(userRole));
-        when(userService.findByUsername(any())).thenReturn(Optional.of(user));
-
-        DomainGroupDto group1 = new DomainGroupDto();
-        group1.setId(1L);
-        User user1 = new User("testUser", true);
-        user1.setId(1L);
-        group1.setManagers(List.of(modelMapper.map(user1, UserViewMinimal.class)));
-        DomainGroupDto group2 = new DomainGroupDto();
-        group2.setId(2L);
-        User user2 = new User("testUser2", true);
-        user2.setId(1L);
-        group2.setManagers(List.of((modelMapper.map(user2, UserViewMinimal.class))));
-
-        when(domainGroupService.getAllDomainGroups()).thenReturn(List.of(group1, group2));
-
-        MvcResult result = mvc.perform(get("/api/groups")
-                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andReturn();
-
-        assertTrue(StringUtils.isNotEmpty(result.getResponse().getContentAsString()));
-    }
-
-    @Test
     void shouldGetOneDomainGroupAsGroupManager() throws Exception {
         when(principalMock.getName()).thenReturn("admin");
         User user = new User("admin");

@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.service;
 
+import net.geant.nmaas.api.dto.domains.DomainGroupBaseDto;
 import net.geant.nmaas.api.dto.domains.DomainGroupDto;
 import net.geant.nmaas.portal.persistence.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistence.entity.Domain;
@@ -23,15 +24,18 @@ public interface DomainGroupService {
 
     DomainGroupDto getDomainGroup(Long domainGroupId);
 
-    List<DomainGroupDto> getAllDomainGroups();
+    List<DomainGroupBaseDto> getAllDomainGroups();
 
-    Page<DomainGroupDto> getPageableAllDomainGroups(Pageable pageable);
+    List<DomainGroupBaseDto> getAllDomainGroupsWhereManagerIsMember(User manager);
 
-    Page<DomainGroupDto> getPageableAllDomainGroupsWhereManagerIsMember(Pageable pageable, User manager);
+    Page<DomainGroupBaseDto> getPageableAllDomainGroups(Pageable pageable);
+
+    Page<DomainGroupBaseDto> getPageableAllDomainGroupsWhereManagerIsMember(Pageable pageable, User manager);
 
     DomainGroupDto updateDomainGroup(Long domainGroupId, DomainGroupDto view);
 
     void deleteAppBaseFromAllAppState(ApplicationBase base);
 
     void deleteUserFromAllDomainsGroups(User user);
+
 }

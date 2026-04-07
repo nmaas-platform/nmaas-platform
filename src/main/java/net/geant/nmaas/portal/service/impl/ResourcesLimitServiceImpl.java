@@ -72,9 +72,9 @@ public class ResourcesLimitServiceImpl implements ResourcesLimitService {
             throw new IllegalArgumentException(DOMAIN_RESOURCES_LIMIT);
         } else if (DOMAIN.equals(dto.limitType()) && dto.domain() != null && dto.domain().getId() != null && resourcesLimitRepository.existsByDomain_Id(dto.domain().getId())) {
             throw new IllegalArgumentException(DOMAIN_UNIQUE_RESOURCES_LIMIT);
-        } else if (DOMAIN_GROUP.equals(dto.limitType()) && (dto.domainGroup() == null || dto.domainGroup().getId() == null)) {
+        } else if (DOMAIN_GROUP.equals(dto.limitType()) && (dto.domainGroup() == null || dto.domainGroup().id() == null)) {
             throw new IllegalArgumentException(DOMAIN_GROUP_RESOURCES_LIMIT);
-        } else if (DOMAIN_GROUP.equals(dto.limitType()) && dto.domainGroup() != null && dto.domainGroup().getId() != null && resourcesLimitRepository.existsByDomainGroup_Id(dto.domainGroup().getId())) {
+        } else if (DOMAIN_GROUP.equals(dto.limitType()) && dto.domainGroup() != null && dto.domainGroup().id() != null && resourcesLimitRepository.existsByDomainGroup_Id(dto.domainGroup().id())) {
             throw new IllegalArgumentException(DOMAIN_GROUP_UNIQUE_RESOURCES_LIMIT);
         }
 

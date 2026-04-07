@@ -2,11 +2,11 @@ package net.geant.nmaas.kubernetes.remote;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.api.dto.users.UserDto;
 import net.geant.nmaas.kubernetes.remote.entities.KCluster;
 import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
 import net.geant.nmaas.notifications.templates.MailType;
-import net.geant.nmaas.api.dto.users.UserView;
 import net.geant.nmaas.portal.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.ApplicationEventPublisher;
@@ -26,11 +26,11 @@ public class RemoteClusterMailer {
     private final ModelMapper modelMapper;
 
     void sendMail(KCluster kCluster, MailType mailType) {
-        UserView recipient;
+        UserDto recipient;
         if (userService.existsByEmail(kCluster.getContactEmail())) {
-            recipient = modelMapper.map(userService.findByEmail(kCluster.getContactEmail()), UserView.class);
+            recipient = modelMapper.map(userService.findByEmail(kCluster.getContactEmail()), UserDto.class);
         } else {
-            recipient = UserView.builder().email(kCluster.getContactEmail()).username(kCluster.getContactEmail()).selectedLanguage("EN").build();
+            recipient = UserDto.builder().email(kCluster.getContactEmail()).username(kCluster.getContactEmail()).selectedLanguage("EN").build();
         }
 
         Map<String, Object> attr = new HashMap<>();

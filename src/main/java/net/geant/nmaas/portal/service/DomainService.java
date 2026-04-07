@@ -5,7 +5,7 @@ import net.geant.nmaas.api.dto.domains.DomainAnnotationDto;
 import net.geant.nmaas.api.dto.domains.DomainBaseDto;
 import net.geant.nmaas.api.dto.domains.DomainGroupDto;
 import net.geant.nmaas.api.dto.domains.DomainRequest;
-import net.geant.nmaas.api.dto.users.UserView;
+import net.geant.nmaas.api.dto.users.UserDto;
 import net.geant.nmaas.api.dto.users.UserViewMinimal;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
@@ -77,7 +77,7 @@ public interface DomainService {
 
     Set<Domain> getUserDomains(Long userId, String searchValue);
 
-    List<UserView> findUsersWithDomainAdminRole(String domain);
+    List<UserDto> findUsersWithDomainAdminRole(String domain);
 
     Domain getAppStatesFromGroups(Domain domain);
 

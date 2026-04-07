@@ -12,7 +12,7 @@ import net.geant.nmaas.portal.api.exceptions.ExternalUserCanNotBeLinked;
 import net.geant.nmaas.portal.api.exceptions.ExternalUserMatchException;
 import net.geant.nmaas.portal.api.exceptions.SignupException;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
-import net.geant.nmaas.api.dto.users.UserView;
+import net.geant.nmaas.api.dto.users.UserDto;
 import net.geant.nmaas.portal.exceptions.UndergoingMaintenanceException;
 import net.geant.nmaas.portal.persistence.entity.Role;
 import net.geant.nmaas.portal.persistence.entity.User;
@@ -118,7 +118,7 @@ public class OIDCAuthController {
     @PostMapping("api/oidc/approvals")
     public UserOidcToken oidcApprovalsSuccess(@RequestBody final OidcApprovals oidcLogin, HttpServletRequest request) {
         User user = oidcUserService.registerNewUser(oidcLogin);
-        this.sendMail(this.userService.findAllUsersWithAdminRole().getFirst(), Map.of("newUser", user.getUsername()));
+        this.sendMail(userService.findAllUsersWithAdminRole().getFirst(), Map.of("newUser", user.getUsername()));
 
         if (configurationManager.getConfiguration().isMaintenance()
                 && user.getRoles().stream().noneMatch(value -> value.getRole().equals(Role.ROLE_SYSTEM_ADMIN))) {
@@ -224,11 +224,11 @@ public class OIDCAuthController {
                 BasicAuthController.getClientIpAddr(request)
         );
     }
-    private void sendMail(UserView user, Map<String, Object> other) {
+    private void sendMail(UserDto user, Map<String, Object> other) {
         MailAttributes mailAttributes = MailAttributes.builder()
                 .mailType(MailType.NEW_SSO_LOGIN)
                 .otherAttributes(other)
-                .addresses(Collections.singletonList(modelMapper.map(user, UserView.class)))
+                .addresses(Collections.singletonList(modelMapper.map(user, UserDto.class)))
                 .build();
         this.eventPublisher.publishEvent(new NotificationEvent(this, mailAttributes));
     }

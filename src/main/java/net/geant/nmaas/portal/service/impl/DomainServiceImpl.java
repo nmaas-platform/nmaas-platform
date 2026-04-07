@@ -7,7 +7,7 @@ import net.geant.nmaas.api.dto.domains.DomainBaseDto;
 import net.geant.nmaas.api.dto.domains.DomainDto;
 import net.geant.nmaas.api.dto.domains.DomainGroupDto;
 import net.geant.nmaas.api.dto.domains.DomainRequest;
-import net.geant.nmaas.api.dto.users.UserView;
+import net.geant.nmaas.api.dto.users.UserDto;
 import net.geant.nmaas.api.dto.users.UserViewMinimal;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 import net.geant.nmaas.dcn.deployment.DcnRepositoryManager;
@@ -495,10 +495,10 @@ public class DomainServiceImpl implements DomainService {
     }
 
     @Override
-    public List<UserView> findUsersWithDomainAdminRole(String domain) {
+    public List<UserDto> findUsersWithDomainAdminRole(String domain) {
         return this.userRoleRepository.findDomainMembers(domain).stream()
                 .filter(user -> user.getRoles().stream().anyMatch(role -> role.getRole().name().equalsIgnoreCase(Role.ROLE_DOMAIN_ADMIN.name()) && role.getDomain().getCodename().equals(domain)))
-                .map(user -> modelMapper.map(user, UserView.class))
+                .map(user -> modelMapper.map(user, UserDto.class))
                 .toList();
     }
 

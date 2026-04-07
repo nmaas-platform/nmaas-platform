@@ -8,7 +8,7 @@ import net.geant.nmaas.notifications.templates.api.MailTemplateView;
 import net.geant.nmaas.notifications.types.persistence.entity.FormType;
 import net.geant.nmaas.notifications.types.service.FormTypeService;
 import net.geant.nmaas.portal.api.configuration.model.ConfigurationView;
-import net.geant.nmaas.api.dto.users.UserView;
+import net.geant.nmaas.api.dto.users.UserDto;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.entity.Role;
@@ -59,18 +59,18 @@ class NotificationManagerTest {
 
         when(userService.findAllUsersWithAdminRole()).thenReturn(
                 getAdminUserList().stream()
-                        .map(user -> modelMapper.map(user, UserView.class))
+                        .map(user -> modelMapper.map(user, UserDto.class))
                         .toList()
         );
         when(userService.findUsersWithRoleSystemAdminAndOperator()).thenReturn(
                 getAdminUserList().stream()
-                        .map(user -> modelMapper.map(user, UserView.class))
+                        .map(user -> modelMapper.map(user, UserDto.class))
                         .toList()
         );
         when(userService.findAll()).thenReturn(getDefaultUserList());
         when(domainService.findUsersWithDomainAdminRole("domainName")).thenReturn(
                 getAdminUserList().stream()
-                        .map(u -> modelMapper.map(u, UserView.class))
+                        .map(u -> modelMapper.map(u, UserDto.class))
                         .toList()
         );
         when(userService.findByUsername("ordinary")).thenReturn(Optional.of(getDefaultUserList().get(1)));
@@ -237,7 +237,7 @@ class NotificationManagerTest {
         List<User> adminUsers = getAdminUserList();
         adminUsers.getFirst().setSelectedLanguage("fr");
         when(userService.findAllUsersWithAdminRole())
-                .thenReturn(adminUsers.stream().map(u -> this.modelMapper.map(u, UserView.class)).toList());
+                .thenReturn(adminUsers.stream().map(u -> this.modelMapper.map(u, UserDto.class)).toList());
 
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> notificationManager.prepareAndSendMail(ma));
         assertEquals("Mail template in language fr cannot be found", ex.getMessage());
@@ -254,7 +254,7 @@ class NotificationManagerTest {
 
         List<User> adminUsers = getAdminUserList();
         when(userService.findAllUsersWithAdminRole())
-                .thenReturn(adminUsers.stream().map(u -> this.modelMapper.map(u, UserView.class)).toList());
+                .thenReturn(adminUsers.stream().map(u -> this.modelMapper.map(u, UserDto.class)).toList());
 
         List<String> emails = new ArrayList<>();
         emails.add("email@man.poznan.pl");

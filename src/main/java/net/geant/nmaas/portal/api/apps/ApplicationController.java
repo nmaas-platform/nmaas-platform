@@ -14,7 +14,7 @@ import net.geant.nmaas.api.dto.applications.ApplicationBaseViewS;
 import net.geant.nmaas.api.dto.applications.ApplicationStateChangeRequest;
 import net.geant.nmaas.api.dto.applications.ApplicationStateDto;
 import net.geant.nmaas.api.dto.applications.ApplicationView;
-import net.geant.nmaas.api.dto.users.UserView;
+import net.geant.nmaas.api.dto.users.UserDto;
 import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
 import net.geant.nmaas.notifications.templates.MailType;
@@ -441,7 +441,7 @@ public class ApplicationController extends AppBaseController {
                 "message", stateChangeRequest.getNotificationText() == null ? "" : stateChangeRequest.getNotificationText());
         if (!stateChangeRequest.getState().equals(ApplicationStateDto.ACTIVE)) {
             ApplicationBase applicationBase = appBaseService.findByName(appBaseName);
-            UserView owner = modelMapper.map(userService.findByUsername(applicationBase.getOwner()).orElseThrow(() -> new IllegalArgumentException("Owner not found")), UserView.class);
+            UserDto owner = modelMapper.map(userService.findByUsername(applicationBase.getOwner()).orElseThrow(() -> new IllegalArgumentException("Owner not found")), UserDto.class);
             MailAttributes mailAttributes = MailAttributes.builder()
                     .mailType(ApplicationState.valueOf(stateChangeRequest.getState().name()).getMailType())
                     .addresses(Collections.singletonList(owner))
@@ -450,10 +450,10 @@ public class ApplicationController extends AppBaseController {
             this.eventPublisher.publishEvent(new NotificationEvent(this, mailAttributes));
         }
         if (stateChangeRequest.getState().equals(ApplicationStateDto.ACTIVE) && stateChangeRequest.shouldSendNotification()) {
-            List<UserView> users = userService.findAll()
+            List<UserDto> users = userService.findAll()
                     .stream()
                     .filter(User::isEnabled)
-                    .map(user -> modelMapper.map(user, UserView.class))
+                    .map(user -> modelMapper.map(user, UserDto.class))
                     .toList();
             MailAttributes mailAttributes = MailAttributes.builder()
                     .mailType(MailType.NEW_ACTIVE_APP)

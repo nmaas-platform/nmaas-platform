@@ -11,6 +11,7 @@ import net.geant.nmaas.portal.domain.converters.CommentConverter;
 import net.geant.nmaas.portal.domain.converters.ConfigurationConverter;
 import net.geant.nmaas.portal.domain.converters.CustomerNetworkConverter;
 import net.geant.nmaas.portal.domain.converters.DomainBaseConverter;
+import net.geant.nmaas.portal.domain.converters.DomainGroupBaseConverter;
 import net.geant.nmaas.portal.domain.converters.FileInfoConverter;
 import net.geant.nmaas.portal.domain.converters.InetAddressConverter;
 import net.geant.nmaas.portal.domain.converters.InetAddressInverseConverter;
@@ -68,6 +69,7 @@ public class ConvertersConfig {
         modelMapper.addConverter(new AppConfigurationSpecInverseConverter());
         modelMapper.addConverter(new WebhookHistoryConverter());
         modelMapper.addConverter(new DomainBaseConverter(resourcesLimitUsageService));
+        modelMapper.addConverter(new DomainGroupBaseConverter());
         return modelMapper;
     }
 

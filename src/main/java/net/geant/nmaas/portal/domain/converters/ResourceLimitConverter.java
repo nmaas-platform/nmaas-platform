@@ -16,6 +16,7 @@ public class ResourceLimitConverter extends AbstractConverter<ResourcesLimit, Re
 
     @Override
     protected ResourcesLimitDto convert(ResourcesLimit source) {
+        modelMapper.addConverter(new DomainGroupBaseConverter());
         return new ResourcesLimitDto(
                 source.getId(),
                 source.getMemory(),

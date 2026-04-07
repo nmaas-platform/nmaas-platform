@@ -6,7 +6,7 @@ import net.geant.nmaas.api.dto.domains.DomainDcnDetailsDto;
 import net.geant.nmaas.api.dto.domains.DomainGroupDto;
 import net.geant.nmaas.api.dto.domains.DomainRequest;
 import net.geant.nmaas.api.dto.domains.DomainTechDetailsDto;
-import net.geant.nmaas.api.dto.users.UserView;
+import net.geant.nmaas.api.dto.users.UserDto;
 import net.geant.nmaas.api.dto.users.UserViewMinimal;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 import net.geant.nmaas.dcn.deployment.DcnRepositoryManager;
@@ -17,6 +17,7 @@ import net.geant.nmaas.kubernetes.remote.repositories.KClusterRepository;
 import net.geant.nmaas.orchestration.entities.DomainTechDetails;
 import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
+import net.geant.nmaas.portal.domain.converters.DomainGroupBaseConverter;
 import net.geant.nmaas.portal.events.DomainCreatedEvent;
 import net.geant.nmaas.portal.events.DomainRemovalEvent;
 import net.geant.nmaas.portal.persistence.entity.ApplicationBase;
@@ -87,6 +88,7 @@ class DomainServiceTest {
 
     @BeforeEach
     void setup() {
+        modelMapper.addConverter(new DomainGroupBaseConverter());
         domainGroupService = new DomainGroupServiceImpl(domainGroupRepository, applicationStatePerDomainService, eventPublisher, userRoleRepository, modelMapper);
         domainService = new DomainServiceImpl(validator,
                 namespaceValidator, domainRepository, domainDcnDetailsRepository, domainTechDetailsRepository,
@@ -402,7 +404,7 @@ class DomainServiceTest {
 
         List<User> users = List.of(user1, user2);
         when(userRoleRepo.findDomainMembers(anyString())).thenReturn(users);
-        List<UserView> filteredUsers = domainService.findUsersWithDomainAdminRole(domain.getCodename());
+        List<UserDto> filteredUsers = domainService.findUsersWithDomainAdminRole(domain.getCodename());
         assertThat("Result mismatch", filteredUsers.size() == 2);
     }
 

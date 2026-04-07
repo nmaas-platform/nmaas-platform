@@ -1,8 +1,8 @@
 package net.geant.nmaas.portal.service;
 
+import net.geant.nmaas.api.dto.users.UserDto;
 import net.geant.nmaas.portal.api.auth.Registration;
 import net.geant.nmaas.portal.api.bulk.CsvDomain;
-import net.geant.nmaas.api.dto.users.UserView;
 import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.entity.Role;
 import net.geant.nmaas.portal.persistence.entity.User;
@@ -63,9 +63,9 @@ public interface UserService {
 
     void setUserTheme(Long userId, final String defaultTheme);
 
-    List<UserView> findAllUsersWithAdminRole();
+    List<UserDto> findAllUsersWithAdminRole();
 
-    List<UserView> findUsersWithRoleSystemAdminAndOperator();
+    List<UserDto> findUsersWithRoleSystemAdminAndOperator();
 
     boolean isUserAdminInAnyDomainById(List<Long> domainIds, String username);
 

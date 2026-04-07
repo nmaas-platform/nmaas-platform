@@ -3,7 +3,7 @@ package net.geant.nmaas.webhooks.jobs;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.api.dto.domains.DomainBaseDto;
 import net.geant.nmaas.api.dto.users.RoleDto;
-import net.geant.nmaas.api.dto.users.UserView;
+import net.geant.nmaas.api.dto.users.UserDto;
 import net.geant.nmaas.api.dto.webhooks.UserDomainAssignmentWebhookDto;
 import net.geant.nmaas.api.dto.webhooks.WebhookEventDto;
 import net.geant.nmaas.api.dto.webhooks.WebhookEventTypeDto;
@@ -58,7 +58,7 @@ public class UserDomainAssignmentJob extends WebhookJob {
             }
             Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException(String.format("Domain with id: %d cannot be found", domainId)));
             User user = userService.findById(userId).orElseThrow(() -> new MissingElementException(String.format("User with id: %d cannot be found", userId)));
-            UserView userView = modelMapper.map(user, UserView.class);
+            UserDto userView = modelMapper.map(user, UserDto.class);
             userView.setSshKeys(null);
 
             UserDomainAssignmentWebhookDto dto = new UserDomainAssignmentWebhookDto(userView, modelMapper.map(domain, DomainBaseDto.class), RoleDto.valueOf(role.name()), action, WebhookEventTypeDto.USER_ASSIGNMENT);

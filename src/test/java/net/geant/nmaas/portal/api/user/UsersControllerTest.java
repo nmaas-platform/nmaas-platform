@@ -2,9 +2,9 @@ package net.geant.nmaas.portal.api.user;
 
 import net.geant.nmaas.api.dto.PasswordChangeRequest;
 import net.geant.nmaas.api.dto.users.RoleDto;
+import net.geant.nmaas.api.dto.users.UserDto;
 import net.geant.nmaas.api.dto.users.UserRequest;
 import net.geant.nmaas.api.dto.users.UserRoleDto;
-import net.geant.nmaas.api.dto.users.UserView;
 import net.geant.nmaas.api.dto.users.UserViewMinimal;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
@@ -21,7 +21,6 @@ import net.geant.nmaas.portal.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
-import org.quartz.SchedulerException;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -87,8 +86,8 @@ class UsersControllerTest {
         when(userService.findByUsername(userList.get(1).getUsername())).thenReturn(Optional.of(userList.get(1)));
         when(domainService.getGlobalDomain()).thenReturn(Optional.of(GLOBAL_DOMAIN));
         when(domainService.findDomain(DOMAIN.getId())).thenReturn(Optional.of(DOMAIN));
-        when(userService.findAllUsersWithAdminRole()).thenReturn(new ArrayList<UserView>() {{
-            add(new UserView(2L, "admin", true));
+        when(userService.findAllUsersWithAdminRole()).thenReturn(new ArrayList<UserDto>() {{
+            add(new UserDto(2L, "admin", true));
         }});
     }
 
@@ -103,7 +102,7 @@ class UsersControllerTest {
         when(userService.findById(userList.getFirst().getId())).thenReturn(Optional.of(userList.getFirst()));
         when(userLoginService.getUserFirstAndLastSuccessfulLoginDate(userList.getFirst())).thenReturn(Optional.empty());
         UserRoleDto userRole = modelMapper.map(userList.getFirst().getRoles().getFirst(), UserRoleDto.class);
-        UserView user = (UserView) usersController.getUser(userList.getFirst().getId(), principal);
+        UserDto user = (UserDto) usersController.getUser(userList.getFirst().getId(), principal);
         assertThat("Wrong username", user.getUsername().equals(userList.getFirst().getUsername()));
         assertThat("Wrong role", user.getRoles().iterator().next().getRole().equals(userRole.getRole()));
     }
@@ -296,7 +295,7 @@ class UsersControllerTest {
         Long domainId = 1L;
         Long userId = 1L;
         when(domainService.getMember(domainId, userId)).thenReturn(userList.getFirst());
-        UserView user = usersController.getDomainUser(domainId, userId);
+        UserDto user = usersController.getDomainUser(domainId, userId);
         assertThat("User mismatch", user.getUsername().equals(userList.getFirst().getUsername()));
     }
 
@@ -306,7 +305,7 @@ class UsersControllerTest {
             Long domainId = 5L;
             Long userId = 1L;
             when(domainService.getMember(domainId, userId)).thenThrow(ObjectNotFoundException.class);
-            UserView user = usersController.getDomainUser(domainId, userId);
+            UserDto user = usersController.getDomainUser(domainId, userId);
         });
     }
 
@@ -316,7 +315,7 @@ class UsersControllerTest {
             Long domainId = 1L;
             Long userId = 8L;
             when(domainService.getMember(domainId, userId)).thenThrow(ProcessingException.class);
-            UserView user = usersController.getDomainUser(domainId, userId);
+            usersController.getDomainUser(domainId, userId);
         });
     }
 
@@ -333,7 +332,7 @@ class UsersControllerTest {
     }
 
     @Test
-    void shouldAddUserRoleToCustomDomain() throws SchedulerException {
+    void shouldAddUserRoleToCustomDomain() {
         UserRoleDto userRole = new UserRoleDto();
         userRole.setDomainId(DOMAIN.getId());
         userRole.setRole(RoleDto.ROLE_USER);

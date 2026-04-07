@@ -3,6 +3,7 @@ package net.geant.nmaas.portal.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.api.dto.applications.ApplicationStatePerDomainView;
+import net.geant.nmaas.api.dto.domains.DomainGroupBaseDto;
 import net.geant.nmaas.api.dto.domains.DomainGroupDto;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
@@ -17,7 +18,6 @@ import net.geant.nmaas.portal.persistence.repositories.DomainGroupRepository;
 import net.geant.nmaas.portal.persistence.repositories.UserRoleRepository;
 import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
 import net.geant.nmaas.portal.service.DomainGroupService;
-import net.geant.nmaas.portal.service.UserService;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.ApplicationEventPublisher;
@@ -120,22 +120,28 @@ public class DomainGroupServiceImpl implements DomainGroupService {
     }
 
     @Override
-    public List<DomainGroupDto> getAllDomainGroups() {
+    public List<DomainGroupBaseDto> getAllDomainGroups() {
         return domainGroupRepository.findAll().stream()
-                .map(g -> modelMapper.map(g, DomainGroupDto.class))
+                .map(g -> modelMapper.map(g, DomainGroupBaseDto.class))
                 .toList();
     }
 
     @Override
-    public Page<DomainGroupDto> getPageableAllDomainGroups(Pageable pageable) {
-        return domainGroupRepository.findAll(pageable)
-                .map( g -> modelMapper.map(g, DomainGroupDto.class));
+    public List<DomainGroupBaseDto> getAllDomainGroupsWhereManagerIsMember(User manager) {
+        return domainGroupRepository.findAllByManagers(manager).stream()
+                .map(g -> modelMapper.map(g, DomainGroupBaseDto.class)).toList();
     }
 
     @Override
-    public Page<DomainGroupDto> getPageableAllDomainGroupsWhereManagerIsMember(Pageable pageable, User manager) {
+    public Page<DomainGroupBaseDto> getPageableAllDomainGroups(Pageable pageable) {
+        return domainGroupRepository.findAll(pageable)
+                .map(g -> modelMapper.map(g, DomainGroupBaseDto.class));
+    }
+
+    @Override
+    public Page<DomainGroupBaseDto> getPageableAllDomainGroupsWhereManagerIsMember(Pageable pageable, User manager) {
         return domainGroupRepository.findAllByManagers(manager, pageable)
-                .map(g -> modelMapper.map(g, DomainGroupDto.class));
+                .map(g -> modelMapper.map(g, DomainGroupBaseDto.class));
     }
 
     @Override
