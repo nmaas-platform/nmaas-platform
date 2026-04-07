@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.service.impl;
 
+import jakarta.xml.bind.annotation.XmlElementDecl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.api.dto.ResourcesLimitDto;
@@ -14,9 +15,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
-import static net.geant.nmaas.portal.persistence.entity.ResourcesLimitType.DOMAIN;
-import static net.geant.nmaas.portal.persistence.entity.ResourcesLimitType.DOMAIN_GROUP;
-import static net.geant.nmaas.portal.persistence.entity.ResourcesLimitType.GLOBAL;
+import static net.geant.nmaas.api.dto.ResourcesLimitTypeDto.DOMAIN;
+import static net.geant.nmaas.api.dto.ResourcesLimitTypeDto.DOMAIN_GROUP;
+import static net.geant.nmaas.api.dto.ResourcesLimitTypeDto.GLOBAL;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +35,8 @@ public class ResourcesLimitServiceImpl implements ResourcesLimitService {
 
     @Override
     public void setGlobalResourcesLimit(ResourcesLimitDto dto) {
-        List<ResourcesLimit> limits = resourcesLimitRepository.findByLimitType(GLOBAL);
+        List<ResourcesLimit> limits = resourcesLimitRepository.findByLimitType(
+                net.geant.nmaas.portal.persistence.entity.ResourcesLimitType.GLOBAL);
         if (limits.size() == 1) {
             log.info("Updating existing global limit");
             ResourcesLimit limitFromDb = limits.getFirst();
@@ -54,7 +56,8 @@ public class ResourcesLimitServiceImpl implements ResourcesLimitService {
 
     @Override
     public ResourcesLimitDto getGlobalResourcesLimit() {
-        List<ResourcesLimit> limits = resourcesLimitRepository.findByLimitType(GLOBAL);
+        List<ResourcesLimit> limits = resourcesLimitRepository.findByLimitType(
+                net.geant.nmaas.portal.persistence.entity.ResourcesLimitType.GLOBAL);
         if (limits.size() == 1) {
             return modelMapper.map(limits.getFirst(), ResourcesLimitDto.class);
         } else {
@@ -66,7 +69,8 @@ public class ResourcesLimitServiceImpl implements ResourcesLimitService {
     public ResourcesLimitDto create(ResourcesLimitDto dto) {
         log.info("Creating resources limit of type {}", dto.limitType());
 
-        if (GLOBAL.equals(dto.limitType()) && resourcesLimitRepository.existsByLimitType(GLOBAL)) {
+        if (GLOBAL.equals(dto.limitType()) && resourcesLimitRepository.existsByLimitType(
+                net.geant.nmaas.portal.persistence.entity.ResourcesLimitType.GLOBAL)) {
             throw new IllegalArgumentException(GLOBAL_UNIQUE_RESOURCES_LIMIT);
         } else if (DOMAIN.equals(dto.limitType()) && (dto.domain() == null || dto.domain().getId() == null)) {
             throw new IllegalArgumentException(DOMAIN_RESOURCES_LIMIT);

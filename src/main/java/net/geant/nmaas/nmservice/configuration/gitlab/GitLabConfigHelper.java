@@ -131,7 +131,7 @@ public class GitLabConfigHelper {
             );
         }
         // Remove leading or trailing dots/hyphens (not allowed in paths)
-        String sanitized = value.replaceAll("^[-.]+|[-.]+$", "").trim();
+        String sanitized = value.replaceAll("(^[-.]+)|([-.]+$)", "").trim();
         if (!sanitized.matches(GITLAB_ALLOWED_CHARACTERS)) {
             throw new GitLabInvalidConfigurationException(
                     "Invalid GitLab top-level group name: " + value
