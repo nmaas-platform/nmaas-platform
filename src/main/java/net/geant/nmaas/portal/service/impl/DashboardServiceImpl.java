@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -94,10 +95,8 @@ public class DashboardServiceImpl implements DashboardService {
 
             domainUsers.forEach(user -> {
                 Optional<UserLoginRegister> register = userLoginRegisterService.getLastLogin(user);
-                if (register.isPresent()) {
-                    userLogins.put(this.getUserPreferredUsername(user), register.get().getDate());
-                    appsDeployed.put(this.getUserPreferredUsername(user), appInstanceRepository.countAllByOwner(user));
-                }
+                register.ifPresent(userLoginRegister -> userLogins.put(getUserPreferredUsername(user), userLoginRegister.getDate()));
+                appsDeployed.put(getUserPreferredUsername(user), appInstanceRepository.countAllByOwnerAndDomain(user, dom));
             });
             apps.forEach(app -> {
                 upgradePossible.add(DomainDashboardView.DomainAppInstanceView.builder()
@@ -109,9 +108,12 @@ public class DashboardServiceImpl implements DashboardService {
                         .upgradePossible(applicationInstanceService.checkUpgradePossible(app.getId())).build());
             });
 
+            Map<String, Integer> sortedAppsDeployed = appsDeployed.entrySet().stream()
+                    .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a, HashMap::new));
             return DomainDashboardView.builder()
                     .userLogins(userLogins)
-                    .applicationDeployed(appsDeployed)
+                    .applicationDeployed(sortedAppsDeployed)
                     .applicationUpgradeStatus(upgradePossible)
                     .build();
         } else {
@@ -127,7 +129,7 @@ public class DashboardServiceImpl implements DashboardService {
                 .domainsCount(domainCount).build();
     }
 
-    private String getUserPreferredUsername(User user) {
+    private static String getUserPreferredUsername(User user) {
         String preferredUsername;
         if (StringUtils.isEmpty(user.getUsername())) {
             throw new IllegalArgumentException("User or username is not set");

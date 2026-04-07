@@ -67,7 +67,7 @@ public interface AppInstanceRepository extends JpaRepository<AppInstance, Long> 
     @Query(value = "SELECT * FROM app_instance ai WHERE ai.created_at >= :sinceTime AND ai.created_at <= :endTime", nativeQuery = true)
     List<AppInstance> findAllInTimePeriod(@Param("sinceTime") Long sinceTime, @Param("endTime") Long endTime);
 
-    int countAllByOwner(User user);
+    int countAllByOwnerAndDomain(User user, Domain domain);
 
     @Query("""
             SELECT a FROM AppInstance a
