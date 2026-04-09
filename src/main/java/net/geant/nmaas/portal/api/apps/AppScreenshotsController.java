@@ -31,6 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -97,14 +98,28 @@ public class AppScreenshotsController extends AppBaseController {
     @PostMapping("/screenshots")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
     @Transactional
-    public FileInfoDto uploadScreenshot(@PathVariable("appId") Long appId, @RequestParam("file") MultipartFile file) {
-        ApplicationBase app = getBaseApp(appId);
+    public List<FileInfoDto> uploadScreenshot(
+            @PathVariable("appId") Long appId,
+            @RequestParam("files") List<MultipartFile> files
+    ) {
 
-        FileInfo fileInfo = fileStorage.store(file);
-        app.getScreenshots().add(fileInfo);
+        ApplicationBase app = appBaseService.getByIdForUpdate(appId);
+
+        List<FileInfoDto> result = new ArrayList<>();
+
+        for (MultipartFile file : files) {
+            FileInfo fileInfo = fileStorage.store(file);
+
+            if (!app.getScreenshots().contains(fileInfo)) {
+                app.getScreenshots().add(fileInfo);
+            }
+
+            result.add(modelMapper.map(fileInfo, FileInfoDto.class));
+        }
+
         appBaseService.update(app);
 
-        return modelMapper.map(fileInfo, FileInfoDto.class);
+        return result;
     }
 
     @GetMapping("/screenshots/{screenshotId}")

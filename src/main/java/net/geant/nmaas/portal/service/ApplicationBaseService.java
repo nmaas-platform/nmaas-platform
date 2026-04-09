@@ -24,6 +24,8 @@ public interface ApplicationBaseService {
 
     ApplicationBase getBaseApp(Long id);
 
+    ApplicationBase getByIdForUpdate(Long id);
+
     ApplicationBase findByName(String name);
 
     ApplicationBase findByVersionId(Long versionId);
