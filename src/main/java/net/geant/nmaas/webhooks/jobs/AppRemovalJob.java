@@ -50,9 +50,9 @@ public class AppRemovalJob extends AppWebhookJob {
             log.error("Failed to decrypt webhook with id {}", webhookId);
             throw new JobExecutionException("Failed webhook decryption");
         } catch (MissingElementException e) {
-            log.warn("Webhook does not exist. AppDeploymentJob is abandoned");
+            log.warn("Webhook does not exist. AppRemovalJob is abandoned");
         } catch (InvalidDeploymentIdException e) {
-            log.warn("Application Deployment does not exist. AppDeploymentJob is abandoned");
+            log.warn("Application Deployment does not exist. AppRemovalJob is abandoned");
         } catch (WebServiceCommunicationException e) {
             log.error("Failed to communicate with external system for the webhook of application removal with id {}", deploymentId);
             throw new JobExecutionException("Failed communication with external system");

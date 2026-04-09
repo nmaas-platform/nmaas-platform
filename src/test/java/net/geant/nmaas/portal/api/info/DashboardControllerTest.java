@@ -1,5 +1,8 @@
 package net.geant.nmaas.portal.api.info;
 
+import net.geant.nmaas.portal.api.dashboard.DashboardController;
+import net.geant.nmaas.portal.api.dashboard.DashboardDto;
+import net.geant.nmaas.portal.api.dashboard.DomainDashboardDto;
 import net.geant.nmaas.portal.service.DashboardService;
 import org.junit.jupiter.api.Test;
 
@@ -17,11 +20,11 @@ class DashboardControllerTest {
     void shouldGetDashboardAdmin() {
         OffsetDateTime start = OffsetDateTime.now().minusDays(1);
         OffsetDateTime end = OffsetDateTime.now();
-        DashboardView dashboardView = DashboardView.builder().domainsCount(1L).build();
+        DashboardDto dashboardDto = DashboardDto.builder().domainsCount(1L).build();
 
-        when(dashboardService.getSystemDashboard(start, end)).thenReturn(dashboardView);
+        when(dashboardService.getSystemDashboard(start, end)).thenReturn(dashboardDto);
 
-        DashboardView result = dashboardController.getDashboardAdmin(start, end);
+        DashboardDto result = dashboardController.getDashboardAdmin(start, end);
 
         assertNotNull(result);
         assertEquals(1L, result.getDomainsCount());
@@ -30,11 +33,11 @@ class DashboardControllerTest {
     @Test
     void shouldGetDashboardDomain() {
         Long domainId = 1L;
-        DomainDashboardView domainDashboardView = DomainDashboardView.builder().build();
+        DomainDashboardDto domainDashboardDto = DomainDashboardDto.builder().build();
 
-        when(dashboardService.getDomainDashboard(domainId)).thenReturn(domainDashboardView);
+        when(dashboardService.getDomainDashboard(domainId)).thenReturn(domainDashboardDto);
 
-        DomainDashboardView result = dashboardController.getDashboardDomain(domainId);
+        DomainDashboardDto result = dashboardController.getDashboardDomain(domainId);
 
         assertNotNull(result);
     }

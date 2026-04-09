@@ -1,4 +1,4 @@
-package net.geant.nmaas.portal.api.info;
+package net.geant.nmaas.portal.api.dashboard;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,11 +17,11 @@ import java.util.Map;
 @AllArgsConstructor
 @Builder
 @ToString
-public class DomainDashboardView {
+public class DomainDashboardDto {
 
     private Map<String, OffsetDateTime> userLogins;
     private Map<String, Integer> applicationDeployed;
-    private List<DomainAppInstanceView> applicationUpgradeStatus;
+    private List<DomainAppInstanceDto> applicationUpgradeStatus;
 
     @NoArgsConstructor
     @AllArgsConstructor
@@ -29,7 +29,7 @@ public class DomainDashboardView {
     @Setter
     @Builder
     @ToString
-    public static class DomainAppInstanceView {
+    public static class DomainAppInstanceDto {
 
         private String appName;
         private String instanceName;

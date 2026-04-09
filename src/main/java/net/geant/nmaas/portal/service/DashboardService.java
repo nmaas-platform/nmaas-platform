@@ -1,16 +1,16 @@
 package net.geant.nmaas.portal.service;
 
-import net.geant.nmaas.portal.api.info.DashboardView;
-import net.geant.nmaas.portal.api.info.DomainDashboardView;
+import net.geant.nmaas.portal.api.dashboard.DashboardDto;
+import net.geant.nmaas.portal.api.dashboard.DomainDashboardDto;
 
 import java.time.OffsetDateTime;
 
 public interface DashboardService {
 
-    DashboardView getSystemDashboard(OffsetDateTime startDate, OffsetDateTime endDate);
+    DashboardDto getSystemDashboard(OffsetDateTime startDate, OffsetDateTime endDate);
 
-    DomainDashboardView getDomainDashboard(Long domainId);
+    DomainDashboardDto getDomainDashboard(Long domainId);
 
-    DashboardView getOperatorDashboard();
+    DashboardDto getOperatorDashboard();
 
 }

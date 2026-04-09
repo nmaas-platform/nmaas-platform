@@ -32,7 +32,6 @@ class ApplicationStatePerDomainServiceImplTest {
 
     private final DomainRepository domains = mock(DomainRepository.class);
     private final ApplicationBaseRepository applications = mock(ApplicationBaseRepository.class);
-
     private final DomainGroupRepository domainGroupRepository = mock(DomainGroupRepository.class);
 
     private ApplicationStatePerDomainServiceImpl appState;
@@ -47,7 +46,7 @@ class ApplicationStatePerDomainServiceImplTest {
 
     @Test
     void shouldGenerateListOfDefaultApplicationStatesWithDefaults() {
-        when(applications.findAll()).thenReturn(new ArrayList<ApplicationBase>() {{
+        when(applications.findAllActive()).thenReturn(new ArrayList<ApplicationBase>() {{
             add(app1);
         }});
 
@@ -79,7 +78,7 @@ class ApplicationStatePerDomainServiceImplTest {
 
     @Test
     void shouldGenerateListOfDisabledApplicationStatesWithDefaults() {
-        when(applications.findAll()).thenReturn(new ArrayList<ApplicationBase>() {{
+        when(applications.findAllActive()).thenReturn(new ArrayList<ApplicationBase>() {{
             add(app1);
         }});
 

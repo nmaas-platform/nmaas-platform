@@ -1,4 +1,4 @@
-package net.geant.nmaas.portal.api.info;
+package net.geant.nmaas.portal.api.dashboard;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,20 +22,20 @@ public class DashboardController {
 
     @GetMapping("/admin")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
-    public DashboardView getDashboardAdmin(@RequestParam("startDate") OffsetDateTime startDate,
-                                           @RequestParam("end") OffsetDateTime endDate) {
+    public DashboardDto getDashboardAdmin(@RequestParam("startDate") OffsetDateTime startDate,
+                                          @RequestParam("end") OffsetDateTime endDate) {
         validateRequestedPeriod(startDate, endDate);
         return dashboardService.getSystemDashboard(startDate, endDate);
     }
 
     @GetMapping("/operator")
     @PreAuthorize("hasRole('ROLE_OPERATOR')")
-    public DashboardView getDashboardOperator() {
+    public DashboardDto getDashboardOperator() {
         return dashboardService.getOperatorDashboard();
     }
 
     @GetMapping("/domain/{id}")
-    public DomainDashboardView getDashboardDomain(@PathVariable Long id) {
+    public DomainDashboardDto getDashboardDomain(@PathVariable Long id) {
         return dashboardService.getDomainDashboard(id);
     }
 

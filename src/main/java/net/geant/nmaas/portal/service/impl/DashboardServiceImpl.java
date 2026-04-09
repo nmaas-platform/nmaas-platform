@@ -2,9 +2,9 @@ package net.geant.nmaas.portal.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.portal.api.info.DashboardDeploymentsView;
-import net.geant.nmaas.portal.api.info.DashboardView;
-import net.geant.nmaas.portal.api.info.DomainDashboardView;
+import net.geant.nmaas.portal.api.dashboard.DashboardDeploymentsDto;
+import net.geant.nmaas.portal.api.dashboard.DashboardDto;
+import net.geant.nmaas.portal.api.dashboard.DomainDashboardDto;
 import net.geant.nmaas.portal.persistence.entity.AppInstance;
 import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.entity.User;
@@ -45,7 +45,7 @@ public class DashboardServiceImpl implements DashboardService {
     private final ApplicationBaseService appBaseService;
 
     @Override
-    public DashboardView getSystemDashboard(OffsetDateTime startDate, OffsetDateTime endDate) {
+    public DashboardDto getSystemDashboard(OffsetDateTime startDate, OffsetDateTime endDate) {
         log.info("Processing system dashboard data request for period {} - {}", startDate, endDate);
 
         long startTimeStamp = startDate.toEpochSecond() * 1000;
@@ -54,8 +54,8 @@ public class DashboardServiceImpl implements DashboardService {
         List<String> baseNames = applicationBaseRepository.findAllNames();
         Map<String, Integer> applicationDeploymentCountPerName = new HashMap<>();
 
-        List<DashboardDeploymentsView> deploymentsViews = appInstanceRepository.findAllInTimePeriod(startTimeStamp, endTimeStamp).stream()
-                .map(entry -> DashboardDeploymentsView.builder().user(entry.getOwner().getUsername())
+        List<DashboardDeploymentsDto> deploymentsViews = appInstanceRepository.findAllInTimePeriod(startTimeStamp, endTimeStamp).stream()
+                .map(entry -> DashboardDeploymentsDto.builder().user(entry.getOwner().getUsername())
                         .domainName(entry.getDomain().getName())
                         .applicationName(entry.getApplication().getName())
                         .instanceId(entry.getId())
@@ -70,7 +70,7 @@ public class DashboardServiceImpl implements DashboardService {
         // filter not deployed application
         applicationDeploymentCountPerName.entrySet().removeIf(app -> app.getValue() == 0);
 
-        return DashboardView.builder()
+        return DashboardDto.builder()
                 .domainsCount(domainRepository.count())
                 .userCount(userRepository.count())
                 .instanceCount(appInstanceRepository.count())
@@ -80,13 +80,13 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     @Override
-    public DomainDashboardView getDomainDashboard(Long domainId) {
+    public DomainDashboardDto getDomainDashboard(Long domainId) {
         log.info("Processing dashboard data request for domain {}", domainId);
 
         Optional<Domain> domain = domainService.findDomain(domainId);
         Map<String, OffsetDateTime> userLogins = new HashMap<>();
         Map<String, Integer> appsDeployed = new HashMap<>();
-        List<DomainDashboardView.DomainAppInstanceView> upgradePossible = new ArrayList<>();
+        List<DomainDashboardDto.DomainAppInstanceDto> upgradePossible = new ArrayList<>();
 
         if (domain.isPresent()) {
             Domain dom = domain.get();
@@ -100,7 +100,7 @@ public class DashboardServiceImpl implements DashboardService {
                 appsDeployed.put(getUserPreferredUsername(user), appInstanceRepository.countAllByOwnerAndDomain(user, dom));
             });
             apps.forEach(app -> {
-                upgradePossible.add(DomainDashboardView.DomainAppInstanceView.builder()
+                upgradePossible.add(DomainDashboardDto.DomainAppInstanceDto.builder()
                         .appId(app.getId())
                         .baseAppId(appBaseService.findByName(app.getApplication().getName()).getId())
                         .appName(app.getApplication().getName())
@@ -112,21 +112,21 @@ public class DashboardServiceImpl implements DashboardService {
             Map<String, Integer> sortedAppsDeployed = appsDeployed.entrySet().stream()
                     .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a, LinkedHashMap::new));
-            return DomainDashboardView.builder()
+            return DomainDashboardDto.builder()
                     .userLogins(userLogins)
                     .applicationDeployed(sortedAppsDeployed)
                     .applicationUpgradeStatus(upgradePossible)
                     .build();
         } else {
             log.error("Domain {} not present. Returning empty...", domainId);
-            return DomainDashboardView.builder().build();
+            return DomainDashboardDto.builder().build();
         }
     }
 
     @Override
-    public DashboardView getOperatorDashboard() {
+    public DashboardDto getOperatorDashboard() {
         Long domainCount = domainRepository.countByActiveTrueAndDeletedFalse();
-        return DashboardView.builder()
+        return DashboardDto.builder()
                 .domainsCount(domainCount).build();
     }
 

@@ -1,4 +1,4 @@
-package net.geant.nmaas.portal.api.info;
+package net.geant.nmaas.portal.api.dashboard;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @Builder
-public class DashboardDeploymentsView {
+public class DashboardDeploymentsDto {
 
     private String domainName;
     private String user;

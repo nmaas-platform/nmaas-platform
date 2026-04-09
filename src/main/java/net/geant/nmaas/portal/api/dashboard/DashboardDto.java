@@ -1,4 +1,4 @@
-package net.geant.nmaas.portal.api.info;
+package net.geant.nmaas.portal.api.dashboard;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,18 +15,18 @@ import java.util.StringJoiner;
 @Setter
 @AllArgsConstructor
 @Builder
-public class DashboardView {
+public class DashboardDto {
 
     private Long userCount;
     private Long domainsCount;
     private Long instanceCount;
     private int instanceCountInPeriod;
-    private List<DashboardDeploymentsView> instanceCountInPeriodDetails;
+    private List<DashboardDeploymentsDto> instanceCountInPeriodDetails;
     private Map<String, Integer> popularApps;
 
     @Override
     public String toString() {
-        return new StringJoiner(", ", DashboardView.class.getSimpleName() + "[", "]")
+        return new StringJoiner(", ", DashboardDto.class.getSimpleName() + "[", "]")
                 .add("userCount=" + userCount)
                 .add("domainsCount=" + domainsCount)
                 .add("instanceCount=" + instanceCount)

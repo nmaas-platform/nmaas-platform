@@ -1,8 +1,8 @@
 package net.geant.nmaas.portal.persistence.repositories;
 
-import net.geant.nmaas.portal.persistence.entity.ApplicationBaseS;
 import net.geant.nmaas.portal.persistence.entity.AppDescription;
 import net.geant.nmaas.portal.persistence.entity.ApplicationBase;
+import net.geant.nmaas.portal.persistence.entity.ApplicationBaseS;
 import net.geant.nmaas.portal.persistence.entity.Tag;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -37,5 +37,8 @@ public interface ApplicationBaseRepository extends JpaRepository<ApplicationBase
 
     @Query("SELECT ab FROM ApplicationBase ab JOIN ab.versions v WHERE v.appVersionId =?1")
     Optional<ApplicationBase> findByVersionId(Long versionId);
+
+    @Query("SELECT DISTINCT ab FROM ApplicationBase ab JOIN Application a on a.name = ab.name WHERE a.state = 'ACTIVE'")
+    List<ApplicationBase> findAllActive();
 
 }

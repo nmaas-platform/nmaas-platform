@@ -30,7 +30,7 @@ public class ApplicationStatePerDomainServiceImpl implements ApplicationStatePer
 
     @Override
     public List<ApplicationStatePerDomain> generateListOfDefaultApplicationStatesPerDomain() {
-        return applicationBaseRepository.findAll().stream()
+        return applicationBaseRepository.findAllActive().stream()
                 .map(appBase -> {
                     ApplicationStatePerDomain appState = new ApplicationStatePerDomain(appBase);
                     appState.setPvStorageSizeLimit(ApplicationStatePerDomainServiceImpl.DEFAULT_PV_STORAGE_SIZE_LIMIT);
@@ -59,7 +59,7 @@ public class ApplicationStatePerDomainServiceImpl implements ApplicationStatePer
 
     @Override
     public List<ApplicationStatePerDomain> generateListOfDefaultApplicationStatesPerDomainDisabled() {
-        return applicationBaseRepository.findAll().stream()
+        return applicationBaseRepository.findAllActive().stream()
                 .map(appBase -> {
                     ApplicationStatePerDomain appState = new ApplicationStatePerDomain(appBase);
                     appState.setPvStorageSizeLimit(ApplicationStatePerDomainServiceImpl.DEFAULT_PV_STORAGE_SIZE_LIMIT);

@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.service.impl;
 
-import net.geant.nmaas.portal.api.info.DashboardView;
-import net.geant.nmaas.portal.api.info.DomainDashboardView;
+import net.geant.nmaas.portal.api.dashboard.DashboardDto;
+import net.geant.nmaas.portal.api.dashboard.DomainDashboardDto;
 import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.entity.User;
 import net.geant.nmaas.portal.persistence.entity.UserLoginRegister;
@@ -65,7 +65,7 @@ class DashboardServiceImplTest {
 
     @Test
     void getDomainDashboardShouldReturnEmptyObjectWhenDomainIdIsNull() {
-        DomainDashboardView result = dashboardService.getDomainDashboard(null);
+        DomainDashboardDto result = dashboardService.getDomainDashboard(null);
 
         assertNotNull(result);
         assertNull(result.getUserLogins());
@@ -82,7 +82,7 @@ class DashboardServiceImplTest {
         when(domainService.getMembers(domainId)).thenReturn(Collections.emptyList());
         when(appInstanceRepository.findAllByDomain(domain)).thenReturn(Collections.emptyList());
 
-        DomainDashboardView result = dashboardService.getDomainDashboard(domainId);
+        DomainDashboardDto result = dashboardService.getDomainDashboard(domainId);
 
         assertNotNull(result);
         assertTrue(result.getUserLogins().isEmpty());
@@ -110,7 +110,7 @@ class DashboardServiceImplTest {
         when(appInstanceRepository.findAllByDomain(domain)).thenReturn(Collections.emptyList());
         when(userLoginRegisterService.getLastLogin(user)).thenReturn(Optional.of(userLoginRegister));
 
-        DomainDashboardView result = dashboardService.getDomainDashboard(domainId);
+        DomainDashboardDto result = dashboardService.getDomainDashboard(domainId);
 
         assertNotNull(result);
         assertFalse(result.getUserLogins().isEmpty());
@@ -125,7 +125,7 @@ class DashboardServiceImplTest {
         when(appInstanceRepository.countAllDeployedInTimePeriod(anyLong(), anyLong())).thenReturn((int) 3L);
         when(applicationBaseRepository.findAllNames()).thenReturn(Collections.emptyList());
 
-        DashboardView result = dashboardService.getSystemDashboard(OffsetDateTime.now().minusDays(1), OffsetDateTime.now());
+        DashboardDto result = dashboardService.getSystemDashboard(OffsetDateTime.now().minusDays(1), OffsetDateTime.now());
 
         assertNotNull(result);
         assertTrue(result.getPopularApps().isEmpty());
@@ -210,7 +210,7 @@ class DashboardServiceImplTest {
         when(domainRepository.countByActiveTrueAndDeletedFalse()).thenReturn(expectedDomainCount);
 
         // Call the method
-        DashboardView result = dashboardService.getOperatorDashboard();
+        DashboardDto result = dashboardService.getOperatorDashboard();
 
         // Verify the result
         assertNotNull(result);
