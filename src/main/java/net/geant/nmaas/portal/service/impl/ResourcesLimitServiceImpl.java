@@ -1,13 +1,16 @@
 package net.geant.nmaas.portal.service.impl;
 
-import jakarta.xml.bind.annotation.XmlElementDecl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.api.dto.ResourcesLimitDto;
 import net.geant.nmaas.api.dto.ResourcesLimitUpdateDto;
+import net.geant.nmaas.api.dto.domains.DomainGroupDto;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
+import net.geant.nmaas.portal.persistence.entity.Domain;
+import net.geant.nmaas.portal.persistence.entity.DomainGroup;
 import net.geant.nmaas.portal.persistence.entity.ResourcesLimit;
 import net.geant.nmaas.portal.persistence.repositories.ResourcesLimitRepository;
+import net.geant.nmaas.portal.service.DomainGroupService;
 import net.geant.nmaas.portal.service.ResourcesLimitService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -32,6 +35,7 @@ public class ResourcesLimitServiceImpl implements ResourcesLimitService {
 
     private final ResourcesLimitRepository resourcesLimitRepository;
     private final ModelMapper modelMapper;
+    private final DomainGroupService groupService;
 
     @Override
     public void setGlobalResourcesLimit(ResourcesLimitDto dto) {
@@ -83,8 +87,16 @@ public class ResourcesLimitServiceImpl implements ResourcesLimitService {
         }
 
         ResourcesLimit entity = modelMapper.map(dto, ResourcesLimit.class);
-        entity = resourcesLimitRepository.save(entity);
-        return modelMapper.map(entity, ResourcesLimitDto.class);
+        if (dto.limitType().equals(DOMAIN_GROUP)) {
+//          A simple mapping using `dto.domainGroup()` returns null
+            DomainGroupDto domainGroupDto = groupService.getDomainGroup(dto.domainGroup().id());
+            DomainGroup domainGroup = modelMapper.map(domainGroupDto, DomainGroup.class);
+            entity.setDomainGroup(domainGroup);
+        } else if (dto.limitType().equals(DOMAIN)) {
+            entity.setDomain(modelMapper.map(dto.domain(), Domain.class));
+        }
+        ResourcesLimit result = resourcesLimitRepository.save(entity);
+        return modelMapper.map(result, ResourcesLimitDto.class);
     }
 
     @Override

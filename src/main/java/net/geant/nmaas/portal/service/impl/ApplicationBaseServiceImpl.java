@@ -162,6 +162,13 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
     }
 
     @Override
+    public ApplicationBase getByIdForUpdate(Long id) {
+        return appBaseRepository.findByIdForUpdate(id)
+                .orElseThrow(() ->
+                        new MissingElementException(String.format("App base with id: %d cannot be found", id)));
+    }
+
+    @Override
     public boolean isAppActive(ApplicationBase application) {
         return application.getVersions().stream()
                 .anyMatch(app -> app.getState().equals(ApplicationState.ACTIVE));

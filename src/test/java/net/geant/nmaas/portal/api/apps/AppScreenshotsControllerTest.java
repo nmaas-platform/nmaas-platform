@@ -148,12 +148,15 @@ class AppScreenshotsControllerTest {
     @Test
     void shouldUploadScreenshot() {
         MultipartFile mf = mock(MultipartFile.class);
+        List<MultipartFile> screenshots = new ArrayList<>();
+        screenshots.add(mf);
         FileInfo newScreenshot = new FileInfo("newScreenshot", "image/png");
         when(fileStorageService.store(mf)).thenReturn(newScreenshot);
+        when(applicationBaseService.getByIdForUpdate(1L)).thenReturn(app);
 
-        FileInfoDto fiv = this.appScreenshotsController.uploadScreenshot(app.getId(), mf);
+        List<FileInfoDto> fiv = this.appScreenshotsController.uploadScreenshot(app.getId(), screenshots);
 
-        assertEquals(newScreenshot.getFilename(), fiv.getFilename());
+        assertEquals(newScreenshot.getFilename(), fiv.get(0).getFilename());
         verify(applicationBaseService, times(1)).update(any(ApplicationBase.class));
     }
 
