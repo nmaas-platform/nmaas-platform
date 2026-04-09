@@ -10,6 +10,7 @@ import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.entity.ResourcesLimit;
 import net.geant.nmaas.portal.persistence.entity.ResourcesLimitType;
 import net.geant.nmaas.portal.persistence.repositories.ResourcesLimitRepository;
+import net.geant.nmaas.portal.service.DomainGroupService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
@@ -32,6 +33,7 @@ public class ResourcesLimitTest {
 
     private final DomainBaseDto domainView = new DomainBaseDto();
     private final ModelMapper mapper = new ModelMapper();
+    private final DomainGroupService groupService = mock(DomainGroupService.class);
 
     private ResourcesLimitDto resourcesLimitDto;
     private ResourcesLimit resourcesLimit;
@@ -42,7 +44,7 @@ public class ResourcesLimitTest {
     void setUp() {
         mapper.addConverter(new ResourceLimitConverter());
         mapper.addConverter(new ResourceLimitInverseConverter());
-        resourcesLimitService = new ResourcesLimitServiceImpl(resourcesLimitRepository, mapper);
+        resourcesLimitService = new ResourcesLimitServiceImpl(resourcesLimitRepository, mapper,groupService);
         domainView.setId(1L);
         resourcesLimitDto = new ResourcesLimitDto(1L, 500, 100, 10, 50,
                 ResourcesLimitTypeDto.DOMAIN, null, domainView);
