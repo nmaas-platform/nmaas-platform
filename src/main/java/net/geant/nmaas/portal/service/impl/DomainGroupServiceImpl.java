@@ -134,14 +134,22 @@ public class DomainGroupServiceImpl implements DomainGroupService {
 
     @Override
     public Page<DomainGroupBaseDto> getPageableAllDomainGroups(Pageable pageable) {
-        return domainGroupRepository.findAll(pageable)
-                .map(g -> modelMapper.map(g, DomainGroupBaseDto.class));
+        return domainGroupRepository.getAllBaseDto(pageable);
+    }
+
+    @Override
+    public Page<DomainGroupBaseDto> getPageableAllDomainGroupsAndSearch(Pageable pageable, String search) {
+        return domainGroupRepository.getAllBaseDtoWithSearch(search, pageable);
     }
 
     @Override
     public Page<DomainGroupBaseDto> getPageableAllDomainGroupsWhereManagerIsMember(Pageable pageable, User manager) {
-        return domainGroupRepository.findAllByManagers(manager, pageable)
-                .map(g -> modelMapper.map(g, DomainGroupBaseDto.class));
+        return domainGroupRepository.getAllBaseDtoByManager(manager, pageable);
+    }
+
+    @Override
+    public Page<DomainGroupBaseDto> getPageableAllDomainGroupsWhereManagerIsMemberAndSearch(Pageable pageable, User manager, String search) {
+        return domainGroupRepository.getAllBaseDtoByManagerWithSearch(manager, search, pageable);
     }
 
     @Override

@@ -30,7 +30,11 @@ public interface DomainGroupService {
 
     Page<DomainGroupBaseDto> getPageableAllDomainGroups(Pageable pageable);
 
+    Page<DomainGroupBaseDto> getPageableAllDomainGroupsAndSearch(Pageable pageable, String search);
+
     Page<DomainGroupBaseDto> getPageableAllDomainGroupsWhereManagerIsMember(Pageable pageable, User manager);
+
+    Page<DomainGroupBaseDto> getPageableAllDomainGroupsWhereManagerIsMemberAndSearch(Pageable pageable, User manager, String search);
 
     DomainGroupDto updateDomainGroup(Long domainGroupId, DomainGroupDto view);
 
