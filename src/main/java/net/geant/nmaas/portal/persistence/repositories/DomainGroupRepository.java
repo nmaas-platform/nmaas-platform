@@ -33,7 +33,7 @@ public interface DomainGroupRepository extends JpaRepository<DomainGroup, Long> 
                     dg.id,
                     dg.name,
                     dg.codename,
-                    CAST(COUNT(d) as integer)
+                    CAST(COUNT(d) as integer) as noOfDomains
                 )
                     FROM DomainGroup dg
                     LEFT JOIN dg.domains d
@@ -45,7 +45,7 @@ public interface DomainGroupRepository extends JpaRepository<DomainGroup, Long> 
                 dg.id,
                 dg.name,
                 dg.codename,
-                CAST(COUNT(d) as integer)
+                CAST(COUNT(d) as integer) as noOfDomains
             )
                     FROM DomainGroup dg
                     LEFT JOIN dg.domains d
@@ -60,7 +60,7 @@ public interface DomainGroupRepository extends JpaRepository<DomainGroup, Long> 
         dg.id,
         dg.name,
         dg.codename,
-        CAST(COUNT(d) as integer)
+        CAST(COUNT(d) as integer) as noOfDomains
         )
             FROM DomainGroup dg
             JOIN dg.managers m
@@ -75,7 +75,7 @@ public interface DomainGroupRepository extends JpaRepository<DomainGroup, Long> 
         dg.id,
         dg.name,
         dg.codename,
-        CAST(COUNT(d) as integer)
+        CAST(COUNT(d) as integer) as noOfDomains
         )
             FROM DomainGroup dg
             JOIN dg.managers m
