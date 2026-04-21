@@ -64,10 +64,10 @@ public class RemoteClusterManagerController {
             } else if (!StringUtils.isBlank(secretNamespace) && !StringUtils.isBlank(secretName)) {
                 return remoteClusterManager.processNewCluster(cluster, createNamespaceFlag, secretNamespace, secretName);
             } else {
-                throw new RuntimeException("You need either to upload the kubeConfig file or name of secret object that holds the respective kubeConfig file in the local cluster");
+                throw new IllegalArgumentException("You need either to upload the kubeConfig file or name of secret object that holds the respective kubeConfig file in the local cluster");
             }
         } catch (JacksonException e) {
-            throw new RuntimeException(e);
+            throw new IllegalArgumentException("Invalid cluster request payload", e);
         }
     }
 
@@ -97,10 +97,10 @@ public class RemoteClusterManagerController {
             } else if (!StringUtils.isBlank(secretNamespace) && !StringUtils.isBlank(secretName)) {
                 return remoteClusterManager.mapFile(cluster, secretNamespace, secretName);
             } else {
-                throw new RuntimeException("You need either to upload the kubeConfig file or name of secret object that holds the respective kubeConfig file in the local cluster");
+                throw new IllegalArgumentException("You need either to upload the kubeConfig file or name of secret object that holds the respective kubeConfig file in the local cluster");
             }
         } catch (JacksonException e) {
-            throw new RuntimeException(e);
+            throw new IllegalArgumentException("Invalid cluster request payload", e);
         }
     }
 

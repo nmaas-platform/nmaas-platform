@@ -19,6 +19,7 @@ import java.security.Principal;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -132,7 +133,7 @@ class RemoteClusterManagerTest {
         Long id = 100L;
         when(kClusterRepository.findById(id)).thenReturn(Optional.empty());
 
-        assertThrows(IllegalArgumentException.class, () -> remoteClusterManager.getCluster(id, mockPrincipal));
+        assertThrows(NoSuchElementException.class, () -> remoteClusterManager.getCluster(id, mockPrincipal));
         verify(kClusterRepository, times(1)).findById(id);
     }
 
@@ -201,6 +202,29 @@ class RemoteClusterManagerTest {
         verify(kClusterRepository, never()).findAll();
         assertEquals(1, result.size());
         assertTrue(result.stream().anyMatch(v -> v.getId().equals(cluster1.getId())));
+    }
+
+    @Test
+    void removeCluster_missingId_throwsNoSuchElementException() {
+        when(kClusterRepository.existsById(123L)).thenReturn(false);
+
+        assertThrows(NoSuchElementException.class, () -> remoteClusterManager.removeCluster(123L));
+
+        verify(kClusterRepository, times(1)).existsById(123L);
+        verify(kClusterRepository, never()).deleteById(anyLong());
+    }
+
+    @Test
+    void removeCluster_deleteFails_rethrowsRuntimeException() {
+        when(kClusterRepository.existsById(123L)).thenReturn(true);
+        RuntimeException failure = new RuntimeException("delete failed");
+        org.mockito.Mockito.doThrow(failure).when(kClusterRepository).deleteById(123L);
+
+        RuntimeException thrown = assertThrows(RuntimeException.class, () -> remoteClusterManager.removeCluster(123L));
+
+        assertEquals("delete failed", thrown.getMessage());
+        verify(kClusterRepository, times(1)).existsById(123L);
+        verify(kClusterRepository, times(1)).deleteById(123L);
     }
 
 }

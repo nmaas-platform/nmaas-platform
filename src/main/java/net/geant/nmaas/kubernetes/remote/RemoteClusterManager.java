@@ -31,6 +31,7 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -67,7 +68,7 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
                 throw new IllegalArgumentException("No access to cluster " + id);
             }
         } else {
-            throw new IllegalArgumentException("Cluster not found");
+            throw new NoSuchElementException("Cluster not found");
         }
     }
 
@@ -310,13 +311,15 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
 
     @Override
     public void removeCluster(Long id) {
+        if (!kClusterRepository.existsById(id)) {
+            throw new NoSuchElementException("Cluster not found");
+        }
         try {
-            if (kClusterRepository.existsById(id)) {
-                kClusterRepository.deleteById(id);
-            }
+            kClusterRepository.deleteById(id);
         } catch (RuntimeException ex) {
             log.warn("Can not delete cluster {}", id);
-            log.error("Exception: {}", ex.getMessage());
+            log.error("Exception: {}", ex.getMessage(), ex);
+            throw ex;
         }
     }
 
