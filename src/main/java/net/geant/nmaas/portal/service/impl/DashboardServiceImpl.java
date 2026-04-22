@@ -112,9 +112,21 @@ public class DashboardServiceImpl implements DashboardService {
             Map<String, Integer> sortedAppsDeployed = appsDeployed.entrySet().stream()
                     .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a, LinkedHashMap::new));
+            List<DomainDashboardDto.ApplicationDeployedDto> sortedAppsDeployedDto = sortedAppsDeployed.entrySet().stream()
+                    .map(entry -> DomainDashboardDto.ApplicationDeployedDto.builder()
+                            .userName(entry.getKey())
+                            .count(entry.getValue())
+                            .build())
+                    .collect(Collectors.toList());
+            List<DomainDashboardDto.UserLoginsDto> userLoginsDto = userLogins.entrySet().stream()
+                    .map(entry -> DomainDashboardDto.UserLoginsDto.builder()
+                            .userName(entry.getKey())
+                            .lastLogin(entry.getValue())
+                            .build())
+                    .collect(Collectors.toList());
             return DomainDashboardDto.builder()
-                    .userLogins(userLogins)
-                    .applicationDeployed(sortedAppsDeployed)
+                    .userLogins(userLoginsDto)
+                    .applicationDeployed(sortedAppsDeployedDto)
                     .applicationUpgradeStatus(upgradePossible)
                     .build();
         } else {
