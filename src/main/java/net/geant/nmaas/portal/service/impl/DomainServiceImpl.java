@@ -613,11 +613,13 @@ public class DomainServiceImpl implements DomainService {
 
     @Override
     public void addAnnotation(KeyValueDto keyValue) {
-        ModelMapper modelMapper = new ModelMapper();
         if (this.domainAnnotationsRepository.existsByKey(keyValue.key())) {
             throw new ProcessingException(String.format("Domain annotation with key (%s) already exist", keyValue.key()));
         }
-        this.domainAnnotationsRepository.save(modelMapper.map(keyValue, DomainAnnotation.class));
+        DomainAnnotation annotationToSave = new DomainAnnotation();
+        annotationToSave.setKey(keyValue.key());
+        annotationToSave.setValue(keyValue.value());
+        this.domainAnnotationsRepository.save(annotationToSave);
     }
 
     @Override
