@@ -30,6 +30,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -200,10 +201,14 @@ class DashboardControllerIntTest extends BaseControllerTestSetup {
         System.out.println(result.getResponse().getContentAsString());
         DomainDashboardDto response = objectMapper.readValue(result.getResponse().getContentAsString(), DomainDashboardDto.class);
 
-        assertEquals(loginDate, response.getUserLogins().get(userWithInstance.getUsername()));
+        assertEquals(loginDate, response.getUserLogins().getFirst().getLastLogin());
         assertEquals(3, response.getApplicationDeployed().size());
-        assertEquals(1, response.getApplicationDeployed().get(userWithInstance.getUsername()));
-        assertEquals(2, response.getApplicationDeployed().get(userWithTwoInstances.getUsername()));
+        assertEquals(1, response.getApplicationDeployed().stream()
+                .filter(d -> d.getUserName().equals(userWithInstance.getUsername()))
+                .count());
+        assertEquals(1, response.getApplicationDeployed().stream()
+                .filter(d -> d.getUserName().equals(userWithTwoInstances.getUsername()))
+                .count());
         assertTrue(response.getApplicationUpgradeStatus().isEmpty());
     }
 
