@@ -2,8 +2,8 @@ package net.geant.nmaas.portal.api.apps;
 
 import net.geant.nmaas.api.dto.applications.AppRateDto;
 import net.geant.nmaas.api.dto.applications.ApplicationBaseView;
-import net.geant.nmaas.api.dto.applications.ApplicationSubscription;
 import net.geant.nmaas.api.dto.applications.ApplicationSubscriptionBase;
+import net.geant.nmaas.api.dto.applications.ApplicationSubscriptionDto;
 import net.geant.nmaas.portal.persistence.repositories.RatingRepository;
 import net.geant.nmaas.portal.service.ApplicationBaseService;
 import net.geant.nmaas.portal.service.ApplicationService;
@@ -69,8 +69,8 @@ public class ApplicationSubscriptionController extends AppBaseController {
     @GetMapping("/apps/{appId}/domains/{domainId}")
     @PreAuthorize("hasPermission(#domainId, 'domain', 'READ')")
     @Transactional(readOnly = true)
-    public ResponseEntity<ApplicationSubscription> getSubscription(@PathVariable Long domainId, @PathVariable Long appId) {
-        Optional<ApplicationSubscription> appSub = appSubscriptions.getSubscription(appId, domainId).map(sub -> modelMapper.map(sub, ApplicationSubscription.class));
+    public ResponseEntity<ApplicationSubscriptionDto> getSubscription(@PathVariable Long domainId, @PathVariable Long appId) {
+        Optional<ApplicationSubscriptionDto> appSub = appSubscriptions.getSubscription(appId, domainId).map(sub -> modelMapper.map(sub, ApplicationSubscriptionDto.class));
         return appSub.map(applicationSubscription -> new ResponseEntity<>(applicationSubscription, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 

@@ -7,14 +7,14 @@ import org.modelmapper.AbstractConverter;
 
 public class TagStringConverter extends AbstractConverter<String, Tag> {
 
-    private final TagRepository tagRepo;
+    private final TagRepository tagRepository;
 
-    public TagStringConverter(TagRepository tagRepo) {
+    public TagStringConverter(TagRepository tagRepository) {
         super();
-        if (tagRepo == null) {
-            throw new IllegalStateException("Tag repo is null");
+        if (tagRepository == null) {
+            throw new IllegalStateException("Tag repository is null");
         }
-        this.tagRepo = tagRepo;
+        this.tagRepository = tagRepository;
     }
 
     @Override
@@ -22,8 +22,7 @@ public class TagStringConverter extends AbstractConverter<String, Tag> {
         if (StringUtils.isEmpty(source)) {
             return null;
         }
-        return tagRepo.findByName(source).orElse(new Tag(source));
+        return tagRepository.findByName(source).orElse(new Tag(source));
     }
 
 }
-

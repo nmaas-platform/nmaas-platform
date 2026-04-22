@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import net.geant.nmaas.api.dto.applications.ApplicationStatePerDomainView;
+import net.geant.nmaas.api.dto.applications.ApplicationStatePerDomainDto;
 import net.geant.nmaas.api.dto.domains.DomainDto;
 import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.portal.persistence.entity.Application;
@@ -74,7 +74,7 @@ public class ApplicationStatePerDomainServiceImpl implements ApplicationStatePer
         Domain updatedDomain = domainRepository.getReferenceById(changes.getId());
         List<ApplicationStatePerDomain> list = updatedDomain.getApplicationStatePerDomain();
         for (ApplicationStatePerDomain appState : list) {
-            for (ApplicationStatePerDomainView appStateView : changes.getApplicationStatePerDomain()) {
+            for (ApplicationStatePerDomainDto appStateView : changes.getApplicationStatePerDomain()) {
                 if (appState.getApplicationBase().getId().equals(appStateView.getApplicationBaseId())) {
                     // rewrite state
                     appState.applyChangedState(appStateView);

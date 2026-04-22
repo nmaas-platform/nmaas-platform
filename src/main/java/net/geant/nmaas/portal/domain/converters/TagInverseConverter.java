@@ -8,7 +8,7 @@ public class TagInverseConverter extends AbstractConverter<AppTagDto, Tag> {
 
     @Override
     protected Tag convert(AppTagDto source) {
-        return new Tag(source.id(), source.name());
+        return new Tag(source.getId(), source.getName());
     }
 
 }

@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.service.impl;
 
-import net.geant.nmaas.api.dto.applications.ApplicationStatePerDomainView;
+import net.geant.nmaas.api.dto.applications.ApplicationStatePerDomainDto;
 import net.geant.nmaas.api.dto.domains.DomainDto;
 import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.portal.persistence.entity.Application;
@@ -147,11 +147,11 @@ class ApplicationStatePerDomainServiceImplTest {
         updatedDomain.setApplicationStatePerDomain(new ArrayList<>(List.of(state)));
 
         DomainDto changes = mock(DomainDto.class);
-        ApplicationStatePerDomainView changeView = mock(ApplicationStatePerDomainView.class);
+        ApplicationStatePerDomainDto changeView = mock(ApplicationStatePerDomainDto.class);
         when(changes.getId()).thenReturn(10L);
         when(changes.getApplicationStatePerDomain()).thenReturn(List.of(changeView));
         when(changeView.getApplicationBaseId()).thenReturn(5L);
-        when(changeView.isEnabled()).thenReturn(false);
+        when(changeView.getEnabled()).thenReturn(false);
         when(changeView.getPvStorageSizeLimit()).thenReturn(99L);
         when(domains.getReferenceById(10L)).thenReturn(updatedDomain);
 

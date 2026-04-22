@@ -5,7 +5,7 @@ import net.geant.nmaas.api.dto.Id;
 import net.geant.nmaas.api.dto.applications.AppAccessMethodView;
 import net.geant.nmaas.api.dto.applications.AppConfigurationSpecView;
 import net.geant.nmaas.api.dto.applications.AppDeploymentSpecView;
-import net.geant.nmaas.api.dto.applications.AppStorageVolumeView;
+import net.geant.nmaas.api.dto.applications.AppStorageVolumeDto;
 import net.geant.nmaas.api.dto.applications.ApplicationBaseView;
 import net.geant.nmaas.api.dto.applications.ApplicationBaseViewS;
 import net.geant.nmaas.api.dto.applications.ApplicationDto;
@@ -207,9 +207,9 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
         applicationView.getAppDeploymentSpec().getAccessMethods()
                 .add(new AppAccessMethodView(null, ServiceAccessMethodTypeDto.DEFAULT, "name5", "tag5", null, null));
         applicationView.getAppDeploymentSpec().getStorageVolumes()
-                .add(new AppStorageVolumeView(null, ServiceStorageVolumeTypeDto.SHARED, 5, new HashMap<>()));
+                .add(new AppStorageVolumeDto(null, ServiceStorageVolumeTypeDto.SHARED, 5, new HashMap<>()));
         applicationView.getAppDeploymentSpec().getStorageVolumes()
-                .add(new AppStorageVolumeView(null, ServiceStorageVolumeTypeDto.SHARED, 5, new HashMap<>()));
+                .add(new AppStorageVolumeDto(null, ServiceStorageVolumeTypeDto.SHARED, 5, new HashMap<>()));
 
         mvc.perform(patch("/api/apps/version")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
@@ -353,7 +353,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
                 )
         );
         appDeploymentSpec.setStorageVolumes(new ArrayList<>());
-        appDeploymentSpec.getStorageVolumes().add(new AppStorageVolumeView(null, ServiceStorageVolumeTypeDto.MAIN, 5, new HashMap<>()));
+        appDeploymentSpec.getStorageVolumes().add(new AppStorageVolumeDto(null, ServiceStorageVolumeTypeDto.MAIN, 5, new HashMap<>()));
         appDeploymentSpec.setAccessMethods(new ArrayList<>());
         appDeploymentSpec.getAccessMethods().addAll(List.of(
                 new AppAccessMethodView(null, ServiceAccessMethodTypeDto.DEFAULT, "name1", "tag1", null, null),

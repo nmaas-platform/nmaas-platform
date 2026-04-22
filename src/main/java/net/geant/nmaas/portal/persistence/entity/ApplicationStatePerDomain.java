@@ -8,7 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import net.geant.nmaas.api.dto.applications.ApplicationStatePerDomainView;
+import net.geant.nmaas.api.dto.applications.ApplicationStatePerDomainDto;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -55,8 +55,8 @@ public class ApplicationStatePerDomain implements Serializable {
         this.pvStorageSizeLimit = pvStorageSizeLimit;
     }
 
-    public void applyChangedState(ApplicationStatePerDomainView appStateView) {
-        this.enabled = appStateView.isEnabled();
+    public void applyChangedState(ApplicationStatePerDomainDto appStateView) {
+        this.enabled = appStateView.getEnabled();
         this.pvStorageSizeLimit = appStateView.getPvStorageSizeLimit();
     }
 

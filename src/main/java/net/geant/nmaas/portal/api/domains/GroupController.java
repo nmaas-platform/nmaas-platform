@@ -2,7 +2,7 @@ package net.geant.nmaas.portal.api.domains;
 
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.api.dto.Id;
-import net.geant.nmaas.api.dto.applications.ApplicationStatePerDomainView;
+import net.geant.nmaas.api.dto.applications.ApplicationStatePerDomainDto;
 import net.geant.nmaas.api.dto.domains.DomainGroupBaseDto;
 import net.geant.nmaas.api.dto.domains.DomainGroupDto;
 import net.geant.nmaas.api.dto.users.UserViewMinimal;
@@ -221,7 +221,7 @@ public class GroupController extends BaseController {
 
     @PutMapping("/{domainGroupId}/applications")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
-    public List<ApplicationStatePerDomainView> enableGroupApplication(@PathVariable Long domainGroupId,
+    public List<ApplicationStatePerDomainDto> enableGroupApplication(@PathVariable Long domainGroupId,
                                                                       @RequestBody List<Long> applicationBaseIds,
                                                                       Principal principal) throws AccessDeniedException {
         DomainGroupDto domainGroup = domainGroupService.getDomainGroup(domainGroupId);
@@ -241,7 +241,7 @@ public class GroupController extends BaseController {
 
     @DeleteMapping("/{domainGroupId}/applications")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
-    public List<ApplicationStatePerDomainView> disableGroupApplication(@PathVariable Long domainGroupId,
+    public List<ApplicationStatePerDomainDto> disableGroupApplication(@PathVariable Long domainGroupId,
                                                                        @RequestBody List<Long> applicationBaseIds,
                                                                        Principal principal) throws AccessDeniedException {
         DomainGroupDto domainGroup = domainGroupService.getDomainGroup(domainGroupId);

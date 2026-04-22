@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.api.domains;
 
 import net.geant.nmaas.api.dto.Id;
-import net.geant.nmaas.api.dto.applications.ApplicationStatePerDomainView;
+import net.geant.nmaas.api.dto.applications.ApplicationStatePerDomainDto;
 import net.geant.nmaas.api.dto.domains.DomainGroupDto;
 import net.geant.nmaas.api.dto.users.UserViewMinimal;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
@@ -107,8 +107,8 @@ class GroupControllerTest {
         admin.setRoles(List.of(new UserRole(admin, global, Role.ROLE_SYSTEM_ADMIN)));
         when(userService.findByUsername("admin")).thenReturn(Optional.of(admin));
 
-        ApplicationStatePerDomainView appState1 = mock(ApplicationStatePerDomainView.class);
-        ApplicationStatePerDomainView appState2 = mock(ApplicationStatePerDomainView.class);
+        ApplicationStatePerDomainDto appState1 = mock(ApplicationStatePerDomainDto.class);
+        ApplicationStatePerDomainDto appState2 = mock(ApplicationStatePerDomainDto.class);
         when(appState1.getApplicationBaseId()).thenReturn(1L);
         when(appState2.getApplicationBaseId()).thenReturn(2L);
 
@@ -118,8 +118,8 @@ class GroupControllerTest {
         when(domainGroupService.getDomainGroup(55L)).thenReturn(group);
         when(domainGroupService.updateDomainGroup(55L, group)).thenReturn(group);
 
-        List<ApplicationStatePerDomainView> enabled = controller.enableGroupApplication(55L, List.of(1L), principal);
-        List<ApplicationStatePerDomainView> disabled = controller.disableGroupApplication(55L, List.of(1L), principal);
+        List<ApplicationStatePerDomainDto> enabled = controller.enableGroupApplication(55L, List.of(1L), principal);
+        List<ApplicationStatePerDomainDto> disabled = controller.disableGroupApplication(55L, List.of(1L), principal);
 
         assertEquals(2, enabled.size());
         assertEquals(2, disabled.size());
