@@ -129,16 +129,32 @@ public class AppDeploymentStateChangeManager {
     }
 
     private MailAttributes getMailAttributes(AppDeployment appDeployment) {
-        return MailAttributes.builder()
-                .otherAttributes(Map.of(
-                        "accessURL", prepareDeployUrl(appDeployment),
-                        "domainName", deploymentRepositoryManager.loadDomainName(appDeployment.getDeploymentId()),
-                        "owner", appDeployment.getOwner(),
-                        "appInstanceName", appDeployment.getDeploymentName(),
-                        "appName", appDeployment.getAppName()
-                ))
-                .mailType(MailType.APP_DEPLOYED)
-                .build();
+        if (deploymentMonitor.userAccessDetails(appDeployment.getDeploymentId())
+                .getServiceAccessMethods().stream()
+                .anyMatch(m ->
+                        !Arrays.asList(ServiceAccessMethodTypeDto.INTERNAL, ServiceAccessMethodTypeDto.LOCAL)
+                        .contains(m.getType()))) {
+            return MailAttributes.builder()
+                    .otherAttributes(Map.of(
+                            "accessURL", prepareDeployUrl(appDeployment),
+                            "domainName", deploymentRepositoryManager.loadDomainName(appDeployment.getDeploymentId()),
+                            "owner", appDeployment.getOwner(),
+                            "appInstanceName", appDeployment.getDeploymentName(),
+                            "appName", appDeployment.getAppName()
+                    ))
+                    .mailType(MailType.APP_DEPLOYED)
+                    .build();
+        } else {
+            return MailAttributes.builder()
+                    .otherAttributes(Map.of(
+                            "domainName", deploymentRepositoryManager.loadDomainName(appDeployment.getDeploymentId()),
+                            "owner", appDeployment.getOwner(),
+                            "appInstanceName", appDeployment.getDeploymentName(),
+                            "appName", appDeployment.getAppName()
+                    ))
+                    .mailType(MailType.APP_DEPLOYED_PORTAL_ACCESS)
+                    .build();
+        }
     }
 
     private String prepareDeployUrl(AppDeployment appDeployment) {
