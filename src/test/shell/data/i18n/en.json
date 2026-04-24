@@ -276,6 +276,7 @@
     "TITLE": "Domains",
     "DETAILS_TITLE": "Domain",
     "CODE_NAME": "Codename",
+    "LIMIT": "Limit",
     "NUMBER_OF_DOMAINS": "Number of domains",
     "NAME": "Name",
     "ACTIVATE": "Active",
