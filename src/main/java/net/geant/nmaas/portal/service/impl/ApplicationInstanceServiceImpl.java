@@ -1,12 +1,15 @@
 package net.geant.nmaas.portal.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.api.dto.applications.AppInstanceState;
 import net.geant.nmaas.api.dto.applications.AppInstanceView;
+import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.orchestration.exceptions.InvalidApplicationIdException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
+import net.geant.nmaas.portal.api.apps.AppInstanceController;
 import net.geant.nmaas.portal.exceptions.ApplicationSubscriptionNotActiveException;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistence.entity.AppInstance;
@@ -46,46 +49,49 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ApplicationInstanceServiceImpl implements ApplicationInstanceService {
 
-    private final AppInstanceRepository appInstanceRepo;
-    private final ApplicationService applications;
-    private final DomainService domains;
-    private final UserService users;
+    private final AppInstanceRepository appInstanceRepository;
+    private final ApplicationService applicationService;
+    private final DomainService domainService;
+    private final UserService userService;
     private final ApplicationSubscriptionService applicationSubscriptions;
     private final CodenameValidator validator;
     private final ApplicationStatePerDomainService applicationStatePerDomainService;
     private final ApplicationInstanceUpgradeService instanceUpgradeService;
     private final AppLifecycleManager appLifecycleManager;
     private final ConfigurationManager configurationManager;
+    private final AppDeploymentMonitor appDeploymentMonitor;
 
     @Autowired
     public ApplicationInstanceServiceImpl(
-            AppInstanceRepository appInstanceRepo,
-            ApplicationService applications,
-            DomainService domains,
-            UserService users,
+            AppInstanceRepository appInstanceRepository,
+            ApplicationService applicationService,
+            DomainService domainService,
+            UserService userService,
             ApplicationSubscriptionService applicationSubscriptions,
             @Qualifier("instanceNameValidator") CodenameValidator validator,
             ApplicationStatePerDomainService applicationStatePerDomainService,
             ApplicationInstanceUpgradeService instanceUpgradeService,
             AppLifecycleManager appLifecycleManager,
-            ConfigurationManager configurationManager
+            ConfigurationManager configurationManager,
+            AppDeploymentMonitor appDeploymentMonitor
     ) {
-        this.appInstanceRepo = appInstanceRepo;
-        this.applications = applications;
-        this.domains = domains;
-        this.users = users;
+        this.appInstanceRepository = appInstanceRepository;
+        this.applicationService = applicationService;
+        this.domainService = domainService;
+        this.userService = userService;
         this.applicationSubscriptions = applicationSubscriptions;
         this.validator = validator;
         this.applicationStatePerDomainService = applicationStatePerDomainService;
         this.instanceUpgradeService = instanceUpgradeService;
         this.appLifecycleManager = appLifecycleManager;
         this.configurationManager = configurationManager;
+        this.appDeploymentMonitor = appDeploymentMonitor;
     }
 
     @Override
     public AppInstance create(Long domainId, Long applicationId, String name, boolean autoUpgradesEnabled) {
-        Application app = applications.findApplication(applicationId).orElseThrow(() -> new ObjectNotFoundException("Application not found."));
-        Domain domain = domains.findDomain(domainId).orElseThrow(() -> new ObjectNotFoundException("Domain not found."));
+        Application app = applicationService.findApplication(applicationId).orElseThrow(() -> new ObjectNotFoundException("Application not found."));
+        Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new ObjectNotFoundException("Domain not found."));
         return create(domain, app, name, autoUpgradesEnabled);
     }
 
@@ -103,7 +109,7 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
         }
 
         if (applicationSubscriptions.isActive(application.getName(), domain)) {
-            return appInstanceRepo.save(new AppInstance(application, domain, name, autoUpgradesEnabled));
+            return appInstanceRepository.save(new AppInstance(application, domain, name, autoUpgradesEnabled));
         } else {
             throw new ApplicationSubscriptionNotActiveException("Application subscription is missing or not active.");
         }
@@ -125,13 +131,13 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
     @Override
     public void delete(Long appInstanceId) {
         checkParam(appInstanceId);
-        find(appInstanceId).ifPresent(appInstanceRepo::delete);
+        find(appInstanceId).ifPresent(appInstanceRepository::delete);
     }
 
     @Override
     public void update(AppInstance appInstance) {
         checkParam(appInstance);
-        appInstanceRepo.save(appInstance);
+        appInstanceRepository.save(appInstance);
     }
 
     @Override
@@ -141,26 +147,26 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
         checkParam(applicationId);
         final AppInstance instance = findByInternalId(internalId)
                 .orElseThrow(() -> new InvalidDeploymentIdException("Application instance with internalId " + internalId + " does not exist"));
-        final Application application = applications.findApplication(applicationId)
+        final Application application = applicationService.findApplication(applicationId)
                 .orElseThrow(() -> new InvalidApplicationIdException("Application with id " + applicationId + " does not exist"));
-        appInstanceRepo.updateApplication(instance.getId(), instance.getApplication().getId(), application);
+        appInstanceRepository.updateApplication(instance.getId(), instance.getApplication().getId(), application);
     }
 
     @Override
     public Optional<AppInstance> findByInternalId(Identifier deploymentId) {
         checkParam(deploymentId);
-        return appInstanceRepo.findByInternalId(deploymentId);
+        return appInstanceRepository.findByInternalId(deploymentId);
     }
 
     @Override
     public Optional<AppInstance> find(Long appInstanceId) {
         checkParam(appInstanceId);
-        return appInstanceRepo.findById(appInstanceId);
+        return appInstanceRepository.findById(appInstanceId);
     }
 
     @Override
     public List<AppInstance> findAll() {
-        return appInstanceRepo.findAll()
+        return appInstanceRepository.findAll()
                 .stream()
                 .filter(appInstance -> !appInstance.getDomain().isDeleted())
                 .collect(Collectors.toList());
@@ -168,7 +174,7 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 
     @Override
     public Page<AppInstance> findAll(Pageable pageable) {
-        Page<AppInstance> page = appInstanceRepo.findAll(pageable);
+        Page<AppInstance> page = appInstanceRepository.findAll(pageable);
         List<AppInstance> filtered = page.getContent()
                 .stream()
                 .filter(appInstance -> !appInstance.getDomain().isDeleted())
@@ -179,14 +185,14 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
     @Override
     public List<AppInstance> findAllByOwner(Long userId) {
         checkParam(userId);
-        User user = users.findById(userId).orElseThrow(() -> new ObjectNotFoundException("user not found"));
+        User user = userService.findById(userId).orElseThrow(() -> new ObjectNotFoundException("user not found"));
         return findAllByOwner(user);
     }
 
     @Override
     public List<AppInstance> findAllByOwner(User owner) {
         checkParam(owner);
-        return appInstanceRepo.findAllByOwner(owner);
+        return appInstanceRepository.findAllByOwner(owner);
     }
 
     @Override
@@ -200,7 +206,7 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
     public List<AppInstance> findAllByOwnerAndDomain(User owner, Domain domain) {
         checkParam(owner);
         checkParam(domain);
-        return appInstanceRepo.findAllByOwnerAndDomain(owner, domain);
+        return appInstanceRepository.findAllByOwnerAndDomain(owner, domain);
     }
 
     @Override
@@ -212,7 +218,7 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
     @Override
     public Page<AppInstance> findAllByOwner(User owner, Pageable pageable) {
         checkParam(owner);
-        return appInstanceRepo.findAllByOwner(owner, pageable);
+        return appInstanceRepository.findAllByOwner(owner, pageable);
     }
 
     @Override
@@ -226,7 +232,7 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
     public Page<AppInstance> findAllByOwner(User owner, Domain domain, Pageable pageable) {
         checkParam(owner);
         checkParam(domain);
-        return appInstanceRepo.findAllByOwnerAndDomain(owner, domain, pageable);
+        return appInstanceRepository.findAllByOwnerAndDomain(owner, domain, pageable);
     }
 
     @Override
@@ -238,7 +244,7 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
     @Override
     public List<AppInstance> findAllByDomain(Domain domain) {
         checkParam(domain);
-        return appInstanceRepo.findAllByDomain(domain);
+        return appInstanceRepository.findAllByDomain(domain);
     }
 
     @Override
@@ -250,12 +256,12 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
     @Override
     public Page<AppInstance> findAllByDomain(Domain domain, Pageable pageable) {
         checkParam(domain);
-        return appInstanceRepo.findAllByDomain(domain, pageable);
+        return appInstanceRepository.findAllByDomain(domain, pageable);
     }
 
     @Override
     public List<AppInstance> findAllByApplication(Application application) {
-        return appInstanceRepo.findAllByApplication(application);
+        return appInstanceRepository.findAllByApplication(application);
     }
 
     @Override
@@ -275,12 +281,12 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
     }
 
     private Optional<Application> obtainVersionForUpgrade(Long appInstanceId) {
-        Optional<AppInstance> appInstance = appInstanceRepo.findById(appInstanceId);
+        Optional<AppInstance> appInstance = appInstanceRepository.findById(appInstanceId);
         if (appInstance.isPresent()) {
             String currentHelmChartVersion = appInstance.get().getApplication().getAppDeploymentSpec().getKubernetesTemplate().getChart().getVersion();
-            Map<String, Long> allAppVersions = applications.findAllActiveVersionNumbers(appInstance.get().getApplication().getName());
+            Map<String, Long> allAppVersions = applicationService.findAllActiveVersionNumbers(appInstance.get().getApplication().getName());
             Optional<Long> versionForUpgrade = instanceUpgradeService.getNextApplicationVersionForUpgrade(currentHelmChartVersion, allAppVersions);
-            return versionForUpgrade.flatMap(applications::findApplication);
+            return versionForUpgrade.flatMap(applicationService::findApplication);
         }
         return Optional.empty();
     }
@@ -289,13 +295,13 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
     @Transactional
     @Loggable(LogLevel.DEBUG)
     public AppInstanceView.AppInstanceUpgradeInfo obtainUpgradeInfo(Long appInstanceId) {
-        Optional<AppInstance> appInstance = appInstanceRepo.findById(appInstanceId);
+        Optional<AppInstance> appInstance = appInstanceRepository.findById(appInstanceId);
         if (appInstance.isPresent()) {
             String currentHelmChartVersion = appInstance.get().getApplication().getAppDeploymentSpec().getKubernetesTemplate().getChart().getVersion();
-            Map<String, Long> allAppVersions = applications.findAllActiveVersionNumbers(appInstance.get().getApplication().getName());
+            Map<String, Long> allAppVersions = applicationService.findAllActiveVersionNumbers(appInstance.get().getApplication().getName());
             Optional<Long> nextVersionId = instanceUpgradeService.getNextApplicationVersionForUpgrade(currentHelmChartVersion, allAppVersions);
             if (nextVersionId.isPresent()) {
-                Optional<Application> nextApplication = applications.findApplication(nextVersionId.get());
+                Optional<Application> nextApplication = applicationService.findApplication(nextVersionId.get());
                 if (nextApplication.isPresent()) {
                     return new AppInstanceView.AppInstanceUpgradeInfo(
                             nextVersionId.get(),
@@ -322,8 +328,15 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 
     @Override
     public boolean isNameAvailableInDomain(String name, Domain domain) {
-        log.error("Found: {} matching names in domain", appInstanceRepo.isNameAvailableInDomain(name, domain.getCodename()));
-        return appInstanceRepo.isNameAvailableInDomain(name, domain.getCodename()) <= 0;
+        log.error("Found: {} matching names in domain", appInstanceRepository.isNameAvailableInDomain(name, domain.getCodename()));
+        return appInstanceRepository.isNameAvailableInDomain(name, domain.getCodename()) <= 0;
+    }
+
+    @Override
+    public boolean isInAnyState(Long appInstanceId, List<AppInstanceState> states) {
+        final AppInstance appInstance = find(appInstanceId).orElseThrow(() -> new ObjectNotFoundException("App instance not found"));
+        final AppInstanceState currentState = AppInstanceController.mapAppInstanceState(appDeploymentMonitor.state(appInstance.getInternalId()));
+        return states.contains(currentState);
     }
 
     private void checkParam(AppInstance appInstance) {
@@ -368,12 +381,12 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 
     protected Domain getDomain(Long domainId) {
         checkParam(domainId);
-        return domains.findDomain(domainId).orElseThrow(() -> new ObjectNotFoundException("Domain not found"));
+        return domainService.findDomain(domainId).orElseThrow(() -> new ObjectNotFoundException("Domain not found"));
     }
 
     protected User getUser(Long userId) {
         checkParam(userId);
-        return users.findById(userId).orElseThrow(() -> new ObjectNotFoundException("User not found"));
+        return userService.findById(userId).orElseThrow(() -> new ObjectNotFoundException("User not found"));
     }
 
 }

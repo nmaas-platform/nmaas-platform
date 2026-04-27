@@ -89,6 +89,7 @@ public class AppInstanceControllerTest {
     private final ApplicationInstanceBaseService instanceBaseService = mock(ApplicationInstanceBaseService.class);
 
     private AppInstanceController appInstanceController;
+    private AppInstanceReadController appInstanceReadController;
 
     private Application application;
     private Domain domain1;
@@ -141,9 +142,18 @@ public class AppInstanceControllerTest {
                 appDeploymentMonitor,
                 applicationInstanceService,
                 domainService,
-                appDeploymentRepositoryManager,
                 applicationEventPublisher,
-                configurationManager,
+                configurationManager
+        );
+        appInstanceReadController = new AppInstanceReadController(
+                new ModelMapper(),
+                applicationService,
+                applicationBaseService,
+                userService,
+                appDeploymentMonitor,
+                applicationInstanceService,
+                domainService,
+                appDeploymentRepositoryManager,
                 instanceBaseService
         );
 
@@ -188,7 +198,7 @@ public class AppInstanceControllerTest {
 
         when(instanceBaseService.findAll(pageable)).thenReturn(appInstancePage);
 
-        Page<AppInstanceBase> result = appInstanceController.getAllInstances(pageable);
+        Page<AppInstanceBase> result = appInstanceReadController.getAllInstances(pageable);
 
         assertEquals(1, result.getTotalElements());
         AppInstanceBase appInstanceView = result.getContent().getFirst();
@@ -208,7 +218,7 @@ public class AppInstanceControllerTest {
         Principal principal = mock(Principal.class);
         when(principal.getName()).thenReturn(admin.getUsername());
 
-        List<AppInstanceBase> result = appInstanceController.getAllInstances(global.getId(), principal, "deployed");
+        List<AppInstanceBase> result = appInstanceReadController.getAllInstances(global.getId(), principal, "deployed");
 
         assertEquals(1, result.size());
         AppInstanceBase appInstanceView = result.get(0);
@@ -228,7 +238,7 @@ public class AppInstanceControllerTest {
         Principal principal = mock(Principal.class);
         when(principal.getName()).thenReturn(admin.getUsername());
 
-        List<AppInstanceBase> result = appInstanceController.getMyAllInstances(principal);
+        List<AppInstanceBase> result = appInstanceReadController.getMyAllInstances(principal);
 
         assertEquals(1, result.size());
         AppInstanceBase appInstanceView = result.getFirst();
@@ -244,7 +254,7 @@ public class AppInstanceControllerTest {
 
         when(applicationInstanceService.findAllByOwner(admin.getId(), domain1.getId())).thenReturn(appInstanceList);
 
-        List<AppInstanceBase> result = appInstanceController.getUserAllInstances(domain1.getId(), admin.getUsername());
+        List<AppInstanceBase> result = appInstanceReadController.getUserAllInstances(domain1.getId(), admin.getUsername());
 
         assertEquals(1, result.size());
         AppInstanceBase appInstanceView = result.getFirst();
@@ -263,7 +273,7 @@ public class AppInstanceControllerTest {
         Principal principal = mock(Principal.class);
         when(principal.getName()).thenReturn(owner.getUsername());
 
-        List<AppInstanceBase> result = appInstanceController.getMyAllInstances(principal);
+        List<AppInstanceBase> result = appInstanceReadController.getMyAllInstances(principal);
 
         assertEquals(1, result.size());
         AppInstanceBase appInstanceView = result.getFirst();
@@ -283,7 +293,7 @@ public class AppInstanceControllerTest {
         when(principal.getName()).thenReturn(owner.getUsername());
         when(appDeploymentMonitor.state(any())).thenReturn(AppLifecycleState.APPLICATION_DEPLOYMENT_VERIFIED);
 
-        List<AppInstanceView> result = appInstanceController.getRunningAppInstances(domain1.getId(), principal);
+        List<AppInstanceView> result = appInstanceReadController.getRunningAppInstances(domain1.getId(), principal);
 
         assertEquals(1, result.size());
         AppInstanceBase appInstanceView = result.get(0);
@@ -312,14 +322,14 @@ public class AppInstanceControllerTest {
         Principal principal = mock(Principal.class);
         when(principal.getName()).thenReturn(owner.getUsername());
 
-        AppInstanceViewExtendedDto appInstanceView = appInstanceController.getAppInstance(1L, principal);
+        AppInstanceViewExtendedDto appInstanceView = appInstanceReadController.getAppInstance(1L, principal);
 
         assertEquals(NAME, appInstanceView.appBaseName());
         assertEquals(IDENTIFIER_VALUE, appInstanceView.descriptiveDeploymentId());
         assertEquals(domain1.getId(), appInstanceView.domainId());
 
         MissingElementException me = assertThrows(MissingElementException.class,
-                () -> appInstanceController.getAppInstance(-1L, principal)
+                () -> appInstanceReadController.getAppInstance(-1L, principal)
         );
 
         assertEquals("App instance not found.", me.getMessage());
@@ -371,7 +381,7 @@ public class AppInstanceControllerTest {
         when(applicationInstanceService.find(1L)).thenReturn(Optional.of(appInstance));
         when(applicationInstanceService.find(-1L)).thenReturn(Optional.empty());
 
-        AppInstanceStatus ais = this.appInstanceController.getState(1L, principal);
+        AppInstanceStatus ais = this.appInstanceReadController.getState(1L, principal);
 
         assertEquals(appInstance.getId(), ais.appInstanceId());
     }

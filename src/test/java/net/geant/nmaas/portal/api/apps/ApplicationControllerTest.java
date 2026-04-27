@@ -1,7 +1,5 @@
 package net.geant.nmaas.portal.api.apps;
 
-import net.geant.nmaas.api.dto.applications.AppInstanceState;
-import net.geant.nmaas.api.dto.applications.AppInstanceStatus;
 import net.geant.nmaas.api.dto.applications.ApplicationStateChangeRequest;
 import net.geant.nmaas.api.dto.applications.ApplicationStateDto;
 import net.geant.nmaas.notifications.NotificationEvent;
@@ -36,7 +34,6 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -53,7 +50,6 @@ class ApplicationControllerTest {
     private final ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);
     private final RatingRepository ratingRepository = mock(RatingRepository.class);
     private final ApplicationInstanceService applicationInstanceService = mock(ApplicationInstanceService.class);
-    private final AppInstanceController appInstanceController = mock(AppInstanceController.class);
     private final ApplicationSubscriptionService applicationSubscriptionService = mock(ApplicationSubscriptionService.class);
 
     private ApplicationController controller;
@@ -68,7 +64,6 @@ class ApplicationControllerTest {
                 eventPublisher,
                 ratingRepository,
                 applicationInstanceService,
-                appInstanceController,
                 applicationSubscriptionService
         );
     }
@@ -134,13 +129,7 @@ class ApplicationControllerTest {
 
         when(applicationService.findApplication(appId)).thenReturn(Optional.of(app));
         when(applicationInstanceService.findAllByApplication(app)).thenReturn(List.of(instance));
-        when(appInstanceController.getState(eq(44L), any(Principal.class)))
-                .thenReturn(new AppInstanceStatus(44L,
-                        AppInstanceState.DEPLOYING,
-                        AppInstanceState.REQUESTED,
-                        null,
-                        null,
-                        null));
+        when(applicationInstanceService.isInAnyState(any(), any())).thenReturn(false);
 
         ProcessingException ex = assertThrows(ProcessingException.class,
                 () -> controller.changeApplicationState(
@@ -173,23 +162,7 @@ class ApplicationControllerTest {
 
         when(applicationService.findApplication(appId)).thenReturn(Optional.of(app));
         when(applicationInstanceService.findAllByApplication(app)).thenReturn(List.of(removedInstance, doneInstance));
-        when(appInstanceController.getState(eq(51L), any(Principal.class)))
-                .thenReturn(
-                        new AppInstanceStatus(51L,
-                                AppInstanceState.REMOVED,
-                                AppInstanceState.UNDEPLOYING,
-                                null,
-                                null,
-                                null)
-                );
-        when(appInstanceController.getState(eq(52L), any(Principal.class)))
-                .thenReturn(
-                        new AppInstanceStatus(52L,
-                                AppInstanceState.DONE,
-                                AppInstanceState.DEPLOYING,
-                                null,
-                                null,
-                                null));
+        when(applicationInstanceService.isInAnyState(any(), any())).thenReturn(true);
         when(applicationBaseService.findByName("my-app")).thenReturn(base);
         when(userService.findByUsername("owner")).thenReturn(Optional.of(owner));
 

@@ -16,13 +16,13 @@ import java.util.Set;
 public class AppBaseController extends BaseController {
 
 	protected final ApplicationService applicationService;
-	protected final ApplicationBaseService appBaseService;
+	protected final ApplicationBaseService applicationBaseService;
 
 	@Autowired
-	public AppBaseController(ModelMapper modelMapper, UserService userService, ApplicationService applicationService, ApplicationBaseService appBaseService) {
+	public AppBaseController(ModelMapper modelMapper, UserService userService, ApplicationService applicationService, ApplicationBaseService applicationBaseService) {
 		super(modelMapper, userService);
 		this.applicationService = applicationService;
-		this.appBaseService = appBaseService;
+		this.applicationBaseService = applicationBaseService;
 	}
 
 	protected Application getApp(Long appId) {
@@ -43,14 +43,14 @@ public class AppBaseController extends BaseController {
 		if (appBaseId == null) {
 			throw new MissingElementException("Missing application id.");
 		}
-    	return appBaseService.getBaseApp(appBaseId);
+    	return applicationBaseService.getBaseApp(appBaseId);
 	}
 
 	protected Set<ApplicationVersion> getVersions(Long appBaseId) {
 		if (appBaseId == null) {
 			throw new MissingElementException("Missing application id.");
 		}
-		return appBaseService.getBaseApp(appBaseId).getVersions();
+		return applicationBaseService.getBaseApp(appBaseId).getVersions();
 	}
 
 }

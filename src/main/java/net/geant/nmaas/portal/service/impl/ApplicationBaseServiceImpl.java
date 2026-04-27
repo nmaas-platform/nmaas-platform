@@ -55,13 +55,13 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
     public ApplicationBase create(ApplicationBase applicationBase) {
         if (applicationBase.getId() != null) {
             log.error("Cannot add ApplicationBase - id not null");
-            throw new ProcessingException("Created application id must be null");
+            throw new ProcessingException("Identifier of created application must be null");
         }
         if (appBaseRepository.existsByName(applicationBase.getName())) {
             log.error("Cannot add ApplicationBase - application already exists");
-            throw new ProcessingException("Application base with given name must not exist");
+            throw new ProcessingException("Application with given name already exist");
         }
-        this.setMissingDescriptions(applicationBase);
+        setMissingDescriptions(applicationBase);
         applicationBase.validate();
         this.handleTags(applicationBase);
         ApplicationBase created = this.appBaseRepository.save(applicationBase);
@@ -197,7 +197,7 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
         domainService.removeAppBaseFromAllDomains(base);
     }
 
-    private void setMissingDescriptions(ApplicationBase app) {
+    private static void setMissingDescriptions(ApplicationBase app) {
         AppDescription appDescription = app.getDescriptions().stream()
                 .filter(description -> description.getLanguage().equals("en"))
                 .findFirst().orElseThrow(() -> new IllegalStateException("English description is missing"));

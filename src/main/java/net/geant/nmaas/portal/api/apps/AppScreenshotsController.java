@@ -65,12 +65,12 @@ public class AppScreenshotsController extends AppBaseController {
         if (app.getLogo() != null) {
             fileStorage.remove(app.getLogo());
             app.setLogo(null);
-            appBaseService.update(app);
+            applicationBaseService.update(app);
         }
 
         FileInfo fileInfo = fileStorage.store(file);
         app.setLogo(fileInfo);
-        appBaseService.update(app);
+        applicationBaseService.update(app);
 
         return modelMapper.map(fileInfo, FileInfoDto.class);
     }
@@ -83,7 +83,7 @@ public class AppScreenshotsController extends AppBaseController {
         if (app.getLogo() != null) {
             fileStorage.remove(app.getLogo());
             app.setLogo(null);
-            appBaseService.update(app);
+            applicationBaseService.update(app);
         }
     }
 
@@ -103,7 +103,7 @@ public class AppScreenshotsController extends AppBaseController {
             @RequestParam("files") List<MultipartFile> files
     ) {
 
-        ApplicationBase app = appBaseService.getByIdForUpdate(appId);
+        ApplicationBase app = applicationBaseService.getByIdForUpdate(appId);
 
         List<FileInfoDto> result = new ArrayList<>();
 
@@ -117,7 +117,7 @@ public class AppScreenshotsController extends AppBaseController {
             result.add(modelMapper.map(fileInfo, FileInfoDto.class));
         }
 
-        appBaseService.update(app);
+        applicationBaseService.update(app);
 
         return result;
     }
@@ -142,7 +142,7 @@ public class AppScreenshotsController extends AppBaseController {
 
         fileStorage.remove(screenshotInfo);
         app.getScreenshots().remove(screenshotInfo);
-        appBaseService.update(app);
+        applicationBaseService.update(app);
     }
 
     @DeleteMapping("/screenshots/all")
@@ -152,7 +152,7 @@ public class AppScreenshotsController extends AppBaseController {
         ApplicationBase app = getBaseApp(appId);
         app.getScreenshots().forEach(fileStorage::remove);
         app.getScreenshots().clear();
-        appBaseService.update(app);
+        applicationBaseService.update(app);
     }
 
     private ResponseEntity<InputStreamResource> getFile(FileInfo imageFile) throws FileNotFoundException {

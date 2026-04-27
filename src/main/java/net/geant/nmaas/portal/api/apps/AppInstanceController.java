@@ -3,44 +3,29 @@ package net.geant.nmaas.portal.api.apps;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.api.dto.applications.AppInstanceBase;
 import net.geant.nmaas.api.dto.applications.AppInstanceRequest;
 import net.geant.nmaas.api.dto.applications.AppInstanceState;
-import net.geant.nmaas.api.dto.applications.AppInstanceStatus;
-import net.geant.nmaas.api.dto.applications.AppInstanceView;
-import net.geant.nmaas.api.dto.applications.AppInstanceViewExtended;
-import net.geant.nmaas.api.dto.applications.AppInstanceViewExtendedDto;
-import net.geant.nmaas.api.dto.applications.ApplicationBaseView;
-import net.geant.nmaas.api.dto.applications.ConfigWizardTemplateView;
 import net.geant.nmaas.api.dto.Id;
 import net.geant.nmaas.api.dto.users.UserBase;
 import net.geant.nmaas.nmservice.configuration.gitlab.events.AddUserToRepositoryGitlabEvent;
 import net.geant.nmaas.nmservice.configuration.gitlab.events.RemoveUserFromRepositoryGitlabEvent;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
-import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.orchestration.AppLifecycleState;
 import net.geant.nmaas.orchestration.AppScaleDirection;
 import net.geant.nmaas.orchestration.Identifier;
-import net.geant.nmaas.orchestration.api.model.AppDeploymentHistoryView;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.events.app.AppScaleActionEvent;
-import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
-import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.exceptions.ApplicationSubscriptionNotActiveException;
 import net.geant.nmaas.portal.persistence.entity.AppInstance;
 import net.geant.nmaas.portal.persistence.entity.Application;
-import net.geant.nmaas.portal.persistence.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistence.entity.Domain;
-import net.geant.nmaas.portal.persistence.entity.Role;
 import net.geant.nmaas.portal.persistence.entity.SSHKeyEntity;
 import net.geant.nmaas.portal.persistence.entity.User;
-import net.geant.nmaas.portal.persistence.entity.UserRole;
 import net.geant.nmaas.portal.service.ApplicationBaseService;
-import net.geant.nmaas.portal.service.ApplicationInstanceBaseService;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import net.geant.nmaas.portal.service.ApplicationService;
 import net.geant.nmaas.portal.service.ConfigurationManager;
@@ -50,16 +35,10 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -69,12 +48,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.lang.reflect.Field;
 import java.security.Principal;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -85,15 +61,11 @@ import java.util.stream.Collectors;
 public class AppInstanceController extends AppBaseController {
 
     private static final String MISSING_APP_INSTANCE_MESSAGE = "Missing app instance";
-    private static final String MISSING_USER_MESSAGE = "User not found";
-    private static final String DOMAIN_NOT_FOUND_MESSAGE = "Domain %s not found";
 
     private final AppLifecycleManager appLifecycleManager;
     private final AppDeploymentMonitor appDeploymentMonitor;
     private final ApplicationInstanceService instanceService;
     private final DomainService domainService;
-    private final AppDeploymentRepositoryManager appDeploymentRepositoryManager;
-    private final ApplicationInstanceBaseService instanceBaseService;
 
     private final ConfigurationManager configurationManager;
     private final ApplicationEventPublisher eventPublisher;
@@ -110,335 +82,15 @@ public class AppInstanceController extends AppBaseController {
                                  AppDeploymentMonitor appDeploymentMonitor,
                                  ApplicationInstanceService instanceService,
                                  DomainService domainService,
-                                 AppDeploymentRepositoryManager appDeploymentRepositoryManager,
                                  ApplicationEventPublisher eventPublisher,
-                                 ConfigurationManager configurationManager,
-                                 ApplicationInstanceBaseService instanceBaseService) {
+                                 ConfigurationManager configurationManager) {
         super(modelMapper, userService, applicationService, appBaseService);
         this.appLifecycleManager = appLifecycleManager;
         this.appDeploymentMonitor = appDeploymentMonitor;
         this.instanceService = instanceService;
         this.domainService = domainService;
-        this.appDeploymentRepositoryManager = appDeploymentRepositoryManager;
         this.eventPublisher = eventPublisher;
         this.configurationManager = configurationManager;
-        this.instanceBaseService = instanceBaseService;
-    }
-
-    @GetMapping
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
-    @Transactional
-    public List<AppInstanceBase> getAllInstances() {
-        return instanceService.findAll().stream()
-                .map(this::mapAppInstanceBase)
-                .toList();
-    }
-
-    @GetMapping(params = {"page"})
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
-    @Transactional
-    public Page<AppInstanceBase> getAllInstances(Pageable pageable) {
-        this.logPageable(pageable);
-        pageable = this.pageableValidator(pageable);
-        return instanceBaseService.findAll(pageable);
-    }
-
-    @GetMapping("/my")
-    @Transactional
-    public List<AppInstanceBase> getMyAllInstances(@NotNull Principal principal) {
-        User user = userService.findByUsername(principal.getName()).orElseThrow(() ->
-                new MissingElementException(MISSING_USER_MESSAGE));
-        return instanceService.findAllByOwner(user).stream()
-                .map(this::mapAppInstanceBase)
-                .toList();
-    }
-
-    @GetMapping(value = "/my", params = {"page"})
-    @Transactional
-    public Page<AppInstanceBase> getMyAllInstances(@NotNull Principal principal,
-                                                   @RequestParam(required = false) String status,
-                                                   @RequestParam(required = false, defaultValue = "") String search,
-                                                   Pageable pageable) {
-        this.logPageable(pageable);
-        pageable = this.pageableValidator(pageable);
-        User user = userService.findByUsername(principal.getName()).orElseThrow(() ->
-                new MissingElementException(MISSING_USER_MESSAGE));
-        if (status != null) {
-            return instanceBaseService.findAllByOwner(user, pageable, status.equals("deployed"), search);
-        } else {
-
-        }
-        return instanceBaseService.findAllByOwner(user, pageable, search);
-    }
-
-    @GetMapping("/domain/{domainId}")
-    @PreAuthorize("hasPermission(#domainId, 'domain', 'ANY')")
-    @Transactional
-    public List<AppInstanceBase> getAllInstances(@PathVariable Long domainId,
-                                                 @NotNull Principal principal,
-                                                 @RequestParam(required = false) String status) {
-        List<AppInstanceBase> result;
-        Domain domain = domainService.findDomain(domainId)
-                .orElseThrow(() -> new MissingElementException(String.format(DOMAIN_NOT_FOUND_MESSAGE, domainId)));
-        User user = this.userService.findByUsername(principal.getName())
-                .orElseThrow(() -> new UsernameNotFoundException(MISSING_USER_MESSAGE));
-
-        // system admin on global view has an overall view over all instances
-        if (this.isSystemAdminAndIsDomainGlobal(user, domainId)) {
-            List<AppInstance> source = instanceService.findAll();
-            result = source.stream()
-                    .map(this::mapAppInstanceBase)
-                    .toList();
-        } else {
-            result = instanceService.findAllByDomain(domain).stream()
-                    .map(this::mapAppInstanceBase)
-                    .toList();
-        }
-
-        if (status != null && status.equals("deployed")) {
-            return result.stream()
-                    .filter(instance -> instance.getState() != AppInstanceState.REMOVED && instance.getState() != AppInstanceState.DONE)
-                    .toList();
-        } else if (status != null && status.equals("undeployed")) {
-            return result.stream()
-                    .filter(instance -> List.of(AppInstanceState.REMOVED, AppInstanceState.DONE).contains(instance.getState()))
-                    .toList();
-        }
-
-        return result;
-    }
-
-    @GetMapping(value = "/domain/{domainId}", params = {"page"})
-    @PreAuthorize("hasPermission(#domainId, 'domain', 'ANY')")
-    @Transactional
-    public Page<AppInstanceBase> getAllInstances(@PathVariable Long domainId,
-                                                 @NotNull Principal principal,
-                                                 Pageable pageable,
-                                                 @RequestParam(required = false) String status,
-                                                 @RequestParam(required = false, defaultValue = "") String search) {
-        this.logPageable(pageable);
-//        pageable = this.pageableValidator(pageable);
-        Domain domain = domainService.findDomain(domainId)
-                .orElseThrow(() -> new MissingElementException(String.format(DOMAIN_NOT_FOUND_MESSAGE, domainId)));
-        User user = this.userService.findByUsername(principal.getName())
-                .orElseThrow(() -> new UsernameNotFoundException(MISSING_USER_MESSAGE));
-
-        // system admin on global view has an overall view over all instances
-        if (this.isSystemAdminAndIsDomainGlobal(user, domainId)) {
-            if (status != null) {
-                return instanceBaseService.findAll(pageable, status.equals("deployed"), search);
-            }
-            return instanceBaseService.findAll(pageable);
-        } else {
-            if (status != null) {
-                return instanceBaseService.findAllByDomain(domain, pageable, status.equals("deployed"), search);
-            }
-            return instanceBaseService.findAllByDomain(domain, pageable, search);
-        }
-    }
-
-    @GetMapping("/running/domain/{domainId}")
-    @PreAuthorize("hasPermission(#domainId, 'domain', 'ANY')")
-    @Transactional
-    public List<AppInstanceView> getRunningAppInstances(@PathVariable(value = "domainId") long domainId,
-                                                        @NotNull Principal principal) {
-        Domain domain = this.domainService.findDomain(domainId).orElseThrow(() -> new InvalidDomainException("Domain not found"));
-        return getAllRunningByDomain(domain);
-    }
-
-    @GetMapping(value = "/running/domain/{domainId}", params = {"page"})
-    @PreAuthorize("hasPermission(#domainId, 'domain', 'ANY')")
-    @Transactional
-    public Page<AppInstanceView> getRunningAppInstances(@PathVariable(value = "domainId") long domainId,
-                                                        @NotNull Principal principal,
-                                                        Pageable pageable) {
-        this.logPageable(pageable);
-        pageable = this.pageableValidator(pageable);
-        Domain domain = this.domainService.findDomain(domainId).orElseThrow(() -> new InvalidDomainException("Domain not found"));
-        return getAllRunningByDomain(domain, pageable);
-    }
-
-    @GetMapping("/running/app/{id}")
-    @Transactional
-    public boolean hasRunningInstance(@PathVariable Long id) {
-        ApplicationBase appBase = appBaseService.getBaseApp(id);
-        return appBase.getVersions().stream()
-                .map(version -> applicationService.findApplication(version.getAppVersionId())
-                        .orElseThrow(() -> new RuntimeException("Application not found")))
-                .map(instanceService::findAllByApplication)
-                .flatMap(List::stream)
-                .anyMatch(this::isInstanceRunning);
-    }
-
-    private List<AppInstanceView> getAllRunningByDomain(Domain domain) {
-        return this.instanceService.findAllByDomain(domain).stream()
-                .filter(this::isInstanceRunning)
-                .map(this::mapAppInstance)
-                .toList();
-    }
-
-    private Page<AppInstanceView> getAllRunningByDomain(Domain domain, Pageable pageable) {
-        Page<AppInstance> page = instanceService.findAllByDomain(domain, pageable);
-        List<AppInstanceView> filtered = page.getContent()
-                .stream()
-                .filter(this::isInstanceRunning)
-                .map(this::mapAppInstance)
-                .toList();
-        return new PageImpl<>(filtered, pageable, filtered.size());
-    }
-
-    private boolean isInstanceRunning(AppInstance app) {
-        return appDeploymentMonitor.state(app.getInternalId()).equals(AppLifecycleState.APPLICATION_DEPLOYMENT_VERIFIED);
-    }
-
-    @GetMapping(value = "/domain/{domainId}/my")
-    @PreAuthorize("hasPermission(#domainId, 'domain', 'ANY')")
-    @Transactional
-    public List<AppInstanceBase> getMyAllInstances(@PathVariable Long domainId,
-                                                   @NotNull Principal principal,
-                                                   @RequestParam(required = false) String status) {
-        User user = this.userService.findByUsername(principal.getName()).orElseThrow(() -> new UsernameNotFoundException(MISSING_USER_MESSAGE));
-
-        if (this.isSystemAdminAndIsDomainGlobal(user, domainId)) {
-
-            if (status != null && status.equals("deployed")) {
-                return instanceService.findAllByOwner(user).stream()
-                        .map(this::mapAppInstanceBase)
-                        .filter(appInstanceBase ->
-                                appInstanceBase.getState() != AppInstanceState.REMOVED &&
-                                        appInstanceBase.getState() != AppInstanceState.DONE)
-                        .toList();
-
-            } else if (status != null && status.equals("undeployed")) {
-                return instanceService.findAllByOwner(user).stream()
-                        .map(this::mapAppInstanceBase)
-                        .filter(appInstanceBase ->
-                                appInstanceBase.getState() == AppInstanceState.REMOVED ||
-                                        appInstanceBase.getState() == AppInstanceState.DONE)
-                        .toList();
-            }
-            return instanceService.findAllByOwner(user).stream()
-                    .map(this::mapAppInstanceBase)
-                    .toList();
-        } else {
-            if (status != null && status.equals("deployed")) {
-                return getUserDomainAppInstances(domainId, principal.getName())
-                        .stream().filter(appInstanceBase ->
-                                appInstanceBase.getState() != AppInstanceState.REMOVED &&
-                                        appInstanceBase.getState() != AppInstanceState.DONE)
-                        .toList();
-            } else if (status != null && status.equals("undeployed")) {
-                return getUserDomainAppInstances(domainId, principal.getName())
-                        .stream().filter(appInstanceBase ->
-                                appInstanceBase.getState() == AppInstanceState.REMOVED ||
-                                        appInstanceBase.getState() == AppInstanceState.DONE)
-                        .toList();
-            }
-            return getUserDomainAppInstances(domainId, principal.getName());
-        }
-    }
-
-    @GetMapping(value = "/domain/{domainId}/my", params = {"page"})
-    @PreAuthorize("hasPermission(#domainId, 'domain', 'ANY')")
-    @Transactional
-    public Page<AppInstanceBase> getMyAllInstances(@PathVariable Long domainId,
-                                                   @NotNull Principal principal,
-                                                   Pageable pageable,
-                                                   @RequestParam(required = false) String status,
-                                                   @RequestParam(required = false, defaultValue = "") String search) {
-        this.logPageable(pageable);
-        pageable = this.pageableValidator(pageable);
-        User user = this.userService.findByUsername(principal.getName()).orElseThrow(() -> new UsernameNotFoundException(MISSING_USER_MESSAGE));
-
-
-        if (this.isSystemAdminAndIsDomainGlobal(user, domainId)) {
-            if (status != null) {
-                return instanceBaseService.findAllByOwner(
-                        user,
-                        pageable,
-                        status.equals("deployed"),
-                        search
-                );
-            }
-            return instanceBaseService.findAllByOwner(user, pageable);
-        } else {
-
-            if (status != null) {
-                return getPageUserDomainAppInstances(
-                        domainId,
-                        principal.getName(),
-                        pageable,
-                        status.equals("deployed"),
-                        search
-                );
-            }
-            return getPageUserDomainAppInstances(
-                    domainId,
-                    principal.getName(),
-                    pageable
-            );
-        }
-    }
-
-    @GetMapping("/domain/{domainId}/user/{username}")
-    @PreAuthorize("hasPermission(#domainId, 'domain', 'OWNER')")
-    @Transactional
-    public List<AppInstanceBase> getUserAllInstances(@PathVariable Long domainId,
-                                                     @PathVariable String username) {
-        return getUserDomainAppInstances(domainId, username);
-    }
-
-    @GetMapping(value = "/domain/{domainId}/user/{username}", params = {"page"})
-    @PreAuthorize("hasPermission(#domainId, 'domain', 'OWNER')")
-    @Transactional
-    public Page<AppInstanceBase> getUserAllInstances(@PathVariable Long domainId,
-                                                     @PathVariable String username,
-                                                     Pageable pageable) {
-        this.logPageable(pageable);
-        pageable = this.pageableValidator(pageable);
-        return getPageUserDomainAppInstances(domainId, username, pageable);
-    }
-
-    private List<AppInstanceBase> getUserDomainAppInstances(Long domainId, String username) {
-        Domain domain = domainService.findDomain(domainId)
-                .orElseThrow(() -> new MissingElementException(String.format(DOMAIN_NOT_FOUND_MESSAGE, domainId)));
-        User user = userService.findByUsername(username)
-                .orElseThrow(() -> new MissingElementException(MISSING_USER_MESSAGE));
-        return instanceService.findAllByOwner(user.getId(), domain.getId()).stream()
-                .map(this::mapAppInstanceBase)
-                .toList();
-    }
-
-    private Page<AppInstanceBase> getPageUserDomainAppInstances(Long domainId,
-                                                                String username,
-                                                                Pageable pageable) {
-        Domain domain = domainService.findDomain(domainId)
-                .orElseThrow(() -> new MissingElementException(String.format(DOMAIN_NOT_FOUND_MESSAGE, domainId)));
-        User user = userService.findByUsername(username)
-                .orElseThrow(() -> new MissingElementException(MISSING_USER_MESSAGE));
-        return instanceBaseService.findAllByOwner(user, domain, pageable);
-    }
-
-    private Page<AppInstanceBase> getPageUserDomainAppInstances(Long domainId,
-                                                                String username,
-                                                                Pageable pageable,
-                                                                boolean deployed,
-                                                                String search) {
-        Domain domain = domainService.findDomain(domainId)
-                .orElseThrow(() -> new MissingElementException(String.format(DOMAIN_NOT_FOUND_MESSAGE, domainId)));
-        User user = userService.findByUsername(username)
-                .orElseThrow(() -> new MissingElementException(MISSING_USER_MESSAGE));
-        return instanceBaseService.findAllByOwner(user, domain, pageable, deployed, search);
-    }
-
-    @GetMapping("/{appInstanceId}")
-    @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'READ')")
-    @Transactional
-    public AppInstanceViewExtendedDto getAppInstance(@PathVariable(value = "appInstanceId") Long appInstanceId,
-                                                     @NotNull Principal principal) {
-        AppInstance appInstance = instanceService.find(appInstanceId)
-                .orElseThrow(() -> new MissingElementException("App instance not found."));
-        return new AppInstanceViewExtendedDto(mapAppInstanceExtended(appInstance));
     }
 
     @PostMapping("/domain/{domainId}")
@@ -545,27 +197,6 @@ public class AppInstanceController extends AppBaseController {
             appLifecycleManager.removeFailedApplication(appInstance.getInternalId());
         } catch (InvalidDeploymentIdException e) {
             throw new ProcessingException(MISSING_APP_INSTANCE_MESSAGE);
-        }
-    }
-
-    @GetMapping("/{appInstanceId}/state")
-    @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'READ')")
-    @Transactional
-    public AppInstanceStatus getState(@PathVariable(value = "appInstanceId") Long appInstanceId,
-                                      @NotNull Principal principal) {
-        AppInstance appInstance = getAppInstance(appInstanceId);
-        return getAppInstanceState(appInstance);
-    }
-
-    @GetMapping("/{appInstanceId}/state/history")
-    @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'READ')")
-    @Transactional
-    public List<AppDeploymentHistoryView> getStateHistory(@PathVariable(value = "appInstanceId") Long appInstanceId) {
-        try {
-            AppInstance appInstance = getAppInstance(appInstanceId);
-            return appDeploymentMonitor.appDeploymentHistory(appInstance.getInternalId());
-        } catch (InvalidDeploymentIdException e) {
-            throw new MissingElementException(e.getMessage());
         }
     }
 
@@ -718,44 +349,6 @@ public class AppInstanceController extends AppBaseController {
         });
     }
 
-    /**
-     * provides deployment statistics/current number of applications of each type
-     *
-     * @return result map
-     */
-    @GetMapping("/statistics")
-    public Map<String, Long> deploymentStatistics() {
-        return this.appDeploymentRepositoryManager.getDeploymentStatistics();
-    }
-
-    private AppInstanceStatus getAppInstanceState(AppInstance appInstance) {
-        if (appInstance == null) {
-            throw new MissingElementException("App instance is null");
-        }
-
-        try {
-            return prepareAppInstanceStatus(
-                    appInstance.getId(),
-                    appDeploymentMonitor.state(appInstance.getInternalId()),
-                    appDeploymentMonitor.previousState(appInstance.getInternalId()));
-        } catch (InvalidDeploymentIdException e) {
-            throw new ProcessingException(MISSING_APP_INSTANCE_MESSAGE);
-        }
-    }
-
-    @GetMapping("/{appInstanceId}/parameters")
-    @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
-    public Map<String, String> getDeploymentParameters(@PathVariable Long appInstanceId) {
-        Identifier internalId = getAppInstance(appInstanceId).getInternalId();
-        return appDeploymentMonitor.appDeploymentParameters(internalId);
-    }
-
-    private AppInstanceStatus prepareAppInstanceStatus(Long appInstanceId, AppLifecycleState state, AppLifecycleState previousState) {
-        AppInstanceState appInstanceState = mapAppInstanceState(state);
-        return new AppInstanceStatus(appInstanceId, appInstanceState, mapAppInstanceState(previousState),
-                state.name(), state.getUserFriendlyState(), appInstanceState.getUserFriendlyState());
-    }
-
     public static AppInstanceState mapAppInstanceState(AppLifecycleState state) {
         AppInstanceState appInstanceState;
         switch (state) {
@@ -837,136 +430,6 @@ public class AppInstanceController extends AppBaseController {
             throw new MissingElementException("Missing app instance identifier");
         }
         return instanceService.find(appInstanceId).orElseThrow(() -> new MissingElementException("App instance not found."));
-    }
-
-    private AppInstanceView mapAppInstance(AppInstance appInstance) {
-        if (appInstance == null) {
-            return null;
-        }
-        AppInstanceView ai = modelMapper.map(appInstance, AppInstanceView.class);
-        return this.addAppInstanceProperties(ai, appInstance);
-    }
-
-    private AppInstanceViewExtended mapAppInstanceExtended(AppInstance appInstance) {
-        if (appInstance == null) {
-            return null;
-        }
-        AppInstanceViewExtended ai = modelMapper.map(appInstance, AppInstanceViewExtended.class);
-
-        // explicitly set application base
-        ApplicationBase applicationBase = this.appBaseService.findByVersionId(appInstance.getApplication().getId());
-        ai.getApplication().setApplicationBase(modelMapper.map(applicationBase, ApplicationBaseView.class));
-
-        return (AppInstanceViewExtended) addAppInstanceProperties(ai, appInstance);
-    }
-
-    private AppInstanceBase mapAppInstanceBase(AppInstance appInstance) {
-        if (appInstance == null) {
-            return null;
-        }
-        AppInstanceBase ai = modelMapper.map(appInstance, AppInstanceBase.class);
-        ai.setApplicationBaseId(appBaseService.findByVersionId(appInstance.getApplication().getId()).getId());
-        return addAppInstanceBaseProperties(ai, appInstance);
-    }
-
-    private AppInstanceBase addAppInstanceBaseProperties(AppInstanceBase ai, AppInstance appInstance) {
-        try {
-            ai.setState(mapAppInstanceState(this.appDeploymentMonitor.state(appInstance.getInternalId())));
-            ai.setUserFriendlyState(ai.getState().getUserFriendlyState());
-        } catch (Exception e) {
-            ai.setState(AppInstanceState.UNKNOWN);
-            ai.setUserFriendlyState(ai.getState().getUserFriendlyState());
-        }
-
-        if (!ai.getDomainId().equals(appInstance.getDomain().getId())) {
-            ai.setDomainId(appInstance.getDomain().getId());
-        }
-
-        // add information about app instance upgrade possibility
-        if (!List.of(AppInstanceState.DONE, AppInstanceState.REMOVED).contains(ai.getState())) {
-            ai.setUpgradePossible(instanceService.checkUpgradePossible(appInstance.getId()));
-        }
-
-        return ai;
-    }
-
-    private AppInstanceView addAppInstanceProperties(AppInstanceView ai, AppInstance appInstance) {
-        addAppInstanceBaseProperties(ai, appInstance);
-
-        Identifier identifier = appInstance.getInternalId();
-        try {
-            ai.setServiceAccessMethods(appDeploymentMonitor.userAccessDetails(identifier).getServiceAccessMethods());
-        } catch (InvalidAppStateException | InvalidDeploymentIdException e) {
-            ai.setServiceAccessMethods(null);
-        }
-
-        try {
-            ai.setAppConfigRepositoryAccessDetails(appDeploymentMonitor.configRepositoryAccessDetails(identifier));
-        } catch (InvalidAppStateException | InvalidDeploymentIdException e) {
-            ai.setAppConfigRepositoryAccessDetails(null);
-        }
-
-        try {
-            ai.setDescriptiveDeploymentId(appDeploymentRepositoryManager.load(appInstance.getInternalId()).getDescriptiveDeploymentId().value());
-        } catch (InvalidDeploymentIdException e) {
-            ai.setDescriptiveDeploymentId(null);
-        }
-
-        try {
-            ai.setConfigWizardTemplate(new ConfigWizardTemplateView(
-                    appInstance.getApplication().getConfigWizardTemplate().getId(),
-                    appInstance.getApplication().getConfigWizardTemplate().getTemplate()));
-        } catch (Exception e) {
-            ai.setConfigWizardTemplate(null);
-        }
-
-        try {
-            ai.setConfigUpdateWizardTemplate(new ConfigWizardTemplateView(
-                    appInstance.getApplication().getConfigUpdateWizardTemplate().getId(),
-                    appInstance.getApplication().getConfigUpdateWizardTemplate().getTemplate()));
-        } catch (Exception e) {
-            ai.setConfigUpdateWizardTemplate(null);
-        }
-
-        // add app instance upgrade details (might be null as well)
-        ai.setUpgradeInfo(instanceService.obtainUpgradeInfo(appInstance.getId()));
-
-        return ai;
-    }
-
-    private void logPageable(Pageable p) {
-        log.trace("Page number: {}\tPage size:{}\tPage offset:{}\tSort:{}", p.getPageNumber(), p.getPageSize(), p.getOffset(), p.getSort());
-    }
-
-    private boolean isPageableValidForAppInstance(Pageable p) {
-        List<String> sortProperties = p.getSort().get().map(Sort.Order::getProperty).toList();
-        List<String> classProperties = Arrays.stream(AppInstance.class.getDeclaredFields()).map(Field::getName).toList();
-
-        Set<String> sortSet = new HashSet<>(sortProperties);
-        Set<String> classSet = new HashSet<>(classProperties);
-
-        sortSet.removeAll(classSet);
-
-        return sortSet.isEmpty();
-    }
-
-    private boolean isSystemAdminAndIsDomainGlobal(User user, Long domainId) {
-        boolean isSystemAdmin = false;
-        boolean isDomainGlobal = false;
-        if (user.getRoles().stream().anyMatch((UserRole ur) -> ur.getRole().equals(Role.ROLE_SYSTEM_ADMIN))) {
-            isSystemAdmin = true;
-        }
-        if (domainId.equals(domainService.getGlobalDomain().orElseThrow(() -> new InvalidDomainException("Global Domain not found")).getId())) {
-            isDomainGlobal = true;
-        }
-        return isSystemAdmin && isDomainGlobal;
-    }
-
-    private Pageable pageableValidator(Pageable pageable) {
-        if (!this.isPageableValidForAppInstance(pageable)) {
-            return null;
-        }
-        return pageable;
     }
 
     @PutMapping("/{appInstanceId}/scale-down")

@@ -3,6 +3,7 @@ package net.geant.nmaas.portal.service.impl;
 import net.geant.nmaas.api.dto.applications.AppInstanceView;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesChart;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
+import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
@@ -61,6 +62,7 @@ class ApplicationInstanceServiceTest {
     private final ApplicationInstanceUpgradeService applicationInstanceUpgradeService = mock(ApplicationInstanceUpgradeService.class);
     private final AppLifecycleManager appLifecycleManager = mock(AppLifecycleManager.class);
     private final ConfigurationManager configurationManager = mock(ConfigurationManager.class);
+    private final AppDeploymentMonitor appDeploymentMonitor = mock(AppDeploymentMonitor.class);
 
     ApplicationInstanceServiceImpl applicationInstanceService = new ApplicationInstanceServiceImpl(
             appInstanceRepo,
@@ -72,7 +74,8 @@ class ApplicationInstanceServiceTest {
             applicationStatePerDomainService,
             applicationInstanceUpgradeService,
             appLifecycleManager,
-            configurationManager
+            configurationManager,
+            appDeploymentMonitor
     );
 
     @BeforeEach

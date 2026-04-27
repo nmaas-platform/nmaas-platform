@@ -14,14 +14,14 @@ public class BaseController {
 
 	public User getUser(String username) {
 		if (username == null) {
-			throw new MissingElementException("Missing username.");
+			throw new MissingElementException("Missing username");
 		}
 		return userService.findByUsername(username).orElseThrow(() -> new MissingElementException("Missing user " + username));
 	}
 
     public User getUser(Long userId) {
 		if (userId == null) {
-			throw new MissingElementException("Missing username.");
+			throw new MissingElementException("Missing user identifier");
 		}
 		return userService.findById(userId).orElseThrow(() -> new MissingElementException("Missing user id=" + userId));
 	}

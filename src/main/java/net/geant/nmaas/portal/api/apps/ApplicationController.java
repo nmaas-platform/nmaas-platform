@@ -70,7 +70,7 @@ public class ApplicationController extends AppBaseController {
     @NoArgsConstructor
     @Getter
     @Setter
-    public static class ApplicationDTO {
+    public static class ApplicationDto {
         @Valid
         private ApplicationBaseView applicationBase;
         @Valid
@@ -81,7 +81,7 @@ public class ApplicationController extends AppBaseController {
     @NoArgsConstructor
     @Getter
     @Setter
-    public static class ApplicationDTOVersionList {
+    public static class ApplicationDtoVersionList {
         private ApplicationBaseView applicationBase;
         private List<ApplicationView> applications;
     }
@@ -89,16 +89,16 @@ public class ApplicationController extends AppBaseController {
     private final ApplicationEventPublisher eventPublisher;
     private final RatingRepository ratingRepository;
     private final ApplicationInstanceService applicationInstanceService;
-    private final AppInstanceController appInstanceController;
     private final ApplicationSubscriptionService applicationSubscriptionService;
 
     @Autowired
-    public ApplicationController(ModelMapper modelMapper, ApplicationService applicationService, ApplicationBaseService appBaseService, UserService userService, ApplicationEventPublisher eventPublisher, RatingRepository ratingRepository, ApplicationInstanceService applicationInstanceService, AppInstanceController appInstanceController, ApplicationSubscriptionService applicationSubscriptionService) {
-        super(modelMapper, userService, applicationService, appBaseService);
+    public ApplicationController(ModelMapper modelMapper, ApplicationService applicationService, ApplicationBaseService applicationBaseService,
+                                 UserService userService, ApplicationEventPublisher eventPublisher, RatingRepository ratingRepository,
+                                 ApplicationInstanceService applicationInstanceService, ApplicationSubscriptionService applicationSubscriptionService) {
+        super(modelMapper, userService, applicationService, applicationBaseService);
         this.eventPublisher = eventPublisher;
         this.ratingRepository = ratingRepository;
         this.applicationInstanceService = applicationInstanceService;
-        this.appInstanceController = appInstanceController;
         this.applicationSubscriptionService = applicationSubscriptionService;
     }
 
@@ -109,7 +109,7 @@ public class ApplicationController extends AppBaseController {
     @GetMapping("/base")
     @Transactional
     public List<ApplicationBaseViewS> getAllActiveApplicationBase() {
-        return appBaseService.findAllActiveAppsSmall().stream()
+        return applicationBaseService.findAllActiveAppsSmall().stream()
                 .map(this::setAppRating)
                 .toList();
     }
@@ -122,7 +122,7 @@ public class ApplicationController extends AppBaseController {
         boolean isSystemAdmin = this.getUser(principal.getName()).getRoles().stream()
                 .anyMatch(userRole -> userRole.getRole().equals(Role.ROLE_SYSTEM_ADMIN));
 
-        return appBaseService.findAll().stream()
+        return applicationBaseService.findAll().stream()
                 // system admin should see all the applications
                 .filter(app -> isSystemAdmin || app.getOwner().equals(principal.getName()))
                 .map(app -> modelMapper.map(app, ApplicationBaseView.class))
@@ -152,7 +152,7 @@ public class ApplicationController extends AppBaseController {
     @GetMapping(value = "/base/{id}")
     @Transactional
     public ApplicationBaseView getApplicationBase(@PathVariable Long id) {
-        ApplicationBaseView app = modelMapper.map(appBaseService.getBaseApp(id), ApplicationBaseView.class);
+        ApplicationBaseView app = modelMapper.map(applicationBaseService.getBaseApp(id), ApplicationBaseView.class);
         return this.setAppRating(app);
     }
 
@@ -162,7 +162,7 @@ public class ApplicationController extends AppBaseController {
     public void updateApplicationBase(@RequestBody ApplicationBaseView baseView, Principal principal) {
         // only system admin and owner can update application base
         this.applicationBaseOwnerCheck(baseView.getName(), principal);
-        appBaseService.update(modelMapper.map(baseView, ApplicationBase.class));
+        applicationBaseService.update(modelMapper.map(baseView, ApplicationBase.class));
     }
 
     @PatchMapping(value = "/base/{id}/owner/{owner}")
@@ -171,14 +171,14 @@ public class ApplicationController extends AppBaseController {
     public void updateApplicationBaseOwner(@PathVariable Long id, @PathVariable String owner, Principal principal) {
         log.info("Updating owner of application {} to {}", id, owner);
         this.applicationBaseOwnerCheck(id, principal);
-        appBaseService.updateOwner(id, owner);
+        applicationBaseService.updateOwner(id, owner);
     }
 
     @DeleteMapping(value = "/base/{id}")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
     @Transactional
     public void deleteApplicationBase(@PathVariable Long id, Principal principal) {
-        ApplicationBase base = appBaseService.getBaseApp(id);
+        ApplicationBase base = applicationBaseService.getBaseApp(id);
         // only system admin and owner can update application base
         this.applicationBaseOwnerCheck(base.getName(), principal);
         for (ApplicationVersion appVersion : base.getVersions()) {
@@ -188,14 +188,14 @@ public class ApplicationController extends AppBaseController {
             }
         }
         applicationSubscriptionService.unsubscribeAll(base);
-        appBaseService.deleteAppBase(base);
+        applicationBaseService.deleteAppBase(base);
     }
 
     @GetMapping(value = "/base/name/{name}")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
     @Transactional
     public ApplicationBaseView getApplicationBase(@PathVariable String name) {
-        ApplicationBaseView app = modelMapper.map(appBaseService.findByName(name), ApplicationBaseView.class);
+        ApplicationBaseView app = modelMapper.map(applicationBaseService.findByName(name), ApplicationBaseView.class);
         return this.setAppRating(app);
     }
 
@@ -206,11 +206,11 @@ public class ApplicationController extends AppBaseController {
     @PostMapping
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
     @Transactional
-    public Id addApplication(@RequestBody @Valid ApplicationDTO request, Principal principal) {
+    public Id addApplication(@RequestBody @Valid ApplicationController.ApplicationDto request, Principal principal) {
         ApplicationBaseView creationRequest = request.getApplicationBase();
         creationRequest.setOwner(principal.getName());
         // create new application base
-        ApplicationBase base = this.appBaseService.create(modelMapper.map(creationRequest, ApplicationBase.class));
+        ApplicationBase base = applicationBaseService.create(modelMapper.map(creationRequest, ApplicationBase.class));
 
         this.addApplicationVersion(request.getApplication(), principal);
 
@@ -220,10 +220,10 @@ public class ApplicationController extends AppBaseController {
     @GetMapping(value = "/{name}/latest")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
     @Transactional
-    public ApplicationDTO getLatestAppVersion(@PathVariable String name) {
-        ApplicationBase base = this.appBaseService.findByName(name);
-        Application application = this.applicationService.findApplicationLatestVersion(name);
-        return new ApplicationDTO(
+    public ApplicationDto getLatestAppVersion(@PathVariable String name) {
+        ApplicationBase base = applicationBaseService.findByName(name);
+        Application application = applicationService.findApplicationLatestVersion(name);
+        return new ApplicationDto(
                 modelMapper.map(base, ApplicationBaseView.class),
                 modelMapper.map(application, ApplicationView.class)
         );
@@ -232,13 +232,13 @@ public class ApplicationController extends AppBaseController {
     @GetMapping(value = "/{name}/version/{version}")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
     @Transactional
-    public ApplicationDTO getApplicationByNameAndVersion(@PathVariable String name, @PathVariable String version) {
-        ApplicationBase base = this.appBaseService.findByName(name);
+    public ApplicationDto getApplicationByNameAndVersion(@PathVariable String name, @PathVariable String version) {
+        ApplicationBase base = applicationBaseService.findByName(name);
 
-        Optional<Application> application = this.applicationService.findApplication(name, version);
+        Optional<Application> application = applicationService.findApplication(name, version);
 
         if (application.isPresent()) {
-            return new ApplicationDTO(
+            return new ApplicationDto(
                     modelMapper.map(base, ApplicationBaseView.class),
                     modelMapper.map(application.get(), ApplicationView.class)
             );
@@ -250,10 +250,10 @@ public class ApplicationController extends AppBaseController {
 
     @GetMapping(value = "/{id}")
     @Transactional
-    public ApplicationDTO getApplicationDTO(@PathVariable Long id) {
+    public ApplicationDto getApplicationDTO(@PathVariable Long id) {
         Application app = getApp(id);
-        ApplicationBase base = this.appBaseService.findByName(app.getName());
-        return new ApplicationDTO(
+        ApplicationBase base = applicationBaseService.findByName(app.getName());
+        return new ApplicationDto(
                 modelMapper.map(base, ApplicationBaseView.class),
                 modelMapper.map(app, ApplicationView.class)
         );
@@ -261,12 +261,12 @@ public class ApplicationController extends AppBaseController {
 
     @GetMapping(value = "/base/allversions/{id}")
     @Transactional
-    public ApplicationDTOVersionList getApplicationDTOWithAllVersions(@PathVariable Long id) {
-        ApplicationBase base = appBaseService.getBaseApp(id);
-        List<Application> versionList = this.applicationService.findAll().stream()
+    public ApplicationDtoVersionList getApplicationDTOWithAllVersions(@PathVariable Long id) {
+        ApplicationBase base = applicationBaseService.getBaseApp(id);
+        List<Application> versionList = applicationService.findAll().stream()
                 .filter(app -> app.getName().equalsIgnoreCase(base.getName()))
                 .toList();
-        return new ApplicationDTOVersionList(
+        return new ApplicationDtoVersionList(
                 modelMapper.map(base, ApplicationBaseView.class),
                 versionList.stream()
                         .map(app -> modelMapper.map(app, ApplicationView.class))
@@ -303,7 +303,7 @@ public class ApplicationController extends AppBaseController {
 
         // validate
         // application base with given name must exist
-        ApplicationBase base = appBaseService.findByName(view.getName());
+        ApplicationBase base = applicationBaseService.findByName(view.getName());
         // specified version for this application base must not exist
         boolean hasVersion = base.getVersions()
                 .stream()
@@ -317,7 +317,7 @@ public class ApplicationController extends AppBaseController {
 
         // create application stub to avoid problems with circular dependencies
         // see application -> app config spec -> config file template -> application (id) :)
-        Application temp = this.applicationService.create(new Application(view.getName(), view.getVersion()));
+        Application temp = applicationService.create(new Application(view.getName(), view.getVersion()));
         Long appId = temp.getId();
 
         // create application entity & set properties
@@ -325,17 +325,17 @@ public class ApplicationController extends AppBaseController {
         application.setId(appId);
         application.setState(ApplicationState.NEW);
         application.setCreationDate(LocalDateTime.now());
-        this.applicationService.setMissingProperties(application, appId);
+        applicationService.setMissingProperties(application, appId);
         ApplicationServiceImpl.clearIds(application);
-        this.applicationService.checkAndUpdateConfigurationTemplate(application);
-        this.applicationService.update(application);
+        applicationService.checkAndUpdateConfigurationTemplate(application);
+        applicationService.update(application);
 
         // create, add and persist new application version
         ApplicationVersion version = new ApplicationVersion(application.getVersion(), ApplicationState.NEW, appId);
         base.getVersions().add(version);
-        appBaseService.update(base);
+        applicationBaseService.update(base);
 
-        this.sendMails(application, new ApplicationStateChangeRequest(ApplicationStateDto.valueOf(application.getState().name()), "", false));
+        notifyApplicationStateChange(application, new ApplicationStateChangeRequest(ApplicationStateDto.valueOf(application.getState().name()), "", false));
     }
 
     @PatchMapping(value = "/version")
@@ -366,7 +366,7 @@ public class ApplicationController extends AppBaseController {
         }
 
         // application base with given name must exist
-        ApplicationBase base = appBaseService.findByName(view.getName());
+        ApplicationBase base = applicationBaseService.findByName(view.getName());
 
         // you cannot really change version label
         Optional<ApplicationVersion> version = base.getVersions().stream()
@@ -399,20 +399,19 @@ public class ApplicationController extends AppBaseController {
         Application app = getApp(id);
         if (stateChangeRequest.getState().equals(ApplicationStateDto.DELETED)) {
             long numberOfRunningInstances = applicationInstanceService.findAllByApplication(app).stream()
-                    .map(ai -> appInstanceController.getState(ai.getId(), principal))
-                    .filter(s -> !List.of(AppInstanceState.DONE, AppInstanceState.FAILURE, AppInstanceState.REMOVED).contains(s.state()))
+                    .filter(ai -> !applicationInstanceService.isInAnyState(ai.getId(), List.of(AppInstanceState.DONE, AppInstanceState.FAILURE, AppInstanceState.REMOVED)))
                     .count();
             if (numberOfRunningInstances > 0) {
                 throw new ProcessingException("Can't set state to DELETED. There is still " + numberOfRunningInstances + " running instances of this version.");
             }
         }
         applicationService.changeApplicationState(app, ApplicationState.valueOf(stateChangeRequest.getState().name()));
-        appBaseService.updateApplicationVersionState(app.getName(), app.getVersion(), ApplicationState.valueOf(stateChangeRequest.getState().name()));
-        this.sendMails(app, stateChangeRequest);
+        applicationBaseService.updateApplicationVersionState(app.getName(), app.getVersion(), ApplicationState.valueOf(stateChangeRequest.getState().name()));
+        this.notifyApplicationStateChange(app, stateChangeRequest);
     }
 
     /**
-     * Deletes application entity, labels application version as deleted
+     * Deletes application entity, labels an application version as deleted
      *
      * @param id application id (not an ApplicationBase or ApplicationVersion id)
      */
@@ -423,13 +422,13 @@ public class ApplicationController extends AppBaseController {
         Application app = getApp(id);
         this.applicationBaseOwnerCheck(app.getName(), principal);
         applicationService.delete(id);
-        appBaseService.updateApplicationVersionState(app.getName(), app.getVersion(), ApplicationState.DELETED);
+        applicationBaseService.updateApplicationVersionState(app.getName(), app.getVersion(), ApplicationState.DELETED);
     }
 
     /*
      * Utilities
      */
-    private void sendMails(Application app, ApplicationStateChangeRequest stateChangeRequest) {
+    private void notifyApplicationStateChange(Application app, ApplicationStateChangeRequest stateChangeRequest) {
         String appBaseName = app.getName().contains("_DELETED_")
                 ? app.getName().substring(0, app.getName().indexOf("_DELETED_"))
                 : app.getName();
@@ -440,7 +439,7 @@ public class ApplicationController extends AppBaseController {
                 "reason", stateChangeRequest.getReason() == null ? "" : stateChangeRequest.getReason(),
                 "message", stateChangeRequest.getNotificationText() == null ? "" : stateChangeRequest.getNotificationText());
         if (!stateChangeRequest.getState().equals(ApplicationStateDto.ACTIVE)) {
-            ApplicationBase applicationBase = appBaseService.findByName(appBaseName);
+            ApplicationBase applicationBase = applicationBaseService.findByName(appBaseName);
             UserDto owner = modelMapper.map(userService.findByUsername(applicationBase.getOwner()).orElseThrow(() -> new IllegalArgumentException("Owner not found")), UserDto.class);
             MailAttributes mailAttributes = MailAttributes.builder()
                     .mailType(ApplicationState.valueOf(stateChangeRequest.getState().name()).getMailType())
@@ -474,12 +473,12 @@ public class ApplicationController extends AppBaseController {
     }
 
     private void applicationBaseOwnerCheck(String applicationBaseName, Principal principal) {
-        ApplicationBase applicationBase = this.appBaseService.findByName(applicationBaseName);
+        ApplicationBase applicationBase = this.applicationBaseService.findByName(applicationBaseName);
         this.applicationBaseOwnerCheck(applicationBase, principal);
     }
 
     private void applicationBaseOwnerCheck(Long id, Principal principal) {
-        ApplicationBase applicationBase = this.appBaseService.getBaseApp(id);
+        ApplicationBase applicationBase = this.applicationBaseService.getBaseApp(id);
         this.applicationBaseOwnerCheck(applicationBase, principal);
     }
 

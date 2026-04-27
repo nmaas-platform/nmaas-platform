@@ -1,5 +1,7 @@
 package net.geant.nmaas.portal.service;
 
+import net.geant.nmaas.api.dto.applications.AppInstanceState;
+import net.geant.nmaas.orchestration.AppLifecycleState;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.api.dto.applications.AppInstanceView;
@@ -19,6 +21,7 @@ public interface ApplicationInstanceService {
 	AppInstance create(Domain domain, Application application, String name, boolean autoUpgradesEnabled);
 	
 	void delete(Long appInstanceId);
+	void deleteAllByDomain(Long domainId);
 
 	void update(AppInstance appInstance);
 	void updateApplication(Identifier internalId, Long applicationId);
@@ -52,8 +55,7 @@ public interface ApplicationInstanceService {
 	boolean checkUpgradePossible(Long appInstanceId, String targetVersion);
     AppInstanceView.AppInstanceUpgradeInfo obtainUpgradeInfo(Long appInstanceId);
 
-	void deleteAllByDomain(Long domainId);
-
 	boolean isNameAvailableInDomain(String name, Domain domain);
+	boolean isInAnyState(Long appInstanceId, List<AppInstanceState> states);
 
 }

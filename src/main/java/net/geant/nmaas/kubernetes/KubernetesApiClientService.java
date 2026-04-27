@@ -231,12 +231,12 @@ public class KubernetesApiClientService {
                     .withName(secretName)
                     .get();
             if (secret == null) {
-                throw new NoSuchElementException(String.format("Secret %s not found namespace %s", secretName, namespace));
+                throw new NoSuchElementException(String.format("Secret \"%s\" not found in namespace \"%s\"", secretName, namespace));
             }
 
             String encoded = secret.getData().get("value");
             if (encoded == null) {
-                throw new NoSuchElementException("Expected field not found in secret");
+                throw new NoSuchElementException(String.format("Expected field \"value\" not found in secret \"%s\"", secretName));
             }
 
             // The content is Base64-encoded by Kubernetes, so decode it
