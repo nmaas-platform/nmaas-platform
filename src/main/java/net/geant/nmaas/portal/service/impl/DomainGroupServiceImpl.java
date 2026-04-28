@@ -133,6 +133,20 @@ public class DomainGroupServiceImpl implements DomainGroupService {
     }
 
     @Override
+    public List<DomainGroupDto> getAllDetailedDomainGroups() {
+        return domainGroupRepository.findAll().stream()
+                .map(g -> modelMapper.map(g, DomainGroupDto.class))
+                .toList();
+    }
+
+    @Override
+    public List<DomainGroupDto> getAllDetailedDomainGroupsWhereManagerIsMember(User manager) {
+        return domainGroupRepository.findAllByManagers(manager).stream()
+                .map(g -> modelMapper.map(g, DomainGroupDto.class))
+                .toList();
+    }
+
+    @Override
     public Page<DomainGroupBaseDto> getPageableAllDomainGroups(Pageable pageable) {
         return domainGroupRepository.getAllBaseDto(pageable);
     }

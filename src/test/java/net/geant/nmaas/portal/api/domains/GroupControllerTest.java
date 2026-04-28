@@ -2,6 +2,7 @@ package net.geant.nmaas.portal.api.domains;
 
 import net.geant.nmaas.api.dto.Id;
 import net.geant.nmaas.api.dto.applications.ApplicationStatePerDomainDto;
+import net.geant.nmaas.api.dto.domains.DomainGroupBaseDto;
 import net.geant.nmaas.api.dto.domains.DomainGroupDto;
 import net.geant.nmaas.api.dto.users.UserViewMinimal;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
@@ -61,6 +62,39 @@ class GroupControllerTest {
 
         assertNotNull(result);
         verify(domainService).updateRolesInDomainGroupByUsers(created);
+    }
+
+    @Test
+    void shouldGetBaseDomainGroupsByDefault() {
+        Principal principal = () -> "admin";
+        User admin = new User("admin", true);
+        Domain global = new Domain(1L, "global", "global", true);
+        admin.setRoles(List.of(new UserRole(admin, global, Role.ROLE_SYSTEM_ADMIN)));
+        List<DomainGroupBaseDto> groups = List.of(new DomainGroupBaseDto(10L, "group", "grp", 1));
+        when(userService.findByUsername("admin")).thenReturn(Optional.of(admin));
+        when(domainGroupService.getAllDomainGroups()).thenReturn(groups);
+
+        List<?> result = controller.getDomainGroups(principal, false);
+
+        assertEquals(groups, result);
+        verify(domainGroupService).getAllDomainGroups();
+    }
+
+    @Test
+    void shouldGetDetailedDomainGroupsWhenRequested() {
+        Principal principal = () -> "admin";
+        User admin = new User("admin", true);
+        Domain global = new Domain(1L, "global", "global", true);
+        admin.setRoles(List.of(new UserRole(admin, global, Role.ROLE_SYSTEM_ADMIN)));
+        DomainGroupDto group = new DomainGroupDto(10L, "group", "grp");
+        List<DomainGroupDto> groups = List.of(group);
+        when(userService.findByUsername("admin")).thenReturn(Optional.of(admin));
+        when(domainGroupService.getAllDetailedDomainGroups()).thenReturn(groups);
+
+        List<?> result = controller.getDomainGroups(principal, true);
+
+        assertEquals(groups, result);
+        verify(domainGroupService).getAllDetailedDomainGroups();
     }
 
     @Test

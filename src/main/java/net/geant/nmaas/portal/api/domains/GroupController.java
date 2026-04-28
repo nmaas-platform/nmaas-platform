@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -84,11 +85,20 @@ public class GroupController extends BaseController {
     @GetMapping
     @Transactional(readOnly = true)
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
-    public List<DomainGroupBaseDto> getDomainGroups(Principal principal) {
+    public List<?> getDomainGroups(
+            Principal principal,
+            @RequestParam(value = "detailed", required = false, defaultValue = "false") boolean detailed
+    ) {
         final User user = userService.findByUsername(principal.getName())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
         if (user.getRoles().stream().anyMatch(userRole -> userRole.getRole().equals(Role.ROLE_GROUP_MANAGER))) {
+            if (detailed) {
+                return domainGroupService.getAllDetailedDomainGroupsWhereManagerIsMember(user);
+            }
             return domainGroupService.getAllDomainGroupsWhereManagerIsMember(user);
+        }
+        if (detailed) {
+            return domainGroupService.getAllDetailedDomainGroups();
         }
         return domainGroupService.getAllDomainGroups();
     }

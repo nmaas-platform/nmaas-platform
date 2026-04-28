@@ -28,6 +28,10 @@ public interface DomainGroupService {
 
     List<DomainGroupBaseDto> getAllDomainGroupsWhereManagerIsMember(User manager);
 
+    List<DomainGroupDto> getAllDetailedDomainGroups();
+
+    List<DomainGroupDto> getAllDetailedDomainGroupsWhereManagerIsMember(User manager);
+
     Page<DomainGroupBaseDto> getPageableAllDomainGroups(Pageable pageable);
 
     Page<DomainGroupBaseDto> getPageableAllDomainGroupsAndSearch(Pageable pageable, String search);
