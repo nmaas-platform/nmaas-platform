@@ -24,19 +24,15 @@ public interface DomainGroupService {
 
     DomainGroupDto getDomainGroup(Long domainGroupId);
 
-    List<DomainGroupBaseDto> getAllDomainGroups();
+    List<DomainGroupBaseDto> getAllDomainGroups(String search);
 
-    List<DomainGroupBaseDto> getAllDomainGroupsWhereManagerIsMember(User manager);
+    List<DomainGroupBaseDto> getAllDomainGroupsWhereManagerIsMember(User manager, String search);
 
-    List<DomainGroupDto> getAllDetailedDomainGroups();
+    List<DomainGroupDto> getAllDetailedDomainGroups(String search);
 
-    List<DomainGroupDto> getAllDetailedDomainGroupsWhereManagerIsMember(User manager);
-
-    Page<DomainGroupBaseDto> getPageableAllDomainGroups(Pageable pageable);
+    List<DomainGroupDto> getAllDetailedDomainGroupsWhereManagerIsMember(User manager, String search);
 
     Page<DomainGroupBaseDto> getPageableAllDomainGroupsAndSearch(Pageable pageable, String search);
-
-    Page<DomainGroupBaseDto> getPageableAllDomainGroupsWhereManagerIsMember(Pageable pageable, User manager);
 
     Page<DomainGroupBaseDto> getPageableAllDomainGroupsWhereManagerIsMemberAndSearch(Pageable pageable, User manager, String search);
 

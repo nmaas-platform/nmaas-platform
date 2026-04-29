@@ -3,6 +3,7 @@ package net.geant.nmaas.portal.persistence.repositories;
 import net.geant.nmaas.api.dto.domains.DomainGroupBaseDto;
 import net.geant.nmaas.portal.persistence.entity.DomainGroup;
 import net.geant.nmaas.portal.persistence.entity.User;
+import org.apache.commons.lang3.EnumUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -25,67 +26,58 @@ public interface DomainGroupRepository extends JpaRepository<DomainGroup, Long> 
     @Query("SELECT DISTINCT dg.id FROM DomainGroup dg JOIN dg.domains d WHERE d.codename = :codename")
     List<String> findDomainGroupIdsByDomainCodename(@Param("codename") String codename);
 
-    List<DomainGroup> findAllByManagers(User manager);
-
-    Page<DomainGroup> findAllByManagers(User manager, Pageable pageable);
     @Query("""
-                SELECT new net.geant.nmaas.api.dto.domains.DomainGroupBaseDto(
-                    dg.id,
-                    dg.name,
-                    dg.codename,
-                    CAST(COUNT(d) as integer) as noOfDomains
-                )
-                    FROM DomainGroup dg
-                    LEFT JOIN dg.domains d
-                    GROUP BY dg.id, dg.name, dg.codename
+            SELECT dg
+            FROM DomainGroup dg
+            WHERE (:search IS NULL
+            OR LOWER(dg.name) LIKE LOWER(CONCAT('%', :search, '%'))
+            OR LOWER(dg.codename) LIKE LOWER(CONCAT('%', :search, '%')))
+            GROUP BY dg.id, dg.name, dg.codename
             """)
-    Page<DomainGroupBaseDto> getAllBaseDto(Pageable pageable);
+    List<DomainGroup> findAllWithSearch(String search);
+
+    @Query("""
+            SELECT dg
+            FROM DomainGroup dg
+            JOIN dg.managers m
+            WHERE m = :manager
+            AND (:search IS NULL
+            OR LOWER(dg.name) LIKE LOWER(CONCAT('%', :search, '%'))
+            OR LOWER(dg.codename) LIKE LOWER(CONCAT('%', :search, '%')))
+            GROUP BY dg.id, dg.name, dg.codename
+            """)
+    List<DomainGroup> findAllByManagersWithSearch(User manager, String search);
+
     @Query("""
             SELECT new net.geant.nmaas.api.dto.domains.DomainGroupBaseDto(
                 dg.id,
                 dg.name,
                 dg.codename,
-                CAST(COUNT(d) as integer) as noOfDomains
-            )
-                    FROM DomainGroup dg
-                    LEFT JOIN dg.domains d
-                    WHERE LOWER(dg.name) LIKE LOWER(CONCAT('%', :search, '%'))
-                    OR LOWER(dg.codename) LIKE LOWER(CONCAT('%', :search, '%'))
-                    GROUP BY dg.id, dg.name, dg.codename
+                CAST(COUNT(d) as integer) as noOfDomains)
+            FROM DomainGroup dg
+            LEFT JOIN dg.domains d
+            WHERE (:search IS NULL
+            OR LOWER(dg.name) LIKE LOWER(CONCAT('%', :search, '%'))
+            OR LOWER(dg.codename) LIKE LOWER(CONCAT('%', :search, '%')))
+            GROUP BY dg.id, dg.name, dg.codename
             """)
     Page<DomainGroupBaseDto> getAllBaseDtoWithSearch(String search, Pageable pageable);
 
     @Query("""
-    SELECT new net.geant.nmaas.api.dto.domains.DomainGroupBaseDto(
-        dg.id,
-        dg.name,
-        dg.codename,
-        CAST(COUNT(d) as integer) as noOfDomains
-        )
+            SELECT new net.geant.nmaas.api.dto.domains.DomainGroupBaseDto(
+                dg.id,
+                dg.name,
+                dg.codename,
+                CAST(COUNT(d) as integer) as noOfDomains)
             FROM DomainGroup dg
             JOIN dg.managers m
-        LEFT JOIN dg.domains d
-        WHERE m = :manager
-        GROUP BY dg.id, dg.name, dg.codename
-""")
-    Page<DomainGroupBaseDto> getAllBaseDtoByManager(User manager, Pageable pageable);
-
-    @Query("""
-    SELECT new net.geant.nmaas.api.dto.domains.DomainGroupBaseDto(
-        dg.id,
-        dg.name,
-        dg.codename,
-        CAST(COUNT(d) as integer) as noOfDomains
-        )
-            FROM DomainGroup dg
-            JOIN dg.managers m
-        LEFT JOIN dg.domains d
-        WHERE m = :manager
-        AND LOWER(dg.name) LIKE LOWER(CONCAT('%', :search, '%'))
-        OR  m = :manager
-        AND LOWER(dg.codename) LIKE LOWER(CONCAT('%', :search, '%'))
-        GROUP BY dg.id, dg.name, dg.codename
-""")
-    Page<DomainGroupBaseDto> getAllBaseDtoByManagerWithSearch(User manager, String search, Pageable pageable);
+            LEFT JOIN dg.domains d
+            WHERE m = :manager
+            AND (:search IS NULL
+            OR LOWER(dg.name) LIKE LOWER(CONCAT('%', :search, '%'))
+            OR LOWER(dg.codename) LIKE LOWER(CONCAT('%', :search, '%')))
+            GROUP BY dg.id, dg.name, dg.codename
+            """)
+    Page<DomainGroupBaseDto> getAllBaseDtoByManagerWithSearch(User manager, @Param("search") String search, Pageable pageable);
 
 }

@@ -120,45 +120,35 @@ public class DomainGroupServiceImpl implements DomainGroupService {
     }
 
     @Override
-    public List<DomainGroupBaseDto> getAllDomainGroups() {
-        return domainGroupRepository.findAll().stream()
+    public List<DomainGroupBaseDto> getAllDomainGroups(String search) {
+        return domainGroupRepository.findAllWithSearch(search).stream()
                 .map(g -> modelMapper.map(g, DomainGroupBaseDto.class))
                 .toList();
     }
 
     @Override
-    public List<DomainGroupBaseDto> getAllDomainGroupsWhereManagerIsMember(User manager) {
-        return domainGroupRepository.findAllByManagers(manager).stream()
+    public List<DomainGroupBaseDto> getAllDomainGroupsWhereManagerIsMember(User manager, String search) {
+        return domainGroupRepository.findAllByManagersWithSearch(manager, search).stream()
                 .map(g -> modelMapper.map(g, DomainGroupBaseDto.class)).toList();
     }
 
     @Override
-    public List<DomainGroupDto> getAllDetailedDomainGroups() {
-        return domainGroupRepository.findAll().stream()
+    public List<DomainGroupDto> getAllDetailedDomainGroups(String search) {
+        return domainGroupRepository.findAllWithSearch(search).stream()
                 .map(g -> modelMapper.map(g, DomainGroupDto.class))
                 .toList();
     }
 
     @Override
-    public List<DomainGroupDto> getAllDetailedDomainGroupsWhereManagerIsMember(User manager) {
-        return domainGroupRepository.findAllByManagers(manager).stream()
+    public List<DomainGroupDto> getAllDetailedDomainGroupsWhereManagerIsMember(User manager, String search) {
+        return domainGroupRepository.findAllByManagersWithSearch(manager, search).stream()
                 .map(g -> modelMapper.map(g, DomainGroupDto.class))
                 .toList();
-    }
-
-    @Override
-    public Page<DomainGroupBaseDto> getPageableAllDomainGroups(Pageable pageable) {
-        return domainGroupRepository.getAllBaseDto(pageable);
     }
 
     @Override
     public Page<DomainGroupBaseDto> getPageableAllDomainGroupsAndSearch(Pageable pageable, String search) {
         return domainGroupRepository.getAllBaseDtoWithSearch(search, pageable);
-    }
-
-    @Override
-    public Page<DomainGroupBaseDto> getPageableAllDomainGroupsWhereManagerIsMember(Pageable pageable, User manager) {
-        return domainGroupRepository.getAllBaseDtoByManager(manager, pageable);
     }
 
     @Override

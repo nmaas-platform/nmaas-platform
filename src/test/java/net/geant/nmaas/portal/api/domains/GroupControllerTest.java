@@ -72,12 +72,12 @@ class GroupControllerTest {
         admin.setRoles(List.of(new UserRole(admin, global, Role.ROLE_SYSTEM_ADMIN)));
         List<DomainGroupBaseDto> groups = List.of(new DomainGroupBaseDto(10L, "group", "grp", 1));
         when(userService.findByUsername("admin")).thenReturn(Optional.of(admin));
-        when(domainGroupService.getAllDomainGroups()).thenReturn(groups);
+        when(domainGroupService.getAllDomainGroups(null)).thenReturn(groups);
 
-        List<?> result = controller.getDomainGroups(principal, false);
+        List<?> result = controller.getDomainGroups(principal, false, null);
 
         assertEquals(groups, result);
-        verify(domainGroupService).getAllDomainGroups();
+        verify(domainGroupService).getAllDomainGroups(null);
     }
 
     @Test
@@ -89,12 +89,12 @@ class GroupControllerTest {
         DomainGroupDto group = new DomainGroupDto(10L, "group", "grp");
         List<DomainGroupDto> groups = List.of(group);
         when(userService.findByUsername("admin")).thenReturn(Optional.of(admin));
-        when(domainGroupService.getAllDetailedDomainGroups()).thenReturn(groups);
+        when(domainGroupService.getAllDetailedDomainGroups(null)).thenReturn(groups);
 
-        List<?> result = controller.getDomainGroups(principal, true);
+        List<?> result = controller.getDomainGroups(principal, true, null);
 
         assertEquals(groups, result);
-        verify(domainGroupService).getAllDetailedDomainGroups();
+        verify(domainGroupService).getAllDetailedDomainGroups(null);
     }
 
     @Test

@@ -21,7 +21,7 @@ nmaas is an open-source framework developed within the GÉANT project for orches
 
 With a simple self-service web interface, nmaas applications are easily deployed within an isolated tenant environment assigned to a given user institution or team.
 
-An application’s lifecycle (configuration updates and re-deployments) is fully managed following a GitOps approach: a specific Git repository is tightly associated with every deployed application and a set of CI/CD pipelines ensure proper re-deployments of the applications following every update on the Git master branch.
+An application’s lifecycle (configuration updates and re-deployments) is fully managed following a GitOps approach: a specific Git repository is tightly associated with every deployed application, and a set of CI/CD pipelines ensure proper re-deployments of the applications following every update on the Git master branch.
 
 nmaas applications are containerized and deployed using [Helm charts](https://helm.sh/).
 
@@ -48,7 +48,7 @@ nmaas applications are containerized and deployed using [Helm charts](https://he
 [nmaas Platform](https://github.com/nmaas-platform/nmaas-platform) is the central nmaas component, exposing a REST API 
 consumed by the nmaas Portal. It stores the application catalog, the users, as well as information about all deployed 
 applications. Upon a new request for an application deployment, it uses a Helm client to execute necessary Helm operations. 
-It also communicates with a self-hosted instance of GitLab, in order to provision boilerplate configuration files for 
+It also communicates with a self-hosted instance of GitLab to provision boilerplate configuration files for 
 the application instances deployed by the users, allowing them to make any additional configuration changes exclusively 
 through Git.
 
@@ -60,6 +60,6 @@ Explore the nmaas Platform [development and deployment](docs/DEVELOPMENT.md) doc
 
 Interested users can use the following mailing lists to subscribe to news about nmaas, get in touch with the nmaas development team, or other nmaas users:
 
-- [nmaas-announce@lists.geant.org](mailto:nmaas-announce@lists.geant.org) - public mailing list for announcements shared by the nmaas team with the community ([subscribe here](https://lists.geant.org/sympa/info/nmaas-announce))
-- [nmaas@lists.geant.org](mailto:nmaas@lists.geant.org) - private mailing list for contacting the nmaas core team members
-- [nmaas-users@lists.geant.org](mailto:nmaas-users@lists.geant.org) - public mailing lists for discussions related to nmaas usage and development ([subscribe here](https://lists.geant.org/sympa/info/nmaas-users))
+- [nmaas-announce@lists.geant.org](mailto:nmaas-announce@lists.geant.org) – public mailing list for announcements shared by the nmaas team with the community ([subscribe here](https://lists.geant.org/sympa/info/nmaas-announce))
+- [nmaas@lists.geant.org](mailto:nmaas@lists.geant.org) – private mailing list for contacting the nmaas core team members
+- [nmaas-users@lists.geant.org](mailto:nmaas-users@lists.geant.org) – public mailing lists for discussions related to nmaas usage and development ([subscribe here](https://lists.geant.org/sympa/info/nmaas-users))
