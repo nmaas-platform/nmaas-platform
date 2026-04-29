@@ -32,6 +32,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -127,18 +128,32 @@ public class AppDeploymentStateChangeManager {
             log.error("Error reported at {}", timestamp, ex);
         }
     }
-
+    private boolean isExternalAccess(AppDeployment appDeployment){
+        return deploymentMonitor.userAccessDetails(appDeployment.getDeploymentId())
+                .getServiceAccessMethods().stream()
+                .anyMatch(m ->
+                        !Arrays.asList(ServiceAccessMethodTypeDto.INTERNAL, ServiceAccessMethodTypeDto.LOCAL)
+                                .contains(m.getType()));
+    }
     private MailAttributes getMailAttributes(AppDeployment appDeployment) {
-        return MailAttributes.builder()
-                .otherAttributes(Map.of(
-                        "accessURL", prepareDeployUrl(appDeployment),
-                        "domainName", deploymentRepositoryManager.loadDomainName(appDeployment.getDeploymentId()),
-                        "owner", appDeployment.getOwner(),
-                        "appInstanceName", appDeployment.getDeploymentName(),
-                        "appName", appDeployment.getAppName()
-                ))
-                .mailType(MailType.APP_DEPLOYED)
-                .build();
+        Map<String, Object> otherAttributes  = new HashMap<>(Map.of(
+                "domainName", deploymentRepositoryManager.loadDomainName(appDeployment.getDeploymentId()),
+                "owner", appDeployment.getOwner(),
+                "appInstanceName", appDeployment.getDeploymentName(),
+                "appName", appDeployment.getAppName()
+        ));
+        if (isExternalAccess(appDeployment)) {
+            otherAttributes.put("accessURL", prepareDeployUrl(appDeployment));
+            return MailAttributes.builder()
+                    .otherAttributes(otherAttributes)
+                    .mailType(MailType.APP_DEPLOYED)
+                    .build();
+        } else {
+            return MailAttributes.builder()
+                    .otherAttributes(otherAttributes)
+                    .mailType(MailType.APP_DEPLOYED_PORTAL_ACCESS)
+                    .build();
+        }
     }
 
     private String prepareDeployUrl(AppDeployment appDeployment) {

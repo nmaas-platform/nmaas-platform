@@ -1,0 +1,51 @@
+{
+  "mailType": "APP_DEPLOYED_PORTAL_ACCESS",
+  "globalInformation": {
+    "LOGO_ALT": "GÉANT logo",
+    "PORTAL_LOGO_ALT": "nmaas logo",
+    "SENDER_INFO": "&#9400; GÉANT Association Hoekenrode 3 1102 BR - Amsterdam – Zuidoost- The Netherlands"
+  },
+  "templates": [
+    {
+      "language": "en",
+      "subject": "nmaas: Application instance ready",
+      "template": {
+        "HEADER": "Dear ${username},",
+        "CONTENT": "The application instance ${appName} named ${appInstanceName} in the domain ${domainName} is now ready. Log in to the portal to gain access.</a></#if>",        "SENDER": "Best regards,<br />nmaas Team",
+        "NOREPLY": "This is an automatically generated message, please do not reply.",
+        "SENDER_POLICY": ""
+      }
+    },
+    {
+      "language": "fr",
+      "subject": "nmaas: Application instance ready",
+      "template": {
+        "HEADER": "Dear ${username},",
+        "CONTENT": "L'instance de l'application ${appName} nommée ${appInstanceName} dans le domaine ${domainName} est maintenant prête. Connectez-vous au portail pour y accéder.</a></#if>",        "SENDER": "Best regards,<br />nmaas Team",
+        "NOREPLY": "This is an automatically generated message, please do not reply.",
+        "SENDER_POLICY": ""
+      }
+    },
+    {
+      "language": "de",
+      "subject": "nmaas: Application instance ready",
+      "template": {
+        "HEADER": "Dear ${username},",
+        "CONTENT": "Die Anwendungsinstanz ${appName} mit dem Namen ${appInstanceName} in der Domäne ${domainName} ist jetzt bereit. Melden Sie sich im Portal an, um Zugriff zu erhalten.</a></#if>",        "SENDER": "Best regards,<br />nmaas Team",
+        "NOREPLY": "This is an automatically generated message, please do not reply.",
+        "SENDER_POLICY": ""
+      }
+    },
+    {
+      "language": "pl",
+      "subject": "nmaas: Instancja aplikacji jest już gotowa",
+      "template": {
+        "HEADER": "Drogi ${username},",
+        "CONTENT": "Instancja aplikacji ${appName} o nazwie ${appInstanceName} w domenie ${domainName} jest już gotowa. Zaloguj się do portalu aby uzyskać dostęp.</a></#if>",
+        "SENDER": "Z pozdrowieniami,<br />Zespół nmaas",
+        "NOREPLY": "Ta wiadomość została wygenerowana automatycznie.",
+        "SENDER_POLICY": ""
+      }
+    }
+  ]
+}
