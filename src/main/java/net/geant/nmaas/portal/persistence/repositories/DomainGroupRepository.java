@@ -30,11 +30,11 @@ public interface DomainGroupRepository extends JpaRepository<DomainGroup, Long> 
             SELECT dg
             FROM DomainGroup dg
             WHERE (:search IS NULL
-            OR LOWER(dg.name) LIKE LOWER(CONCAT('%', :search, '%'))
-            OR LOWER(dg.codename) LIKE LOWER(CONCAT('%', :search, '%')))
+            OR LOWER(dg.name) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%'))
+            OR LOWER(dg.codename) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%')))
             GROUP BY dg.id, dg.name, dg.codename
             """)
-    List<DomainGroup> findAllWithSearch(String search);
+    List<DomainGroup> findAllWithSearch(@Param("search") String search);
 
     @Query("""
             SELECT dg
@@ -42,11 +42,11 @@ public interface DomainGroupRepository extends JpaRepository<DomainGroup, Long> 
             JOIN dg.managers m
             WHERE m = :manager
             AND (:search IS NULL
-            OR LOWER(dg.name) LIKE LOWER(CONCAT('%', :search, '%'))
-            OR LOWER(dg.codename) LIKE LOWER(CONCAT('%', :search, '%')))
+            OR LOWER(dg.name) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%'))
+            OR LOWER(dg.codename) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%')))
             GROUP BY dg.id, dg.name, dg.codename
             """)
-    List<DomainGroup> findAllByManagersWithSearch(User manager, String search);
+    List<DomainGroup> findAllByManagersWithSearch(User manager, @Param("search") String search);
 
     @Query("""
             SELECT new net.geant.nmaas.api.dto.domains.DomainGroupBaseDto(
@@ -57,11 +57,11 @@ public interface DomainGroupRepository extends JpaRepository<DomainGroup, Long> 
             FROM DomainGroup dg
             LEFT JOIN dg.domains d
             WHERE (:search IS NULL
-            OR LOWER(dg.name) LIKE LOWER(CONCAT('%', :search, '%'))
-            OR LOWER(dg.codename) LIKE LOWER(CONCAT('%', :search, '%')))
+            OR LOWER(dg.name) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%'))
+            OR LOWER(dg.codename) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%')))
             GROUP BY dg.id, dg.name, dg.codename
             """)
-    Page<DomainGroupBaseDto> getAllBaseDtoWithSearch(String search, Pageable pageable);
+    Page<DomainGroupBaseDto> getAllBaseDtoWithSearch(@Param("search") String search, Pageable pageable);
 
     @Query("""
             SELECT new net.geant.nmaas.api.dto.domains.DomainGroupBaseDto(
@@ -74,8 +74,8 @@ public interface DomainGroupRepository extends JpaRepository<DomainGroup, Long> 
             LEFT JOIN dg.domains d
             WHERE m = :manager
             AND (:search IS NULL
-            OR LOWER(dg.name) LIKE LOWER(CONCAT('%', :search, '%'))
-            OR LOWER(dg.codename) LIKE LOWER(CONCAT('%', :search, '%')))
+            OR LOWER(dg.name) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%'))
+            OR LOWER(dg.codename) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%')))
             GROUP BY dg.id, dg.name, dg.codename
             """)
     Page<DomainGroupBaseDto> getAllBaseDtoByManagerWithSearch(User manager, @Param("search") String search, Pageable pageable);
