@@ -109,7 +109,7 @@ public class GroupController extends BaseController {
     public Page<DomainGroupBaseDto> getPageDomainGroups(
             Principal principal,
             Pageable pageable,
-            @RequestParam("searchValue") String searchValue
+            @RequestParam(value = "searchValue", required = false) String searchValue
     ) {
         final User user = userService.findByUsername(principal.getName())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
