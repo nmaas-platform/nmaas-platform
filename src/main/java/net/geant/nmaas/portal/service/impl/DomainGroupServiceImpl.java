@@ -71,10 +71,26 @@ public class DomainGroupServiceImpl implements DomainGroupService {
     }
 
     @Override
+    public DomainGroupDto addDomainsToGroup(List<Domain> domains, Long domainGroupId) {
+        DomainGroup domainGroup = domainGroupRepository.findById(domainGroupId).orElseThrow();
+        domains.forEach(domain -> {
+            logDomainAddSummary(domain, domainGroup.getCodename());
+            if (!domainGroup.getDomains().contains(domain)) {
+                domainGroup.addDomain(domain);
+            }
+        });
+        return modelMapper.map(domainGroupRepository.save(domainGroup), DomainGroupDto.class);
+    }
+
+    private static void logDomainAddSummary(Domain domain, String domainGroup) {
+        log.debug("Adding domain {}/{} to group {}", domain.getName(), domain.getCodename(), domainGroup);
+    }
+
+    @Override
     public DomainGroupDto addDomainsToGroup(List<Domain> domains, String groupCodeName) {
         DomainGroup domainGroup = domainGroupRepository.findByCodename(groupCodeName).orElseThrow();
         domains.forEach(domain -> {
-            log.debug("Adding domain {}/{} to group {}", domain.getName(), domain.getCodename(), groupCodeName);
+            logDomainAddSummary(domain, groupCodeName);
             if (!domainGroup.getDomains().contains(domain)) {
                 domainGroup.addDomain(domain);
             }
