@@ -119,9 +119,9 @@ class GroupControllerTest {
         Domain d2 = new Domain(2L, "d2", "d2", true);
         DomainGroupDto response = new DomainGroupDto();
         when(domainService.getDomains()).thenReturn(List.of(d1, d2));
-        when(domainGroupService.addDomainsToGroup(List.of(d2), "g-code")).thenReturn(response);
+        when(domainGroupService.addDomainsToGroup(List.of(d2), 10L)).thenReturn(response);
 
-        DomainGroupDto result = controller.addDomainsToGroup("g-code", List.of(2L));
+        DomainGroupDto result = controller.addDomainsToGroup(10L, List.of(2L));
 
         assertEquals(response, result);
     }

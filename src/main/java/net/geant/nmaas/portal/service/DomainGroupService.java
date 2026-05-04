@@ -16,6 +16,8 @@ public interface DomainGroupService {
 
     DomainGroupDto createDomainGroup(DomainGroupDto domainGroup);
 
+    DomainGroupDto addDomainsToGroup(List<Domain> domains, Long domainGroupId);
+
     DomainGroupDto addDomainsToGroup(List<Domain> domains, String groupCodeName);
 
     DomainGroupDto deleteDomainFromGroup(Domain domain, Long domainGroupId);

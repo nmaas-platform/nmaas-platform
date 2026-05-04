@@ -132,19 +132,19 @@ public class GroupController extends BaseController {
         }
     }
 
-    @PostMapping("/{domainGroupCodeName}")
+    @PutMapping("/{domainGroupId}/domains")
     @Transactional
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
-    public DomainGroupDto addDomainsToGroup(@PathVariable String domainGroupCodeName,
+    public DomainGroupDto addDomainsToGroup(@PathVariable Long domainGroupId,
                                             @RequestBody List<Long> domainIds) {
         return domainGroupService.addDomainsToGroup(
                 domainService.getDomains().stream()
                         .filter(d -> domainIds.contains(d.getId()))
                         .collect(Collectors.toList()),
-                domainGroupCodeName);
+                domainGroupId);
     }
 
-    @PatchMapping("/{domainGroupId}")
+    @DeleteMapping("/{domainGroupId}/domains")
     @Transactional
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
     public DomainGroupDto deleteDomainFromGroup(@PathVariable Long domainGroupId,
