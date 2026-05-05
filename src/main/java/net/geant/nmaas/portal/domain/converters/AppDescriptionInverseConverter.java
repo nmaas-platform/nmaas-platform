@@ -1,13 +1,13 @@
 package net.geant.nmaas.portal.domain.converters;
 
-import net.geant.nmaas.api.dto.applications.AppDescriptionView;
+import net.geant.nmaas.api.dto.applications.AppDescriptionDto;
 import net.geant.nmaas.portal.persistence.entity.AppDescription;
 import org.modelmapper.AbstractConverter;
 
-public class AppDescriptionInverseConverter extends AbstractConverter<AppDescriptionView, AppDescription> {
+public class AppDescriptionInverseConverter extends AbstractConverter<AppDescriptionDto, AppDescription> {
 
     @Override
-    protected AppDescription convert(AppDescriptionView source) {
+    protected AppDescription convert(AppDescriptionDto source) {
         return new AppDescription(null, source.language(), source.briefDescription(), source.fullDescription());
     }
 

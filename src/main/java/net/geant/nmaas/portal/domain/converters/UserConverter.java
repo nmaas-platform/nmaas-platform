@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.domain.converters;
 
 import net.geant.nmaas.api.dto.users.RoleDto;
-import net.geant.nmaas.api.dto.users.SSHKeyView;
+import net.geant.nmaas.api.dto.users.SSHKeyDto;
 import net.geant.nmaas.api.dto.users.UserDto;
 import net.geant.nmaas.api.dto.users.UserRoleDto;
 import net.geant.nmaas.portal.persistence.entity.User;
@@ -36,9 +36,9 @@ public class UserConverter extends AbstractConverter<User, UserDto> {
                 .collect(Collectors.toSet());
     }
 
-    private Set<SSHKeyView> convertSshKeys(User source) {
+    private Set<SSHKeyDto> convertSshKeys(User source) {
         return source.getSshKeys().stream()
-                .map(key -> new SSHKeyView(key.getId(), key.getName(), key.getFingerprint()))
+                .map(key -> new SSHKeyDto(key.getId(), key.getName(), key.getFingerprint()))
                 .collect(Collectors.toSet());
     }
 

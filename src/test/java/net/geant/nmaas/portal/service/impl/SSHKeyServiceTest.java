@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.service.impl;
 
+import net.geant.nmaas.api.dto.users.SSHKeyDto;
 import net.geant.nmaas.api.dto.users.SSHKeyRequest;
-import net.geant.nmaas.api.dto.users.SSHKeyView;
 import net.geant.nmaas.portal.persistence.entity.SSHKeyEntity;
 import net.geant.nmaas.portal.persistence.entity.User;
 import net.geant.nmaas.portal.persistence.repositories.SSHKeyRepository;
@@ -47,7 +47,7 @@ class SSHKeyServiceTest {
 
     @Test
     void ShouldReturnAllKeysForUser() {
-        List<SSHKeyView> result = this.sut.findAllByUser(this.owner);
+        List<SSHKeyDto> result = this.sut.findAllByUser(this.owner);
         assertEquals(1, result.size());
         assertEquals("name", result.getFirst().name());
     }
@@ -86,7 +86,7 @@ class SSHKeyServiceTest {
         res.setId(123L);
         when(repository.save(any(SSHKeyEntity.class))).thenReturn(res);
 
-        SSHKeyView result = sut.create(request, this.owner);
+        SSHKeyDto result = sut.create(request, this.owner);
 
         verify(this.repository, times(1)).save(any(SSHKeyEntity.class));
         assertEquals(result.name(), res.getName());

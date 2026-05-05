@@ -21,7 +21,7 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
      * @param deploymentName        name of the deployment provided by the user
      * @param externalServiceDomain base domain name for external services
      * @param ingressPerDomain      indicates which external service domain should be used
-     * @return URL under which deployed service is available
+     * @return URL under which the deployed service is available
      */
     @Override
     public String generateServiceExternalURL(String domain, String deploymentName, String externalServiceDomain, boolean ingressPerDomain) {
@@ -43,7 +43,7 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
     }
 
     /**
-     * Creates new ingress resource if one does not exist or updates the existing one by adding an ingress rule for newly
+     * Creates a new ingress resource if one does not exist or updates the existing one by adding an ingress rule for a newly
      * deployed service.
      *
      * @param deploymentId       unique identifier of service deployment
@@ -69,7 +69,7 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
     }
 
     /**
-     * Removes ingress resource for given client.
+     * Removes ingress resource for a given client.
      *
      * @param domain name of the domain for this deployment
      */

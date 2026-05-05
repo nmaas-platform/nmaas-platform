@@ -4,8 +4,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.api.dto.users.SSHKeyDto;
 import net.geant.nmaas.api.dto.users.SSHKeyRequest;
-import net.geant.nmaas.api.dto.users.SSHKeyView;
 import net.geant.nmaas.portal.persistence.entity.User;
 import net.geant.nmaas.portal.service.SSHKeyService;
 import net.geant.nmaas.portal.service.UserService;
@@ -34,7 +34,7 @@ public class SSHKeysController {
     private final UserService userService;
 
     @GetMapping("/user/keys")
-    public List<SSHKeyView> getAllByUser(Principal principal) {
+    public List<SSHKeyDto> getAllByUser(Principal principal) {
         User owner = this.getUser(principal);
         return keysService.findAllByUser(owner);
     }
@@ -53,7 +53,7 @@ public class SSHKeysController {
 
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @GetMapping("/user/keys/view/{id}")
-    public List<SSHKeyView> getAllByUserId(Principal principal, @PathVariable Long id) {
+    public List<SSHKeyDto> getAllByUserId(Principal principal, @PathVariable Long id) {
         User requester = this.getUser(principal);
         if (!isAdmin(requester)) {
             throw new IllegalArgumentException("You need admin privileges to view user keys.");

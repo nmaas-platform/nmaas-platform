@@ -3,7 +3,7 @@ package net.geant.nmaas.portal.service.impl;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.api.dto.applications.AppDescriptionView;
+import net.geant.nmaas.api.dto.applications.AppDescriptionDto;
 import net.geant.nmaas.api.dto.applications.AppTagDto;
 import net.geant.nmaas.api.dto.applications.ApplicationBaseViewS;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
@@ -146,7 +146,7 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
                 .map(app -> ApplicationBaseViewS.builder().
                         id(app.getId())
                         .name(app.getName())
-                        .descriptions(mapList(modelMapper, app.getDescriptions(), AppDescriptionView.class))
+                        .descriptions(mapList(modelMapper, app.getDescriptions(), AppDescriptionDto.class))
                         .tags(mapSet(modelMapper, app.getTags(), AppTagDto.class))
                         .build())
                 .collect(Collectors.toList());

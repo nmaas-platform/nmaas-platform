@@ -2,9 +2,9 @@ package net.geant.nmaas.portal.api.apps;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.geant.nmaas.api.dto.applications.AppDescriptionView;
-import net.geant.nmaas.api.dto.applications.ApplicationBaseView;
+import net.geant.nmaas.api.dto.applications.AppDescriptionDto;
 import net.geant.nmaas.api.dto.applications.AppTagDto;
+import net.geant.nmaas.api.dto.applications.ApplicationBaseView;
 import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.HelmChartRepositoryEmbeddable;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesChart;
@@ -153,7 +153,7 @@ public class TagControllerIntTest extends BaseControllerTestSetup {
                 .owner("admin")
                 .descriptions(
                         Collections.singletonList(
-                                new AppDescriptionView("en", "description", "full description")
+                                new AppDescriptionDto("en", "description", "full description")
                         )
                 )
                 .tags(Set.of(new AppTagDto(null, "tag1"), new AppTagDto(null, "tag2")))
