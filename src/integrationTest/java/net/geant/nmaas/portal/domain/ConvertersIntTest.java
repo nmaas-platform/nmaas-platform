@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.domain;
 
-import net.geant.nmaas.api.dto.applications.AppConfigurationSpecView;
+import net.geant.nmaas.api.dto.applications.AppConfigurationSpecDto;
 import net.geant.nmaas.api.dto.applications.AppDeploymentSpecView;
 import net.geant.nmaas.api.dto.applications.AppTagDto;
 import net.geant.nmaas.api.dto.applications.ApplicationBaseView;
@@ -183,7 +183,7 @@ public class ConvertersIntTest {
         app.setName("testApp");
         app.setVersion("0.0.1");
         app.setConfigWizardTemplate(new ConfigWizardTemplateView(2L, "template"));
-        app.setAppConfigurationSpec(new AppConfigurationSpecView(5L, null, false, false, false));
+        app.setAppConfigurationSpec(new AppConfigurationSpecDto(5L, null, false, false, false));
         app.setAppDeploymentSpec(new AppDeploymentSpecView());
         app.getAppDeploymentSpec().setExposesWebUI(true);
         app.setState(ApplicationStateDto.ACTIVE);

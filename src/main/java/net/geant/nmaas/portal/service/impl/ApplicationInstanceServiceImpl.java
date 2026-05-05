@@ -1,12 +1,12 @@
 package net.geant.nmaas.portal.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.api.dto.applications.AppConfigurationDto;
 import net.geant.nmaas.api.dto.applications.AppInstanceState;
 import net.geant.nmaas.api.dto.applications.AppInstanceView;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.orchestration.Identifier;
-import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.orchestration.exceptions.InvalidApplicationIdException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.portal.api.apps.AppInstanceController;
@@ -116,7 +116,7 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
     }
 
     @Override
-    public boolean validateAgainstAppConfiguration(AppInstance appInstance, AppConfigurationView appConfigurationView) {
+    public boolean validateAgainstAppConfiguration(AppInstance appInstance, AppConfigurationDto appConfigurationView) {
         Domain domain = appInstance.getDomain();
         Application app = appInstance.getApplication();
 

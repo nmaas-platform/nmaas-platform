@@ -1,10 +1,10 @@
 package net.geant.nmaas.orchestration;
 
+import net.geant.nmaas.api.dto.applications.AppConfigurationDto;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
-import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
@@ -82,7 +82,7 @@ class DefaultAppLifecycleManagerTest {
     void shouldNotTriggerAppInstanceConfiguration() {
         when(repositoryManager.load(any())).thenReturn(new AppDeployment());
         when(serviceRepositoryManager.loadService(any())).thenReturn(new KubernetesNmServiceInfo());
-        AppConfigurationView configurationView = mock(AppConfigurationView.class);
+        AppConfigurationDto configurationView = mock(AppConfigurationDto.class);
         when(configurationView.getStorageSpace()).thenReturn(null);
         when(configurationView.getJsonInput()).thenReturn(jsonMapper.readTree(""));
         appLifecycleManager.applyConfiguration(new Identifier(), configurationView, "TEST");
@@ -96,7 +96,7 @@ class DefaultAppLifecycleManagerTest {
     void shouldNotTriggerAppInstanceConfigurationButPopulateAdditionalParameters() {
         when(repositoryManager.load(any())).thenReturn(new AppDeployment());
         when(serviceRepositoryManager.loadService(any())).thenReturn(new KubernetesNmServiceInfo());
-        AppConfigurationView configurationView = mock(AppConfigurationView.class);
+        AppConfigurationDto configurationView = mock(AppConfigurationDto.class);
         when(configurationView.getStorageSpace()).thenReturn(10);
         when(configurationView.getAdditionalParameters()).thenReturn(jsonMapper.readTree("{\"keyadd1\": \"valadd1\"}"));
         when(configurationView.getMandatoryParameters()).thenReturn(jsonMapper.readTree("{\"keyman1\": \"valman1\", \"keyman2\": \"valman2\"}"));
@@ -114,7 +114,7 @@ class DefaultAppLifecycleManagerTest {
     void shouldTriggerAppInstanceConfigurationInCorrectState() {
         when(repositoryManager.load(any())).thenReturn(AppDeployment.builder().state(AppDeploymentState.MANAGEMENT_VPN_CONFIGURED).build());
         when(serviceRepositoryManager.loadService(any())).thenReturn(new KubernetesNmServiceInfo());
-        AppConfigurationView configurationView = mock(AppConfigurationView.class);
+        AppConfigurationDto configurationView = mock(AppConfigurationDto.class);
         when(configurationView.getJsonInput()).thenReturn(jsonMapper.readTree(""));
         appLifecycleManager.applyConfiguration(new Identifier(), configurationView, "TEST");
         verify(eventPublisher, times(1)).publishEvent(any(AppApplyConfigurationActionEvent.class));
@@ -123,7 +123,7 @@ class DefaultAppLifecycleManagerTest {
     @Test
     void shouldNotTriggerAppInstanceConfigurationUpdate() {
         when(repositoryManager.load(any())).thenReturn(AppDeployment.builder().configuration(new AppConfiguration()).build());
-        AppConfigurationView configurationView = mock(AppConfigurationView.class);
+        AppConfigurationDto configurationView = mock(AppConfigurationDto.class);
         when(configurationView.getJsonInput()).thenReturn(null);
         appLifecycleManager.updateConfiguration(new Identifier(), configurationView);
         verifyNoMoreInteractions(eventPublisher);
@@ -140,7 +140,7 @@ class DefaultAppLifecycleManagerTest {
                         .configuration(new AppConfiguration())
                         .build()
         );
-        AppConfigurationView configurationView = mock(AppConfigurationView.class);
+        AppConfigurationDto configurationView = mock(AppConfigurationDto.class);
         when(configurationView.getAccessCredentials()).thenReturn(jsonMapper.readTree("{\"accessUsername\":\"username\", \"accessPassword\":\"password\"}"));
         appLifecycleManager.updateConfiguration(deploymentId, configurationView);
         verify(eventPublisher, times(1))

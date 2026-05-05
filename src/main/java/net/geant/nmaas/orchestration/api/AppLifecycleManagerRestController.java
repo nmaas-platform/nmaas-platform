@@ -3,9 +3,9 @@ package net.geant.nmaas.orchestration.api;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.api.dto.applications.AppConfigurationDto;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.orchestration.Identifier;
-import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.portal.persistence.entity.Application;
@@ -73,7 +73,7 @@ public class AppLifecycleManagerRestController {
     @ResponseStatus(code = HttpStatus.OK)
     public void applyConfiguration(
             @PathVariable("deploymentId") String deploymentId,
-            @RequestBody AppConfigurationView configuration,
+            @RequestBody AppConfigurationDto configuration,
             @NotNull Principal principal) {
         lifecycleManager.applyConfiguration(
                 Identifier.newInstance(deploymentId),
@@ -93,7 +93,7 @@ public class AppLifecycleManagerRestController {
     @PostMapping(value = "/{deploymentId}/update")
     @ResponseStatus(code = HttpStatus.OK)
     public void updateConfiguration(@PathVariable("deploymentId") String deploymentId,
-                                    @RequestBody AppConfigurationView configuration) {
+                                    @RequestBody AppConfigurationDto configuration) {
         lifecycleManager.updateConfiguration(Identifier.newInstance(deploymentId), configuration);
     }
 
@@ -101,7 +101,7 @@ public class AppLifecycleManagerRestController {
      * Requests application instance removal.
      *
      * @param deploymentId unique identifier of the application deployment
-     * @throws InvalidDeploymentIdException if deployment with provided identifier doesn't exist in the system
+     * @throws InvalidDeploymentIdException if deployment with the provided identifier doesn't exist in the system
      */
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @DeleteMapping(value = "/{deploymentId}")

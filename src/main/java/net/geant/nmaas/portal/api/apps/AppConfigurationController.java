@@ -3,8 +3,8 @@ package net.geant.nmaas.portal.api.apps;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.api.dto.applications.AppConfigurationDto;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
-import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistence.entity.AppInstance;
@@ -39,7 +39,7 @@ public class AppConfigurationController {
     @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
     @Transactional
     public void applyConfiguration(@PathVariable(value = "appInstanceId") Long appInstanceId,
-                                   @RequestBody AppConfigurationView configuration,
+                                   @RequestBody AppConfigurationDto configuration,
                                    @NotNull Principal principal) {
         AppInstance appInstance = instances.find(appInstanceId).orElseThrow(() -> new MissingElementException(INSTANCE_NOT_FOUND_MESSAGE));
 
@@ -80,7 +80,7 @@ public class AppConfigurationController {
     @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
     @Transactional
     public void updateConfiguration(@PathVariable(value = "appInstanceId") Long appInstanceId,
-                                    @RequestBody AppConfigurationView configuration,
+                                    @RequestBody AppConfigurationDto configuration,
                                     @NotNull Principal principal) {
         AppInstance appInstance = instances.find(appInstanceId).orElseThrow(() -> new MissingElementException(INSTANCE_NOT_FOUND_MESSAGE));
 

@@ -1,6 +1,6 @@
 package net.geant.nmaas.orchestration;
 
-import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
+import net.geant.nmaas.api.dto.applications.AppConfigurationDto;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
@@ -29,7 +29,7 @@ public interface AppLifecycleManager {
     Identifier initApplicationDeployment(AppDeployment appDeployment);
 
     /**
-     * Triggers the nmaas application redeployment process which may take some time.This process is executed asynchronously
+     * Triggers the nmaas application redeployment process which may take some time. This process is executed asynchronously
      * and {@link AppDeploymentState} for this deployment is updated once particular deployment phases
      * are completed. The current {@link AppDeploymentState} may be retrieved from {@link AppDeploymentMonitor}.
      * @param deploymentId unique identifier of the user application
@@ -39,10 +39,10 @@ public interface AppLifecycleManager {
     /**
      * Applies custom configuration for the nmaas application being deployed once provided by the user.
      *  @param deploymentId unique identifier of the deployed user application
-     * @param configuration configuration provided by user in application deployment wizard
+     * @param configuration configuration provided by the user in the application deployment wizard
      * @param initiator username of a user who triggered this action
      */
-    void applyConfiguration(Identifier deploymentId, AppConfigurationView configuration, String initiator);
+    void applyConfiguration(Identifier deploymentId, AppConfigurationDto configuration, String initiator);
 
     /**
      * Removes deployed application from the system.
@@ -67,7 +67,7 @@ public interface AppLifecycleManager {
      * @param deploymentId unique identifier of the deployed user application
      * @param configuration updated application configuration provided by the user
      */
-    void updateConfiguration(Identifier deploymentId, AppConfigurationView configuration);
+    void updateConfiguration(Identifier deploymentId, AppConfigurationDto configuration);
 
     /**
      * Restarts the already running application.

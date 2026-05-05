@@ -1,9 +1,9 @@
 package net.geant.nmaas.portal.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import net.geant.nmaas.api.dto.applications.AppConfigurationDto;
 import net.geant.nmaas.api.dto.applications.ApplicationStatePerDomainDto;
 import net.geant.nmaas.api.dto.domains.DomainDto;
-import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.portal.persistence.entity.Application;
 import net.geant.nmaas.portal.persistence.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistence.entity.ApplicationStatePerDomain;
@@ -108,7 +108,7 @@ public class ApplicationStatePerDomainServiceImpl implements ApplicationStatePer
 
     // in some cases the storage space may be set at the later stage (if not set by the user)
     @Override
-    public boolean validateAppConfigurationAgainstState(AppConfigurationView appConfig, ApplicationStatePerDomain appState) {
+    public boolean validateAppConfigurationAgainstState(AppConfigurationDto appConfig, ApplicationStatePerDomain appState) {
         return appConfig.getStorageSpace() == null || appConfig.getStorageSpace() <= appState.getPvStorageSizeLimit();
     }
 }

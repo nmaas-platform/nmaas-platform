@@ -2,11 +2,11 @@ package net.geant.nmaas.orchestration;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.api.dto.applications.AppConfigurationDto;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.configuration.exceptions.UserConfigHandlingException;
 import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState;
-import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
@@ -127,7 +127,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     @Override
     @Loggable(LogLevel.INFO)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void applyConfiguration(Identifier deploymentId, AppConfigurationView configuration, String initiator) {
+    public void applyConfiguration(Identifier deploymentId, AppConfigurationDto configuration, String initiator) {
         final AppDeployment appDeployment = deploymentRepositoryManager.load(deploymentId);
         verifyTermsAcceptanceIfRequired(configuration, initiator, appDeployment);
         Map<String, String> additionalParameters = preprocessParameters(configuration.getAdditionalParameters());
@@ -158,7 +158,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
         }
     }
 
-    private void verifyTermsAcceptanceIfRequired(AppConfigurationView configuration, String initiator, AppDeployment appDeployment) {
+    private void verifyTermsAcceptanceIfRequired(AppConfigurationDto configuration, String initiator, AppDeployment appDeployment) {
         if (appDeployment.isTermsAcceptanceRequired()) {
             if (configuration.getTermsAcceptance() == null || configuration.getTermsAcceptance().isNull()) {
                 log.error("Terms acceptance is required for this application, however terms are not present in user configuration data");
@@ -298,7 +298,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     @Override
     @Loggable(LogLevel.INFO)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void updateConfiguration(Identifier deploymentId, AppConfigurationView configuration) {
+    public void updateConfiguration(Identifier deploymentId, AppConfigurationDto configuration) {
         // only access credentials update is currently supported
         Map<String, String> accessCredentials = preprocessParameters(configuration.getAccessCredentials());
         if (!accessCredentials.isEmpty()) {

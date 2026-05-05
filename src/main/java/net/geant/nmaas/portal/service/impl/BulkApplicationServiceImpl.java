@@ -6,6 +6,7 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.api.dto.applications.AppConfigurationDto;
 import net.geant.nmaas.api.dto.users.UserViewMinimal;
 import net.geant.nmaas.nmservice.deployment.bulks.BulkDeploymentQueueEntry;
 import net.geant.nmaas.nmservice.deployment.bulks.BulkDeploymentQueueRepository;
@@ -14,7 +15,6 @@ import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.orchestration.AppLifecycleState;
 import net.geant.nmaas.orchestration.Identifier;
-import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
 import net.geant.nmaas.orchestration.events.app.AppAutoDeploymentReviewEvent;
@@ -157,7 +157,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                         .build();
 
                 // updating application instance information with custom configuration
-                AppConfigurationView appConfigurationView = new AppConfigurationView();
+                AppConfigurationDto appConfigurationView = new AppConfigurationDto();
                 if (Objects.nonNull(applicationSpec.getParameters())) {
                     String configJson = new ObjectMapper().writeValueAsString(
                             mapToDeploymentParameters(applicationSpec.getParameters())

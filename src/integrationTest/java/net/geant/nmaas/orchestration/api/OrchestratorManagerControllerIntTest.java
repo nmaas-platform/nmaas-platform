@@ -1,9 +1,9 @@
 package net.geant.nmaas.orchestration.api;
 
+import net.geant.nmaas.api.dto.applications.AppConfigurationDto;
 import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.orchestration.Identifier;
-import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
@@ -82,7 +82,7 @@ public class OrchestratorManagerControllerIntTest {
 
     @Test
     void shouldDeserializeAppConfigurationJson() {
-        AppConfigurationView result = jsonMapper.readValue(CONFIGURATION_JSON, AppConfigurationView.class);
+        AppConfigurationDto result = jsonMapper.readValue(CONFIGURATION_JSON, AppConfigurationDto.class);
         assertEquals("{\"id\":\"testvalue\"}", jsonMapper.writeValueAsString(result.getJsonInput()));
     }
 
@@ -113,7 +113,7 @@ public class OrchestratorManagerControllerIntTest {
                 .andExpect(status().isOk());
 
         ArgumentCaptor<Identifier> deploymentIdCaptor = ArgumentCaptor.forClass(Identifier.class);
-        ArgumentCaptor<AppConfigurationView> appConfigurationCaptor = ArgumentCaptor.forClass(AppConfigurationView.class);
+        ArgumentCaptor<AppConfigurationDto> appConfigurationCaptor = ArgumentCaptor.forClass(AppConfigurationDto.class);
 
         verify(lifecycleManager, times(1)).applyConfiguration(deploymentIdCaptor.capture(), appConfigurationCaptor.capture(), eq("user"));
         assertThat(deploymentIdCaptor.getValue(), equalTo(DEPLOYMENT_ID));
@@ -134,7 +134,7 @@ public class OrchestratorManagerControllerIntTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
         ArgumentCaptor<Identifier> deploymentIdCaptor = ArgumentCaptor.forClass(Identifier.class);
-        ArgumentCaptor<AppConfigurationView> appDeploymentCaptor = ArgumentCaptor.forClass(AppConfigurationView.class);
+        ArgumentCaptor<AppConfigurationDto> appDeploymentCaptor = ArgumentCaptor.forClass(AppConfigurationDto.class);
         verify(lifecycleManager, times(1)).updateConfiguration(deploymentIdCaptor.capture(), appDeploymentCaptor.capture());
         assertEquals(DEPLOYMENT_ID, deploymentIdCaptor.getValue());
         assertTrue(jsonMapper.writeValueAsString(appDeploymentCaptor.getValue().getJsonInput()).contains("newtestvalue"));

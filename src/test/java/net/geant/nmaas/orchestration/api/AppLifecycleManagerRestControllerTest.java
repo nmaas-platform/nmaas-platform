@@ -1,8 +1,8 @@
 package net.geant.nmaas.orchestration.api;
 
+import net.geant.nmaas.api.dto.applications.AppConfigurationDto;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.orchestration.Identifier;
-import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.portal.persistence.entity.Application;
@@ -71,7 +71,7 @@ class AppLifecycleManagerRestControllerTest {
 
     @Test
     void shouldApplyConfigurationForDeploymentAndPrincipal() {
-        AppConfigurationView configuration = AppConfigurationView.builder().build();
+        AppConfigurationDto configuration = AppConfigurationDto.builder().build();
         Principal principal = () -> "test-user";
 
         controller.applyConfiguration("dep-1", configuration, principal);
@@ -82,7 +82,7 @@ class AppLifecycleManagerRestControllerTest {
 
     @Test
     void shouldUpdateConfigurationForDeployment() {
-        AppConfigurationView configuration = AppConfigurationView.builder().build();
+        AppConfigurationDto configuration = AppConfigurationDto.builder().build();
 
         controller.updateConfiguration("dep-1", configuration);
 
@@ -102,4 +102,3 @@ class AppLifecycleManagerRestControllerTest {
         assertEquals("missing deployment", result);
     }
 }
-

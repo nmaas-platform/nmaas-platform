@@ -1,8 +1,8 @@
 package net.geant.nmaas.portal.service.impl;
 
+import net.geant.nmaas.api.dto.applications.AppConfigurationDto;
 import net.geant.nmaas.api.dto.applications.ApplicationStatePerDomainDto;
 import net.geant.nmaas.api.dto.domains.DomainDto;
-import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.portal.persistence.entity.Application;
 import net.geant.nmaas.portal.persistence.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistence.entity.ApplicationStatePerDomain;
@@ -164,10 +164,10 @@ class ApplicationStatePerDomainServiceImplTest {
 
     @Test
     void validateAppConfigurationAgainstStateShouldReturnTrueForNullStorageAndFalseAboveLimit() {
-        AppConfigurationView configNull = new AppConfigurationView();
-        AppConfigurationView configOk = new AppConfigurationView();
+        AppConfigurationDto configNull = new AppConfigurationDto();
+        AppConfigurationDto configOk = new AppConfigurationDto();
         configOk.setStorageSpace(10);
-        AppConfigurationView configTooBig = new AppConfigurationView();
+        AppConfigurationDto configTooBig = new AppConfigurationDto();
         configTooBig.setStorageSpace(30);
 
         ApplicationStatePerDomain state = new ApplicationStatePerDomain(new ApplicationBase(1L, "a"), true, 20);
