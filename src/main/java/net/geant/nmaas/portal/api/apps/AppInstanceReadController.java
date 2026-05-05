@@ -91,18 +91,31 @@ public class AppInstanceReadController extends AppBaseController {
     @GetMapping
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @Transactional
-    public List<AppInstanceBase> getAllInstances() {
-        return applicationInstanceService.findAll().stream()
+    public List<AppInstanceBase> getAllInstances(@RequestParam(required = false) String status) {
+        List<AppInstanceBase> result = applicationInstanceService.findAll().stream()
                 .map(this::mapAppInstanceBase)
                 .toList();
+        List<AppInstanceState> undeployedStates = List.of(AppInstanceState.REMOVED, AppInstanceState.DONE);
+        if (status == null || status.equals("deployed")) {
+            return result.stream()
+                    .filter(instance -> !undeployedStates.contains(instance.getState()))
+                    .toList();
+        } else if (status.equals("undeployed")) {
+            return result.stream()
+                    .filter(instance -> undeployedStates.contains(instance.getState()))
+                    .toList();
+        } else {
+            log.warn("Unknown status: {}", status);
+            return result;
+        }
     }
 
     @GetMapping(params = {"page"})
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @Transactional
     public Page<AppInstanceBase> getAllInstances(Pageable pageable) {
-        this.logPageable(pageable);
-        pageable = this.pageableValidator(pageable);
+        logPageable(pageable);
+        pageable = pageableValidator(pageable);
         return instanceBaseService.findAll(pageable);
     }
 
@@ -122,8 +135,8 @@ public class AppInstanceReadController extends AppBaseController {
                                                    @RequestParam(required = false) String status,
                                                    @RequestParam(required = false, defaultValue = "") String search,
                                                    Pageable pageable) {
-        this.logPageable(pageable);
-        pageable = this.pageableValidator(pageable);
+        logPageable(pageable);
+        pageable = pageableValidator(pageable);
         User user = userService.findByUsername(principal.getName()).orElseThrow(() ->
                 new MissingElementException(MISSING_USER_MESSAGE));
         if (status != null) {
@@ -141,7 +154,7 @@ public class AppInstanceReadController extends AppBaseController {
         List<AppInstanceBase> result;
         Domain domain = domainService.findDomain(domainId)
                 .orElseThrow(() -> new MissingElementException(String.format(DOMAIN_NOT_FOUND_MESSAGE, domainId)));
-        User user = this.userService.findByUsername(principal.getName())
+        User user = userService.findByUsername(principal.getName())
                 .orElseThrow(() -> new UsernameNotFoundException(MISSING_USER_MESSAGE));
 
         if (this.isSystemAdminAndIsDomainGlobal(user, domainId)) {
@@ -175,10 +188,10 @@ public class AppInstanceReadController extends AppBaseController {
                                                  Pageable pageable,
                                                  @RequestParam(required = false) String status,
                                                  @RequestParam(required = false, defaultValue = "") String search) {
-        this.logPageable(pageable);
+        logPageable(pageable);
         Domain domain = domainService.findDomain(domainId)
                 .orElseThrow(() -> new MissingElementException(String.format(DOMAIN_NOT_FOUND_MESSAGE, domainId)));
-        User user = this.userService.findByUsername(principal.getName())
+        User user = userService.findByUsername(principal.getName())
                 .orElseThrow(() -> new UsernameNotFoundException(MISSING_USER_MESSAGE));
 
         if (this.isSystemAdminAndIsDomainGlobal(user, domainId)) {
@@ -199,7 +212,7 @@ public class AppInstanceReadController extends AppBaseController {
     @Transactional
     public List<AppInstanceView> getRunningAppInstances(@PathVariable(value = "domainId") long domainId,
                                                         @NotNull Principal principal) {
-        Domain domain = this.domainService.findDomain(domainId).orElseThrow(() -> new InvalidDomainException("Domain not found"));
+        Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new InvalidDomainException("Domain not found"));
         return getAllRunningByDomain(domain);
     }
 
@@ -209,9 +222,9 @@ public class AppInstanceReadController extends AppBaseController {
     public Page<AppInstanceView> getRunningAppInstances(@PathVariable(value = "domainId") long domainId,
                                                         @NotNull Principal principal,
                                                         Pageable pageable) {
-        this.logPageable(pageable);
-        pageable = this.pageableValidator(pageable);
-        Domain domain = this.domainService.findDomain(domainId).orElseThrow(() -> new InvalidDomainException("Domain not found"));
+        logPageable(pageable);
+        pageable = pageableValidator(pageable);
+        Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new InvalidDomainException("Domain not found"));
         return getAllRunningByDomain(domain, pageable);
     }
 
@@ -233,7 +246,7 @@ public class AppInstanceReadController extends AppBaseController {
     public List<AppInstanceBase> getMyAllInstances(@PathVariable Long domainId,
                                                    @NotNull Principal principal,
                                                    @RequestParam(required = false) String status) {
-        User user = this.userService.findByUsername(principal.getName()).orElseThrow(() -> new UsernameNotFoundException(MISSING_USER_MESSAGE));
+        User user = userService.findByUsername(principal.getName()).orElseThrow(() -> new UsernameNotFoundException(MISSING_USER_MESSAGE));
 
         if (this.isSystemAdminAndIsDomainGlobal(user, domainId)) {
             if (status != null && status.equals("deployed")) {
@@ -280,9 +293,9 @@ public class AppInstanceReadController extends AppBaseController {
                                                    Pageable pageable,
                                                    @RequestParam(required = false) String status,
                                                    @RequestParam(required = false, defaultValue = "") String search) {
-        this.logPageable(pageable);
-        pageable = this.pageableValidator(pageable);
-        User user = this.userService.findByUsername(principal.getName()).orElseThrow(() -> new UsernameNotFoundException(MISSING_USER_MESSAGE));
+        logPageable(pageable);
+        pageable = pageableValidator(pageable);
+        User user = userService.findByUsername(principal.getName()).orElseThrow(() -> new UsernameNotFoundException(MISSING_USER_MESSAGE));
 
         if (this.isSystemAdminAndIsDomainGlobal(user, domainId)) {
             if (status != null) {
@@ -300,8 +313,7 @@ public class AppInstanceReadController extends AppBaseController {
     @GetMapping("/domain/{domainId}/user/{username}")
     @PreAuthorize("hasPermission(#domainId, 'domain', 'OWNER')")
     @Transactional
-    public List<AppInstanceBase> getUserAllInstances(@PathVariable Long domainId,
-                                                     @PathVariable String username) {
+    public List<AppInstanceBase> getUserAllInstances(@PathVariable Long domainId, @PathVariable String username) {
         return getUserDomainAppInstances(domainId, username);
     }
 
@@ -311,8 +323,8 @@ public class AppInstanceReadController extends AppBaseController {
     public Page<AppInstanceBase> getUserAllInstances(@PathVariable Long domainId,
                                                      @PathVariable String username,
                                                      Pageable pageable) {
-        this.logPageable(pageable);
-        pageable = this.pageableValidator(pageable);
+        logPageable(pageable);
+        pageable = pageableValidator(pageable);
         return getPageUserDomainAppInstances(domainId, username, pageable);
     }
 
@@ -349,7 +361,7 @@ public class AppInstanceReadController extends AppBaseController {
 
     @GetMapping("/statistics")
     public Map<String, Long> deploymentStatistics() {
-        return this.appDeploymentRepositoryManager.getDeploymentStatistics();
+        return appDeploymentRepositoryManager.getDeploymentStatistics();
     }
 
     @GetMapping("/{appInstanceId}/parameters")
@@ -360,7 +372,7 @@ public class AppInstanceReadController extends AppBaseController {
     }
 
     private List<AppInstanceView> getAllRunningByDomain(Domain domain) {
-        return this.applicationInstanceService.findAllByDomain(domain).stream()
+        return applicationInstanceService.findAllByDomain(domain).stream()
                 .filter(this::isInstanceRunning)
                 .map(this::mapAppInstance)
                 .toList();
@@ -416,7 +428,6 @@ public class AppInstanceReadController extends AppBaseController {
         if (appInstance == null) {
             throw new MissingElementException("App instance is null");
         }
-
         try {
             return prepareAppInstanceStatus(
                     appInstance.getId(),
@@ -453,7 +464,7 @@ public class AppInstanceReadController extends AppBaseController {
             return null;
         }
         AppInstanceViewExtended ai = modelMapper.map(appInstance, AppInstanceViewExtended.class);
-        ApplicationBase applicationBase = this.applicationBaseService.findByVersionId(appInstance.getApplication().getId());
+        ApplicationBase applicationBase = applicationBaseService.findByVersionId(appInstance.getApplication().getId());
         ai.getApplication().setApplicationBase(modelMapper.map(applicationBase, ApplicationBaseView.class));
         return (AppInstanceViewExtended) addAppInstanceProperties(ai, appInstance);
     }
@@ -530,20 +541,8 @@ public class AppInstanceReadController extends AppBaseController {
         return ai;
     }
 
-    private void logPageable(Pageable p) {
+    private static void logPageable(Pageable p) {
         log.trace("Page number: {}\tPage size:{}\tPage offset:{}\tSort:{}", p.getPageNumber(), p.getPageSize(), p.getOffset(), p.getSort());
-    }
-
-    private boolean isPageableValidForAppInstance(Pageable p) {
-        List<String> sortProperties = p.getSort().get().map(Sort.Order::getProperty).toList();
-        List<String> classProperties = Arrays.stream(AppInstance.class.getDeclaredFields()).map(Field::getName).toList();
-
-        Set<String> sortSet = new HashSet<>(sortProperties);
-        Set<String> classSet = new HashSet<>(classProperties);
-
-        sortSet.removeAll(classSet);
-
-        return sortSet.isEmpty();
     }
 
     private boolean isSystemAdminAndIsDomainGlobal(User user, Long domainId) {
@@ -558,10 +557,27 @@ public class AppInstanceReadController extends AppBaseController {
         return isSystemAdmin && isDomainGlobal;
     }
 
-    private Pageable pageableValidator(Pageable pageable) {
-        if (!this.isPageableValidForAppInstance(pageable)) {
+    private static Pageable pageableValidator(Pageable pageable) {
+        if (!isPageableValidForAppInstance(pageable)) {
             return null;
         }
         return pageable;
     }
+
+    private static boolean isPageableValidForAppInstance(Pageable p) {
+        List<String> sortProperties = p.getSort().get()
+                .map(Sort.Order::getProperty)
+                .toList();
+        List<String> classProperties = Arrays.stream(AppInstance.class.getDeclaredFields())
+                .map(Field::getName)
+                .toList();
+
+        Set<String> sortSet = new HashSet<>(sortProperties);
+        Set<String> classSet = new HashSet<>(classProperties);
+
+        sortSet.removeAll(classSet);
+
+        return sortSet.isEmpty();
+    }
+
 }

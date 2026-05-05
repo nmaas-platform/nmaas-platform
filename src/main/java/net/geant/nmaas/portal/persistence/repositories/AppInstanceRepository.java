@@ -79,9 +79,7 @@ public interface AppInstanceRepository extends JpaRepository<AppInstance, Long> 
 
     Page<AppInstance> findAllByOwner(User owner, Pageable pageable);
 
-    Page<AppInstance> findAllByOwnerAndDomain(User owner,
-                                              Domain domain,
-                                              Pageable pageable);
+    Page<AppInstance> findAllByOwnerAndDomain(User owner, Domain domain, Pageable pageable);
 
     @Query("""
                 SELECT a
@@ -108,13 +106,11 @@ public interface AppInstanceRepository extends JpaRepository<AppInstance, Long> 
                        )
                   )
             """)
-    Page<AppInstance> findAllNotDeletedByDeploy(@Param("search") String search,
-                                                Pageable pageable,
-                                                boolean deployed);
+    Page<AppInstance> findAllNotDeletedByDeploy(@Param("search") String search, Pageable pageable, boolean deployed);
 
     @Query("""
             SELECT a
-            FROM AppInstance a 
+            FROM AppInstance a
             WHERE a.domain = :domain
             AND (:search IS NULL OR LOWER(a.name) LIKE LOWER(CONCAT('%', :search, '%')))
             """)
@@ -255,9 +251,7 @@ public interface AppInstanceRepository extends JpaRepository<AppInstance, Long> 
             WHERE a.owner = :user
             AND (:search IS NULL OR LOWER(a.name) LIKE LOWER(CONCAT('%', :search, '%')))
             """)
-    Page<AppInstance> findAllByOwnerAndSearch(@Param("user") User user,
-                                              @Param("search") String search,
-                                              Pageable pageable);
+    Page<AppInstance> findAllByOwnerAndSearch(@Param("user") User user, @Param("search") String search, Pageable pageable);
 
     @Query("""
             SELECT a
