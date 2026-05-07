@@ -226,6 +226,22 @@ class NotificationManagerTest {
     }
 
     @Test
+    void shouldSendAppDeployedWithNoExternalAccessEmailToAdminAndOrdinaryWhenOwnerIsOrdinary() {
+        MailAttributes ma = new MailAttributes();
+        ma.setMailType(MailType.APP_DEPLOYED_PORTAL_ACCESS);
+        ma.setOtherAttributes(new HashMap<>() {{
+            put("text", "text");
+            put("username", "MyUser");
+            put("owner", "ordinary");
+            put("domainName", "domainName");
+        }});
+
+        notificationManager.prepareAndSendMail(ma);
+
+        verify(notificationService, times(2)).sendMail(any(String.class), eq("Default"), any(String.class));
+    }
+
+    @Test
     void shouldThrowExceptionWhenCannotFindTemplateWithMatchingLanguage() {
         MailAttributes ma = new MailAttributes();
         ma.setMailType(MailType.REGISTRATION);

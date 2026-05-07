@@ -128,15 +128,17 @@ public class AppDeploymentStateChangeManager {
             log.error("Error reported at {}", timestamp, ex);
         }
     }
-    private boolean isExternalAccess(AppDeployment appDeployment){
+
+    private boolean isExternalAccess(AppDeployment appDeployment) {
         return deploymentMonitor.userAccessDetails(appDeployment.getDeploymentId())
                 .getServiceAccessMethods().stream()
                 .anyMatch(m ->
                         !Arrays.asList(ServiceAccessMethodTypeDto.INTERNAL, ServiceAccessMethodTypeDto.LOCAL)
                                 .contains(m.getType()));
     }
+
     private MailAttributes getMailAttributes(AppDeployment appDeployment) {
-        Map<String, Object> otherAttributes  = new HashMap<>(Map.of(
+        Map<String, Object> otherAttributes = new HashMap<>(Map.of(
                 "domainName", deploymentRepositoryManager.loadDomainName(appDeployment.getDeploymentId()),
                 "owner", appDeployment.getOwner(),
                 "appInstanceName", appDeployment.getDeploymentName(),
