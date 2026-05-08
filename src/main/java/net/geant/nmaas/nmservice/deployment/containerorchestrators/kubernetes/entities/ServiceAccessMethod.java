@@ -7,6 +7,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.MapKeyEnumerated;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -57,6 +58,7 @@ public class ServiceAccessMethod {
     private boolean enabled;
 
     @ElementCollection
+    @MapKeyEnumerated(EnumType.STRING)
     @Fetch(FetchMode.SELECT)
     private Map<HelmChartIngressVariable, String> deployParameters;
 
