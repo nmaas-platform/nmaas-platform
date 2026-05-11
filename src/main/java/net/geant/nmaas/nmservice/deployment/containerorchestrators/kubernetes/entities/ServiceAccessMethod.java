@@ -27,7 +27,7 @@ import java.util.Map;
 import static net.geant.nmaas.orchestration.entities.AppAccessMethod.ConditionType.DEPLOYMENT_PARAMETER;
 
 /**
- * This class represents single access method to a nmaas service
+ * This class represents a single access method to a nmaas service
  */
 @Getter
 @Setter

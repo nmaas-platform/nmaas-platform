@@ -63,7 +63,7 @@
                                                 "label": "Email address for the initial admin user account",
                                                 "type": "email",
                                                 "input": true,
-                                                "key": "healthchecks#properties#superuserEmail",
+                                                "key": "healthchecks_dot_properties_dot_superuserEmail",
                                                 "tab": 0,
                                                 "inputFormat": "plain",
                                                 "validate": {
@@ -74,7 +74,7 @@
                                                 "label": "Password for the initial admin user account",
                                                 "type": "password",
                                                 "input": true,
-                                                "key": "healthchecks#properties#superuserPassword",
+                                                "key": "healthchecks_dot_properties_dot_superuserPassword",
                                                 "tab": 0,
                                                 "inputFormat": "plain",
                                                 "validate": {
@@ -87,7 +87,7 @@
                                                 "input": true,
                                                 "tableView": true,
                                                 "inputType": "radio",
-                                                "key": "healthchecks#properties#registrationOpen",
+                                                "key": "healthchecks_dot_properties_dot_registrationOpen",
                                                 "values": [
                                                     {
                                                         "value": "True",
@@ -111,7 +111,7 @@
                                                 "input": true,
                                                 "tableView": true,
                                                 "inputType": "radio",
-                                                "key": "accessmethods#public#healthchecks",
+                                                "key": "accessmethods_dot_public_dot_healthchecks",
                                                 "values": [
                                                     {
                                                         "value": "yes",
@@ -133,7 +133,7 @@
                                                 "label": "Allocated storage space",
                                                 "type": "textfield",
                                                 "input": true,
-                                                "key": "persistence#size",
+                                                "key": "persistence_dot_size",
                                                 "tab": 0,
                                                 "validate": {
                                                     "required": true

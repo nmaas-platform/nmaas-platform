@@ -37,7 +37,7 @@
     "application": {
         "id": null,
         "name": "PostgreSQL",
-        "version": "14.3.0",
+        "version": "17.6.0",
         "configWizardTemplate": {
             "template": {
                 "components": [
@@ -60,7 +60,7 @@
                                                 "label": "Root password",
                                                 "type": "password",
                                                 "input": true,
-                                                "key": "global#postgresql#auth#postgresPassword",
+                                                "key": "global_dot_postgresql_dot_auth_dot_postgresPassword",
                                                 "inputFormat": "plain",
                                                 "validate": {
                                                     "required": true
@@ -71,7 +71,7 @@
                                                 "label": "Database user",
                                                 "type": "textfield",
                                                 "input": true,
-                                                "key": "global#postgresql#auth#username",
+                                                "key": "global_dot_postgresql_dot_auth_dot_username",
                                                 "inputFormat": "plain",
                                                 "validate": {
                                                     "required": true
@@ -82,7 +82,7 @@
                                                 "label": "Database user password",
                                                 "type": "password",
                                                 "input": true,
-                                                "key": "global#postgresql#auth#password",
+                                                "key": "global_dot_postgresql_dot_auth_dot_password",
                                                 "inputFormat": "plain",
                                                 "validate": {
                                                     "required": true
@@ -93,7 +93,7 @@
                                                 "label": "Database name",
                                                 "type": "textfield",
                                                 "input": true,
-                                                "key": "global#postgresql#auth#database",
+                                                "key": "global_dot_postgresql_dot_auth_dot_database",
                                                 "inputFormat": "plain",
                                                 "validate": {
                                                     "required": true
@@ -128,7 +128,7 @@
             "kubernetesTemplate": {
                 "chart": {
                     "name": "helm-mirror/postgresql",
-                    "version": "11.5.0"
+                    "version": "16.7.26"
                 },
                 "helmChartRepository": {
                     "name": "helm-mirror",
