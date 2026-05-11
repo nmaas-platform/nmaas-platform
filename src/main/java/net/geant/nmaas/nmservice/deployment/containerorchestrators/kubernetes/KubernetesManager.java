@@ -256,8 +256,7 @@ public class KubernetesManager implements ContainerOrchestrator {
             Set<ServiceAccessMethod> accessMethods = retrieveAccessMethods(service);
             disableAccessMethodsBasedOnCondition(accessMethods, service.getAdditionalParameters());
             accessMethods = populateAccessMethodsWithUrl(accessMethods, serviceExternalUrl, servicePublicUrl);
-            log.debug("Updated list of access methods:");
-            accessMethods.forEach(am -> log.debug("{}:{}:{}", am.getType(), am.getName(), am.getUrl()));
+            logUpdatedAccessMethods(accessMethods);
             repositoryManager.updateKServiceAccessMethods(accessMethods);
             serviceLifecycleManager.deployService(deploymentId);
         } catch (InvalidDeploymentIdException | InvalidConfigurationException ex) {
@@ -265,6 +264,11 @@ public class KubernetesManager implements ContainerOrchestrator {
         } catch (KServiceManipulationException e) {
             throw new CouldNotDeployServiceException(e.getMessage());
         }
+    }
+
+    private static void logUpdatedAccessMethods(Set<ServiceAccessMethod> accessMethods) {
+        log.debug("Updated list of access methods:");
+        accessMethods.forEach(am -> log.debug("{}:{}:{}", am.getType(), am.getName(), am.getUrl()));
     }
 
     private Set<ServiceAccessMethod> retrieveAccessMethods(KubernetesNmServiceInfo service) {
@@ -320,18 +324,25 @@ public class KubernetesManager implements ContainerOrchestrator {
         Set<ServiceAccessMethod> accessMethods = new HashSet<>();
         inputAccessMethods.forEach(m -> {
             ServiceAccessMethod updated = copy(m);
+            String externalUrlSuffixString = getExternalUrlSuffixString(m);
             switch (m.getType()) {
-                case DEFAULT -> updated.setUrl(serviceExternalUrl);
-                case EXTERNAL -> updated.setUrl(updated.getName().toLowerCase() + "-" + serviceExternalUrl);
+                case DEFAULT -> updated.setUrl(serviceExternalUrl + externalUrlSuffixString);
+                case EXTERNAL ->
+                        updated.setUrl(updated.getName().toLowerCase() + "-" + serviceExternalUrl + externalUrlSuffixString);
                 case PUBLIC -> {
                     if (servicePublicUrl != null) {
-                        updated.setUrl(servicePublicUrl);
+                        updated.setUrl(servicePublicUrl + externalUrlSuffixString);
                     }
                 }
             }
             accessMethods.add(updated);
         });
         return accessMethods;
+    }
+
+    private static String getExternalUrlSuffixString(ServiceAccessMethod m) {
+        String externalUrlSuffix = m.getDeployParameters() != null ? m.getDeployParameters().get(HelmChartIngressVariable.EXTERNAL_SERVICE_SUFFIX) : null;
+        return externalUrlSuffix != null ? "/" + externalUrlSuffix : "";
     }
 
     @Override
