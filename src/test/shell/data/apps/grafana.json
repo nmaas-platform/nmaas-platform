@@ -38,7 +38,7 @@
     "application": {
         "id": null,
         "name": "Grafana",
-        "version": "11.2.0",
+        "version": "11.6.5",
         "configWizardTemplate": {
             "template": {
                 "components": [
@@ -208,7 +208,7 @@
             "kubernetesTemplate": {
                 "chart": {
                     "name": "nmaas-grafana",
-                    "version": "8.0.6"
+                    "version": "8.0.15"
                 }
             },
             "globalDeployParameters": {

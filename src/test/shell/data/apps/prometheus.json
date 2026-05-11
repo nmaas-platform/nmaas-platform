@@ -38,7 +38,7 @@
     "application": {
         "id": null,
         "name": "Prometheus",
-        "version": "2.54.1",
+        "version": "3.5.0",
         "configWizardTemplate": {
             "template": {
                 "components": [
@@ -256,7 +256,7 @@
                                                 "input": true,
                                                 "defaultValue": "18GB",
                                                 "inputFormat": "plain",
-                                                "key": "server#extraArgs#\"storage\\#tsdb\\#retention\\#size\"",
+                                                "key": "server_dot_extraArgs_dot_\"storage\\_dot_tsdb\\_dot_retention\\_dot_size\"",
                                                 "tab": 2
                                             },
                                             {
@@ -265,7 +265,7 @@
                                                 "input": true,
                                                 "defaultValue": "15d",
                                                 "inputFormat": "plain",
-                                                "key": "server#extraArgs#\"storage\\#tsdb\\#retention\\#time\"",
+                                                "key": "server_dot_extraArgs_dot_\"storage\\_dot_tsdb\\_dot_retention\\_dot_time\"",
                                                 "tab": 2
                                             }
                                         ]
@@ -367,7 +367,7 @@
             "kubernetesTemplate": {
                 "chart": {
                     "name": "nmaas-prometheus",
-                    "version": "3.0.11"
+                    "version": "4.0.8"
                 }
             },
             "storageVolumes": [
@@ -389,11 +389,10 @@
                     "name": "Prometheus",
                     "tag": "prometheus",
                     "deployParameters": {
-                        "INGRESS_ENABLED": "ingress.enabled",
                         "INGRESS_HOSTS": "ingress.hosts",
-                        "INGRESS_TLS_ENABLED": "ingress.tls.enabled",
-                        "INGRESS_CLASS": "ingress.class",
                         "INGRESS_LETSENCRYPT": "ingress.tls.acme",
+                        "INGRESS_CLASS": "ingress.class",
+                        "INGRESS_TLS_ENABLED": "ingress.tls.enabled",
                         "INGRESS_WILDCARD_OR_ISSUER": "ingress.tls.certOrIssuer"
                     }
                 },
