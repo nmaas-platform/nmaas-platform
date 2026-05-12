@@ -114,7 +114,7 @@ dependencies {
     implementation('io.micrometer:micrometer-registry-prometheus:1.16.5')
 
     // Kubernetes API client
-    implementation('io.fabric8:kubernetes-client:7.6.1')
+    implementation('io.fabric8:kubernetes-client:7.7.0')
 
     // GitLab API client
     implementation 'org.gitlab4j:gitlab4j-api:6.2.0'
