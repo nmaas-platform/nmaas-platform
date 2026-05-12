@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.domain.converters;
 
 import net.geant.nmaas.api.dto.applications.AppConfigurationSpecDto;
-import net.geant.nmaas.api.dto.applications.ConfigFileTemplateView;
+import net.geant.nmaas.api.dto.applications.ConfigFileTemplateDto;
 import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
@@ -17,7 +17,7 @@ public class AppConfigurationSpecConverter extends AbstractConverter<AppConfigur
         return new AppConfigurationSpecDto(
                 source.getId(),
                 Objects.nonNull(source.getTemplates()) ?
-                        source.getTemplates().stream().map(t -> modelMapper.map(t, ConfigFileTemplateView.class)).toList() : null,
+                        source.getTemplates().stream().map(t -> modelMapper.map(t, ConfigFileTemplateDto.class)).toList() : null,
                 source.isConfigFileRepositoryRequired(),
                 source.isConfigUpdateEnabled(),
                 source.isTermsAcceptanceRequired());

@@ -17,6 +17,7 @@ public class AppAccessMethodConverter extends AbstractConverter<AppAccessMethod,
                 source.getName(),
                 source.getTag(),
                 Objects.nonNull(source.getConditionType()) ? AppAccessMethodDto.ConditionType.valueOf(source.getConditionType().name()) : null,
+                source.getCondition(),
                 source.getDeployParameters()
         );
     }

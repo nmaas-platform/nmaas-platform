@@ -1,13 +1,13 @@
 package net.geant.nmaas.portal.domain;
 
 import net.geant.nmaas.api.dto.applications.AppConfigurationSpecDto;
-import net.geant.nmaas.api.dto.applications.AppDeploymentSpecView;
+import net.geant.nmaas.api.dto.applications.AppDeploymentSpecDto;
 import net.geant.nmaas.api.dto.applications.AppTagDto;
 import net.geant.nmaas.api.dto.applications.ApplicationBaseView;
 import net.geant.nmaas.api.dto.applications.ApplicationStateDto;
 import net.geant.nmaas.api.dto.applications.ApplicationSubscriptionBase;
 import net.geant.nmaas.api.dto.applications.ApplicationView;
-import net.geant.nmaas.api.dto.applications.ConfigWizardTemplateView;
+import net.geant.nmaas.api.dto.applications.ConfigWizardTemplateDto;
 import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.portal.persistence.entity.Application;
@@ -182,9 +182,9 @@ public class ConvertersIntTest {
         app.setId(1L);
         app.setName("testApp");
         app.setVersion("0.0.1");
-        app.setConfigWizardTemplate(new ConfigWizardTemplateView(2L, "template"));
+        app.setConfigWizardTemplate(new ConfigWizardTemplateDto(2L, "template"));
         app.setAppConfigurationSpec(new AppConfigurationSpecDto(5L, null, false, false, false));
-        app.setAppDeploymentSpec(new AppDeploymentSpecView());
+        app.setAppDeploymentSpec(new AppDeploymentSpecDto());
         app.getAppDeploymentSpec().setExposesWebUI(true);
         app.setState(ApplicationStateDto.ACTIVE);
         return app;

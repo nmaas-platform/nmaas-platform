@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.api.dto.Id;
 import net.geant.nmaas.api.dto.applications.AppAccessMethodDto;
 import net.geant.nmaas.api.dto.applications.AppConfigurationSpecDto;
-import net.geant.nmaas.api.dto.applications.AppDeploymentSpecView;
+import net.geant.nmaas.api.dto.applications.AppDeploymentSpecDto;
 import net.geant.nmaas.api.dto.applications.AppStorageVolumeDto;
 import net.geant.nmaas.api.dto.applications.ApplicationBaseView;
 import net.geant.nmaas.api.dto.applications.ApplicationBaseViewS;
@@ -12,9 +12,9 @@ import net.geant.nmaas.api.dto.applications.ApplicationDto;
 import net.geant.nmaas.api.dto.applications.ApplicationStateChangeRequest;
 import net.geant.nmaas.api.dto.applications.ApplicationStateDto;
 import net.geant.nmaas.api.dto.applications.ApplicationView;
-import net.geant.nmaas.api.dto.applications.ConfigFileTemplateView;
-import net.geant.nmaas.api.dto.applications.ConfigWizardTemplateView;
-import net.geant.nmaas.api.dto.applications.HelmChartRepositoryView;
+import net.geant.nmaas.api.dto.applications.ConfigFileTemplateDto;
+import net.geant.nmaas.api.dto.applications.ConfigWizardTemplateDto;
+import net.geant.nmaas.api.dto.applications.HelmChartRepositoryDto;
 import net.geant.nmaas.api.dto.applications.KubernetesChartDto;
 import net.geant.nmaas.api.dto.applications.KubernetesTemplateDto;
 import net.geant.nmaas.api.dto.applications.ServiceAccessMethodTypeDto;
@@ -187,7 +187,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
     @Test
     void shouldUpdateApplicationVersion() throws Exception {
         ApplicationView applicationView = modelMapper.map(this.testApp1, ApplicationView.class);
-        applicationView.setConfigWizardTemplate(new ConfigWizardTemplateView(null, "{}"));
+        applicationView.setConfigWizardTemplate(new ConfigWizardTemplateDto(null, "{}"));
 
         mvc.perform(patch("/api/apps/version")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
@@ -199,13 +199,13 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
                 .andExpect(status().isOk());
 
         // simulate bug from NMAAS-844
-        applicationView.getAppDeploymentSpec().getAccessMethods().getFirst().deployParameters().putIfAbsent("NEW.PARAM", "value");
+        applicationView.getAppDeploymentSpec().getAccessMethods().getFirst().getDeployParameters().putIfAbsent("NEW.PARAM", "value");
         applicationView.getAppDeploymentSpec().getStorageVolumes().getFirst().getDeployParameters().putIfAbsent("NEW.PARAM", "value");
 
         applicationView.getAppDeploymentSpec().getAccessMethods()
-                .add(new AppAccessMethodDto(null, ServiceAccessMethodTypeDto.DEFAULT, "name4", "tag4", null, null));
+                .add(new AppAccessMethodDto(null, ServiceAccessMethodTypeDto.DEFAULT, "name4", "tag4", null, null, null));
         applicationView.getAppDeploymentSpec().getAccessMethods()
-                .add(new AppAccessMethodDto(null, ServiceAccessMethodTypeDto.DEFAULT, "name5", "tag5", null, null));
+                .add(new AppAccessMethodDto(null, ServiceAccessMethodTypeDto.DEFAULT, "name5", "tag5", null, null, null));
         applicationView.getAppDeploymentSpec().getStorageVolumes()
                 .add(new AppStorageVolumeDto(null, ServiceStorageVolumeTypeDto.SHARED, 5, new HashMap<>()));
         applicationView.getAppDeploymentSpec().getStorageVolumes()
@@ -342,34 +342,34 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
 
     @Test
     void shouldAddNewVersion() {
-        AppDeploymentSpecView appDeploymentSpec = new AppDeploymentSpecView();
+        AppDeploymentSpecDto appDeploymentSpec = new AppDeploymentSpecDto();
         appDeploymentSpec.setKubernetesTemplate(
                 new KubernetesTemplateDto(
                         null,
                         new KubernetesChartDto(null, "name", "version"),
                         "archive",
                         null,
-                        new HelmChartRepositoryView("tooLongNameToMatchTheConstraint", "http://test")
+                        new HelmChartRepositoryDto("tooLongNameToMatchTheConstraint", "http://test")
                 )
         );
         appDeploymentSpec.setStorageVolumes(new ArrayList<>());
         appDeploymentSpec.getStorageVolumes().add(new AppStorageVolumeDto(null, ServiceStorageVolumeTypeDto.MAIN, 5, new HashMap<>()));
         appDeploymentSpec.setAccessMethods(new ArrayList<>());
         appDeploymentSpec.getAccessMethods().addAll(List.of(
-                new AppAccessMethodDto(null, ServiceAccessMethodTypeDto.DEFAULT, "name1", "tag1", null, null),
-                new AppAccessMethodDto(null, ServiceAccessMethodTypeDto.EXTERNAL, "name2", "tag2", null, null),
-                new AppAccessMethodDto(null, ServiceAccessMethodTypeDto.INTERNAL, "name3", "tag3", null, null)
+                new AppAccessMethodDto(null, ServiceAccessMethodTypeDto.DEFAULT, "name1", "tag1", null, null, null),
+                new AppAccessMethodDto(null, ServiceAccessMethodTypeDto.EXTERNAL, "name2", "tag2", null, null, null),
+                new AppAccessMethodDto(null, ServiceAccessMethodTypeDto.INTERNAL, "name3", "tag3", null, null, null)
         ));
 
         AppConfigurationSpecDto appConfigurationSpec = new AppConfigurationSpecDto(null, new ArrayList<>(), true, false, false);
-        appConfigurationSpec.templates().add(new ConfigFileTemplateView(null, null, "name", "dir", "content"));
+        appConfigurationSpec.templates().add(new ConfigFileTemplateDto(null, null, "name", "dir", "content"));
 
         ApplicationView view = ApplicationView.builder()
                 .name(APP_1_NAME)
                 .version("3.0.0")
                 .appConfigurationSpec(appConfigurationSpec)
                 .appDeploymentSpec(appDeploymentSpec)
-                .configWizardTemplate(new ConfigWizardTemplateView(null, "{}"))
+                .configWizardTemplate(new ConfigWizardTemplateDto(null, "{}"))
                 .configUpdateWizardTemplate(null)
                 .build();
 

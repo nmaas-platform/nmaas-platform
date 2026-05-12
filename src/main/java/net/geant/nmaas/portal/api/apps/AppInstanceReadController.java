@@ -9,7 +9,7 @@ import net.geant.nmaas.api.dto.applications.AppInstanceView;
 import net.geant.nmaas.api.dto.applications.AppInstanceViewExtended;
 import net.geant.nmaas.api.dto.applications.AppInstanceViewExtendedDto;
 import net.geant.nmaas.api.dto.applications.ApplicationBaseView;
-import net.geant.nmaas.api.dto.applications.ConfigWizardTemplateView;
+import net.geant.nmaas.api.dto.applications.ConfigWizardTemplateDto;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.AppLifecycleState;
@@ -521,7 +521,7 @@ public class AppInstanceReadController extends AppBaseController {
         }
 
         try {
-            ai.setConfigWizardTemplate(new ConfigWizardTemplateView(
+            ai.setConfigWizardTemplate(new ConfigWizardTemplateDto(
                     appInstance.getApplication().getConfigWizardTemplate().getId(),
                     appInstance.getApplication().getConfigWizardTemplate().getTemplate()));
         } catch (Exception e) {
@@ -529,7 +529,7 @@ public class AppInstanceReadController extends AppBaseController {
         }
 
         try {
-            ai.setConfigUpdateWizardTemplate(new ConfigWizardTemplateView(
+            ai.setConfigUpdateWizardTemplate(new ConfigWizardTemplateDto(
                     appInstance.getApplication().getConfigUpdateWizardTemplate().getId(),
                     appInstance.getApplication().getConfigUpdateWizardTemplate().getTemplate()));
         } catch (Exception e) {
