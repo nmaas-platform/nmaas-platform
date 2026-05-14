@@ -153,7 +153,12 @@ public class DomainController extends BaseController {
     @Transactional(readOnly = true)
     public List<DomainBaseDto> getMyDomains(@NotNull Principal principal, @RequestParam(required = false) String searchValue) {
         try {
-            User user = userService.findByUsername(principal.getName()).orElseThrow(() -> new ProcessingException("User not found"));
+            User user = userService.findByUsername(principal.getName())
+                    .orElseThrow(() -> new ProcessingException("User not found"));
+            if (user.getRoles().stream()
+                    .anyMatch(role -> List.of(Role.ROLE_SYSTEM_ADMIN, Role.ROLE_OPERATOR).contains(role.getRole()))) {
+                return domainService.getDomainsBase(searchValue);
+            }
             return domainService.getUserDomains(user.getId(), searchValue).stream()
                     .map(d -> modelMapper.map(d, DomainBaseDto.class))
                     .toList();

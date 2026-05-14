@@ -19,6 +19,8 @@ import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
@@ -121,6 +123,26 @@ class DomainControllerTest {
         assertEquals(base, result);
     }
 
+    @ParameterizedTest
+    @EnumSource(value = Role.class, names = {"ROLE_SYSTEM_ADMIN", "ROLE_OPERATOR"})
+    void shouldGetMyDomainsFromAllDomainsBaseForPrivilegedUsers(Role role) {
+        Principal principal = () -> "privileged";
+        User user = new User("privileged", true);
+        Domain global = new Domain(1L, "global", "global", true);
+        user.setRoles(List.of(new UserRole(user, global, role)));
+        List<DomainBaseDto> domains = List.of(mock(DomainBaseDto.class));
+
+        when(userService.findByUsername("privileged")).thenReturn(Optional.of(user));
+        when(domainService.getDomainsBase("search")).thenReturn(domains);
+
+        List<DomainBaseDto> result = controller.getMyDomains(principal, "search");
+
+        assertEquals(domains, result);
+        verify(domainService).getDomainsBase("search");
+        verify(domainService, times(0)).getUserDomains(any(), any());
+        verify(modelMapper, times(0)).map(any(), any());
+    }
+
     @Test
     void shouldGetMyDomainsAndWrapObjectNotFound() {
         Principal principal = () -> "user1";
@@ -135,6 +157,9 @@ class DomainControllerTest {
 
         List<DomainBaseDto> result = controller.getMyDomains(principal, "x");
         assertEquals(1, result.size());
+        assertEquals(base, result.getFirst());
+        verify(domainService).getUserDomains(99L, "x");
+        verify(domainService, times(0)).getDomainsBase("x");
 
         when(domainService.getUserDomains(99L, "y")).thenThrow(new ObjectNotFoundException("missing"));
         assertThrows(MissingElementException.class, () -> controller.getMyDomains(principal, "y"));
