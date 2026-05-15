@@ -324,25 +324,18 @@ public class KubernetesManager implements ContainerOrchestrator {
         Set<ServiceAccessMethod> accessMethods = new HashSet<>();
         inputAccessMethods.forEach(m -> {
             ServiceAccessMethod updated = copy(m);
-            String externalUrlSuffixString = getExternalUrlSuffixString(m);
             switch (m.getType()) {
-                case DEFAULT -> updated.setUrl(serviceExternalUrl + externalUrlSuffixString);
-                case EXTERNAL ->
-                        updated.setUrl(updated.getName().toLowerCase() + "-" + serviceExternalUrl + externalUrlSuffixString);
+                case DEFAULT -> updated.setUrl(serviceExternalUrl);
+                case EXTERNAL -> updated.setUrl(updated.getName().toLowerCase() + "-" + serviceExternalUrl);
                 case PUBLIC -> {
                     if (servicePublicUrl != null) {
-                        updated.setUrl(servicePublicUrl + externalUrlSuffixString);
+                        updated.setUrl(servicePublicUrl);
                     }
                 }
             }
             accessMethods.add(updated);
         });
         return accessMethods;
-    }
-
-    private static String getExternalUrlSuffixString(ServiceAccessMethod m) {
-        String externalUrlSuffix = m.getDeployParameters() != null ? m.getDeployParameters().get(HelmChartIngressVariable.EXTERNAL_SERVICE_SUFFIX) : null;
-        return externalUrlSuffix != null ? "/" + externalUrlSuffix : "";
     }
 
     @Override
@@ -481,11 +474,20 @@ public class KubernetesManager implements ContainerOrchestrator {
             Set<ServiceAccessMethodDto> serviceAccessMethodViewSet = new HashSet<>();
             repositoryManager.loadService(deploymentId).getAccessMethods().stream()
                     .filter(ServiceAccessMethod::isEnabled)
-                    .forEach(m -> serviceAccessMethodViewSet.add(m.toDto()));
+                    .map(ServiceAccessMethod::copy)
+                    .forEach(m -> {
+                        m.setUrl(m.getUrl() + getExternalUrlSuffixString(m));
+                        serviceAccessMethodViewSet.add(m.toDto());
+                    });
             return new AppUiAccessDetails(serviceAccessMethodViewSet);
         } catch (InvalidDeploymentIdException idie) {
             throw new ContainerOrchestratorInternalErrorException(serviceNotFoundMessage(idie.getMessage()));
         }
+    }
+
+    private static String getExternalUrlSuffixString(ServiceAccessMethod m) {
+        String externalUrlSuffix = m.getDeployParameters() != null ? m.getDeployParameters().get(HelmChartIngressVariable.EXTERNAL_SERVICE_SUFFIX) : null;
+        return externalUrlSuffix != null ? "/" + externalUrlSuffix : "";
     }
 
     @Override

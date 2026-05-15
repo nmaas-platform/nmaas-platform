@@ -400,50 +400,6 @@ class KubernetesManagerTest {
     }
 
     @Test
-    void shouldPopulateAccessMethodUrlsWithExternalServiceSuffix() {
-        KubernetesNmServiceInfo service = new KubernetesNmServiceInfo();
-        service.setDomain("domain");
-        service.setDeploymentName("DeploymentName");
-        service.setDescriptiveDeploymentId(Identifier.newInstance("deploymentId"));
-        service.setAdditionalParameters(Collections.emptyMap());
-
-        Map<HelmChartIngressVariable, String> defaultAccessDeploymentParameters = new HashMap<>();
-        defaultAccessDeploymentParameters.put(HelmChartIngressVariable.EXTERNAL_SERVICE_SUFFIX, "default-path");
-        Map<HelmChartIngressVariable, String> externalAccessDeploymentParameters = new HashMap<>();
-        externalAccessDeploymentParameters.put(HelmChartIngressVariable.EXTERNAL_SERVICE_SUFFIX, "external-path");
-        Map<HelmChartIngressVariable, String> publicAccessDeploymentParameters = new HashMap<>();
-        publicAccessDeploymentParameters.put(HelmChartIngressVariable.EXTERNAL_SERVICE_SUFFIX, "public-path");
-
-        service.setAccessMethods(Set.of(
-                new ServiceAccessMethod(ServiceAccessMethodType.DEFAULT, "Default", null, "Web", defaultAccessDeploymentParameters),
-                new ServiceAccessMethod(ServiceAccessMethodType.EXTERNAL, "web-service", null, "Web", externalAccessDeploymentParameters),
-                new ServiceAccessMethod(ServiceAccessMethodType.PUBLIC, "public-service", null, "Public", publicAccessDeploymentParameters)
-        ));
-        when(repositoryManager.loadService(DEPLOYMENT_ID)).thenReturn(service);
-        when(ingressResourceManager.generateServiceExternalURL("domain", "DeploymentName", null, false)).thenReturn("base.url");
-        when(ingressManager.getPublicServiceDomain()).thenReturn("public-base.url");
-
-        manager.deployNmService(DEPLOYMENT_ID);
-
-        ArgumentCaptor<Set<ServiceAccessMethod>> accessMethodsArg = ArgumentCaptor.forClass(HashSet.class);
-        verify(repositoryManager, times(1)).updateKServiceAccessMethods(accessMethodsArg.capture());
-        assertEquals(3, accessMethodsArg.getValue().size());
-        assertTrue(accessMethodsArg.getValue().stream().anyMatch(m ->
-                m.isOfType(ServiceAccessMethodType.DEFAULT)
-                        && m.getName().equals("Default")
-                        && m.getUrl().equals("base.url/default-path")));
-        assertTrue(accessMethodsArg.getValue().stream().anyMatch(m ->
-                m.isOfType(ServiceAccessMethodType.EXTERNAL)
-                        && m.getName().equals("web-service")
-                        && m.getUrl().equals("web-service-base.url/external-path")));
-        assertTrue(accessMethodsArg.getValue().stream().anyMatch(m ->
-                m.isOfType(ServiceAccessMethodType.PUBLIC)
-                        && m.getName().equals("public-service")
-                        && m.getUrl().equals("deploymentname-domain.public-base.url/public-path")));
-        verify(serviceLifecycleManager, times(1)).deployService(DEPLOYMENT_ID);
-    }
-
-    @Test
     void shouldTriggerServiceRestart() {
         manager.restartNmService(DEPLOYMENT_ID);
         verify(serviceOperationsManager, times(1)).restartService(DEPLOYMENT_ID);
@@ -551,6 +507,37 @@ class KubernetesManagerTest {
                         && m.getName().equals("ssh-service")
                         && m.getProtocol().equals("SSH")
                         && m.getUrl().equals("192.168.1.1")
+        ));
+    }
+
+    @Test
+    void shouldRetrieveServiceAccessDetailsWithExternalServiceSuffix() {
+        KubernetesNmServiceInfo service = new KubernetesNmServiceInfo();
+        Set<ServiceAccessMethod> accessMethods = new HashSet<>();
+        Map<HelmChartIngressVariable, String> webAccessDeploymentParameters = new HashMap<>();
+        webAccessDeploymentParameters.put(HelmChartIngressVariable.EXTERNAL_SERVICE_SUFFIX, "custom-path");
+        Map<HelmChartIngressVariable, String> disabledAccessDeploymentParameters = new HashMap<>();
+        disabledAccessDeploymentParameters.put(HelmChartIngressVariable.EXTERNAL_SERVICE_SUFFIX, "disabled-path");
+        accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.EXTERNAL, "web-service", "app1.nmaas.eu", "Web", webAccessDeploymentParameters));
+        accessMethods.add(ServiceAccessMethod.builder()
+                .type(ServiceAccessMethodType.EXTERNAL)
+                .name("web-service-disabled")
+                .url("app2.nmaas.eu")
+                .protocol("Web")
+                .enabled(false)
+                .deployParameters(disabledAccessDeploymentParameters)
+                .build());
+        service.setAccessMethods(accessMethods);
+        when(repositoryManager.loadService(DEPLOYMENT_ID)).thenReturn(service);
+
+        AppUiAccessDetails appUiAccessDetails = manager.serviceAccessDetails(DEPLOYMENT_ID);
+
+        assertEquals(1, appUiAccessDetails.getServiceAccessMethods().size());
+        assertTrue(appUiAccessDetails.getServiceAccessMethods().stream().anyMatch(m ->
+                m.getType().equals(ServiceAccessMethodTypeDto.EXTERNAL)
+                        && m.getName().equals("web-service")
+                        && m.getProtocol().equals("Web")
+                        && m.getUrl().equals("app1.nmaas.eu/custom-path")
         ));
     }
 
