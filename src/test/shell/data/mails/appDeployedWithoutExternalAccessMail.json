@@ -11,7 +11,7 @@
       "subject": "nmaas: Application instance ready",
       "template": {
         "HEADER": "Dear ${username},",
-        "CONTENT": "The application instance ${appName} named ${appInstanceName} in the domain ${domainName} is now ready. Log in to the portal to gain access.",
+        "CONTENT": "The ${appName} instance named ${appInstanceName} in the ${domainName} domain is now ready. Log in to the portal to view the available access options.",
         "SENDER": "Best regards,<br />nmaas Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": ""
@@ -44,7 +44,7 @@
       "subject": "nmaas: Instancja aplikacji jest już gotowa",
       "template": {
         "HEADER": "Drogi ${username},",
-        "CONTENT": "Instancja aplikacji ${appName} o nazwie ${appInstanceName} w domenie ${domainName} jest już gotowa. Zaloguj się do portalu aby uzyskać dostęp.",
+        "CONTENT": "Instancja aplikacji ${appName} o nazwie ${appInstanceName} w domenie ${domainName} jest już gotowa. Zaloguj się do portalu aby zobaczyć możliwości dostępu.",
         "SENDER": "Z pozdrowieniami,<br />Zespół nmaas",
         "NOREPLY": "Ta wiadomość została wygenerowana automatycznie.",
         "SENDER_POLICY": ""
