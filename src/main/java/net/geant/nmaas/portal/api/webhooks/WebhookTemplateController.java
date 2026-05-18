@@ -16,7 +16,7 @@ import java.util.Set;
 @RestController
 @RequestMapping("/api/webhook-templates")
 @RequiredArgsConstructor
-@Tag(name = "Webhook-templates", description = "Webhooks templates get API")
+@Tag(name = "Webhook Templates", description = "Webhooks templates get API")
 public class WebhookTemplateController {
 
     private final AutoWebhookTemplateService templateService;

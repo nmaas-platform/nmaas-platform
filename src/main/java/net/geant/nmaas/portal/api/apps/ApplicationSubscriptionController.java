@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/subscriptions")
+@io.swagger.v3.oas.annotations.tags.Tag(name = "Application Subscriptions", description = "Application subscriptions")
 public class ApplicationSubscriptionController extends AppBaseController {
 
     private final ApplicationSubscriptionService appSubscriptions;

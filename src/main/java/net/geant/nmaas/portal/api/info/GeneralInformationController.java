@@ -18,6 +18,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/info")
 @PropertySource("classpath:git.properties")
+@io.swagger.v3.oas.annotations.tags.Tag(name = "Software Information", description = "Platform software information API")
 public class GeneralInformationController {
 
     @Value("classpath:changelog.json")

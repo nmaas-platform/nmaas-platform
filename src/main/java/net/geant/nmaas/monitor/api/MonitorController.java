@@ -1,5 +1,6 @@
 package net.geant.nmaas.monitor.api;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import net.geant.nmaas.monitor.MonitorManager;
 import net.geant.nmaas.monitor.MonitorService;
@@ -24,6 +25,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/monitor")
+@Tag(name = "Monitors", description = "Monitors management API")
 public class MonitorController {
 
     private final List<MonitorService> monitorServices;

@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.api.domains;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.api.dto.Id;
 import net.geant.nmaas.api.dto.applications.ApplicationStatePerDomainDto;
@@ -45,6 +46,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/groups")
 @Slf4j
+@Tag(name = "Domain Groups", description = "The domain groups API")
 public class GroupController extends BaseController {
 
     private static final String ACCESS_DENIED_MESSAGE = "You have no access to this domain group";

@@ -20,7 +20,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @Transactional
 @Slf4j
-@Tag(name = "Application Logs", description = "Access to running application logs")
+@Tag(name = "Application Instance Logs", description = "Access to running application logs")
 public class AppLogsController {
 
     private final ApplicationLogsService service;

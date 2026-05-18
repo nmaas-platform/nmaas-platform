@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.api.apps;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import net.geant.nmaas.api.dto.Id;
 import net.geant.nmaas.api.dto.applications.CommentDto;
 import net.geant.nmaas.api.dto.applications.CommentRequest;
@@ -32,6 +33,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/apps/{appId}/comments")
+@Tag(name = "Application Comments", description = "Operations related to application comments")
 public class AppCommentsController extends AppBaseController {
 
     private final CommentRepository commentRepository;

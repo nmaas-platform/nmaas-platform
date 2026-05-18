@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.api.info;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import net.geant.nmaas.api.dto.ContentDto;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/content")
+@Tag(name = "Content", description = "Static content management API")
 public class ContentController {
 
     private final ContentRepository contentRepository;

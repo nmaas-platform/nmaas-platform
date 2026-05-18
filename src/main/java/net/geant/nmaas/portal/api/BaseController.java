@@ -16,14 +16,16 @@ public class BaseController {
 		if (username == null) {
 			throw new MissingElementException("Missing username");
 		}
-		return userService.findByUsername(username).orElseThrow(() -> new MissingElementException("Missing user " + username));
+		return userService.findByUsername(username)
+				.orElseThrow(() -> new MissingElementException("Missing user " + username));
 	}
 
     public User getUser(Long userId) {
 		if (userId == null) {
 			throw new MissingElementException("Missing user identifier");
 		}
-		return userService.findById(userId).orElseThrow(() -> new MissingElementException("Missing user id=" + userId));
+		return userService.findById(userId)
+				.orElseThrow(() -> new MissingElementException("Missing user id=" + userId));
 	}
 
 }

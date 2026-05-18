@@ -12,8 +12,8 @@ import net.geant.nmaas.api.dto.GroupAppListElement;
 import net.geant.nmaas.api.dto.users.UserDto;
 import net.geant.nmaas.notifications.templates.MailType;
 import net.geant.nmaas.notifications.templates.TemplateService;
-import net.geant.nmaas.notifications.templates.api.LanguageMailContentView;
-import net.geant.nmaas.notifications.templates.api.MailTemplateView;
+import net.geant.nmaas.notifications.templates.api.LanguageMailContentDto;
+import net.geant.nmaas.notifications.templates.api.MailTemplateDto;
 import net.geant.nmaas.notifications.types.persistence.entity.FormType;
 import net.geant.nmaas.notifications.types.service.FormTypeService;
 import net.geant.nmaas.portal.api.configuration.model.ConfigurationView;
@@ -70,7 +70,7 @@ public class NotificationManager {
      * @param mailAttributes provided mail type and attributes
      */
     void prepareAndSendMail(MailAttributes mailAttributes) {
-        MailTemplateView mailTemplate = templateService.getMailTemplate(mailAttributes.getMailType());
+        MailTemplateDto mailTemplate = templateService.getMailTemplate(mailAttributes.getMailType());
         Template template;
         try {
             template = templateService.getHTMLTemplate();
@@ -83,7 +83,7 @@ public class NotificationManager {
 
         for (UserDto user : mailAttributes.getAddresses()) {
             try {
-                LanguageMailContentView mailContent = getTemplateInSelectedLanguage(mailTemplate.getTemplates(), user.getSelectedLanguage());
+                LanguageMailContentDto mailContent = getTemplateInSelectedLanguage(mailTemplate.getTemplates(), user.getSelectedLanguage());
                 customizeMessage(mailContent, mailAttributes);
                 String filledTemplate = getFilledTemplate(template, mailContent, user, mailAttributes, mailTemplate);
                 if (StringUtils.isEmpty(fromAddress)) {
@@ -98,7 +98,7 @@ public class NotificationManager {
         log.info("Mail {} was sent to {}", mailAttributes.getMailType().name(), getListOfMails(mailAttributes.getAddresses()));
     }
 
-    private LanguageMailContentView getTemplateInSelectedLanguage(List<LanguageMailContentView> mailContentList, String selectedLanguage) {
+    private LanguageMailContentDto getTemplateInSelectedLanguage(List<LanguageMailContentDto> mailContentList, String selectedLanguage) {
         return mailContentList.stream()
                 .filter(mailContent -> mailContent.getLanguage().equalsIgnoreCase(selectedLanguage))
                 .findFirst()
@@ -198,7 +198,7 @@ public class NotificationManager {
      * @param mailContent    mail content to be customize
      * @param mailAttributes mail information and data provider
      */
-    private void customizeMessage(LanguageMailContentView mailContent, MailAttributes mailAttributes) {
+    private void customizeMessage(LanguageMailContentDto mailContent, MailAttributes mailAttributes) {
         if (mailAttributes.getMailType().equals(MailType.BROADCAST)) {
             mailContent.setSubject((String) mailAttributes.getOtherAttributes().getOrDefault(MailTemplateElements.TITLE, "NMAAS: Broadcast message")); //set subject from other params
         }
@@ -214,7 +214,7 @@ public class NotificationManager {
         }
     }
 
-    private String getFilledTemplate(Template template, LanguageMailContentView langContent, UserDto user, MailAttributes mailAttributes, MailTemplateView mailTemplate) throws IOException, TemplateException {
+    private String getFilledTemplate(Template template, LanguageMailContentDto langContent, UserDto user, MailAttributes mailAttributes, MailTemplateDto mailTemplate) throws IOException, TemplateException {
         boolean showAdditional = mailAttributes.getMailType() == MailType.NEW_ACTIVE_APP && mailAttributes.getOtherAttributes().get("message") != null;
         Map<String, Object> map = new HashMap<>(mailTemplate.getGlobalInformation());
         map.put(MailTemplateElements.PORTAL_LINK, this.portalAddress == null ? "" : this.portalAddress);

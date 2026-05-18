@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.api.bulk;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -47,6 +48,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/api/bulks")
+@Tag(name = "Bulk Operations", description = "Operations related to bulk deployments")
 public class BulkController {
 
     private final BulkCsvProcessor bulkCsvProcessor;

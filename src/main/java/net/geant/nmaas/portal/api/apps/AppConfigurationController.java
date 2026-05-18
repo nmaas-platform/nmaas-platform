@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.api.apps;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +28,7 @@ import java.security.Principal;
 @RequestMapping(value = "/api/apps/instances")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "Application Instance Configuration", description = "Operations related to application instance configuration")
 public class AppConfigurationController {
 
     private static final String INSTANCE_NOT_FOUND_MESSAGE = "App instance not found";

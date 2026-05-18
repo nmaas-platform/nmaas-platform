@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.api.configuration;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import net.geant.nmaas.portal.api.configuration.model.ConfigurationView;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(value = "/api/configuration")
 @RequiredArgsConstructor
+@Tag(name = "Platform Configuration", description = "Platform configuration management API")
 public class ConfigurationController {
 
     private final ConfigurationManager configurationManager;

@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.api.apps;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
@@ -58,6 +59,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/apps/instances")
 @Slf4j
+@Tag(name = "Application Instances", description = "Operations related to application instances")
 public class AppInstanceController extends AppBaseController {
 
     private static final String MISSING_APP_INSTANCE_MESSAGE = "Missing app instance";

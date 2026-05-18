@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.api.i18n;
 
-import lombok.AllArgsConstructor;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import net.geant.nmaas.portal.api.i18n.api.InternationalizationBriefView;
 import net.geant.nmaas.portal.api.i18n.api.InternationalizationView;
 import net.geant.nmaas.portal.service.InternationalizationService;
@@ -20,11 +21,12 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RequestMapping(value = "/api/i18n")
+@Tag(name = "Translations", description = "Translations management API")
 public class InternationalizationController {
 
-    private InternationalizationService internationalizationService;
+    private final InternationalizationService internationalizationService;
 
     @PostMapping("/{language}")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")

@@ -3,8 +3,8 @@ package net.geant.nmaas.notifications;
 import freemarker.template.Template;
 import net.geant.nmaas.notifications.templates.MailType;
 import net.geant.nmaas.notifications.templates.TemplateService;
-import net.geant.nmaas.notifications.templates.api.LanguageMailContentView;
-import net.geant.nmaas.notifications.templates.api.MailTemplateView;
+import net.geant.nmaas.notifications.templates.api.LanguageMailContentDto;
+import net.geant.nmaas.notifications.templates.api.MailTemplateDto;
 import net.geant.nmaas.notifications.types.persistence.entity.FormType;
 import net.geant.nmaas.notifications.types.service.FormTypeService;
 import net.geant.nmaas.portal.api.configuration.model.ConfigurationView;
@@ -75,7 +75,7 @@ class NotificationManagerTest {
         );
         when(userService.findByUsername("ordinary")).thenReturn(Optional.of(getDefaultUserList().get(1)));
 
-        MailTemplateView mt = this.getDefaultMailTemplateView();
+        MailTemplateDto mt = this.getDefaultMailTemplateView();
         when(templateService.getMailTemplate(any())).thenReturn(mt);
 
         Template template = mock(Template.class);
@@ -326,8 +326,8 @@ class NotificationManagerTest {
         assertThrows(ProcessingException.class, () -> notificationManager.prepareAndSendMail(ma));
     }
 
-    private MailTemplateView getDefaultMailTemplateView() {
-        LanguageMailContentView lmcv = new LanguageMailContentView();
+    private MailTemplateDto getDefaultMailTemplateView() {
+        LanguageMailContentDto lmcv = new LanguageMailContentDto();
         lmcv.setLanguage("en");
         lmcv.setSubject("Default");
         lmcv.setTemplate(new HashMap<String, String>() {{
@@ -340,7 +340,7 @@ class NotificationManagerTest {
             put(MailTemplateElements.SENDER_POLICY, "");
         }});
 
-        MailTemplateView mt = new MailTemplateView();
+        MailTemplateDto mt = new MailTemplateDto();
         mt.setTemplates(new ArrayList<>() {{
             add(lmcv);
         }});

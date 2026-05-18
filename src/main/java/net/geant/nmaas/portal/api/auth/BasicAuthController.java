@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.api.auth;
 
 import io.jsonwebtoken.Claims;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +36,7 @@ import static java.lang.String.format;
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/api/auth/basic")
+@Tag(name = "Basic Authentication", description = "Basic authentication API")
 public class BasicAuthController {
 
     private final UserService users;

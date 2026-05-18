@@ -1,5 +1,6 @@
 package net.geant.nmaas.kubernetes.remote.api;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import net.geant.nmaas.api.dto.kubernetes.RemoteKClusterDto;
 import net.geant.nmaas.kubernetes.remote.RemoteClusterManagementService;
@@ -25,6 +26,7 @@ import java.util.Objects;
 @RestController
 @RequestMapping(value = "/api/management/cluster")
 @RequiredArgsConstructor
+@Tag(name = "Remote Kubernetes Clusters", description = "Remote Kubernetes cluster management API")
 public class RemoteClusterManagerController {
 
     private final RemoteClusterManagementService remoteClusterManager;

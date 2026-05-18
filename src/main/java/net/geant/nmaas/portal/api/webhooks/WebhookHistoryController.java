@@ -23,7 +23,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/webhooks-history")
 @RequiredArgsConstructor
-@Tag(name = "Webhook history", description = "Webhook history management API")
+@Tag(name = "Webhook History", description = "Webhook history management API")
 public class WebhookHistoryController {
 
     private final WebhookHistoryService webhookHistoryService;

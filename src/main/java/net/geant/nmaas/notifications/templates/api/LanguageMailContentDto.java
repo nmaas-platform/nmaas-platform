@@ -10,7 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class LanguageMailContentView {
+public class LanguageMailContentDto {
 
     private String language;
 

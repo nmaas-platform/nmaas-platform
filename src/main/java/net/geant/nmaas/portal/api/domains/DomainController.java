@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.api.domains;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.api.dto.Id;
@@ -60,6 +61,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/domains")
 @Slf4j
+@Tag(name = "Domains", description = "The domains API")
 public class DomainController extends BaseController {
 
     private static final String UNABLE_TO_CHANGE_DOMAIN_ID = "Unable to change domain id";

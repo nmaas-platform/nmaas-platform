@@ -1,5 +1,6 @@
-package net.geant.nmaas.portal.api.security;
+package net.geant.nmaas.portal.api.user;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.api.dto.users.UserApiTokenDto;
@@ -26,18 +27,19 @@ import java.util.List;
 @RequestMapping("/api/tokens")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "Custom Access Tokens", description = "Operations related to custom access tokens")
 public class CustomAccessTokenController {
 
     private final CustomAccessTokenService accessTokenService;
     private final UserService userService;
 
-    @GetMapping()
+    @GetMapping
     public List<UserApiTokenDto> getAll(Principal principal) {
         User user = getUser(principal);
         return accessTokenService.getAll(user.getId());
     }
 
-    @PostMapping()
+    @PostMapping
     public UserApiTokenDto createNewToken(Principal principal, @RequestBody String name) {
         User user = getUser(principal);
         return accessTokenService.createToken(user, name);
@@ -61,7 +63,7 @@ public class CustomAccessTokenController {
 
     @ExceptionHandler(DataConflictException.class)
     @ResponseStatus(code = HttpStatus.CONFLICT)
-    public String handleDataConfigException(DataConflictException e){
+    public String handleDataConfigException(DataConflictException e) {
         return e.getMessage();
     }
 }

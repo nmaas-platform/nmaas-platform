@@ -1,7 +1,8 @@
-package net.geant.nmaas.notifications.templates;
+package net.geant.nmaas.notifications.templates.api;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import net.geant.nmaas.notifications.templates.api.MailTemplateView;
+import net.geant.nmaas.notifications.templates.TemplateService;
 import net.geant.nmaas.portal.exceptions.DataConflictException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,6 +22,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/mail/templates")
+@Tag(name = "Mail Templates", description = "Mail template management API")
 public class TemplateController {
 
     private final TemplateService templateService;
@@ -29,7 +31,7 @@ public class TemplateController {
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @ResponseStatus(HttpStatus.ACCEPTED)
     @Transactional
-    public void addTemplate(@RequestBody MailTemplateView mailTemplate) {
+    public void addTemplate(@RequestBody MailTemplateDto mailTemplate) {
         this.templateService.saveMailTemplate(mailTemplate);
     }
 
@@ -37,7 +39,7 @@ public class TemplateController {
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @ResponseStatus(HttpStatus.ACCEPTED)
     @Transactional
-    public void updateTemplates(@RequestBody List<MailTemplateView> mailTemplates) {
+    public void updateTemplates(@RequestBody List<MailTemplateDto> mailTemplates) {
         mailTemplates.forEach(this.templateService::updateMailTemplate);
     }
 
@@ -45,14 +47,14 @@ public class TemplateController {
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @ResponseStatus(HttpStatus.ACCEPTED)
     @Transactional
-    public void updateTemplate(@RequestBody MailTemplateView mailTemplate) {
+    public void updateTemplate(@RequestBody MailTemplateDto mailTemplate) {
         this.templateService.updateMailTemplate(mailTemplate);
     }
 
     @GetMapping("/all")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @Transactional
-    public List<MailTemplateView> getTemplates() {
+    public List<MailTemplateDto> getTemplates() {
         return this.templateService.getMailTemplates();
     }
 

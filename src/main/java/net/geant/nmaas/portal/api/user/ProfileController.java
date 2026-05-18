@@ -20,7 +20,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/profile")
 @RequiredArgsConstructor
-@Tag(name = "User Profile", description = "User profile management API")
+@Tag(name = "User Profiles", description = "User profiles retrieval API")
 public class ProfileController {
 
     private final UserService users;
@@ -28,15 +28,15 @@ public class ProfileController {
 
     @GetMapping("/user")
     public UserDto retrieveLoggedUser(@NotNull Principal principal) {
-        User user = this.getUser(principal.getName());
-        return this.modelMapper.map(user, UserDto.class);
+        User user = getUser(principal.getName());
+        return modelMapper.map(user, UserDto.class);
     }
 
     @GetMapping("/user/roles")
     public List<UserRoleDto> retrieveLoggedUsersRoles(@NotNull Principal principal) {
-        User user = this.getUser(principal.getName());
-        UserDto userView = this.modelMapper.map(user, UserDto.class);
-        return new ArrayList<>(userView.getRoles());
+        User user = getUser(principal.getName());
+        UserDto userDto = modelMapper.map(user, UserDto.class);
+        return new ArrayList<>(userDto.getRoles());
     }
 
     private User getUser(String username) {

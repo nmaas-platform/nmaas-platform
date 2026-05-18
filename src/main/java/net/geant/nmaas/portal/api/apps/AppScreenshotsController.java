@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.api.apps;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.api.dto.FileInfoDto;
 import net.geant.nmaas.api.dto.users.UserFileDto;
@@ -37,6 +38,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/apps/{appId}")
 @Slf4j
+@Tag(name = "Application Screenshots", description = "Operations related to application screenshots")
 public class AppScreenshotsController extends AppBaseController {
 
     private final FileStorageService fileStorage;

@@ -36,7 +36,7 @@ public class AppDeploymentMonitorRestController {
     private final ModelMapper modelMapper;
 
     /**
-     * Retrieves information on all deployments including their identifier and current state.
+     * Retrieves information on all deployments, including their identifier and current state.
      *
      * @return list of deployments
      */
@@ -49,11 +49,11 @@ public class AppDeploymentMonitorRestController {
     }
 
     /**
-     * Returns current state of particular deployment.
+     * Returns the current state of a particular deployment.
      *
      * @param deploymentId application deployment identifier
      * @return current deployment state
-     * @throws InvalidDeploymentIdException if deployment with provided identifier doesn't exist in the system
+     * @throws InvalidDeploymentIdException if deployment with the provided identifier doesn't exist in the system
      */
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @GetMapping(value = "{deploymentId}/state")
@@ -66,7 +66,7 @@ public class AppDeploymentMonitorRestController {
      *
      * @param deploymentId application deployment identifier
      * @return application access information
-     * @throws InvalidDeploymentIdException if deployment with provided identifier doesn't exist in the system
+     * @throws InvalidDeploymentIdException if deployment with the provided identifier doesn't exist in the system
      * @throws InvalidAppStateException     if deployment didn't complete yet
      */
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")

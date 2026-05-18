@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/apps/{appId}/rate")
+@io.swagger.v3.oas.annotations.tags.Tag(name = "Application Ratings", description = "Application ratings")
 public class RatingController extends AppBaseController {
 
     private final RatingRepository ratingRepository;
@@ -90,7 +91,7 @@ public class RatingController extends AppBaseController {
 
     private Integer normalizeRate(Integer rate) {
         if (rate == null) {
-            throw new MissingElementException("Missing rate value.");
+            throw new MissingElementException("Missing rate value");
         }
         if (rate > 5) {
             return 5;

@@ -32,7 +32,7 @@ import java.util.List;
 @RequestMapping("/api/pods/shell")
 @RequiredArgsConstructor
 @Slf4j
-@Tag(name = "Application Shell", description = "Access to running application shell")
+@Tag(name = "Application Instance Shell", description = "Access to running application shell")
 public class PodShellController {
 
     private final K8sShellService k8sShellService;

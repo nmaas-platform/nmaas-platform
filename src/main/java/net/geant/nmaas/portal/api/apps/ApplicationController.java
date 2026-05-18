@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.api.apps;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -64,6 +65,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/apps")
 @Slf4j
+@Tag(name = "Applications", description = "Operations related to applications")
 public class ApplicationController extends AppBaseController {
 
     @AllArgsConstructor

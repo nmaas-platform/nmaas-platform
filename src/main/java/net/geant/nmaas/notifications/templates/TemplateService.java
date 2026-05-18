@@ -4,7 +4,7 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import lombok.RequiredArgsConstructor;
 import net.geant.nmaas.notifications.MailTemplateElements;
-import net.geant.nmaas.notifications.templates.api.MailTemplateView;
+import net.geant.nmaas.notifications.templates.api.MailTemplateDto;
 import net.geant.nmaas.notifications.templates.entities.LanguageMailContent;
 import net.geant.nmaas.notifications.templates.entities.MailTemplate;
 import net.geant.nmaas.notifications.templates.repository.MailTemplateRepository;
@@ -33,24 +33,24 @@ public class TemplateService {
     private final LocalFileStorageService fileStorageService;
 
     @Transactional
-    public MailTemplateView getMailTemplate(MailType mailType) {
+    public MailTemplateDto getMailTemplate(MailType mailType) {
         MailTemplate mailTemplate = repository.findByMailType(mailType).orElseThrow(() -> new IllegalArgumentException("Mail template not found"));
-        return modelMapper.map(mailTemplate, MailTemplateView.class);
+        return modelMapper.map(mailTemplate, MailTemplateDto.class);
     }
 
-    List<MailTemplateView> getMailTemplates() {
+    public List<MailTemplateDto> getMailTemplates() {
         return this.repository.findAll().stream()
-                .map(mailTemplate -> modelMapper.map(mailTemplate, MailTemplateView.class))
+                .map(mailTemplate -> modelMapper.map(mailTemplate, MailTemplateDto.class))
                 .collect(Collectors.toList());
     }
 
-    void saveMailTemplate(MailTemplateView mailTemplate) {
+    public void saveMailTemplate(MailTemplateDto mailTemplate) {
         checkArgumentConflict(!repository.existsByMailType(mailTemplate.getMailType()), String.format("Mail template %s already exists", mailTemplate.getMailType().name()));
         Validate.isTrue(mailTemplate.getTemplates() != null && !mailTemplate.getTemplates().isEmpty(), "Mail template cannot be null or empty");
         repository.save(modelMapper.map(mailTemplate, MailTemplate.class));
     }
 
-    void updateMailTemplate(MailTemplateView mailTemplate) {
+    public void updateMailTemplate(MailTemplateDto mailTemplate) {
         MailTemplate mailTemplateEntity = repository.findByMailType(mailTemplate.getMailType()).orElseThrow(() -> new IllegalArgumentException("Mail template not found"));
         Validate.isTrue(mailTemplate.getTemplates() != null && !mailTemplate.getTemplates().isEmpty(), "Mail template cannot be null or empty");
         mailTemplateEntity.getTemplates().clear();
@@ -58,14 +58,14 @@ public class TemplateService {
         repository.save(mailTemplateEntity);
     }
 
-    void storeHTMLTemplate(MultipartFile file) {
+    public void storeHTMLTemplate(MultipartFile file) {
         Validate.isTrue(Objects.nonNull(file) && !file.isEmpty(), "HTML template cannot be null or empty");
         Validate.isTrue(Objects.equals(file.getContentType(), MailTemplateElements.HTML_TYPE), "HTML template must be in html format");
         checkArgumentConflict(fileStorageService.getFileInfoByContentType(MailTemplateElements.HTML_TYPE).isEmpty(), "Only one HTML template is supported.");
         fileStorageService.store(file);
     }
 
-    void updateHTMLTemplate(MultipartFile file) {
+    public void updateHTMLTemplate(MultipartFile file) {
         FileInfo fileInfo = getHTMLTemplateFileInfo();
         if (fileStorageService.remove(fileInfo)) {
             storeHTMLTemplate(file);
@@ -80,7 +80,7 @@ public class TemplateService {
     private FileInfo getHTMLTemplateFileInfo() {
         List<FileInfo> template = fileStorageService.getFileInfoByContentType(MailTemplateElements.HTML_TYPE);
         if (template.size() == 1) {
-            return template.get(0);
+            return template.getFirst();
         }
         throw new IllegalArgumentException(String.format("Exactly one html template supported (actually got %d)", template.size()));
     }

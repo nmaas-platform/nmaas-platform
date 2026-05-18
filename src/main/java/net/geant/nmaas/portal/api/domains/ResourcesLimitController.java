@@ -25,7 +25,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/resources-limits")
 @RequiredArgsConstructor
-@Tag(name = "ResourcesLimit", description = "ResourcesLimits management API")
+@Tag(name = "Resources Limits", description = "Resources limits management API")
 public class ResourcesLimitController {
 
     private final ResourcesLimitService resourcesLimitService;

@@ -1,8 +1,10 @@
 package net.geant.nmaas.portal.api.auth;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.api.dto.users.UserDto;
 import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
 import net.geant.nmaas.notifications.templates.MailType;
@@ -12,7 +14,6 @@ import net.geant.nmaas.portal.api.exceptions.ExternalUserCanNotBeLinked;
 import net.geant.nmaas.portal.api.exceptions.ExternalUserMatchException;
 import net.geant.nmaas.portal.api.exceptions.SignupException;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
-import net.geant.nmaas.api.dto.users.UserDto;
 import net.geant.nmaas.portal.exceptions.UndergoingMaintenanceException;
 import net.geant.nmaas.portal.persistence.entity.Role;
 import net.geant.nmaas.portal.persistence.entity.User;
@@ -54,6 +55,7 @@ import static java.lang.String.format;
         value = "portal.config.ssoLoginAllowed",
         havingValue = "true"
 )
+@Tag(name = "OIDC Authentication", description = "OIDC authentication API")
 public class OIDCAuthController {
 
     private static final String OIDC_LOGOUT_PATH = "/protocol/openid-connect/logout";
@@ -224,6 +226,7 @@ public class OIDCAuthController {
                 BasicAuthController.getClientIpAddr(request)
         );
     }
+
     private void sendMail(UserDto user, Map<String, Object> other) {
         MailAttributes mailAttributes = MailAttributes.builder()
                 .mailType(MailType.NEW_SSO_LOGIN)
