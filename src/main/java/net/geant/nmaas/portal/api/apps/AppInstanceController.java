@@ -4,9 +4,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.api.dto.Id;
 import net.geant.nmaas.api.dto.applications.AppInstanceRequest;
 import net.geant.nmaas.api.dto.applications.AppInstanceState;
-import net.geant.nmaas.api.dto.Id;
 import net.geant.nmaas.api.dto.users.UserBase;
 import net.geant.nmaas.nmservice.configuration.gitlab.events.AddUserToRepositoryGitlabEvent;
 import net.geant.nmaas.nmservice.configuration.gitlab.events.RemoveUserFromRepositoryGitlabEvent;
@@ -136,7 +136,7 @@ public class AppInstanceController extends AppBaseController {
                 .remoteClusterId(clusterId)
                 .build();
 
-        Identifier internalId = appLifecycleManager.deployApplication(appDeployment);
+        Identifier internalId = appLifecycleManager.deployApplication(appDeployment, principal.getName());
         appInstance.setInternalId(internalId);
 
         instanceService.update(appInstance);
@@ -181,10 +181,12 @@ public class AppInstanceController extends AppBaseController {
     @DeleteMapping("/{appInstanceId}")
     @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'DELETE')")
     @Transactional
-    public void deleteAppInstance(@PathVariable(value = "appInstanceId") Long appInstanceId) {
+    public void deleteAppInstance(@PathVariable(value = "appInstanceId") Long appInstanceId,
+                                  @NotNull Principal principal
+    ) {
         try {
             AppInstance appInstance = getAppInstance(appInstanceId);
-            appLifecycleManager.removeApplication(appInstance.getInternalId());
+            appLifecycleManager.removeApplication(appInstance.getInternalId(), principal.getName());
         } catch (InvalidDeploymentIdException e) {
             throw new ProcessingException(MISSING_APP_INSTANCE_MESSAGE);
         }
@@ -193,10 +195,12 @@ public class AppInstanceController extends AppBaseController {
     @DeleteMapping("/failed/{appInstanceId}")
     @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'DELETE')")
     @Transactional
-    public void removeFailedInstance(@PathVariable(value = "appInstanceId") Long appInstanceId) {
+    public void removeFailedInstance(@PathVariable(value = "appInstanceId") Long appInstanceId,
+                                     @NotNull Principal principal
+    ) {
         try {
             AppInstance appInstance = getAppInstance(appInstanceId);
-            appLifecycleManager.removeFailedApplication(appInstance.getInternalId());
+            appLifecycleManager.removeFailedApplication(appInstance.getInternalId(), principal.getName());
         } catch (InvalidDeploymentIdException e) {
             throw new ProcessingException(MISSING_APP_INSTANCE_MESSAGE);
         }
@@ -205,10 +209,12 @@ public class AppInstanceController extends AppBaseController {
     @PostMapping("/{appInstanceId}/restart")
     @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
     @Transactional
-    public void restartAppInstance(@PathVariable(value = "appInstanceId") Long appInstanceId) {
+    public void restartAppInstance(@PathVariable(value = "appInstanceId") Long appInstanceId,
+                                   @NotNull Principal principal
+    ) {
         try {
             AppInstance appInstance = getAppInstance(appInstanceId);
-            this.appLifecycleManager.restartApplication(appInstance.getInternalId());
+            this.appLifecycleManager.restartApplication(appInstance.getInternalId(), principal.getName());
         } catch (InvalidDeploymentIdException e) {
             throw new ProcessingException(MISSING_APP_INSTANCE_MESSAGE);
         }
@@ -217,10 +223,12 @@ public class AppInstanceController extends AppBaseController {
     @PostMapping("/{appInstanceId}/redeploy")
     @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
     @Transactional
-    public void redeployAppInstance(@PathVariable(value = "appInstanceId") Long appInstanceId) {
+    public void redeployAppInstance(@PathVariable(value = "appInstanceId") Long appInstanceId,
+                                    @NotNull Principal principal
+    ) {
         try {
             AppInstance appInstance = getAppInstance(appInstanceId);
-            this.appLifecycleManager.redeployApplication(appInstance.getInternalId());
+            this.appLifecycleManager.redeployApplication(appInstance.getInternalId(), principal.getName());
         } catch (InvalidDeploymentIdException e) {
             throw new ProcessingException(MISSING_APP_INSTANCE_MESSAGE);
         }
@@ -230,10 +238,15 @@ public class AppInstanceController extends AppBaseController {
     @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
     @Transactional
     public void upgradeAppInstance(@PathVariable(value = "appInstanceId") Long appInstanceId,
-                                   @PathVariable(value = "targetApplicationId") Long targetApplicationId) {
+                                   @PathVariable(value = "targetApplicationId") Long targetApplicationId,
+                                   @NotNull Principal principal) {
         try {
             AppInstance appInstance = getAppInstance(appInstanceId);
-            this.appLifecycleManager.upgradeApplication(appInstance.getInternalId(), Identifier.newInstance(targetApplicationId));
+            this.appLifecycleManager.upgradeApplication(
+                    appInstance.getInternalId(),
+                    Identifier.newInstance(targetApplicationId),
+                    principal.getName()
+            );
         } catch (InvalidDeploymentIdException e) {
             throw new ProcessingException(MISSING_APP_INSTANCE_MESSAGE);
         }
@@ -437,7 +450,9 @@ public class AppInstanceController extends AppBaseController {
     @PutMapping("/{appInstanceId}/scale-down")
     @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void scaleDownAppInstance(@PathVariable Long appInstanceId) {
+    public void scaleDownAppInstance(@PathVariable Long appInstanceId,
+                                     @NotNull Principal principal
+    ) {
         final AppInstance appInstance = getAppInstance(appInstanceId);
         final Identifier deploymentId = appInstance.getInternalId();
         if (appDeploymentMonitor.state(deploymentId).equals(AppLifecycleState.APPLICATION_PAUSED)) {
@@ -448,14 +463,17 @@ public class AppInstanceController extends AppBaseController {
                 new AppScaleActionEvent(
                         this,
                         deploymentId,
-                        AppScaleDirection.DOWN)
+                        AppScaleDirection.DOWN,
+                        principal.getName())
         );
     }
 
     @PutMapping("/{appInstanceId}/scale-up")
     @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void scaleUpAppInstance(@PathVariable Long appInstanceId) {
+    public void scaleUpAppInstance(@PathVariable Long appInstanceId,
+                                   @NotNull Principal principal
+    ) {
         final AppInstance appInstance = getAppInstance(appInstanceId);
         final Identifier deploymentId = appInstance.getInternalId();
         if (appDeploymentMonitor.state(deploymentId).equals(AppLifecycleState.APPLICATION_PAUSED)) {
@@ -463,7 +481,8 @@ public class AppInstanceController extends AppBaseController {
                     new AppScaleActionEvent(
                             this,
                             deploymentId,
-                            AppScaleDirection.UP)
+                            AppScaleDirection.UP,
+                            principal.getName())
             );
         } else {
             log.warn("Won't resume since application instance is not paused");

@@ -22,7 +22,11 @@ public class AppRemovalTask {
     @Loggable(LogLevel.INFO)
     public void trigger(AppRemoveActionEvent event) {
         try {
-            serviceDeployment.removeService(event.getRelatedTo());
+            if (event.getUserInitiator() != null) {
+                serviceDeployment.removeService(event.getRelatedTo(), event.getUserInitiator());
+            } else {
+                serviceDeployment.removeService(event.getRelatedTo());
+            }
         } catch (Exception ex) {
             log.error("Error reported at {}", LocalDateTime.now(), ex);
         }

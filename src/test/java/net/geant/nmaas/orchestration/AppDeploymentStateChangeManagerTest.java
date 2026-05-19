@@ -19,8 +19,10 @@ import net.geant.nmaas.orchestration.events.app.AppVerifyServiceActionEvent;
 import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
 import net.geant.nmaas.portal.events.ApplicationDeployedEvent;
 import net.geant.nmaas.portal.events.ApplicationRemovedEvent;
+import net.geant.nmaas.portal.persistence.entity.User;
 import net.geant.nmaas.portal.persistence.entity.WebhookEventType;
 import net.geant.nmaas.portal.persistence.repositories.WebhookEventRepository;
+import net.geant.nmaas.portal.service.UserService;
 import net.geant.nmaas.scheduling.ScheduleManager;
 import net.geant.nmaas.webhooks.WebhooksEventListener;
 import net.geant.nmaas.webhooks.jobs.AppDeploymentJob;
@@ -67,6 +69,7 @@ class AppDeploymentStateChangeManagerTest {
     private final Identifier deploymentId = Identifier.newInstance("deploymentId");
     private final NmServiceDeploymentStateChangeEvent event = mock(NmServiceDeploymentStateChangeEvent.class);
     private final DefaultAppDeploymentRepositoryManager deployments = mock(DefaultAppDeploymentRepositoryManager.class);
+    private final UserService userService = mock(UserService.class);
     private final AppDeploymentMonitor monitor = mock(AppDeploymentMonitor.class);
     private final ApplicationEventPublisher publisher = mock(ApplicationEventPublisher.class);
     private final WebhookEventRepository webhookEventRepository = mock(WebhookEventRepository.class);
@@ -80,7 +83,7 @@ class AppDeploymentStateChangeManagerTest {
     @BeforeEach
     void setup() {
         when(event.getDeploymentId()).thenReturn(deploymentId);
-        manager = new AppDeploymentStateChangeManager(deployments, monitor, publisher);
+        manager = new AppDeploymentStateChangeManager(deployments, monitor, publisher, userService);
         listener = new WebhooksEventListener(webhookEventRepository, appDeploymentRepository, scheduleManager, modelMapper);
     }
 
@@ -273,10 +276,10 @@ class AppDeploymentStateChangeManagerTest {
         when(monitor.userAccessDetails(deploymentId)).thenReturn(new AppUiAccessDetails(new HashSet<ServiceAccessMethodDto>() {{
             add(new ServiceAccessMethodDto(ServiceAccessMethodTypeDto.DEFAULT, "Default", "Web", "url"));
         }}));
-        AppDeploymentHistory history = new AppDeploymentHistory(1L, stubAppDeployment(), new Date(), APPLICATION_DEPLOYED, APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS);
-        AppDeploymentHistory history2 = new AppDeploymentHistory(2L, stubAppDeployment(), new Date(), APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS, APPLICATION_DEPLOYMENT_VERIFIED);
+        AppDeploymentHistory history = new AppDeploymentHistory(1L, stubAppDeployment(), new Date(), APPLICATION_DEPLOYED, APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS, new User("user1"));
+        AppDeploymentHistory history2 = new AppDeploymentHistory(2L, stubAppDeployment(), new Date(), APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS, APPLICATION_DEPLOYMENT_VERIFIED, new User("user1"));
         // added second time as "current" re-deployment, because current state is not added by `update state` function
-        AppDeploymentHistory history3 = new AppDeploymentHistory(3L, stubAppDeployment(), new Date(), APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS, APPLICATION_DEPLOYMENT_VERIFIED);
+        AppDeploymentHistory history3 = new AppDeploymentHistory(3L, stubAppDeployment(), new Date(), APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS, APPLICATION_DEPLOYMENT_VERIFIED, new User("user1"));
 
         when(deployments.loadStateHistory(deploymentId)).thenReturn(java.util.List.of(history, history2, history3));
         when(event.getDetail(EventDetailType.NEW_APPLICATION_ID)).thenReturn("10");
