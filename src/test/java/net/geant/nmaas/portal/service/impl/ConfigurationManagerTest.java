@@ -2,7 +2,7 @@ package net.geant.nmaas.portal.service.impl;
 
 import net.geant.nmaas.nmservice.deployment.bulks.BulkDeploymentJob;
 import net.geant.nmaas.portal.api.configuration.model.ConfigurationView;
-import net.geant.nmaas.portal.api.i18n.api.InternationalizationView;
+import net.geant.nmaas.portal.api.i18n.api.I18nDto;
 import net.geant.nmaas.portal.domain.converters.ConfigurationConverter;
 import net.geant.nmaas.portal.exceptions.ConfigurationNotFoundException;
 import net.geant.nmaas.portal.exceptions.OnlyOneConfigurationSupportedException;
@@ -41,7 +41,7 @@ class ConfigurationManagerTest {
 
     private Configuration config;
     private ConfigurationView configView;
-    private InternationalizationView internationalization;
+    private I18nDto internationalization;
 
     @BeforeEach
     void setup() {
@@ -59,7 +59,7 @@ class ConfigurationManagerTest {
                 .bulkDomainsAllowForSsoAccounts(false)
                 .bulkDomainsSendEmailForNewAccounts(false)
                 .build();
-        this.internationalization = new InternationalizationView("pl", true, "{\"test\":\"test\"}");
+        this.internationalization = new I18nDto("pl", true, "{\"test\":\"test\"}");
         this.configView = new ConfigurationView(1L, false, false, "pl",
                 false, false, new ArrayList<>(), true, true, false, "0 */1 * * * ?", 2, 60, 10, "", "0 */1 * * * ?", null, 10);
         this.modelMapper.addConverter(new ConfigurationConverter());

@@ -1,5 +1,7 @@
 package net.geant.nmaas.kubernetes;
 
+import net.geant.nmaas.kubernetes.remote.entities.KCluster;
+import net.geant.nmaas.kubernetes.remote.entities.KClusterDeployment;
 import net.geant.nmaas.kubernetes.remote.entities.NamespaceConfigOption;
 import net.geant.nmaas.orchestration.entities.DomainTechDetails;
 import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
@@ -87,6 +89,46 @@ class KubernetesClusterDeploymentManagerTest {
         manager.setNamespaceConfigOption(NamespaceConfigOption.USE_DOMAIN_NAMESPACE);
         manager.setDefaultNamespace("testNamespace");
         assertThat(manager.namespace(DOMAIN), is("domainNamespace"));
+    }
+
+    @Test
+    void shouldReturnRemoteClusterDefaultNamespace() {
+        KCluster remoteCluster = remoteCluster(NamespaceConfigOption.USE_DEFAULT_NAMESPACE, "remoteNamespace");
+
+        assertThat(manager.namespace(remoteCluster, DOMAIN), is("remoteNamespace"));
+    }
+
+    @Test
+    void shouldReturnRemoteClusterDomainNamespace() {
+        DomainTechDetails domainTechDetails = new DomainTechDetails(1L, DOMAIN, null, "domainNamespace", null, null);
+        when(domainTechDetailsRepository.findByDomainCodename(DOMAIN)).thenReturn(Optional.of(domainTechDetails));
+        KCluster remoteCluster = remoteCluster(NamespaceConfigOption.USE_DOMAIN_NAMESPACE, "remoteNamespace");
+
+        assertThat(manager.namespace(remoteCluster, DOMAIN), is("domainNamespace"));
+    }
+
+    @Test
+    void shouldReturnGeneratedNamespaceForRemoteClusterWithoutDomainNamespace() {
+        when(domainTechDetailsRepository.findByDomainCodename(DOMAIN)).thenReturn(Optional.empty());
+        KCluster remoteCluster = remoteCluster(NamespaceConfigOption.USE_DOMAIN_NAMESPACE, "remoteNamespace");
+
+        assertThat(manager.namespace(remoteCluster, DOMAIN), is("nmaas-ns-testDomain"));
+    }
+
+    @Test
+    void shouldReturnGeneratedNamespaceForRemoteClusterCreateNamespaceOption() {
+        KCluster remoteCluster = remoteCluster(NamespaceConfigOption.CREATE_NAMESPACE, "remoteNamespace");
+
+        assertThat(manager.namespace(remoteCluster, DOMAIN), is("nmaas-ns-testDomain"));
+    }
+
+    private KCluster remoteCluster(NamespaceConfigOption namespaceConfigOption, String defaultNamespace) {
+        return KCluster.builder()
+                .deployment(KClusterDeployment.builder()
+                        .namespaceConfigOption(namespaceConfigOption)
+                        .defaultNamespace(defaultNamespace)
+                        .build())
+                .build();
     }
 
 }

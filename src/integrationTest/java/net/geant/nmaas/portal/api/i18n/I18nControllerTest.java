@@ -2,8 +2,8 @@ package net.geant.nmaas.portal.api.i18n;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
-import net.geant.nmaas.portal.api.i18n.api.InternationalizationBriefView;
-import net.geant.nmaas.portal.api.i18n.api.InternationalizationView;
+import net.geant.nmaas.portal.api.i18n.api.I18nBaseDto;
+import net.geant.nmaas.portal.api.i18n.api.I18nDto;
 import net.geant.nmaas.portal.persistence.entity.UsersHelper;
 import net.geant.nmaas.portal.persistence.repositories.InternationalizationSimpleRepository;
 import org.apache.commons.lang3.StringUtils;
@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
-public class InternationalizationControllerTest extends BaseControllerTestSetup {
+public class I18nControllerTest extends BaseControllerTestSetup {
 
     @Autowired
     private InternationalizationSimpleRepository repository;
@@ -33,7 +33,7 @@ public class InternationalizationControllerTest extends BaseControllerTestSetup 
     @BeforeEach
     void setup() {
         this.mvc = createMVC();
-        this.repository.save(new InternationalizationView("pl", true, "{\"content\":\"content\"}").getAsInternationalizationSimple());
+        this.repository.save(new I18nDto("pl", true, "{\"content\":\"content\"}").getAsInternationalizationSimple());
     }
 
     @AfterEach
@@ -74,7 +74,7 @@ public class InternationalizationControllerTest extends BaseControllerTestSetup 
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
-        InternationalizationView lang = new ObjectMapper().readValue(result.getResponse().getContentAsString(), InternationalizationView.class);
+        I18nDto lang = new ObjectMapper().readValue(result.getResponse().getContentAsString(), I18nDto.class);
         assertEquals("pl", lang.getLanguage());
     }
 
@@ -94,7 +94,7 @@ public class InternationalizationControllerTest extends BaseControllerTestSetup 
             mvc.perform(put("/api/i18n/state")
                             .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(new ObjectMapper().writeValueAsString(new InternationalizationBriefView(false, "pl")))
+                            .content(new ObjectMapper().writeValueAsString(new I18nBaseDto(false, "pl")))
                             .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isNoContent())
                     .andReturn();

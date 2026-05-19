@@ -3,7 +3,7 @@ package net.geant.nmaas.portal.api.configuration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
 import net.geant.nmaas.portal.api.configuration.model.ConfigurationView;
-import net.geant.nmaas.portal.api.i18n.api.InternationalizationView;
+import net.geant.nmaas.portal.api.i18n.api.I18nDto;
 import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.entity.User;
 import net.geant.nmaas.portal.persistence.entity.UsersHelper;
@@ -55,7 +55,7 @@ public class ConfigurationControllerTest extends BaseControllerTestSetup {
         mvc = createMVC();
         user = UsersHelper.ADMIN;
         if (intRepo.findAll().stream().noneMatch(lang -> lang.getLanguage().equalsIgnoreCase("en"))) {
-            intRepo.save(new InternationalizationView("en", true, "{\"content\":\"content\"}").getAsInternationalizationSimple());
+            intRepo.save(new I18nDto("en", true, "{\"content\":\"content\"}").getAsInternationalizationSimple());
         }
     }
 
