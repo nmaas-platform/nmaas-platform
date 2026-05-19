@@ -95,7 +95,6 @@ sync_api_docs:
     - cp "$SSH_KNOWN_HOSTS" ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
   script:
-    - ls lah build/openapi/openapi.yaml
     - rsync -ah --progress build/openapi/openapi.yaml $SSH_HOST:$SSH_FILE_PATH
   dependencies:
     - generate_api_docs
