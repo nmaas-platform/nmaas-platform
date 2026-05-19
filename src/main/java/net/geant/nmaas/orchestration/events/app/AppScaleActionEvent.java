@@ -11,10 +11,14 @@ public class AppScaleActionEvent extends ApplicationEvent {
     private final Identifier deploymentId;
     private final AppScaleDirection direction;
 
-    public AppScaleActionEvent(Object source, Identifier deploymentId, AppScaleDirection direction) {
+    @Getter
+    private String username;
+
+    public AppScaleActionEvent(Object source, Identifier deploymentId, AppScaleDirection direction, String username) {
         super(source);
         this.deploymentId = deploymentId;
         this.direction = direction;
+        this.username = username;
     }
 
 }
