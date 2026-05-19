@@ -2,8 +2,8 @@ package net.geant.nmaas.portal.api.i18n;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import net.geant.nmaas.portal.api.i18n.api.InternationalizationBriefView;
-import net.geant.nmaas.portal.api.i18n.api.InternationalizationView;
+import net.geant.nmaas.portal.api.i18n.api.I18nBaseDto;
+import net.geant.nmaas.portal.api.i18n.api.I18nDto;
 import net.geant.nmaas.portal.service.InternationalizationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,44 +24,46 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping(value = "/api/i18n")
 @Tag(name = "Translations", description = "Translations management API")
-public class InternationalizationController {
+public class I18nController {
 
     private final InternationalizationService internationalizationService;
 
     @PostMapping("/{language}")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void saveLanguageContent(@PathVariable("language") String language, @RequestParam(value = "enabled") boolean enabled,
+    public void saveLanguageContent(@PathVariable("language") String language,
+                                    @RequestParam(value = "enabled") boolean enabled,
                                     @RequestParam(value = "force", required = false, defaultValue = "false") Boolean force, @RequestBody String content) {
         boolean isForce = force != null && force;
-        this.internationalizationService.addNewLanguage(new InternationalizationView(language, enabled, content), isForce);
+        this.internationalizationService.addNewLanguage(new I18nDto(language, enabled, content), isForce);
     }
 
     @PatchMapping("/{language}")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void updateLanguageContent(@PathVariable("language") String language, @RequestBody String content) {
+    public void updateLanguageContent(@PathVariable("language") String language,
+                                      @RequestBody String content) {
         this.internationalizationService.updateLanguage(language, content);
     }
 
     @GetMapping("/all")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
     @ResponseStatus(HttpStatus.OK)
-    public List<InternationalizationBriefView> getAllSupportedLanguages() {
+    public List<I18nBaseDto> getAllSupportedLanguages() {
         return this.internationalizationService.getAllSupportedLanguages();
     }
 
     @GetMapping("/{language}")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @ResponseStatus(HttpStatus.OK)
-    public InternationalizationView getLanguage(@PathVariable String language) {
+    public I18nDto getLanguage(@PathVariable String language) {
         return this.internationalizationService.getLanguage(language);
     }
 
     @PutMapping("/state")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void changeSupportedLanguageState(@RequestBody InternationalizationBriefView language) {
+    public void changeSupportedLanguageState(@RequestBody I18nBaseDto language) {
         this.internationalizationService.changeLanguageState(language);
     }
 

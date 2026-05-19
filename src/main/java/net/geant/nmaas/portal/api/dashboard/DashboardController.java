@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.api.dashboard;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.service.DashboardService;
@@ -16,6 +17,7 @@ import java.time.OffsetDateTime;
 @RequestMapping("/api/dashboard")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "Dashboard", description = "Retrieving dashboard data")
 public class DashboardController {
 
     private final DashboardService dashboardService;

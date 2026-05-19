@@ -20,21 +20,22 @@ import java.util.Map;
 @NoArgsConstructor
 @Getter
 @Setter
-public class InternationalizationView extends InternationalizationBriefView {
+public class I18nDto extends I18nBaseDto {
 
     private String content;
 
-    public InternationalizationView(String language, boolean enabled, String content){
+    public I18nDto(String language, boolean enabled, String content) {
         super(enabled, language);
         this.content = content;
     }
 
     /**
      * converts InternalizationView object to InternationalizationSimpleObject
+     *
      * @return InternationalizationSimple object with content serialized into InternationalizationNodes
      */
     @JsonIgnore
-    public InternationalizationSimple getAsInternationalizationSimple(){
+    public InternationalizationSimple getAsInternationalizationSimple() {
         InternationalizationSimple result = new InternationalizationSimple();
         // copy trivial properties
         result.setEnabled(this.isEnabled());
@@ -48,20 +49,21 @@ public class InternationalizationView extends InternationalizationBriefView {
             decompose(parts, node, "");
             result.setLanguageNodes(parts);
             return result;
-        } catch (IOException ioe){
+        } catch (IOException ioe) {
             throw new IllegalArgumentException("Language content cannot be parsed");
         }
     }
 
     /**
      * recursively traverses JsonNode object, retrieving keys and values, appending them to result list
+     *
      * @param result output list
-     * @param node root node
-     * @param key current key value
+     * @param node   root node
+     * @param key    current key value
      */
-    private void decompose(List<InternationalizationNode> result, JsonNode node, String key){
-        if(!node.isContainerNode()){
-            if(node.isTextual()){
+    private void decompose(List<InternationalizationNode> result, JsonNode node, String key) {
+        if (!node.isContainerNode()) {
+            if (node.isTextual()) {
                 result.add(new InternationalizationNode(key, node.textValue()));
             } else {
                 throw new IllegalArgumentException("Language node is not textual");
@@ -70,7 +72,7 @@ public class InternationalizationView extends InternationalizationBriefView {
             for (Iterator<Map.Entry<String, JsonNode>> it = node.fields(); it.hasNext(); ) {
                 Map.Entry<String, JsonNode> e = it.next();
 
-                String outKey = key.equals("") ? e.getKey(): key+"."+e.getKey();
+                String outKey = key.equals("") ? e.getKey() : key + "." + e.getKey();
 
                 decompose(result, e.getValue(), outKey);
             }

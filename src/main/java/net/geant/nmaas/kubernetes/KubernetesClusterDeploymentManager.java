@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.geant.nmaas.api.dto.kubernetes.KClusterDto.KClusterDeploymentView;
 import net.geant.nmaas.api.dto.kubernetes.NamespaceConfigOptionDto;
+import net.geant.nmaas.kubernetes.remote.entities.KCluster;
 import net.geant.nmaas.kubernetes.remote.entities.NamespaceConfigOption;
 import net.geant.nmaas.orchestration.entities.DomainTechDetails;
 import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
@@ -17,6 +18,10 @@ import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 import java.util.Optional;
+
+import static net.geant.nmaas.kubernetes.remote.entities.NamespaceConfigOption.CREATE_NAMESPACE;
+import static net.geant.nmaas.kubernetes.remote.entities.NamespaceConfigOption.USE_DEFAULT_NAMESPACE;
+import static net.geant.nmaas.kubernetes.remote.entities.NamespaceConfigOption.USE_DOMAIN_NAMESPACE;
 
 @Component
 @NoArgsConstructor
@@ -77,9 +82,25 @@ public class KubernetesClusterDeploymentManager implements KubernetesClusterName
                 //dynamic creation of namespace will be added
                 return NMAAS_NAMESPACE_PREFIX + domain;
             case USE_DEFAULT_NAMESPACE:
-                return this.getDefaultNamespace();
+                return getDefaultNamespace();
             case USE_DOMAIN_NAMESPACE:
-                Optional<DomainTechDetails> foundDomain = this.domainTechDetailsRepository.findByDomainCodename(domain);
+                Optional<DomainTechDetails> foundDomain = domainTechDetailsRepository.findByDomainCodename(domain);
+                if (foundDomain.isPresent()) {
+                    return foundDomain.get().getKubernetesNamespace();
+                }
+                return NMAAS_NAMESPACE_PREFIX + domain;
+            default:
+                return NMAAS_NAMESPACE_PREFIX + domain;
+        }
+    }
+
+    @Override
+    public String namespace(KCluster remoteCluster, String domain) {
+        switch (remoteCluster.getDeployment().getNamespaceConfigOption()) {
+            case USE_DEFAULT_NAMESPACE:
+                return remoteCluster.getDeployment().getDefaultNamespace();
+            case USE_DOMAIN_NAMESPACE:
+                Optional<DomainTechDetails> foundDomain = domainTechDetailsRepository.findByDomainCodename(domain);
                 if (foundDomain.isPresent()) {
                     return foundDomain.get().getKubernetesNamespace();
                 }

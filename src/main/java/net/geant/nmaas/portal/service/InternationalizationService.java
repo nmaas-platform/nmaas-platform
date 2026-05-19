@@ -1,15 +1,15 @@
 package net.geant.nmaas.portal.service;
 
 import java.util.List;
-import net.geant.nmaas.portal.api.i18n.api.InternationalizationBriefView;
-import net.geant.nmaas.portal.api.i18n.api.InternationalizationView;
+import net.geant.nmaas.portal.api.i18n.api.I18nBaseDto;
+import net.geant.nmaas.portal.api.i18n.api.I18nDto;
 
 public interface InternationalizationService {
-    void addNewLanguage(InternationalizationView newLanguage, Boolean force);
+    void addNewLanguage(I18nDto newLanguage, Boolean force);
     void updateLanguage(String language, String content);
-    List<InternationalizationBriefView> getAllSupportedLanguages();
-    InternationalizationView getLanguage(String language);
-    void changeLanguageState(InternationalizationBriefView language);
+    List<I18nBaseDto> getAllSupportedLanguages();
+    I18nDto getLanguage(String language);
+    void changeLanguageState(I18nBaseDto language);
     String getLanguageContent(String language);
     List<String> getEnabledLanguages();
 }
