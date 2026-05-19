@@ -15,7 +15,7 @@ public class RemoveClusterManagerAdvice {
 
     @ExceptionHandler(value = {IllegalArgumentException.class})
     public ResponseEntity<ApiError> handleValidationException(IllegalArgumentException ex) {
-        log.warn("Responding with 400 with errors: {}", ex.getMessage());
+        log.warn("Responding with 400 with errors: {}", ex.getMessage(), ex);
         long timestamp = System.currentTimeMillis();
         ApiError error = new ApiError(ex.getMessage(), timestamp, HttpStatus.BAD_REQUEST.getReasonPhrase(), HttpStatus.BAD_REQUEST.value());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
