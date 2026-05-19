@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class InternationalizationBriefView {
+public class I18nBaseDto {
 
     private boolean enabled;
 

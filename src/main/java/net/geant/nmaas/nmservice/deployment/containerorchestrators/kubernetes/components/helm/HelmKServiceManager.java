@@ -78,12 +78,19 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
 
     private void installHelmChart(KubernetesNmServiceInfo serviceInfo) {
         helmCommandExecutor.executeHelmInstallCommand(
-                namespaceService.namespace(serviceInfo.getDomain()),
+                getTargetNamespace(serviceInfo),
                 serviceInfo.getDescriptiveDeploymentId().getValue(),
                 serviceInfo.getKubernetesTemplate(),
                 createArgumentsMap(serviceInfo),
                 serviceInfo.getRemoteCluster() != null ? serviceInfo.getRemoteCluster().getPathConfigFile() : null
         );
+    }
+
+    private String getTargetNamespace(KubernetesNmServiceInfo serviceInfo) {
+        if (serviceInfo.getRemoteCluster() != null) {
+            return namespaceService.namespace(serviceInfo.getRemoteCluster(), serviceInfo.getDomain());
+        }
+        return namespaceService.namespace(serviceInfo.getDomain());
     }
 
     private Map<String, String> createArgumentsMap(KubernetesNmServiceInfo serviceInfo) {
@@ -115,11 +122,9 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
                 arguments.putAll(getIngressVariables(serviceInfo.getRemoteCluster().getIngress().getResourceConfigOption(), externalAccessMethods, serviceInfo.getDomain(), serviceInfo.getRemoteCluster()));
             }
         }
-
         if (serviceInfo.getAdditionalParameters() != null && !serviceInfo.getAdditionalParameters().isEmpty()) {
             arguments.putAll(removeRedundantParameters(serviceInfo.getAdditionalParameters()));
         }
-
         return arguments;
     }
 

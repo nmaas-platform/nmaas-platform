@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.persistence.entity;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.geant.nmaas.portal.api.i18n.api.InternationalizationView;
+import net.geant.nmaas.portal.api.i18n.api.I18nDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.StringUtils;
@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 class InternationalizationTest {
 
-    private InternationalizationView internationalization;
+    private I18nDto internationalization;
 
     private InternationalizationSimple internationalizationSimple;
 
@@ -42,7 +42,7 @@ class InternationalizationTest {
 
     @BeforeEach
     void setup() {
-        this.internationalization = new InternationalizationView("english", true, content);
+        this.internationalization = new I18nDto("english", true, content);
     }
 
     @Test
@@ -58,7 +58,7 @@ class InternationalizationTest {
     @Test
     void InternationalizationSimpleShouldSerializeToInternationalization() {
         this.internationalizationSimple = this.internationalization.getAsInternationalizationSimple();
-        InternationalizationView test = this.internationalizationSimple.getAsInternationalizationView();
+        I18nDto test = this.internationalizationSimple.getAsInternationalizationView();
 //        assertEquals(internationalization.getId(), test.getId());
         assertEquals(internationalization.getLanguage(), test.getLanguage());
         assertEquals(internationalization.isEnabled(), test.isEnabled());

@@ -291,7 +291,6 @@ class HelmKServiceManagerTest {
 
     @Test
     void shouldDeployServiceWithKubeconfigPath() {
-        when(namespaceService.namespace("domain")).thenReturn("namespace");
         when(ingressManager.getResourceConfigOption()).thenReturn(IngressResourceConfigOption.DEPLOY_FROM_CHART);
         when(ingressManager.getIngressPerDomain()).thenReturn(false);
         when(ingressManager.getSupportedIngressClass()).thenReturn("testIngressClass");
@@ -332,12 +331,15 @@ class HelmKServiceManagerTest {
         KubernetesNmServiceInfo service = repositoryManager.loadService(deploymentId);
         service.setRemoteCluster(mockCluster);
         when(repositoryManager.loadService(deploymentId)).thenReturn(service);
+        when(namespaceService.namespace(mockCluster, "domain")).thenReturn("remote-namespace");
 
         manager.deployService(deploymentId);
 
         ArgumentCaptor<String> kubeconfigPathArg = ArgumentCaptor.forClass(String.class);
+        verify(namespaceService, times(1)).namespace(mockCluster, "domain");
+        verify(namespaceService, never()).namespace("domain");
         verify(helmCommandExecutor, times(1)).executeHelmInstallCommand(
-                eq("namespace"),
+                eq("remote-namespace"),
                 eq("descriptiveDeploymentId"),
                 any(KubernetesTemplate.class),
                 any(Map.class),

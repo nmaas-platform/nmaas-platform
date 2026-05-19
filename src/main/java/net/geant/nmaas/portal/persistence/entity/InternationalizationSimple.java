@@ -9,7 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import net.geant.nmaas.portal.api.i18n.api.InternationalizationView;
+import net.geant.nmaas.portal.api.i18n.api.I18nDto;
 
 import java.util.HashMap;
 import java.util.List;
@@ -31,8 +31,8 @@ public class InternationalizationSimple extends InternationalizationAbstract {
      *
      * @return
      */
-    public InternationalizationView getAsInternationalizationView() {
-        InternationalizationView result = new InternationalizationView(); //create simple object
+    public I18nDto getAsInternationalizationView() {
+        I18nDto result = new I18nDto(); //create simple object
         // rewrite trivial properties
         result.setLanguage(this.getLanguage());
         result.setEnabled(this.isEnabled());
