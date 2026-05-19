@@ -64,10 +64,8 @@ build_and_push_release_image:
 generate_api_docs:
   stage: api-docs
   image: eclipse-temurin:21.0.11_10-jdk-alpine
-  # only:
-  #   - develop
-  #   - /^release/
-  #   - tags
+  only:
+    - develop
   script:
     - chmod +x ./gradlew
     - ./gradlew -Dorg.gradle.daemon=false generateOpenApiJson
@@ -80,10 +78,8 @@ generate_api_docs:
 sync_api_docs:
   stage: api-docs
   image: instrumentisto/rsync-ssh:alpine
-  # only:
-  #   - develop
-  #   - /^release/
-  #   - tags
+  only:
+    - develop
   needs:
     - generate_api_docs
   before_script:
