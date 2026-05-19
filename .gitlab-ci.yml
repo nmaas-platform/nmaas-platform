@@ -70,11 +70,11 @@ generate_api_docs:
   #   - tags
   script:
     - chmod +x ./gradlew
-    - ./gradlew -Dorg.gradle.daemon=false generateOpenApiYaml
+    - ./gradlew -Dorg.gradle.daemon=false generateOpenApiJson
   artifacts:
     name: "openapi-$CI_COMMIT_REF_SLUG"
     paths:
-      - build/openapi/openapi.yaml
+      - build/openapi/openapi.json
     expire_in: 30 days
 
 sync_api_docs:
@@ -95,7 +95,7 @@ sync_api_docs:
     - cp "$SSH_KNOWN_HOSTS" ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
   script:
-    - rsync -ah --progress build/openapi/openapi.yaml $SSH_HOST:$SSH_FILE_PATH
+    - rsync -ah --progress build/openapi/openapi.json $SSH_HOST:$SSH_FILE_PATH
   dependencies:
     - generate_api_docs
 
