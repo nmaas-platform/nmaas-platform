@@ -1,5 +1,6 @@
 package net.geant.nmaas.notifications.types;
 
+import net.geant.nmaas.notifications.types.api.FormTypeController;
 import net.geant.nmaas.notifications.types.model.FormTypeRequest;
 import net.geant.nmaas.notifications.types.service.FormTypeService;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,7 +31,7 @@ class FormTypeControllerTest {
     @Test
     void shouldCallProperServiceMethodWhenCreate() {
         FormTypeRequest ftr = new FormTypeRequest();
-        this.underTest.create(ftr);
+        this.underTest.createContactFormType(ftr);
         verify(formTypeService, times(1)).create(any(FormTypeRequest.class));
     }
 

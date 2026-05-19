@@ -1,13 +1,13 @@
 package net.geant.nmaas.notifications.types.model;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import java.util.List;
 
 /**
@@ -21,8 +21,10 @@ public class FormTypeRequest {
 
     @NotBlank
     private String key;
+
     @NotBlank
     private String access;
+
     @NotBlank
     private String templateName;
 

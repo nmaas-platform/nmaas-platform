@@ -48,7 +48,8 @@ public class OpenApiConfig {
             );
             List<String> notificationsManagementTags = List.of(
                     "Notifications",
-                    "Mail Templates"
+                    "Mail Templates",
+                    "Contact Forms"
             );
             List<String> authenticationTags = List.of(
                     "Basic Authentication",
@@ -59,7 +60,7 @@ public class OpenApiConfig {
                     "Platform Configuration",
                     "Kubernetes",
                     "Remote Kubernetes Clusters",
-                    "Monitors",
+                    "Platform Monitoring",
                     "Software Information"
             );
 

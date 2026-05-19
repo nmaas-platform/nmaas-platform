@@ -1,11 +1,10 @@
 package net.geant.nmaas.notifications.types.model;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import jakarta.validation.constraints.NotBlank;
 
 /**
  * DTO for form type presentation
@@ -14,7 +13,7 @@ import jakarta.validation.constraints.NotBlank;
 @NoArgsConstructor
 @Getter
 @Setter
-public class FormTypeView {
+public class FormTypeDto {
     @NotBlank
     private String key;
     @NotBlank

@@ -1,5 +1,6 @@
 package net.geant.nmaas.orchestration.api;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
@@ -23,14 +24,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Exposes REST API methods to retrieve information on application deployments.
+ * Exposes REST API methods to retrieve information on application deployments
  */
 @RestController
 @RequestMapping(value = "/api/orchestration/deployments")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "Application Deployment Monitor", description = "Administrator API for retrieving application deployment details")
 public class AppDeploymentMonitorRestController {
-
 
     private final AppDeploymentMonitor deploymentMonitor;
     private final ModelMapper modelMapper;

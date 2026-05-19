@@ -2,7 +2,7 @@ package net.geant.nmaas.notifications.types.service;
 
 import lombok.AllArgsConstructor;
 import net.geant.nmaas.notifications.types.model.FormTypeRequest;
-import net.geant.nmaas.notifications.types.model.FormTypeView;
+import net.geant.nmaas.notifications.types.model.FormTypeDto;
 import net.geant.nmaas.notifications.types.persistence.entity.FormType;
 import net.geant.nmaas.notifications.types.persistence.repository.FormTypeRepository;
 import net.geant.nmaas.portal.exceptions.DataConflictException;
@@ -18,9 +18,9 @@ public class FormTypeService {
 
     private final FormTypeRepository typeRepository;
 
-    public List<FormTypeView> getAll() {
+    public List<FormTypeDto> getAll() {
         return this.typeRepository.findAll().stream().map(
-                t -> new FormTypeView(t.getKeyValue(), t.getAccess(), t.getTemplateName())
+                t -> new FormTypeDto(t.getKeyValue(), t.getAccess(), t.getTemplateName())
         ).collect(Collectors.toList());
     }
 

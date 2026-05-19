@@ -25,7 +25,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/monitor")
-@Tag(name = "Monitors", description = "Monitors management API")
+@Tag(name = "Platform Monitoring", description = "Internal platform monitoring management API")
 public class MonitorController {
 
     private final List<MonitorService> monitorServices;
@@ -39,8 +39,8 @@ public class MonitorController {
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
     public void createMonitorEntryAndJob(@RequestBody MonitorEntryView monitorEntryView) {
         MonitorService service = getMonitorService(monitorEntryView.getServiceName().getName());
-        this.scheduleManager.createJob(service, monitorEntryView);
-        this.monitorManager.createMonitorEntry(monitorEntryView);
+        scheduleManager.createJob(service, monitorEntryView);
+        monitorManager.createMonitorEntry(monitorEntryView);
     }
 
     @PostMapping("/{serviceName}/execute")
@@ -52,7 +52,8 @@ public class MonitorController {
     }
 
     private MonitorService getMonitorService(String serviceName) {
-        return monitorServices.stream().filter(s -> s.getServiceType().getName().equals(serviceName.toUpperCase()))
+        return monitorServices.stream()
+                .filter(s -> s.getServiceType().getName().equals(serviceName.toUpperCase()))
                 .findAny()
                 .orElseThrow(() -> new MonitorServiceNotFound(String.format("Monitor service for %s not found", serviceName)));
     }
@@ -61,16 +62,16 @@ public class MonitorController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
     public void updateMonitorEntryAndJob(@RequestBody MonitorEntryView monitorEntryView) {
-        this.scheduleManager.updateJob(monitorEntryView);
-        this.monitorManager.updateMonitorEntry(monitorEntryView);
+        scheduleManager.updateJob(monitorEntryView);
+        monitorManager.updateMonitorEntry(monitorEntryView);
     }
 
     @DeleteMapping("/{serviceName}")
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
     public void deleteMonitorEntryAndJob(@PathVariable String serviceName) {
-        this.scheduleManager.deleteJob(serviceName);
-        this.monitorManager.deleteMonitorEntry(serviceName);
+        scheduleManager.deleteJob(serviceName);
+        monitorManager.deleteMonitorEntry(serviceName);
     }
 
     @GetMapping("/all")
@@ -83,7 +84,7 @@ public class MonitorController {
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
     public MonitorEntryView getMonitorEntry(@PathVariable String serviceName) {
-        return this.monitorManager.getMonitorEntries(serviceName);
+        return monitorManager.getMonitorEntries(serviceName);
     }
 
     @PatchMapping("/{serviceName}/resume")

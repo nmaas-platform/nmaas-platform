@@ -1,5 +1,6 @@
 package net.geant.nmaas.orchestration.api;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,12 +26,13 @@ import org.springframework.web.bind.annotation.RestController;
 import java.security.Principal;
 
 /**
- * Exposes REST API methods to manage application deployment lifecycle.
+ * Exposes REST API methods to manage application deployment lifecycle
  */
 @RestController
 @RequestMapping(value = "/api/orchestration/deployments")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "Application Lifecycle Manager", description = "Administrator API for managing application deployment lifecycle")
 public class AppLifecycleManagerRestController {
 
     private final AppLifecycleManager lifecycleManager;
@@ -113,7 +115,7 @@ public class AppLifecycleManagerRestController {
     @ExceptionHandler(InvalidDeploymentIdException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public String handleInvalidDeploymentIdException(InvalidDeploymentIdException ex) {
-        log.error("Requested deployment not found -> {}", ex.getMessage());
+        log.warn("Requested deployment not found -> {}", ex.getMessage());
         return ex.getMessage();
     }
 

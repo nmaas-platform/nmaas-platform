@@ -1,8 +1,10 @@
-package net.geant.nmaas.notifications.types;
+package net.geant.nmaas.notifications.types.api;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import net.geant.nmaas.notifications.types.model.FormTypeDto;
 import net.geant.nmaas.notifications.types.model.FormTypeRequest;
-import net.geant.nmaas.notifications.types.model.FormTypeView;
 import net.geant.nmaas.notifications.types.service.FormTypeService;
 import net.geant.nmaas.portal.exceptions.DataConflictException;
 import org.springframework.http.HttpStatus;
@@ -15,31 +17,31 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/mail/type")
 @AllArgsConstructor
+@Tag(name = "Contact Forms", description = "Contact forms management API")
 public class FormTypeController {
 
     private final FormTypeService service;
 
     @GetMapping
-    public List<FormTypeView> getAll() {
+    public List<FormTypeDto> getAll() {
         return this.service.getAll();
     }
 
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @PutMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void create(@RequestBody @Valid FormTypeRequest request) {
+    public void createContactFormType(@RequestBody @Valid FormTypeRequest request) {
         this.service.create(request);
     }
 
     @ExceptionHandler(DataConflictException.class)
     @ResponseStatus(code = HttpStatus.CONFLICT)
-    public String handleDataConfigException(DataConflictException e){
+    public String handleDataConfigException(DataConflictException e) {
         return e.getMessage();
     }
 }
