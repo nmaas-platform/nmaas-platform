@@ -746,16 +746,16 @@
     },
     "SHOW_VERSIONS_LABEL": "Show available versions",
     "GO_TO_APP_TOOLTIP": "Diese Anwendung stellt keine Webbenutzeroberfläche zur Verfügung",
-    "SHELL": "Shell"
+    "SHELL": "Shell öffnen"
   },
   "SHELL": {
-    "CONNECTED_TO" : "Connected to",
-    "POD_NAME": "container name:",
-    "RECONNECT_BUTTON": "Reconnect",
-    "DISCONNECT_BUTTON": "Disconnect",
+    "CONNECTED_TO": "Verbunden mit",
+    "POD_NAME": "Container-Name:",
+    "RECONNECT_BUTTON": "Erneut verbinden",
+    "DISCONNECT_BUTTON": "Trennen",
     "EXIT_SHELL_MODAL": {
-      "HEADER": "Shell session ended",
-      "BODY": "Your connection was terminated",
+      "HEADER": "Shell-Sitzung beendet",
+      "BODY": "Ihre Verbindung wurde beendet",
       "CONFIRM": "OK"
     }
   },

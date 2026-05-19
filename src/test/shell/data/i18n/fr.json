@@ -751,13 +751,13 @@
     "SHELL": "Shell"
   },
   "SHELL": {
-    "CONNECTED_TO" : "Connected to",
-    "POD_NAME": "container name:",
-    "RECONNECT_BUTTON": "Reconnect",
-    "DISCONNECT_BUTTON": "Disconnect",
+    "CONNECTED_TO": "Connecté à",
+    "POD_NAME": "nom du conteneur :",
+    "RECONNECT_BUTTON": "Reconnecter",
+    "DISCONNECT_BUTTON": "Déconnecter",
     "EXIT_SHELL_MODAL": {
-      "HEADER": "Shell session ended",
-      "BODY": "Your connection was terminated",
+      "HEADER": "Session Shell terminée",
+      "BODY": "Votre connexion a été interrompue",
       "CONFIRM": "OK"
     }
   },

@@ -747,7 +747,7 @@
     },
     "SHOW_VERSIONS_LABEL": "Pokaż dostępne wersje",
     "GO_TO_APP_TOOLTIP": "Ta aplikacja nie udostępnia interfejsu użytkownika",
-    "SHELL": "Shell"
+    "SHELL": "Otwórz konsolę"
   },
   "SHELL": {
     "CONNECTED_TO": "Podłączony do",
