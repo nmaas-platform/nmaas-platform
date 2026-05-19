@@ -20,6 +20,7 @@ import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.entity.User;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import net.geant.nmaas.portal.service.ApplicationService;
+import net.geant.nmaas.portal.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -42,6 +43,7 @@ class AppUpgradeTaskTest {
     private final ApplicationInstanceService instanceService = mock(ApplicationInstanceService.class);
     private final AppUpgradeHistoryRepository appUpgradeHistoryRepository = mock(AppUpgradeHistoryRepository.class);
     private final ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);
+    private final UserService userService = mock(UserService.class);
 
     private AppUpgradeTask task;
 
@@ -53,7 +55,7 @@ class AppUpgradeTaskTest {
 
     @BeforeEach
     void setup() {
-        task = new AppUpgradeTask(deploymentProvider, applicationService, instanceService, appUpgradeHistoryRepository, eventPublisher);
+        task = new AppUpgradeTask(deploymentProvider, applicationService, instanceService, appUpgradeHistoryRepository, eventPublisher, userService);
         application = new Application(1L, "appName", "appVersion");
         application.setAppDeploymentSpec(AppDeploymentSpec.builder().kubernetesTemplate(kubernetesTemplate).build());
     }
