@@ -199,16 +199,16 @@ tasks.register('integrationTest', Test) {
     dependsOn(test)
 }
 
-tasks.register('generateOpenApiYaml', Test) {
+tasks.register('generateOpenApiJson', Test) {
     group = 'documentation'
-    description = 'Runs test that exports OpenAPI YAML from Spring context'
+    description = 'Runs test that exports OpenAPI JSON from Spring context'
     useJUnitPlatform()
 
     // Run only the specific test class and method
     include '**/OpenApiExportTest.class'
 
     filter {
-        includeTestsMatching("net.geant.nmaas.openapi.OpenApiExportTest.exportOpenApiAsYaml")
+        includeTestsMatching("net.geant.nmaas.openapi.OpenApiExportTest.exportOpenApiAsJson")
     }
 
     // Make sure test classes and runtime classpath are ready

@@ -7,8 +7,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.client.EntityExchangeResult;
 import org.springframework.test.web.servlet.client.RestTestClient;
-import org.yaml.snakeyaml.DumperOptions;
-import org.yaml.snakeyaml.Yaml;
 import tools.jackson.databind.json.JsonMapper;
 
 import java.nio.file.Files;
@@ -34,8 +32,8 @@ public class OpenApiExportTest {
     }
 
     @Test
-    void exportOpenApiAsYaml() throws Exception {
-        var outputPath = Path.of("build/openapi/openapi.yaml");
+    void exportOpenApiAsJson() throws Exception {
+        var outputPath = Path.of("build/openapi/openapi.json");
         Files.createDirectories(outputPath.getParent());
 
         // Call the standard SpringDoc OpenAPI endpoint
@@ -56,18 +54,10 @@ public class OpenApiExportTest {
         assertNotNull(openApiMap.get("info"), "OpenAPI info section should be present");
         assertNotNull(openApiMap.get("paths"), "OpenAPI paths section should be present");
 
-        // Configure YAML output
-        var options = new DumperOptions();
-        options.setPrettyFlow(true);
-        options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-        var yaml = new Yaml(options);
-
         // Write to file
-        try (var writer = Files.newBufferedWriter(outputPath)) {
-            yaml.dump(openApiMap, writer);
-        }
+        Files.writeString(outputPath, result.getResponseBody());
 
-        log.info("OpenAPI YAML written to: {}", outputPath);
+        log.info("OpenAPI JSON written to: {}", outputPath);
     }
 
 }
