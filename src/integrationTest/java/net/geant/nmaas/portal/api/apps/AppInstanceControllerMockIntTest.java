@@ -112,7 +112,7 @@ class AppInstanceControllerMockIntTest extends BaseControllerTestSetup {
                         .header("Authorization", "Bearer " + getValidTokenForUser(user)))
                 .andExpect(status().isOk());
         ArgumentCaptor<AppDeployment> appDeployment = ArgumentCaptor.forClass(AppDeployment.class);
-        verify(appLifecycleManager, times(1)).deployApplication(appDeployment.capture());
+        verify(appLifecycleManager, times(1)).deployApplication(appDeployment.capture(), ArgumentMatchers.eq(user.getUsername()));
         assertThat(appDeployment.getValue().getInstanceId(), equalTo(10L));
         assertThat(appDeployment.getValue().getDescriptiveDeploymentId().getValue(),
                 equalTo(UsersHelper.DOMAIN1.getCodename().toLowerCase() + "-namewithspaces-" + 10));
@@ -136,7 +136,7 @@ class AppInstanceControllerMockIntTest extends BaseControllerTestSetup {
                         .header("Authorization", "Bearer " + getValidTokenForUser(user)))
                 .andExpect(status().isOk());
         ArgumentCaptor<AppDeployment> appDeployment = ArgumentCaptor.forClass(AppDeployment.class);
-        verify(appLifecycleManager, times(1)).deployApplication(appDeployment.capture());
+        verify(appLifecycleManager, times(1)).deployApplication(appDeployment.capture(), ArgumentMatchers.eq(user.getUsername()));
         assertThat(appDeployment.getValue().getInstanceId(), equalTo(10L));
         assertThat(appDeployment.getValue().getDescriptiveDeploymentId().getValue(),
                 equalTo(UsersHelper.DOMAIN1.getCodename().toLowerCase() + "-namewithspaces-" + 10));
@@ -191,7 +191,7 @@ class AppInstanceControllerMockIntTest extends BaseControllerTestSetup {
                         .content(new ObjectMapper().writeValueAsString(appInstanceDeployed))
                         .header("Authorization", "Bearer " + getValidTokenForUser(user)))
                 .andExpect(status().isBadRequest());
-        verify(appLifecycleManager, times(0)).deployApplication(ArgumentMatchers.any(AppDeployment.class));
+        verify(appLifecycleManager, times(0)).deployApplication(ArgumentMatchers.any(AppDeployment.class), ArgumentMatchers.any(String.class));
     }
 
     @Test
@@ -221,7 +221,7 @@ class AppInstanceControllerMockIntTest extends BaseControllerTestSetup {
                         .content(new ObjectMapper().writeValueAsString(appInstanceDone))
                         .header("Authorization", "Bearer " + getValidTokenForUser(user)))
                 .andExpect(status().isOk());
-        verify(appLifecycleManager, times(1)).deployApplication(ArgumentMatchers.any(AppDeployment.class));
+        verify(appLifecycleManager, times(1)).deployApplication(ArgumentMatchers.any(AppDeployment.class), ArgumentMatchers.eq(user.getUsername()));
     }
 
     @Test
@@ -250,7 +250,7 @@ class AppInstanceControllerMockIntTest extends BaseControllerTestSetup {
                         .content(new ObjectMapper().writeValueAsString(appInstanceRemoved))
                         .header("Authorization", "Bearer " + getValidTokenForUser(user)))
                 .andExpect(status().isOk());
-        verify(appLifecycleManager, times(1)).deployApplication(ArgumentMatchers.any(AppDeployment.class));
+        verify(appLifecycleManager, times(1)).deployApplication(ArgumentMatchers.any(AppDeployment.class), ArgumentMatchers.eq(user.getUsername()));
     }
 
     private AppInstanceRequest appInstanceRequest(String name) {
@@ -266,7 +266,7 @@ class AppInstanceControllerMockIntTest extends BaseControllerTestSetup {
         mvc.perform(post("/api/apps/instances/{appInstanceId}/restart", 1L)
                         .header("Authorization", "Bearer " + getValidTokenForUser(user)))
                 .andExpect(status().isOk());
-        verify(appLifecycleManager, times(1)).restartApplication(appInstance.getInternalId());
+        verify(appLifecycleManager, times(1)).restartApplication(appInstance.getInternalId(), user.getUsername());
     }
 
     @Test
@@ -280,15 +280,15 @@ class AppInstanceControllerMockIntTest extends BaseControllerTestSetup {
         mvc.perform(post("/api/apps/instances/{appInstanceId}/restart", 1L)
                         .header("Authorization", "Bearer " + getValidTokenForUser(user)))
                 .andExpect(status().isOk());
-        verify(appLifecycleManager, times(1)).restartApplication(appInstance.getInternalId());
+        verify(appLifecycleManager, times(1)).restartApplication(appInstance.getInternalId(), user.getUsername());
         mvc.perform(post("/api/apps/instances/{appInstanceId}/redeploy", 1L)
                         .header("Authorization", "Bearer " + getValidTokenForUser(user)))
                 .andExpect(status().isOk());
-        verify(appLifecycleManager, times(1)).redeployApplication(appInstance.getInternalId());
+        verify(appLifecycleManager, times(1)).redeployApplication(appInstance.getInternalId(), user.getUsername());
         mvc.perform(post("/api/apps/instances/{appInstanceId}/upgrade/{targetAppInstanceId}", 1L, 2L)
                         .header("Authorization", "Bearer " + getValidTokenForUser(user)))
                 .andExpect(status().isOk());
-        verify(appLifecycleManager, times(1)).upgradeApplication(appInstance.getInternalId(), Identifier.newInstance(2L));
+        verify(appLifecycleManager, times(1)).upgradeApplication(appInstance.getInternalId(), Identifier.newInstance(2L), user.getUsername());
     }
 
     @Test
@@ -468,7 +468,7 @@ class AppInstanceControllerMockIntTest extends BaseControllerTestSetup {
         mvc.perform(post("/api/apps/instances/{appInstanceId}/upgrade/{targetAppInstanceId}", 1L, 2L)
                         .header("Authorization", "Bearer " + getValidTokenForUser(user)))
                 .andExpect(status().isOk());
-        verify(appLifecycleManager, times(1)).upgradeApplication(appInstance.getInternalId(), Identifier.newInstance(2L));
+        verify(appLifecycleManager, times(1)).upgradeApplication(appInstance.getInternalId(), Identifier.newInstance(2L), user.getUsername());
     }
 
     private void mockAppInstanceGetProcess(Domain domain, User user, ApplicationBase applicationBase, Application application, AppInstance appInstance) {

@@ -1,5 +1,6 @@
 package net.geant.nmaas.orchestration.entities;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -14,6 +15,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import net.geant.nmaas.portal.persistence.entity.User;
 
 import java.util.Date;
 
@@ -38,16 +40,31 @@ public class AppDeploymentHistory {
     @Column(nullable = false)
     private Date timestamp;
 
+    //TODO potential source of an bug related to changes in the enums
     private AppDeploymentState previousState;
 
+    //TODO potential source of an bug related to changes in the enums
     @Column(nullable = false)
     private AppDeploymentState currentState;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    @Nullable
+    private User triggerredUser;
 
     public AppDeploymentHistory(AppDeployment app, Date timestamp, AppDeploymentState previousState, AppDeploymentState currentState) {
         this.app = app;
         this.timestamp = timestamp;
         this.previousState = previousState;
         this.currentState = currentState;
+    }
+
+    public AppDeploymentHistory(AppDeployment app, Date timestamp, AppDeploymentState previousState, AppDeploymentState currentState, User triggerredUser) {
+        this.app = app;
+        this.timestamp = timestamp;
+        this.previousState = previousState;
+        this.currentState = currentState;
+        this.triggerredUser = triggerredUser;
     }
 
     public String getPreviousStateString() {

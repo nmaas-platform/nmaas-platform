@@ -88,7 +88,7 @@ public class PodShellController {
     }
 
     /**
-     * Retrieves pod names for given application instance
+     * Retrieves pod names for a given application instance
      *
      * @param principal     - principal
      * @param appInstanceId - identifier of application instance

@@ -19,6 +19,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import net.geant.nmaas.orchestration.Identifier;
+import net.geant.nmaas.portal.persistence.entity.User;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.type.descriptor.jdbc.VarcharJdbcType;
 
@@ -137,6 +138,10 @@ public class AppDeployment {
 
     public void addChangeOfStateToHistory(AppDeploymentState previousState, AppDeploymentState currentState) {
         history.add(new AppDeploymentHistory(this, new Date(), previousState, currentState));
+    }
+
+    public void addChangeOfStateToHistory(AppDeploymentState previousState, AppDeploymentState currentState, User triggerredUser) {
+        history.add(new AppDeploymentHistory(this, new Date(), previousState, currentState, triggerredUser));
     }
 
 }

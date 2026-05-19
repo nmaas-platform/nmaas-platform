@@ -15,7 +15,9 @@ import net.geant.nmaas.orchestration.events.app.AppUpdateBasicAuthActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppUpgradeActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppVerifyRequestActionEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
+import net.geant.nmaas.portal.persistence.repositories.UserRepository;
 import net.geant.nmaas.portal.service.ConfigurationManager;
+import net.geant.nmaas.portal.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -49,6 +51,7 @@ class DefaultAppLifecycleManagerTest {
     private final NmServiceRepositoryManager<KubernetesNmServiceInfo> serviceRepositoryManager = mock(KubernetesRepositoryManager.class);
     private final AppTermsAcceptanceService appTermsAcceptanceService = mock(AppTermsAcceptanceService.class);
     private final ConfigurationManager configurationManager = mock(ConfigurationManager.class);
+    private final UserRepository userRepository = mock(UserRepository.class);
 
     private final JsonMapper jsonMapper = new JsonMapper();
 
@@ -56,7 +59,7 @@ class DefaultAppLifecycleManagerTest {
 
     @BeforeEach
     void setup() {
-        appLifecycleManager = new DefaultAppLifecycleManager(repositoryManager, eventPublisher, serviceRepositoryManager, appTermsAcceptanceService, configurationManager, new JsonMapper());
+        appLifecycleManager = new DefaultAppLifecycleManager(repositoryManager, eventPublisher, serviceRepositoryManager,userRepository, appTermsAcceptanceService, configurationManager, new JsonMapper());
     }
 
     @Test

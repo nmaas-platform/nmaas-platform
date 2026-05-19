@@ -55,7 +55,7 @@ This way both the supported network management applications and the nmaas core c
 For more information please contact the [nmaas Team](mailto:nmaas-team@lists.geant.org).
 
 
-### Generate OpenAPI spec yaml file based on the current implementation of REST API endpoints
+### Generate OpenAPI spec JSON file based on the current implementation of REST API endpoints
 
-+ Execute: *./gradlew generateOpenApiYaml* in project folder.
-+ Get yaml file  *build/openapi/openapi.yaml*
++ Execute: *./gradlew generateOpenApiJson* in project folder.
++ Get JSON file  *build/openapi/openapi.json*

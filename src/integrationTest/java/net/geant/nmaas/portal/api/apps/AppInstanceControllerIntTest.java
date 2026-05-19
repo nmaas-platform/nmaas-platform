@@ -98,7 +98,7 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
                 .andDo(print())
                 .andExpect(status().isOk());
         ArgumentCaptor<AppDeployment> appDeployment = ArgumentCaptor.forClass(AppDeployment.class);
-        verify(appLifecycleManager, times(1)).deployApplication(appDeployment.capture());
+        verify(appLifecycleManager, times(1)).deployApplication(appDeployment.capture(), any(String.class));
     }
 
     @Test

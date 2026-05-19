@@ -24,6 +24,8 @@ import net.geant.nmaas.orchestration.events.dcn.DcnDeployedEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.portal.events.ApplicationDeployedEvent;
 import net.geant.nmaas.portal.events.ApplicationRemovedEvent;
+import net.geant.nmaas.portal.persistence.entity.User;
+import net.geant.nmaas.portal.service.UserService;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.context.ApplicationEvent;
@@ -44,13 +46,19 @@ public class AppDeploymentStateChangeManager {
     private final DefaultAppDeploymentRepositoryManager deploymentRepositoryManager;
     private final AppDeploymentMonitor deploymentMonitor;
     private final ApplicationEventPublisher eventPublisher;
+    private final UserService userService;
 
     @EventListener
     @Loggable(LogLevel.INFO)
     public synchronized ApplicationEvent notifyStateChange(NmServiceDeploymentStateChangeEvent event) {
         try {
             AppDeploymentState newDeploymentState = deploymentRepositoryManager.loadState(event.getDeploymentId()).nextState(event.getState());
-            deploymentRepositoryManager.updateState(event.getDeploymentId(), newDeploymentState);
+            User user = userService.findByUsername(event.getUserInitiator()).orElse(null);
+            if (user != null) {
+                deploymentRepositoryManager.updateState(event.getDeploymentId(), newDeploymentState, user);
+            } else {
+                deploymentRepositoryManager.updateState(event.getDeploymentId(), newDeploymentState);
+            }
             if (newDeploymentState.isInFailedState()) {
                 log.warn("Application deployment failed state detected. Saving error message: {}", event.getErrorMessage());
                 deploymentRepositoryManager.updateErrorMessage(event.getDeploymentId(), event.getErrorMessage());
