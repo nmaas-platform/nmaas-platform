@@ -15,8 +15,10 @@ import net.geant.nmaas.orchestration.exceptions.InvalidApplicationIdException;
 import net.geant.nmaas.orchestration.repositories.AppUpgradeHistoryRepository;
 import net.geant.nmaas.portal.persistence.entity.AppInstance;
 import net.geant.nmaas.portal.persistence.entity.Application;
+import net.geant.nmaas.portal.persistence.entity.User;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import net.geant.nmaas.portal.service.ApplicationService;
+import net.geant.nmaas.portal.service.UserService;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.context.ApplicationEventPublisher;
@@ -44,6 +46,7 @@ public class AppUpgradeTask {
     private final ApplicationInstanceService applicationInstanceService;
     private final AppUpgradeHistoryRepository appUpgradeHistoryRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final UserService userService;
 
     @EventListener
     @Loggable(LogLevel.INFO)
@@ -52,7 +55,23 @@ public class AppUpgradeTask {
         try {
             final Identifier deploymentId = event.getRelatedTo();
             final Application application = applicationService.findApplication(event.getApplicationId().longValue()).orElseThrow(() -> new InvalidApplicationIdException("Application with id " + event.getApplicationId() + DOES_NOT_EXIST));
-            serviceDeployment.upgradeKubernetesService(deploymentId, event.getAppUpgradeMode(), event.getApplicationId(), application.getAppDeploymentSpec().getKubernetesTemplate());
+            User user = userService.findByUsername(event.getUsername()).orElse(null);
+            if (user != null) {
+                serviceDeployment.upgradeKubernetesService(
+                        deploymentId,
+                        event.getAppUpgradeMode(),
+                        event.getApplicationId(),
+                        application.getAppDeploymentSpec().getKubernetesTemplate(),
+                        user.getUsername()
+                );
+            } else {
+                serviceDeployment.upgradeKubernetesService(
+                        deploymentId,
+                        event.getAppUpgradeMode(),
+                        event.getApplicationId(),
+                        application.getAppDeploymentSpec().getKubernetesTemplate()
+                );
+            }
         } catch (Exception ex) {
             logGenericError(ex);
         }

@@ -20,6 +20,8 @@ import net.geant.nmaas.orchestration.events.app.AppVerifyRequestActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppVerifyServiceActionEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
+import net.geant.nmaas.portal.persistence.entity.User;
+import net.geant.nmaas.portal.persistence.repositories.UserRepository;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
@@ -61,6 +63,8 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     private final ApplicationEventPublisher eventPublisher;
     private final NmServiceRepositoryManager serviceRepositoryManager;
 
+    private final UserRepository userRepository;
+
     private final AppTermsAcceptanceService appTermsAcceptanceService;
     private final ConfigurationManager configurationManager;
     private final JsonMapper jsonMapper;
@@ -78,6 +82,22 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
             appDeployment.setDeploymentName(configurationManager.getConfiguration().getDeploymentPrefix() + "-" + appDeployment.getDeploymentName());
         }
         deploymentRepositoryManager.store(appDeployment);
+        eventPublisher.publishEvent(new AppVerifyRequestActionEvent(this, deploymentId));
+        return deploymentId;
+    }
+
+    @Override
+    @Loggable(LogLevel.INFO)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public Identifier deployApplication(AppDeployment appDeployment, String username) {
+        Identifier deploymentId = generateDeploymentId();
+        User triggerredUser = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ProcessingException("User with username " + username + " not found"));
+        appDeployment.setDeploymentId(deploymentId);
+        if (useDeploymentPrefix) {
+            appDeployment.setDeploymentName(configurationManager.getConfiguration().getDeploymentPrefix() + "-" + appDeployment.getDeploymentName());
+        }
+        deploymentRepositoryManager.store(appDeployment, triggerredUser);
         eventPublisher.publishEvent(new AppVerifyRequestActionEvent(this, deploymentId));
         return deploymentId;
     }
@@ -120,6 +140,18 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     @Loggable(LogLevel.INFO)
     public void redeployApplication(Identifier deploymentId) {
         eventPublisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, ServiceDeploymentState.INIT, ""));
+        eventPublisher.publishEvent(new AppVerifyRequestActionEvent(this, deploymentId));
+    }
+
+    @Override
+    @Loggable(LogLevel.INFO)
+    public void redeployApplication(Identifier deploymentId, String username) {
+        eventPublisher.publishEvent(new NmServiceDeploymentStateChangeEvent(
+                this,
+                deploymentId,
+                ServiceDeploymentState.INIT,
+                "",
+                username));
         eventPublisher.publishEvent(new AppVerifyRequestActionEvent(this, deploymentId));
     }
 
@@ -282,9 +314,27 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     }
 
     @Override
+    @Loggable(LogLevel.INFO)
+    public void removeApplication(Identifier deploymentId, String username) {
+        try {
+            if (!AppDeploymentState.APPLICATION_REMOVED.equals(deploymentRepositoryManager.loadState(deploymentId))) {
+                eventPublisher.publishEvent(new AppRemoveActionEvent(this, deploymentId, username));
+            }
+        } catch (InvalidDeploymentIdException e) {
+            log.warn("Application deployment {} not found for removal. Skipping.", deploymentId, e);
+        }
+    }
+
+    @Override
     @Loggable(LogLevel.DEBUG)
     public void removeFailedApplication(Identifier deploymentId) {
         eventPublisher.publishEvent(new AppRemoveFailedActionEvent(this, deploymentId));
+    }
+
+    @Override
+    @Loggable(LogLevel.DEBUG)
+    public void removeFailedApplication(Identifier deploymentId, String username) {
+        eventPublisher.publishEvent(new AppRemoveFailedActionEvent(this, deploymentId, username));
     }
 
     @Override
@@ -292,6 +342,22 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     public void upgradeApplication(Identifier deploymentId, Identifier targetApplicationId) {
         if (AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFIED.equals(deploymentRepositoryManager.loadState(deploymentId))) {
             eventPublisher.publishEvent(new AppUpgradeActionEvent(this, deploymentId, targetApplicationId, AppUpgradeMode.MANUAL));
+        }
+    }
+
+    @Override
+    @Loggable(LogLevel.INFO)
+    public void upgradeApplication(Identifier deploymentId, Identifier targetApplicationId, String username) {
+        if (AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFIED.equals(deploymentRepositoryManager.loadState(deploymentId))) {
+            eventPublisher.publishEvent(
+                    new AppUpgradeActionEvent(
+                            this,
+                            deploymentId,
+                            targetApplicationId,
+                            AppUpgradeMode.MANUAL,
+                            username
+                    )
+            );
         }
     }
 
@@ -310,6 +376,12 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     @Loggable(LogLevel.INFO)
     public void restartApplication(Identifier deploymentId) {
         eventPublisher.publishEvent(new AppRestartActionEvent(this, deploymentId));
+    }
+
+    @Override
+    @Loggable(LogLevel.INFO)
+    public void restartApplication(Identifier deploymentId, String username) {
+        eventPublisher.publishEvent(new AppRestartActionEvent(this, deploymentId, username));
     }
 
     @Override

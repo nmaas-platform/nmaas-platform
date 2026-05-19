@@ -22,7 +22,11 @@ public class AppRestartTask {
     @Loggable(LogLevel.INFO)
     public void trigger(AppRestartActionEvent event) {
         try {
-            serviceDeployment.restartService(event.getRelatedTo());
+            if (event.getUsername() != null) {
+                serviceDeployment.restartService(event.getRelatedTo(), event.getUsername());
+            } else {
+                serviceDeployment.restartService(event.getRelatedTo());
+            }
         } catch (Exception ex) {
             log.error("Error reported at {}", LocalDateTime.now(), ex);
         }

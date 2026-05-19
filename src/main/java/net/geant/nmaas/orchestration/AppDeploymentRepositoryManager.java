@@ -4,6 +4,7 @@ import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentHistory;
 import net.geant.nmaas.orchestration.entities.AppDeploymentOwner;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
+import net.geant.nmaas.portal.persistence.entity.User;
 
 import java.util.List;
 import java.util.Map;
@@ -13,9 +14,13 @@ public interface AppDeploymentRepositoryManager {
 
     void store(AppDeployment appDeployment);
 
+    void store(AppDeployment appDeployment, User triggerredUser);
+
     void update(AppDeployment appDeployment);
 
     void updateState(Identifier deploymentId, AppDeploymentState currentState);
+
+    void updateState(Identifier deploymentId, AppDeploymentState currentState, User triggerredUser);
 
     void updateApplicationId(Identifier deploymentId, Identifier applicationId);
 

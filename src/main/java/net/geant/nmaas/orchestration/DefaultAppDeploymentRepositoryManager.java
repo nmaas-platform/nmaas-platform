@@ -41,6 +41,15 @@ public class DefaultAppDeploymentRepositoryManager implements AppDeploymentRepos
     }
 
     @Override
+    public void store(AppDeployment appDeployment, User triggerredUser) {
+        if (repository.existsByDeploymentId(appDeployment.getDeploymentId())) {
+            throw new InvalidDeploymentIdException("Deployment with id " + appDeployment.getDeploymentId() + " already exists in the repository.");
+        }
+        appDeployment.addChangeOfStateToHistory(null, appDeployment.getState(), triggerredUser);
+        repository.save(appDeployment);
+    }
+
+    @Override
     //@Transactional(propagation = Propagation.REQUIRES_NEW)
     public void update(AppDeployment appDeployment) {
         repository.save(appDeployment);
@@ -51,6 +60,15 @@ public class DefaultAppDeploymentRepositoryManager implements AppDeploymentRepos
     public void updateState(Identifier deploymentId, AppDeploymentState currentState) {
         AppDeployment appDeployment = load(deploymentId);
         appDeployment.addChangeOfStateToHistory(appDeployment.getState(), currentState);
+        appDeployment.setState(currentState);
+        repository.save(appDeployment);
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void updateState(Identifier deploymentId, AppDeploymentState currentState, User triggerredUser) {
+        AppDeployment appDeployment = load(deploymentId);
+        appDeployment.addChangeOfStateToHistory(appDeployment.getState(), currentState, triggerredUser);
         appDeployment.setState(currentState);
         repository.save(appDeployment);
     }

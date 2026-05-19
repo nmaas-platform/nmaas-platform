@@ -20,6 +20,8 @@ public interface AppLifecycleManager {
      */
     Identifier deployApplication(AppDeployment appDeployment);
 
+    Identifier deployApplication(AppDeployment appDeployment, String username);
+
     /**
      * Initializes application deployment without triggering the process itself.
      *
@@ -32,15 +34,19 @@ public interface AppLifecycleManager {
      * Triggers the nmaas application redeployment process which may take some time. This process is executed asynchronously
      * and {@link AppDeploymentState} for this deployment is updated once particular deployment phases
      * are completed. The current {@link AppDeploymentState} may be retrieved from {@link AppDeploymentMonitor}.
+     *
      * @param deploymentId unique identifier of the user application
      */
     void redeployApplication(Identifier deploymentId);
 
+    void redeployApplication(Identifier deploymentId, String username);
+
     /**
      * Applies custom configuration for the nmaas application being deployed once provided by the user.
-     *  @param deploymentId unique identifier of the deployed user application
+     *
+     * @param deploymentId  unique identifier of the deployed user application
      * @param configuration configuration provided by the user in the application deployment wizard
-     * @param initiator username of a user who triggered this action
+     * @param initiator     username of a user who triggered this action
      */
     void applyConfiguration(Identifier deploymentId, AppConfigurationDto configuration, String initiator);
 
@@ -51,20 +57,24 @@ public interface AppLifecycleManager {
      */
     void removeApplication(Identifier deploymentId);
 
+    void removeApplication(Identifier deploymentId, String username);
+
     /**
      * Upgrades already deployed user application to the desired version available in the nmaas Portal.
      * This most probably requires application container redeployment.
      * Application configuration and persistent data must be retained.
      *
-     * @param deploymentId unique identifier of the deployed user application
+     * @param deploymentId        unique identifier of the deployed user application
      * @param targetApplicationId unique identifier of the desired version of the originally deployed application
      */
     void upgradeApplication(Identifier deploymentId, Identifier targetApplicationId);
 
+    void upgradeApplication(Identifier deploymentId, Identifier targetApplicationId, String username);
+
     /**
      * Updates the configuration of already deployed user application.
      *
-     * @param deploymentId unique identifier of the deployed user application
+     * @param deploymentId  unique identifier of the deployed user application
      * @param configuration updated application configuration provided by the user
      */
     void updateConfiguration(Identifier deploymentId, AppConfigurationDto configuration);
@@ -77,12 +87,16 @@ public interface AppLifecycleManager {
      */
     void restartApplication(Identifier deploymentId);
 
+    void restartApplication(Identifier deploymentId, String username);
+
     /**
      * Removes application, if it fails on any stage of deployment. Additionally, it rollback successful stages.
      *
      * @param deploymentId unique identifier of the deployed user application
      */
     void removeFailedApplication(Identifier deploymentId);
+
+    void removeFailedApplication(Identifier deploymentId, String username);
 
     /**
      * Run required process to update the current state of deployed application.

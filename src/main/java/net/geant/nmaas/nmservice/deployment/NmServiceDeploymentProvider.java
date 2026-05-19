@@ -2,12 +2,12 @@ package net.geant.nmaas.nmservice.deployment;
 
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotDeployServiceException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotPauseServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotPrepareEnvironmentException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRemoveServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRestartServiceException;
-import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRetrieveServiceAccessDetailsException;
-import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotPauseServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotResumeServiceException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRetrieveServiceAccessDetailsException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotUpgradeKubernetesServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotVerifyServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.ServiceRequestVerificationException;
@@ -87,6 +87,8 @@ public interface NmServiceDeploymentProvider {
      */
     void removeService(Identifier deploymentId);
 
+    void removeService(Identifier deploymentId, String username);
+
     /**
      * Coordinates service restart (delegates tasks to attached {@link ContainerOrchestrator}).
      *
@@ -94,6 +96,8 @@ public interface NmServiceDeploymentProvider {
      * @throws CouldNotRestartServiceException if service couldn't be restarted for some reason
      */
     void restartService(Identifier deploymentId);
+
+    void restartService(Identifier deploymentId, String username);
 
     /**
      * Coordinates service upgrade to specified version (delegates tasks to attached {@link ContainerOrchestrator}).
@@ -105,6 +109,8 @@ public interface NmServiceDeploymentProvider {
      * @throws CouldNotUpgradeKubernetesServiceException if service couldn't be upgraded for some reason
      */
     void upgradeKubernetesService(Identifier deploymentId, AppUpgradeMode mode, Identifier targetApplicationId, KubernetesTemplate kubernetesTemplate);
+
+    void upgradeKubernetesService(Identifier deploymentId, AppUpgradeMode mode, Identifier targetApplicationId, KubernetesTemplate kubernetesTemplate, String username);
 
     /**
      * Retrieves components of the deployed service.
@@ -127,14 +133,16 @@ public interface NmServiceDeploymentProvider {
 
     /**
      * @param deploymentId unique identifier of service deployment
+     * @param username     username of the user who requested the service pause
      * @throws CouldNotPauseServiceException if service couldn't be paused for some reason
      */
-    void pauseService(Identifier deploymentId);
+    void pauseService(Identifier deploymentId, String username);
 
     /**
      * @param deploymentId unique identifier of service deployment
+     * @param username     username of the user who requested the service resume
      * @throws CouldNotResumeServiceException if service couldn't be resumed for some reason
      */
-    void resumeService(Identifier deploymentId);
+    void resumeService(Identifier deploymentId, String username);
 
 }

@@ -209,6 +209,20 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
 
     @Override
     @Loggable(LogLevel.INFO)
+    public void removeService(Identifier deploymentId, String username) {
+        try {
+            notifyStateChangeListeners(deploymentId, REMOVAL_INITIATED, "", username);
+            orchestrator.removeNmService(deploymentId);
+            notifyStateChangeListeners(deploymentId, REMOVED, "", username);
+        } catch (CouldNotRemoveServiceException
+                 | ContainerOrchestratorInternalErrorException e) {
+            notifyStateChangeListeners(deploymentId, REMOVAL_FAILED, e.getMessage());
+            throw new CouldNotRemoveServiceException("NM Service removal failed -> " + e.getMessage());
+        }
+    }
+
+    @Override
+    @Loggable(LogLevel.INFO)
     public void restartService(Identifier deploymentId) {
         try {
             notifyStateChangeListeners(deploymentId, RESTART_INITIATED);
@@ -222,27 +236,41 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
     }
 
     @Override
-    @Loggable(LogLevel.DEBUG)
-    public void pauseService(Identifier deploymentId) {
+    @Loggable(LogLevel.INFO)
+    public void restartService(Identifier deploymentId, String username) {
         try {
-            notifyStateChangeListeners(deploymentId, PAUSE_INITIATED);
+            notifyStateChangeListeners(deploymentId, RESTART_INITIATED, "", username);
+            orchestrator.restartNmService(deploymentId);
+            notifyStateChangeListeners(deploymentId, RESTARTED, "", username);
+        } catch (CouldNotRestartServiceException
+                 | ContainerOrchestratorInternalErrorException e) {
+            notifyStateChangeListeners(deploymentId, RESTART_FAILED, e.getMessage());
+            throw new CouldNotRestartServiceException("Service restart failed -> " + e.getMessage());
+        }
+    }
+
+    @Override
+    @Loggable(LogLevel.DEBUG)
+    public void pauseService(Identifier deploymentId, String username) {
+        try {
+            notifyStateChangeListeners(deploymentId, PAUSE_INITIATED, "", username);
             orchestrator.pauseNmService(deploymentId);
-            notifyStateChangeListeners(deploymentId, PAUSED);
+            notifyStateChangeListeners(deploymentId, PAUSED, "", username);
         } catch (CouldNotPauseServiceException e) {
-            notifyStateChangeListeners(deploymentId, PAUSE_FAILED, e.getMessage());
+            notifyStateChangeListeners(deploymentId, PAUSE_FAILED, e.getMessage(), username);
             throw new CouldNotPauseServiceException("Service scale down failed -> " + e.getMessage());
         }
     }
 
     @Override
     @Loggable(LogLevel.DEBUG)
-    public void resumeService(Identifier deploymentId) {
+    public void resumeService(Identifier deploymentId, String username) {
         try {
-            notifyStateChangeListeners(deploymentId, RESUME_INITIATED);
+            notifyStateChangeListeners(deploymentId, RESUME_INITIATED, "", username);
             orchestrator.resumeNmService(deploymentId);
-            notifyStateChangeListeners(deploymentId, RESUMED);
+            notifyStateChangeListeners(deploymentId, RESUMED, "", username);
         } catch (KubernetesClientSetupException e) {
-            notifyStateChangeListeners(deploymentId, RESUME_FAILED, e.getMessage());
+            notifyStateChangeListeners(deploymentId, RESUME_FAILED, e.getMessage(), username);
             throw new CouldNotResumeServiceException("Service scale up failed -> " + e.getMessage());
         }
     }
@@ -253,7 +281,35 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
         try {
             notifyStateChangeListeners(deploymentId, UPGRADE_INITIATED);
             orchestrator.upgradeKubernetesService(deploymentId, kubernetesTemplate);
-            NmServiceDeploymentStateChangeEvent event = new NmServiceDeploymentStateChangeEvent(this, deploymentId, UPGRADED, "");
+            NmServiceDeploymentStateChangeEvent event = new NmServiceDeploymentStateChangeEvent(this, deploymentId, UPGRADED, "", "");
+            event.addDetail(NmServiceDeploymentStateChangeEvent.EventDetailType.UPGRADE_TRIGGER_TYPE, mode.name());
+            event.addDetail(NmServiceDeploymentStateChangeEvent.EventDetailType.NEW_APPLICATION_ID, targetApplicationId.value());
+            applicationEventPublisher.publishEvent(event);
+        } catch (CouldNotUpgradeKubernetesServiceException
+                 | ContainerOrchestratorInternalErrorException e) {
+            notifyStateChangeListeners(deploymentId, UPGRADE_FAILED, e.getMessage());
+            throw new CouldNotUpgradeKubernetesServiceException("NM Service upgrade failed -> " + e.getMessage());
+        }
+    }
+
+    @Override
+    @Loggable(LogLevel.DEBUG)
+    public void upgradeKubernetesService(
+            Identifier deploymentId,
+            AppUpgradeMode mode,
+            Identifier targetApplicationId,
+            KubernetesTemplate kubernetesTemplate,
+            String username
+    ) {
+        try {
+            notifyStateChangeListeners(deploymentId, UPGRADE_INITIATED);
+            orchestrator.upgradeKubernetesService(deploymentId, kubernetesTemplate);
+            NmServiceDeploymentStateChangeEvent event = new NmServiceDeploymentStateChangeEvent(
+                    this,
+                    deploymentId,
+                    UPGRADED,
+                    "",
+                    username);
             event.addDetail(NmServiceDeploymentStateChangeEvent.EventDetailType.UPGRADE_TRIGGER_TYPE, mode.name());
             event.addDetail(NmServiceDeploymentStateChangeEvent.EventDetailType.NEW_APPLICATION_ID, targetApplicationId.value());
             applicationEventPublisher.publishEvent(event);
@@ -270,6 +326,10 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
 
     private void notifyStateChangeListeners(Identifier deploymentId, ServiceDeploymentState state, String errorMessage) {
         applicationEventPublisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, state, errorMessage));
+    }
+
+    private void notifyStateChangeListeners(Identifier deploymentId, ServiceDeploymentState state, String errorMessage, String username) {
+        applicationEventPublisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, state, errorMessage, username));
     }
 
 }

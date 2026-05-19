@@ -24,10 +24,10 @@ public class AppScaleTask {
         try {
             switch (event.getDirection()) {
                 case DOWN:
-                    serviceDeployment.pauseService(event.getDeploymentId());
+                    serviceDeployment.pauseService(event.getDeploymentId(), event.getUsername());
                     break;
                 case UP:
-                    serviceDeployment.resumeService(event.getDeploymentId());
+                    serviceDeployment.resumeService(event.getDeploymentId(), event.getUsername());
                     break;
             }
         } catch (Exception ex) {
