@@ -13,7 +13,7 @@ public class AppUpgradeActionEvent extends AppBaseEvent {
     private final AppUpgradeMode appUpgradeMode;
 
     @Getter
-    private String username;
+    private String userInitiator;
 
     public AppUpgradeActionEvent(Object source, Identifier deploymentId, Identifier applicationId, AppUpgradeMode appUpgradeMode) {
         super(source, deploymentId);
@@ -26,12 +26,12 @@ public class AppUpgradeActionEvent extends AppBaseEvent {
             Identifier deploymentId,
             Identifier applicationId,
             AppUpgradeMode appUpgradeMode,
-            String username
+            String userInitiator
     ) {
         super(source, deploymentId);
         this.applicationId = applicationId;
         this.appUpgradeMode = appUpgradeMode;
-        this.username = username;
+        this.userInitiator = userInitiator;
     }
 
 }

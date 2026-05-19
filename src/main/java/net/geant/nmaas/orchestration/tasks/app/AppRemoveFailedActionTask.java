@@ -28,8 +28,8 @@ public class AppRemoveFailedActionTask {
     @Loggable(LogLevel.INFO)
     public void trigger(AppRemoveFailedActionEvent event) throws InterruptedException {
         try {
-            if (event.getUsername() != null) {
-                this.serviceDeployment.removeService(event.getRelatedTo(), event.getUsername());
+            if (event.getUserInitiator() != null) {
+                this.serviceDeployment.removeService(event.getRelatedTo(), event.getUserInitiator());
             } else {
                 this.serviceDeployment.removeService(event.getRelatedTo());
             }

@@ -22,8 +22,8 @@ public class AppRemovalTask {
     @Loggable(LogLevel.INFO)
     public void trigger(AppRemoveActionEvent event) {
         try {
-            if (event.getUsername() != null) {
-                serviceDeployment.removeService(event.getRelatedTo(), event.getUsername());
+            if (event.getUserInitiator() != null) {
+                serviceDeployment.removeService(event.getRelatedTo(), event.getUserInitiator());
             } else {
                 serviceDeployment.removeService(event.getRelatedTo());
             }

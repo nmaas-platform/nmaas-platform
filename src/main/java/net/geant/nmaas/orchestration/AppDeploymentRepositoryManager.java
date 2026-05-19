@@ -14,13 +14,13 @@ public interface AppDeploymentRepositoryManager {
 
     void store(AppDeployment appDeployment);
 
-    void store(AppDeployment appDeployment, User triggerredUser);
+    void store(AppDeployment appDeployment, User userInitiator);
 
     void update(AppDeployment appDeployment);
 
     void updateState(Identifier deploymentId, AppDeploymentState currentState);
 
-    void updateState(Identifier deploymentId, AppDeploymentState currentState, User triggerredUser);
+    void updateState(Identifier deploymentId, AppDeploymentState currentState, User userInitiator);
 
     void updateApplicationId(Identifier deploymentId, Identifier applicationId);
 

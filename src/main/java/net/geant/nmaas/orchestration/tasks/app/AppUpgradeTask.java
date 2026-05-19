@@ -55,7 +55,7 @@ public class AppUpgradeTask {
         try {
             final Identifier deploymentId = event.getRelatedTo();
             final Application application = applicationService.findApplication(event.getApplicationId().longValue()).orElseThrow(() -> new InvalidApplicationIdException("Application with id " + event.getApplicationId() + DOES_NOT_EXIST));
-            User user = userService.findByUsername(event.getUsername()).orElse(null);
+            User user = userService.findByUsername(event.getUserInitiator()).orElse(null);
             if (user != null) {
                 serviceDeployment.upgradeKubernetesService(
                         deploymentId,

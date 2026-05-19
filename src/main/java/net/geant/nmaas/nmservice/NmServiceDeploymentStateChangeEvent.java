@@ -16,7 +16,7 @@ public class NmServiceDeploymentStateChangeEvent extends ApplicationEvent {
     private final ServiceDeploymentState state;
 
     @Getter
-    private String username;
+    private String userInitiator;
 
     private final EnumMap<EventDetailType, String> details = new EnumMap<>(EventDetailType.class);
 
@@ -35,13 +35,13 @@ public class NmServiceDeploymentStateChangeEvent extends ApplicationEvent {
             Identifier deploymentId,
             ServiceDeploymentState state,
             String errorMessage,
-            String username
+            String userInitiator
     ) {
         super(source);
         this.deploymentId = deploymentId;
         this.state = state;
         this.errorMessage = errorMessage;
-        this.username = username;
+        this.userInitiator = userInitiator;
     }
 
     public void addDetail(EventDetailType type, String value) {

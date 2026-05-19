@@ -20,7 +20,7 @@ public interface AppLifecycleManager {
      */
     Identifier deployApplication(AppDeployment appDeployment);
 
-    Identifier deployApplication(AppDeployment appDeployment, String username);
+    Identifier deployApplication(AppDeployment appDeployment, String userInitiator);
 
     /**
      * Initializes application deployment without triggering the process itself.
@@ -39,7 +39,7 @@ public interface AppLifecycleManager {
      */
     void redeployApplication(Identifier deploymentId);
 
-    void redeployApplication(Identifier deploymentId, String username);
+    void redeployApplication(Identifier deploymentId, String userInitiator);
 
     /**
      * Applies custom configuration for the nmaas application being deployed once provided by the user.
@@ -57,7 +57,7 @@ public interface AppLifecycleManager {
      */
     void removeApplication(Identifier deploymentId);
 
-    void removeApplication(Identifier deploymentId, String username);
+    void removeApplication(Identifier deploymentId, String userInitiator);
 
     /**
      * Upgrades already deployed user application to the desired version available in the nmaas Portal.
@@ -69,7 +69,7 @@ public interface AppLifecycleManager {
      */
     void upgradeApplication(Identifier deploymentId, Identifier targetApplicationId);
 
-    void upgradeApplication(Identifier deploymentId, Identifier targetApplicationId, String username);
+    void upgradeApplication(Identifier deploymentId, Identifier targetApplicationId, String userInitiator);
 
     /**
      * Updates the configuration of already deployed user application.
@@ -87,7 +87,7 @@ public interface AppLifecycleManager {
      */
     void restartApplication(Identifier deploymentId);
 
-    void restartApplication(Identifier deploymentId, String username);
+    void restartApplication(Identifier deploymentId, String userInitiator);
 
     /**
      * Removes application, if it fails on any stage of deployment. Additionally, it rollback successful stages.
@@ -96,7 +96,7 @@ public interface AppLifecycleManager {
      */
     void removeFailedApplication(Identifier deploymentId);
 
-    void removeFailedApplication(Identifier deploymentId, String username);
+    void removeFailedApplication(Identifier deploymentId, String userInitiator);
 
     /**
      * Run required process to update the current state of deployed application.

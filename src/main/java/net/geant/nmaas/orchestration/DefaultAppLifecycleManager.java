@@ -89,10 +89,10 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     @Override
     @Loggable(LogLevel.INFO)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public Identifier deployApplication(AppDeployment appDeployment, String username) {
+    public Identifier deployApplication(AppDeployment appDeployment, String userInitiator) {
         Identifier deploymentId = generateDeploymentId();
-        User triggerredUser = userRepository.findByUsername(username)
-                .orElseThrow(() -> new ProcessingException("User with username " + username + " not found"));
+        User triggerredUser = userRepository.findByUsername(userInitiator)
+                .orElseThrow(() -> new ProcessingException("User with username " + userInitiator + " not found"));
         appDeployment.setDeploymentId(deploymentId);
         if (useDeploymentPrefix) {
             appDeployment.setDeploymentName(configurationManager.getConfiguration().getDeploymentPrefix() + "-" + appDeployment.getDeploymentName());
@@ -145,13 +145,13 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void redeployApplication(Identifier deploymentId, String username) {
+    public void redeployApplication(Identifier deploymentId, String userInitiator) {
         eventPublisher.publishEvent(new NmServiceDeploymentStateChangeEvent(
                 this,
                 deploymentId,
                 ServiceDeploymentState.INIT,
                 "",
-                username));
+                userInitiator));
         eventPublisher.publishEvent(new AppVerifyRequestActionEvent(this, deploymentId));
     }
 
@@ -315,10 +315,10 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void removeApplication(Identifier deploymentId, String username) {
+    public void removeApplication(Identifier deploymentId, String userInitiator) {
         try {
             if (!AppDeploymentState.APPLICATION_REMOVED.equals(deploymentRepositoryManager.loadState(deploymentId))) {
-                eventPublisher.publishEvent(new AppRemoveActionEvent(this, deploymentId, username));
+                eventPublisher.publishEvent(new AppRemoveActionEvent(this, deploymentId, userInitiator));
             }
         } catch (InvalidDeploymentIdException e) {
             log.warn("Application deployment {} not found for removal. Skipping.", deploymentId, e);
@@ -333,8 +333,8 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
 
     @Override
     @Loggable(LogLevel.DEBUG)
-    public void removeFailedApplication(Identifier deploymentId, String username) {
-        eventPublisher.publishEvent(new AppRemoveFailedActionEvent(this, deploymentId, username));
+    public void removeFailedApplication(Identifier deploymentId, String userInitiator) {
+        eventPublisher.publishEvent(new AppRemoveFailedActionEvent(this, deploymentId, userInitiator));
     }
 
     @Override
@@ -347,7 +347,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void upgradeApplication(Identifier deploymentId, Identifier targetApplicationId, String username) {
+    public void upgradeApplication(Identifier deploymentId, Identifier targetApplicationId, String userInitiator) {
         if (AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFIED.equals(deploymentRepositoryManager.loadState(deploymentId))) {
             eventPublisher.publishEvent(
                     new AppUpgradeActionEvent(
@@ -355,7 +355,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
                             deploymentId,
                             targetApplicationId,
                             AppUpgradeMode.MANUAL,
-                            username
+                            userInitiator
                     )
             );
         }
@@ -380,8 +380,8 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void restartApplication(Identifier deploymentId, String username) {
-        eventPublisher.publishEvent(new AppRestartActionEvent(this, deploymentId, username));
+    public void restartApplication(Identifier deploymentId, String userInitiator) {
+        eventPublisher.publishEvent(new AppRestartActionEvent(this, deploymentId, userInitiator));
     }
 
     @Override

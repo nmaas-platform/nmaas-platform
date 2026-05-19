@@ -53,7 +53,7 @@ public class AppDeploymentStateChangeManager {
     public synchronized ApplicationEvent notifyStateChange(NmServiceDeploymentStateChangeEvent event) {
         try {
             AppDeploymentState newDeploymentState = deploymentRepositoryManager.loadState(event.getDeploymentId()).nextState(event.getState());
-            User user = userService.findByUsername(event.getUsername()).orElse(null);
+            User user = userService.findByUsername(event.getUserInitiator()).orElse(null);
             if (user != null) {
                 deploymentRepositoryManager.updateState(event.getDeploymentId(), newDeploymentState, user);
             } else {

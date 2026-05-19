@@ -87,7 +87,7 @@ public interface NmServiceDeploymentProvider {
      */
     void removeService(Identifier deploymentId);
 
-    void removeService(Identifier deploymentId, String username);
+    void removeService(Identifier deploymentId, String userInitiator);
 
     /**
      * Coordinates service restart (delegates tasks to attached {@link ContainerOrchestrator}).
@@ -97,7 +97,7 @@ public interface NmServiceDeploymentProvider {
      */
     void restartService(Identifier deploymentId);
 
-    void restartService(Identifier deploymentId, String username);
+    void restartService(Identifier deploymentId, String userInitiator);
 
     /**
      * Coordinates service upgrade to specified version (delegates tasks to attached {@link ContainerOrchestrator}).
@@ -110,7 +110,7 @@ public interface NmServiceDeploymentProvider {
      */
     void upgradeKubernetesService(Identifier deploymentId, AppUpgradeMode mode, Identifier targetApplicationId, KubernetesTemplate kubernetesTemplate);
 
-    void upgradeKubernetesService(Identifier deploymentId, AppUpgradeMode mode, Identifier targetApplicationId, KubernetesTemplate kubernetesTemplate, String username);
+    void upgradeKubernetesService(Identifier deploymentId, AppUpgradeMode mode, Identifier targetApplicationId, KubernetesTemplate kubernetesTemplate, String userInitiator);
 
     /**
      * Retrieves components of the deployed service.
@@ -133,16 +133,16 @@ public interface NmServiceDeploymentProvider {
 
     /**
      * @param deploymentId unique identifier of service deployment
-     * @param username     username of the user who requested the service pause
+     * @param userInitiator     username of the user who requested the service pause
      * @throws CouldNotPauseServiceException if service couldn't be paused for some reason
      */
-    void pauseService(Identifier deploymentId, String username);
+    void pauseService(Identifier deploymentId, String userInitiator);
 
     /**
      * @param deploymentId unique identifier of service deployment
-     * @param username     username of the user who requested the service resume
+     * @param userInitiator     username of the user who requested the service resume
      * @throws CouldNotResumeServiceException if service couldn't be resumed for some reason
      */
-    void resumeService(Identifier deploymentId, String username);
+    void resumeService(Identifier deploymentId, String userInitiator);
 
 }

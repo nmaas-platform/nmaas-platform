@@ -22,8 +22,8 @@ public class AppRestartTask {
     @Loggable(LogLevel.INFO)
     public void trigger(AppRestartActionEvent event) {
         try {
-            if (event.getUsername() != null) {
-                serviceDeployment.restartService(event.getRelatedTo(), event.getUsername());
+            if (event.getUserInitiator() != null) {
+                serviceDeployment.restartService(event.getRelatedTo(), event.getUserInitiator());
             } else {
                 serviceDeployment.restartService(event.getRelatedTo());
             }

@@ -5,14 +5,14 @@ import net.geant.nmaas.orchestration.Identifier;
 
 public class AppRemoveActionEvent extends AppBaseEvent {
     @Getter
-    String username;
+    String userInitiator;
 
     public AppRemoveActionEvent(Object source, Identifier deploymentId) {
         super(source, deploymentId);
     }
-    public AppRemoveActionEvent(Object source, Identifier deploymentId, String username) {
+    public AppRemoveActionEvent(Object source, Identifier deploymentId, String userInitiator) {
         super(source, deploymentId);
-        this.username = username;
+        this.userInitiator = userInitiator;
     }
 
 }

@@ -6,14 +6,14 @@ import net.geant.nmaas.orchestration.Identifier;
 public class AppVerifyRequestActionEvent extends AppBaseEvent {
 
     @Getter
-    private Long emiterId;
+    private Long userInitiatorId;
 
     public AppVerifyRequestActionEvent(Object source, Identifier deploymentId) {
         super(source, deploymentId);
     }
-    public AppVerifyRequestActionEvent(Object source, Identifier deploymentId, Long emiterId) {
+    public AppVerifyRequestActionEvent(Object source, Identifier deploymentId, Long userInitiatorId) {
         super(source, deploymentId);
-        this.emiterId = emiterId;
+        this.userInitiatorId = userInitiatorId;
     }
 
 }
