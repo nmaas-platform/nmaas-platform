@@ -91,14 +91,16 @@ public class OrchestratorMonitorControllerIntTest {
         accessDetails = new AppUiAccessDetails(new HashSet<>() {{
             ServiceAccessMethodDto.builder().type(ServiceAccessMethodTypeDto.DEFAULT).name("Default").protocol("Web").url("http://testurl:8080").build();
         }});
-        mvc = MockMvcBuilders.standaloneSetup(new AppDeploymentMonitorRestController(deploymentMonitor, modelMapper)).build();
+        mvc = MockMvcBuilders.standaloneSetup(new AppDeploymentMonitorRestController(deploymentMonitor, modelMapper))
+                .addPlaceholderValue("nmaas.api.version", "v1")
+                .build();
     }
 
     @Test
     void shouldRetrieveAllDeployments() throws Exception {
         when(deploymentMonitor.allDeployments()).thenReturn(deployments).thenReturn(deployments);
         JavaType type = objectMapper.getTypeFactory().constructCollectionType(ArrayList.class, AppDeploymentView.class);
-        MvcResult result = mvc.perform(get("/api/orchestration/deployments"))
+        MvcResult result = mvc.perform(get("/api/v1/orchestration/deployments"))
                 .andExpect(status().isOk())
                 .andReturn();
         List<AppDeploymentView> retrievedDeployments = objectMapper.readValue(result.getResponse().getContentAsString(), type);
@@ -111,7 +113,7 @@ public class OrchestratorMonitorControllerIntTest {
     @Test
     void shouldRetrieveCurrentDeploymentLifecycleStatus() throws Exception {
         when(deploymentMonitor.state(deploymentId)).thenReturn(AppLifecycleState.APPLICATION_CONFIGURED);
-        MvcResult result = mvc.perform(get("/api/orchestration/deployments/{deploymentId}/state", deploymentId.toString()))
+        MvcResult result = mvc.perform(get("/api/v1/orchestration/deployments/{deploymentId}/state", deploymentId.toString()))
                 .andExpect(status().isOk())
                 .andReturn();
         assertThat(
@@ -124,7 +126,7 @@ public class OrchestratorMonitorControllerIntTest {
         Identifier invalidDeploymentID = Identifier.newInstance("invalidValue");
         when(deploymentMonitor.state(invalidDeploymentID)).thenThrow(InvalidDeploymentIdException.class);
         assertDoesNotThrow(() -> {
-            mvc.perform(get("/api/orchestration/deployments/{deploymentId}/state", invalidDeploymentID.toString()))
+            mvc.perform(get("/api/v1/orchestration/deployments/{deploymentId}/state", invalidDeploymentID.toString()))
                     .andExpect(status().isNotFound());
         });
     }
@@ -132,7 +134,7 @@ public class OrchestratorMonitorControllerIntTest {
     @Test
     void shouldRetrieveDeploymentAccessDetails() throws Exception {
         when(deploymentMonitor.userAccessDetails(deploymentId)).thenReturn(accessDetails);
-        MvcResult result = mvc.perform(get("/api/orchestration/deployments/{deploymentId}/access", deploymentId.toString()))
+        MvcResult result = mvc.perform(get("/api/v1/orchestration/deployments/{deploymentId}/access", deploymentId.toString()))
                 .andExpect(status().isOk())
                 .andReturn();
         AppUiAccessDetails resultAccessDetails = new ObjectMapper().readValue(result.getResponse().getContentAsString(), AppUiAccessDetails.class);
@@ -143,7 +145,7 @@ public class OrchestratorMonitorControllerIntTest {
     void shouldTryToRetrieveDeploymentAccessDetailsInWrongState() {
         when(deploymentMonitor.userAccessDetails(deploymentId)).thenThrow(new InvalidAppStateException(""));
         assertDoesNotThrow(() -> {
-            mvc.perform(get("/api/orchestration/deployments/{deploymentId}/access", deploymentId.toString()))
+            mvc.perform(get("/api/v1/orchestration/deployments/{deploymentId}/access", deploymentId.toString()))
                     .andExpect(status().isConflict());
         });
     }

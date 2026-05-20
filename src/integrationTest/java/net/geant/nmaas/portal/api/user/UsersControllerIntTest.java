@@ -126,7 +126,7 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
 
     @Test
     void testDisableUser() throws Exception {
-        mvc.perform(put("/api/users/status/" + userEntity.getId() + "?enabled=false")
+        mvc.perform(put("/api/v1/users/status/" + userEntity.getId() + "?enabled=false")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -138,7 +138,7 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
 
     @Test
     void testEnableUser() throws Exception {
-        mvc.perform(put("/api/users/status/" + userEntity.getId() + "?enabled=true")
+        mvc.perform(put("/api/v1/users/status/" + userEntity.getId() + "?enabled=true")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -149,7 +149,7 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
 
     @Test
     void testSetAcceptanceOfTermsOfUseAndPrivacyPolicy() throws Exception {
-        mvc.perform(post("/api/users/terms/" + user3.getUsername())
+        mvc.perform(post("/api/v1/users/terms/" + user3.getUsername())
                         .header("Authorization", "Bearer " + tokenForUserWithNotAcceptedTermsAndPolicy)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -349,7 +349,7 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
 
     @Test
     void shouldValidateResetRequest() throws Exception {
-        MvcResult result = mvc.perform(post("/api/users/reset/validate")
+        MvcResult result = mvc.perform(post("/api/v1/users/reset/validate")
                         .content(jwtTokenService.getResetToken(user3.getEmail()))
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -362,7 +362,7 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
     @Test
     void shouldNotValidateResetRequest() {
         assertDoesNotThrow(() -> {
-            mvc.perform(post("/api/users/reset/validate")
+            mvc.perform(post("/api/v1/users/reset/validate")
                             .content(jwtTokenService.getResetToken("notexisting@email.co.uk"))
                             .header("Authorization", "Bearer " + token)
                             .contentType(MediaType.APPLICATION_JSON)
@@ -375,7 +375,7 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
     void shouldResetPassword() {
         PasswordResetRequest passwordReset = new PasswordResetRequest(jwtTokenService.getResetToken(user3.getEmail()), "test");
         assertDoesNotThrow(() -> {
-            mvc.perform(post("/api/users/reset?token=test-token")
+            mvc.perform(post("/api/v1/users/reset?token=test-token")
                             .content(new ObjectMapper().writeValueAsString(passwordReset))
                             .header("Authorization", "Bearer " + token)
                             .contentType(MediaType.APPLICATION_JSON)
@@ -388,7 +388,7 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
     void shouldNotResetPassword() {
         PasswordResetRequest passwordReset = new PasswordResetRequest(jwtTokenService.getResetToken("notexistingemail@mail.com"), "test");
         assertDoesNotThrow(() -> {
-            mvc.perform(post("/api/users/reset?token=test-token")
+            mvc.perform(post("/api/v1/users/reset?token=test-token")
                             .content(new ObjectMapper().writeValueAsString(passwordReset))
                             .header("Authorization", "Bearer " + token)
                             .contentType(MediaType.APPLICATION_JSON)

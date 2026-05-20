@@ -30,7 +30,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/subscriptions")
+@RequestMapping("/api/${nmaas.api.version:v1}/subscriptions")
 @io.swagger.v3.oas.annotations.tags.Tag(name = "Application Subscriptions", description = "Application subscriptions")
 public class ApplicationSubscriptionController extends AppBaseController {
 

@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/auth/basic/registration")
+@RequestMapping("/api/${nmaas.api.version:v1}/auth/basic/registration")
 @Slf4j
 @Tag(name = "User Registration", description = "New account registration API")
 public class RegistrationController {

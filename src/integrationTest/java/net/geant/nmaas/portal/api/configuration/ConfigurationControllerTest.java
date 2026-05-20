@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 public class ConfigurationControllerTest extends BaseControllerTestSetup {
 
-    private static final String URL_PREFIX = "/api/configuration";
+    private static final String URL_PREFIX = "/api/v1/configuration";
 
     private final ConfigurationRepository repository;
     private final ConfigurationManager configManager;

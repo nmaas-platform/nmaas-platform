@@ -16,7 +16,7 @@ Install Java 21 jdk
 
 #### Running the software
 In order to build and run the nmaas Platform software locally execute *./gradlew bootRun* in project root directory.
-By default, the REST API will be exposed at *http://localhost:9000/api*.
+By default, the REST API will be exposed at *http://localhost:9000/api/v1*.
 
 
 ### Running nmaas Platform on dedicated server machine

@@ -18,7 +18,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/tags")
+@RequestMapping("/api/${nmaas.api.version:v1}/tags")
 @RequiredArgsConstructor
 @io.swagger.v3.oas.annotations.tags.Tag(name = "Application Tags", description = "Application tags")
 public class TagController {

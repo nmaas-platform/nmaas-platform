@@ -18,7 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 public class KubernetesClusterControllerIntTest {
 
-    private static final String URL_PREFIX = "/api/management/kubernetes";
+    private static final String URL_PREFIX = "/api/v1/management/kubernetes";
     private static final String KUBERNETES_CLUSTER_JSON =
                 "{" +
                       "\"ingress\":{\"id\":null," +
@@ -64,6 +64,7 @@ public class KubernetesClusterControllerIntTest {
     void shouldFetchKubernetesCluster() throws Exception {
         MockMvc mvc = MockMvcBuilders
                 .standaloneSetup(new KubernetesClusterController(clusterIngressManager, clusterDeploymentManager))
+                .addPlaceholderValue("nmaas.api.version", "v1")
                 .setControllerAdvice(new ApiExceptionHandler())
                 .setMessageConverters(new JacksonJsonHttpMessageConverter(jsonMapper))
                 .build();

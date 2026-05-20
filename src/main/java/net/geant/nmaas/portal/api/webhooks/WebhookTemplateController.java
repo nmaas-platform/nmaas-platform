@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/api/webhook-templates")
+@RequestMapping("/api/${nmaas.api.version:v1}/webhook-templates")
 @RequiredArgsConstructor
 @Tag(name = "Webhook Templates", description = "Webhooks templates get API")
 public class WebhookTemplateController {

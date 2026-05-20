@@ -70,7 +70,9 @@ public class OrchestratorManagerControllerIntTest {
     void setup() {
         String jsonInput = "{\"id\":\"testvalue\"}";
         appConfiguration = new AppConfiguration(jsonInput);
-        mvc = MockMvcBuilders.standaloneSetup(new AppLifecycleManagerRestController(lifecycleManager, applicationRepository)).build();
+        mvc = MockMvcBuilders.standaloneSetup(new AppLifecycleManagerRestController(lifecycleManager, applicationRepository))
+                .addPlaceholderValue("nmaas.api.version", "v1")
+                .build();
 
         Application application = new Application("testapp", "testversion");
         application.setAppDeploymentSpec(new AppDeploymentSpec());
@@ -95,7 +97,7 @@ public class OrchestratorManagerControllerIntTest {
         params.set("applicationid", APPLICATION_ID.getValue());
         params.set("deploymentname", DEPLOYMENT_NAME);
         assertDoesNotThrow(() -> {
-            mvc.perform(post("/api/orchestration/deployments")
+            mvc.perform(post("/api/v1/orchestration/deployments")
                             .params(params)
                             .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isCreated())
@@ -105,7 +107,7 @@ public class OrchestratorManagerControllerIntTest {
 
     @Test
     void shouldApplyConfigurationForDeploymentWithGivenDeploymentId() throws Exception {
-        mvc.perform(post("/api/orchestration/deployments/{deploymentId}", DEPLOYMENT_ID.toString())
+        mvc.perform(post("/api/v1/orchestration/deployments/{deploymentId}", DEPLOYMENT_ID.toString())
                         .principal(this.principal)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(CONFIGURATION_JSON)
@@ -122,13 +124,13 @@ public class OrchestratorManagerControllerIntTest {
 
     @Test
     void shouldUpdateConfigurationForDeploymentWithGivenDeploymentId() throws Exception {
-        mvc.perform(post("/api/orchestration/deployments/{deploymentId}", DEPLOYMENT_ID.toString())
+        mvc.perform(post("/api/v1/orchestration/deployments/{deploymentId}", DEPLOYMENT_ID.toString())
                         .principal(this.principal)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(CONFIGURATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-        mvc.perform(post("/api/orchestration/deployments/{deploymentId}/update", DEPLOYMENT_ID.toString())
+        mvc.perform(post("/api/v1/orchestration/deployments/{deploymentId}/update", DEPLOYMENT_ID.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"jsonInput\":{\"id\":\"newtestvalue\"}," + "\"storageSpace\":null" + "}")
                         .accept(MediaType.APPLICATION_JSON))
@@ -145,7 +147,7 @@ public class OrchestratorManagerControllerIntTest {
         doThrow(InvalidDeploymentIdException.class)
                 .when(lifecycleManager).applyConfiguration(any(), any(), anyString());
         assertDoesNotThrow(() -> {
-            mvc.perform(post("/api/orchestration/deployments/{deploymentId}", "anydeploymentid")
+            mvc.perform(post("/api/v1/orchestration/deployments/{deploymentId}", "anydeploymentid")
                             .principal(this.principal)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(CONFIGURATION_JSON)

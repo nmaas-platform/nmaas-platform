@@ -16,7 +16,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/info")
+@RequestMapping("/api/${nmaas.api.version:v1}/info")
 @PropertySource("classpath:git.properties")
 @io.swagger.v3.oas.annotations.tags.Tag(name = "Software Information", description = "Platform software information API")
 public class GeneralInformationController {

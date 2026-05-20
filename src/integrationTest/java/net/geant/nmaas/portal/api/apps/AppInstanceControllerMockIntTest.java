@@ -106,7 +106,7 @@ class AppInstanceControllerMockIntTest extends BaseControllerTestSetup {
         when(domainService.findDomain(DOMAIN.getId())).thenReturn(Optional.of(DOMAIN));
         when(applicationInstanceService.create(DOMAIN, application, appInstanceRequest.name(), appInstanceRequest.autoUpgradesEnabled()))
                 .thenReturn(new AppInstance(10L, application, DOMAIN, appInstanceRequest.name(), appInstanceRequest.autoUpgradesEnabled()));
-        mvc.perform(post("/api/apps/instances/domain/{domainId}", DOMAIN.getId())
+        mvc.perform(post("/api/v1/apps/instances/domain/{domainId}", DOMAIN.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(appInstanceRequest))
                         .header("Authorization", "Bearer " + getValidTokenForUser(user)))
@@ -129,7 +129,7 @@ class AppInstanceControllerMockIntTest extends BaseControllerTestSetup {
         when(domainService.findDomain(DOMAIN.getId())).thenReturn(Optional.of(DOMAIN));
         when(applicationInstanceService.create(DOMAIN, application, appInstanceRequest.name(), appInstanceRequest.autoUpgradesEnabled()))
                 .thenReturn(new AppInstance(10L, application, DOMAIN, appInstanceRequest.name(), appInstanceRequest.autoUpgradesEnabled()));
-        mvc.perform(post("/api/apps/instances/domain/{domainId}", DOMAIN.getId())
+        mvc.perform(post("/api/v1/apps/instances/domain/{domainId}", DOMAIN.getId())
                         .param("clusterId", "100")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(appInstanceRequest))
@@ -157,7 +157,7 @@ class AppInstanceControllerMockIntTest extends BaseControllerTestSetup {
         when(applicationInstanceService.create(DOMAIN, application, appInstanceRequest.name(), appInstanceRequest.autoUpgradesEnabled()))
                 .thenReturn(new AppInstance(10L, application, DOMAIN, appInstanceRequest.name(), appInstanceRequest.autoUpgradesEnabled()));
         assertDoesNotThrow(() -> {
-            mvc.perform(post("/api/apps/instances/domain/{domainId}", DOMAIN.getId())
+            mvc.perform(post("/api/v1/apps/instances/domain/{domainId}", DOMAIN.getId())
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(new ObjectMapper().writeValueAsString(appInstanceRequest))
                             .header("Authorization", "Bearer " + getValidTokenForUser(user)))
@@ -186,7 +186,7 @@ class AppInstanceControllerMockIntTest extends BaseControllerTestSetup {
         when(applicationInstanceService.findAllByDomain(DOMAIN)).thenReturn(deployedInstances);
         when(appDeploymentMonitor.state(appInstance.getInternalId())).thenReturn(AppLifecycleState.APPLICATION_DEPLOYED);
 
-        mvc.perform(post("/api/apps/instances/domain/{domainId}", DOMAIN.getId())
+        mvc.perform(post("/api/v1/apps/instances/domain/{domainId}", DOMAIN.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(appInstanceDeployed))
                         .header("Authorization", "Bearer " + getValidTokenForUser(user)))
@@ -216,7 +216,7 @@ class AppInstanceControllerMockIntTest extends BaseControllerTestSetup {
         when(applicationInstanceService.findAllByDomain(DOMAIN)).thenReturn(deployedInstances);
         when(appDeploymentMonitor.state(appInstance.getInternalId())).thenReturn(AppLifecycleState.APPLICATION_REMOVED);
 
-        mvc.perform(post("/api/apps/instances/domain/{domainId}", DOMAIN.getId())
+        mvc.perform(post("/api/v1/apps/instances/domain/{domainId}", DOMAIN.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(appInstanceDone))
                         .header("Authorization", "Bearer " + getValidTokenForUser(user)))
@@ -245,7 +245,7 @@ class AppInstanceControllerMockIntTest extends BaseControllerTestSetup {
         when(applicationInstanceService.findAllByDomain(DOMAIN)).thenReturn(deployedInstances);
         when(appDeploymentMonitor.state(appInstance.getInternalId())).thenReturn(AppLifecycleState.FAILED_APPLICATION_REMOVED);
 
-        mvc.perform(post("/api/apps/instances/domain/{domainId}", DOMAIN.getId())
+        mvc.perform(post("/api/v1/apps/instances/domain/{domainId}", DOMAIN.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(appInstanceRemoved))
                         .header("Authorization", "Bearer " + getValidTokenForUser(user)))
@@ -263,7 +263,7 @@ class AppInstanceControllerMockIntTest extends BaseControllerTestSetup {
         AppInstance appInstance = new AppInstance(new Application("test", "testVersion"), "test", DOMAIN, user, true);
         when(applicationInstanceService.find(1L)).thenReturn(Optional.of(appInstance));
         when(applicationInstanceRepository.findById(10L)).thenReturn(Optional.of(appInstance));
-        mvc.perform(post("/api/apps/instances/{appInstanceId}/restart", 1L)
+        mvc.perform(post("/api/v1/apps/instances/{appInstanceId}/restart", 1L)
                         .header("Authorization", "Bearer " + getValidTokenForUser(user)))
                 .andExpect(status().isOk());
         verify(appLifecycleManager, times(1)).restartApplication(appInstance.getInternalId(), user.getUsername());
@@ -277,15 +277,15 @@ class AppInstanceControllerMockIntTest extends BaseControllerTestSetup {
         AppInstance appInstance = new AppInstance(new Application("test", "testVersion"), "test", DOMAIN, user, true);
         when(applicationInstanceService.find(1L)).thenReturn(Optional.of(appInstance));
         when(applicationInstanceRepository.findById(1L)).thenReturn(Optional.of(appInstance));
-        mvc.perform(post("/api/apps/instances/{appInstanceId}/restart", 1L)
+        mvc.perform(post("/api/v1/apps/instances/{appInstanceId}/restart", 1L)
                         .header("Authorization", "Bearer " + getValidTokenForUser(user)))
                 .andExpect(status().isOk());
         verify(appLifecycleManager, times(1)).restartApplication(appInstance.getInternalId(), user.getUsername());
-        mvc.perform(post("/api/apps/instances/{appInstanceId}/redeploy", 1L)
+        mvc.perform(post("/api/v1/apps/instances/{appInstanceId}/redeploy", 1L)
                         .header("Authorization", "Bearer " + getValidTokenForUser(user)))
                 .andExpect(status().isOk());
         verify(appLifecycleManager, times(1)).redeployApplication(appInstance.getInternalId(), user.getUsername());
-        mvc.perform(post("/api/apps/instances/{appInstanceId}/upgrade/{targetAppInstanceId}", 1L, 2L)
+        mvc.perform(post("/api/v1/apps/instances/{appInstanceId}/upgrade/{targetAppInstanceId}", 1L, 2L)
                         .header("Authorization", "Bearer " + getValidTokenForUser(user)))
                 .andExpect(status().isOk());
         verify(appLifecycleManager, times(1)).upgradeApplication(appInstance.getInternalId(), Identifier.newInstance(2L), user.getUsername());
@@ -300,13 +300,13 @@ class AppInstanceControllerMockIntTest extends BaseControllerTestSetup {
         when(applicationInstanceService.find(1L)).thenReturn(Optional.of(appInstance));
         when(applicationInstanceRepository.findById(1L)).thenReturn(Optional.of(appInstance));
         assertDoesNotThrow(() -> {
-            mvc.perform(post("/api/apps/instances/{appInstanceId}/restart", 1L)
+            mvc.perform(post("/api/v1/apps/instances/{appInstanceId}/restart", 1L)
                             .header("Authorization", "Bearer " + getValidTokenForUser(user)))
                     .andExpect(status().isUnauthorized());
-            mvc.perform(post("/api/apps/instances/{appInstanceId}/redeploy", 1L)
+            mvc.perform(post("/api/v1/apps/instances/{appInstanceId}/redeploy", 1L)
                             .header("Authorization", "Bearer " + getValidTokenForUser(user)))
                     .andExpect(status().isUnauthorized());
-            mvc.perform(post("/api/apps/instances/{appInstanceId}/upgrade/{targetAppInstanceId}", 1L, 2L)
+            mvc.perform(post("/api/v1/apps/instances/{appInstanceId}/upgrade/{targetAppInstanceId}", 1L, 2L)
                             .header("Authorization", "Bearer " + getValidTokenForUser(user)))
                     .andExpect(status().isUnauthorized());
         });
@@ -316,7 +316,7 @@ class AppInstanceControllerMockIntTest extends BaseControllerTestSetup {
     void shouldThrowAnExceptionWhenInputIsIncorrect() {
         when(applicationInstanceService.find(0L)).thenReturn(Optional.empty());
         assertDoesNotThrow(() -> {
-            mvc.perform(post("/api/apps/instances/{appInstanceId}/restart", 0L)
+            mvc.perform(post("/api/v1/apps/instances/{appInstanceId}/restart", 0L)
                             .header("Authorization", "Bearer " + getValidUserTokenFor(Role.ROLE_SYSTEM_ADMIN)))
                     .andExpect(status().is(404));
         });
@@ -333,14 +333,14 @@ class AppInstanceControllerMockIntTest extends BaseControllerTestSetup {
         mockAppInstanceGetProcess(DOMAIN, user, applicationBase, application, appInstance);
 
         assertDoesNotThrow(() -> {
-            mvc.perform(get("/api/apps/instances/{appInstanceId}", 10L)
+            mvc.perform(get("/api/v1/apps/instances/{appInstanceId}", 10L)
                             .contentType(MediaType.APPLICATION_JSON)
                             .header("Authorization", "Bearer " + getValidTokenForUser(user)))
                     .andExpect(status().isOk());
         });
 
         assertDoesNotThrow(() -> {
-            mvc.perform(post("/api/apps/instances/{appInstanceId}/check", 10L)
+            mvc.perform(post("/api/v1/apps/instances/{appInstanceId}/check", 10L)
                             .header("Authorization", "Bearer " + getValidTokenForUser(user)))
                     .andExpect(status().isOk());
         });
@@ -356,11 +356,11 @@ class AppInstanceControllerMockIntTest extends BaseControllerTestSetup {
         mockAppInstanceGetProcess(DOMAIN, user, applicationBase, application, appInstance);
 
         assertDoesNotThrow(() -> {
-            mvc.perform(get("/api/apps/instances/{appInstanceId}", 10L)
+            mvc.perform(get("/api/v1/apps/instances/{appInstanceId}", 10L)
                             .contentType(MediaType.APPLICATION_JSON)
                             .header("Authorization", "Bearer " + getValidTokenForUser(user)))
                     .andExpect(status().isUnauthorized());
-            mvc.perform(post("/api/apps/instances/{appInstanceId}/check", 10L)
+            mvc.perform(post("/api/v1/apps/instances/{appInstanceId}/check", 10L)
                             .header("Authorization", "Bearer " + getValidTokenForUser(user)))
                     .andExpect(status().isUnauthorized());
         });
@@ -376,14 +376,14 @@ class AppInstanceControllerMockIntTest extends BaseControllerTestSetup {
         mockAppInstanceGetProcess(DOMAIN, user, applicationBase, application, appInstance);
 
         assertDoesNotThrow(() -> {
-            mvc.perform(get("/api/apps/instances/{appInstanceId}", 10L)
+            mvc.perform(get("/api/v1/apps/instances/{appInstanceId}", 10L)
                             .contentType(MediaType.APPLICATION_JSON)
                             .header("Authorization", "Bearer " + getValidTokenForUser(user)))
                     .andExpect(status().isOk());
         });
 
         assertDoesNotThrow(() -> {
-            mvc.perform(post("/api/apps/instances/{appInstanceId}/check", 10L)
+            mvc.perform(post("/api/v1/apps/instances/{appInstanceId}/check", 10L)
                             .header("Authorization", "Bearer " + getValidTokenForUser(user)))
                     .andExpect(status().isUnauthorized());
         });
@@ -400,7 +400,7 @@ class AppInstanceControllerMockIntTest extends BaseControllerTestSetup {
         when(applicationInstanceRepository.findById(10L)).thenReturn(Optional.of(appInstance));
 
         assertDoesNotThrow(() -> {
-            mvc.perform(delete("/api/apps/instances/{appInstanceId}", 10L)
+            mvc.perform(delete("/api/v1/apps/instances/{appInstanceId}", 10L)
                             .contentType(MediaType.APPLICATION_JSON)
                             .header("Authorization", "Bearer " + getValidTokenForUser(user)))
                     .andExpect(status().isOk());
@@ -416,7 +416,7 @@ class AppInstanceControllerMockIntTest extends BaseControllerTestSetup {
         AppInstance appInstance = testAppInstance(DOMAIN, application, user);
         mockAppInstanceGetProcess(DOMAIN, user, applicationBase, application, appInstance);
 
-        mvc.perform(get("/api/apps/instances/{appInstanceId}", 10L)
+        mvc.perform(get("/api/v1/apps/instances/{appInstanceId}", 10L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + getValidTokenForUser(user)))
                 .andExpect(status().isOk());
@@ -442,14 +442,14 @@ class AppInstanceControllerMockIntTest extends BaseControllerTestSetup {
 
         ObjectMapper objectMapper = new ObjectMapper();
 
-        mvc.perform(post("/api/apps/instances/{appInstanceId}/members", 10L)
+        mvc.perform(post("/api/v1/apps/instances/{appInstanceId}/members", 10L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(members))
                         .header("Authorization", "Bearer " + getValidTokenForUser(user)))
                 .andExpect(status().is2xxSuccessful());
 
-        String data = mvc.perform(get("/api/apps/instances/{appInstanceId}", 10L)
+        String data = mvc.perform(get("/api/v1/apps/instances/{appInstanceId}", 10L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + getValidTokenForUser(user)))
                 .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
@@ -465,7 +465,7 @@ class AppInstanceControllerMockIntTest extends BaseControllerTestSetup {
         when(applicationInstanceService.find(1L)).thenReturn(Optional.of(appInstance));
         when(applicationInstanceRepository.findById(10L)).thenReturn(Optional.of(appInstance));
 
-        mvc.perform(post("/api/apps/instances/{appInstanceId}/upgrade/{targetAppInstanceId}", 1L, 2L)
+        mvc.perform(post("/api/v1/apps/instances/{appInstanceId}/upgrade/{targetAppInstanceId}", 1L, 2L)
                         .header("Authorization", "Bearer " + getValidTokenForUser(user)))
                 .andExpect(status().isOk());
         verify(appLifecycleManager, times(1)).upgradeApplication(appInstance.getInternalId(), Identifier.newInstance(2L), user.getUsername());

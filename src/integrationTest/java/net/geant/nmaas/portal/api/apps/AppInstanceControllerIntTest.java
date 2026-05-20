@@ -91,7 +91,7 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
         Domain domainInDb = domainService.createDomain(new DomainRequest("Domain1", "domain1", true));
 
         AppInstanceRequest appInstanceRequest = new AppInstanceRequest(applicationInDb.getId(), "instance", true);
-        mvc.perform(post("/api/apps/instances/domain/{domainId}", domainInDb.getId())
+        mvc.perform(post("/api/v1/apps/instances/domain/{domainId}", domainInDb.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(appInstanceRequest))
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN)))
@@ -114,7 +114,7 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
         domainService.createDomain(new DomainRequest("Domain1", "domain1", true));
 
         AppInstanceRequest appInstanceRequest = new AppInstanceRequest(applicationInDb.getId(), "instanceTooLong", true);
-        MvcResult result = mvc.perform(post("/api/apps/instances/domain/{domainId}", DOMAIN.getId())
+        MvcResult result = mvc.perform(post("/api/v1/apps/instances/domain/{domainId}", DOMAIN.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(appInstanceRequest))
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN)))

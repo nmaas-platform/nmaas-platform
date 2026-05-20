@@ -57,7 +57,7 @@ import java.util.Map;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/api/apps/instances")
+@RequestMapping("/api/${nmaas.api.version:v1}/apps/instances")
 @Slf4j
 @Tag(name = "Application Instances")
 public class AppInstanceReadController extends AppBaseController {

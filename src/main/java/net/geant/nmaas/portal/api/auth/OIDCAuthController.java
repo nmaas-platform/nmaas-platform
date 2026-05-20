@@ -76,7 +76,7 @@ public class OIDCAuthController {
     private String oidcAddress;
 
     @Loggable(LogLevel.INFO)
-    @PostMapping("api/oidc/link")
+    @PostMapping("/api/${nmaas.api.version:v1}/oidc/link")
     public UserOidcToken oidcLinkedSuccess(@RequestBody final OidcLogin oidcLogin, HttpServletRequest request) {
         User user = userService.findByEmail(oidcLogin.email());
         try {
@@ -117,7 +117,7 @@ public class OIDCAuthController {
     }
 
     @Loggable(LogLevel.INFO)
-    @PostMapping("api/oidc/approvals")
+    @PostMapping("/api/${nmaas.api.version:v1}/oidc/approvals")
     public UserOidcToken oidcApprovalsSuccess(@RequestBody final OidcApprovals oidcLogin, HttpServletRequest request) {
         User user = oidcUserService.registerNewUser(oidcLogin);
         this.sendMail(userService.findAllUsersWithAdminRole().getFirst(), Map.of("newUser", user.getUsername()));
@@ -136,7 +136,7 @@ public class OIDCAuthController {
     }
 
     @Loggable(LogLevel.INFO)
-    @GetMapping("/api/oidc/success")
+    @GetMapping("/api/${nmaas.api.version:v1}/oidc/success")
     public RedirectView oidcLoginSuccess(@AuthenticationPrincipal OidcUser oidcUser, HttpServletRequest request) {
         log.info("OIDC LOGIN SUCCESS: {}", request.toString());
         if (oidcUserService.externalUserRequiresLinking(oidcUser)) {
@@ -191,7 +191,7 @@ public class OIDCAuthController {
         }
     }
 
-    @GetMapping("/api/oidc/logout/{oidcToken}")
+    @GetMapping("/api/${nmaas.api.version:v1}/oidc/logout/{oidcToken}")
     public RedirectView logout(@PathVariable String oidcToken) {
         String logoutUrl = oidcAddress + OIDC_LOGOUT_PATH;
         return new RedirectView(logoutUrl + "?id_token_hint=" + oidcToken);

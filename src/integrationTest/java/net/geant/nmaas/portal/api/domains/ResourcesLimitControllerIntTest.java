@@ -68,7 +68,7 @@ public class ResourcesLimitControllerIntTest extends BaseControllerTestSetup {
     @Test
     void shouldSetGlobalLimitForFirstTime() throws Exception {
         when(resourcesLimitRepository.findByLimitType(ResourcesLimitType.GLOBAL)).thenReturn(Collections.emptyList());
-        mvc.perform(post("/api/resources-limits/global")
+        mvc.perform(post("/api/v1/resources-limits/global")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(getDefaultGlobalLimitRequest()))
@@ -84,7 +84,7 @@ public class ResourcesLimitControllerIntTest extends BaseControllerTestSetup {
     @Test
     void shouldNotGetGlobalLimitIfNotSet() throws Exception {
         when(resourcesLimitRepository.findByLimitType(ResourcesLimitType.GLOBAL)).thenReturn(Collections.emptyList());
-        mvc.perform(get("/api/resources-limits/global")
+        mvc.perform(get("/api/v1/resources-limits/global")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
@@ -95,7 +95,7 @@ public class ResourcesLimitControllerIntTest extends BaseControllerTestSetup {
         when(resourcesLimitRepository.findByLimitType(ResourcesLimitType.GLOBAL)).thenReturn(
                 List.of(new ResourcesLimit(1L, 100, 200, 5, 10))
         );
-        MvcResult result = mvc.perform(get("/api/resources-limits/global")
+        MvcResult result = mvc.perform(get("/api/v1/resources-limits/global")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -112,7 +112,7 @@ public class ResourcesLimitControllerIntTest extends BaseControllerTestSetup {
                 Optional.of(new ResourcesLimit(1L, 100, 200, 5, 10,
                         ResourcesLimitType.DOMAIN, null, new Domain(100L)))
         );
-        MvcResult result = mvc.perform(get("/api/resources-limits/domain/100")
+        MvcResult result = mvc.perform(get("/api/v1/resources-limits/domain/100")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -129,7 +129,7 @@ public class ResourcesLimitControllerIntTest extends BaseControllerTestSetup {
                 Optional.of(new ResourcesLimit(1L, 100, 200, 5, 10,
                         ResourcesLimitType.DOMAIN_GROUP, new DomainGroup(100L), null))
         );
-        MvcResult result = mvc.perform(get("/api/resources-limits/group/100")
+        MvcResult result = mvc.perform(get("/api/v1/resources-limits/group/100")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

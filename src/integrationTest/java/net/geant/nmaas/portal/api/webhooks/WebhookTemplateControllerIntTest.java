@@ -34,7 +34,7 @@ class WebhookTemplateControllerIntTest extends BaseControllerTestSetup {
         when(templateService.getAvailableVariables(WebhookEventType.DOMAIN_ACTION))
                 .thenReturn(Set.of("$ACTION", "$WEBHOOKEVENTTYPE"));
 
-        mvc.perform(get("/api/webhook-templates/variables/DOMAIN_ACTION")
+        mvc.perform(get("/api/v1/webhook-templates/variables/DOMAIN_ACTION")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -46,7 +46,7 @@ class WebhookTemplateControllerIntTest extends BaseControllerTestSetup {
         when(templateService.getDefaultTemplate(WebhookEventType.APPLICATION_DEPLOYMENT))
                 .thenReturn("{\"type\": $WEBHOOKEVENTTYPE}");
 
-        mvc.perform(get("/api/webhook-templates/default/APPLICATION_DEPLOYMENT")
+        mvc.perform(get("/api/v1/webhook-templates/default/APPLICATION_DEPLOYMENT")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .accept(MediaType.TEXT_PLAIN))
                 .andExpect(status().isOk())
@@ -55,7 +55,7 @@ class WebhookTemplateControllerIntTest extends BaseControllerTestSetup {
 
     @Test
     void shouldRejectVariablesForOperator() throws Exception {
-        mvc.perform(get("/api/webhook-templates/variables/DOMAIN_ACTION")
+        mvc.perform(get("/api/v1/webhook-templates/variables/DOMAIN_ACTION")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.OPERATOR))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());

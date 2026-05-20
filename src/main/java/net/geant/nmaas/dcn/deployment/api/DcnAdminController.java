@@ -12,7 +12,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/api/management/dcns")
+@RequestMapping(value = "/api/${nmaas.api.version:v1}/management/dcns")
 public class DcnAdminController {
 
     private final DcnRepositoryManager dcnRepositoryManager;

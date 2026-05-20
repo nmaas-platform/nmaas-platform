@@ -52,7 +52,7 @@ public class RegistrationControllerIntTest extends BaseControllerTestSetup {
     @Test
     @Transactional
     void testSuccessfulRegistration() throws Exception {
-        mvc.perform(post("/api/auth/basic/registration?token=test-token")
+        mvc.perform(post("/api/v1/auth/basic/registration?token=test-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(getDefaultRegistration()))
                         .accept(MediaType.APPLICATION_JSON))

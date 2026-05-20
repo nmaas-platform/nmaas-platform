@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.OffsetDateTime;
 
 @RestController
-@RequestMapping("/api/dashboard")
+@RequestMapping("/api/${nmaas.api.version:v1}/dashboard")
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Dashboard", description = "Retrieving dashboard data")

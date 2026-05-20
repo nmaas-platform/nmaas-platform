@@ -35,7 +35,7 @@ import static java.lang.String.format;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/api/auth/basic")
+@RequestMapping("/api/${nmaas.api.version:v1}/auth/basic")
 @Tag(name = "Basic Authentication", description = "Basic authentication API")
 public class BasicAuthController {
 

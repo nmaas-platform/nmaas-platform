@@ -115,7 +115,7 @@ public class TagControllerIntTest extends BaseControllerTestSetup {
 
     @Test
     void shouldGetAllTags() throws Exception {
-        MvcResult result = mvc.perform(get("/api/tags")
+        MvcResult result = mvc.perform(get("/api/v1/tags")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN)))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -126,7 +126,7 @@ public class TagControllerIntTest extends BaseControllerTestSetup {
 
     @Test
     void shouldGetAppByTagWhenThereAreActiveApplications() throws Exception {
-        MvcResult result = mvc.perform(get("/api/tags/tag1")
+        MvcResult result = mvc.perform(get("/api/v1/tags/tag1")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN)))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -138,7 +138,7 @@ public class TagControllerIntTest extends BaseControllerTestSetup {
 
     @Test
     void shouldGetEmptyCollection() throws Exception {
-        MvcResult result = mvc.perform(get("/api/tags/deprecated")
+        MvcResult result = mvc.perform(get("/api/v1/tags/deprecated")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN)))
                 .andExpect(status().isOk())
                 .andReturn();

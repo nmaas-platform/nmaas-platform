@@ -24,7 +24,7 @@ import java.security.Principal;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/tokens")
+@RequestMapping("/api/${nmaas.api.version:v1}/tokens")
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Custom Access Tokens", description = "Operations related to custom access tokens")

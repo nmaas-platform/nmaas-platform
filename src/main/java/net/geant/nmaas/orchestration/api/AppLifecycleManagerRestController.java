@@ -29,7 +29,7 @@ import java.security.Principal;
  * Exposes REST API methods to manage application deployment lifecycle
  */
 @RestController
-@RequestMapping(value = "/api/orchestration/deployments")
+@RequestMapping(value = "/api/${nmaas.api.version:v1}/orchestration/deployments")
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Application Lifecycle Manager", description = "Administrator API for managing application deployment lifecycle")

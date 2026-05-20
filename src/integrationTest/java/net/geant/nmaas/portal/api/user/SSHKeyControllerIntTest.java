@@ -29,7 +29,7 @@ public class SSHKeyControllerIntTest extends BaseControllerTestSetup {
     void shouldAddValidKey() {
         SSHKeyRequest req = new SSHKeyRequest("longName", VALID_KEY);
         assertDoesNotThrow(() -> {
-            mvc.perform(put("/api/user/keys")
+            mvc.perform(put("/api/v1/user/keys")
                     .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(req))
@@ -42,7 +42,7 @@ public class SSHKeyControllerIntTest extends BaseControllerTestSetup {
     void shouldReturnErrorWhenKeyIsNotValid() {
         SSHKeyRequest req = new SSHKeyRequest("longName", "some random text which by definition is not valid ssh key");
         assertDoesNotThrow(() -> {
-            mvc.perform(put("/api/user/keys")
+            mvc.perform(put("/api/v1/user/keys")
                     .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(req))

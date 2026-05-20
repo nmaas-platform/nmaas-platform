@@ -16,37 +16,40 @@ public class SecurityConstants {
 
     static final String SSL_ENABLED = "server.ssl.enabled";
 
-    static final String AUTH_BASIC_LOGIN = "/api/auth/basic/login";
-    static final String AUTH_BASIC_SIGNUP = "/api/auth/basic/registration/**";
-    static final String AUTH_BASIC_TOKEN = "/api/auth/basic/token";
+    static final String API_VERSIONED_PATTERN = "/api/*";
+    static final String API_ANY = API_VERSIONED_PATTERN + "/**";
 
-    static final String AUTH_SSO_LOGIN = "/api/auth/sso/login";
-    static final String AUTH_OIDC_LOGIN_PAGE = "/api/oauth2/authorization/my-oidc";
-    static final String AUTH_OIDC_LOGIN = "/api/auth/oidc/login";
-    static final String AUTH_OIDC_SUCCESS = "/api/oidc/success";
-    static final String AUTH_OIDC_LINK = "/api/oidc/link";
-    static final String AUTH_OIDC_APPROVALS = "/api/oidc/approvals";
-    static final String AUTH_LOGOUT = "/api/oidc/logout/*";
-    static final String AUTH_OIDC = "/api/oidc/**";
-    static final String AUTH_CODE = "/api/login/oauth2/code";
+    static final String AUTH_BASIC_LOGIN = API_VERSIONED_PATTERN + "/auth/basic/login";
+    static final String AUTH_BASIC_SIGNUP = API_VERSIONED_PATTERN + "/auth/basic/registration/**";
+    static final String AUTH_BASIC_TOKEN = API_VERSIONED_PATTERN + "/auth/basic/token";
+
+    static final String AUTH_SSO_LOGIN = API_VERSIONED_PATTERN + "/auth/sso/login";
+    static final String AUTH_OIDC_LOGIN_PAGE = API_VERSIONED_PATTERN + "/oauth2/authorization/my-oidc";
+    static final String AUTH_OIDC_LOGIN = API_VERSIONED_PATTERN + "/auth/oidc/login";
+    static final String AUTH_OIDC_SUCCESS = API_VERSIONED_PATTERN + "/oidc/success";
+    static final String AUTH_OIDC_LINK = API_VERSIONED_PATTERN + "/oidc/link";
+    static final String AUTH_OIDC_APPROVALS = API_VERSIONED_PATTERN + "/oidc/approvals";
+    static final String AUTH_LOGOUT = API_VERSIONED_PATTERN + "/oidc/logout/*";
+    static final String AUTH_OIDC = API_VERSIONED_PATTERN + "/oidc/**";
+    static final String AUTH_CODE = API_VERSIONED_PATTERN + "/login/oauth2/code";
 
     /**
      * Paths allowed for unauthenticated GET requests (e.g., for public config or localization).
      */
     static final String[] AUTH_WHITELIST_GET_METHOD = {
-            "/api/i18n/content/**",
-            "/api/i18n/all/enabled",
-            "/api/configuration/**",
-            "/api/auth/sso",
-            "/api/mail/type",
-            "/api/monitor/all"
+            API_VERSIONED_PATTERN + "/i18n/content/**",
+            API_VERSIONED_PATTERN + "/i18n/all/enabled",
+            API_VERSIONED_PATTERN + "/configuration/**",
+            API_VERSIONED_PATTERN + "/auth/sso",
+            API_VERSIONED_PATTERN + "/mail/type",
+            API_VERSIONED_PATTERN + "/monitor/all"
     };
 
     /**
      * Paths whitelisted for unauthenticated OPTIONS requests (CORS preflight, etc.).
      */
     static final String[] AUTH_WHITELIST_OPTIONS_METHOD = {
-            "/api/**"
+            API_ANY
     };
 
     /**
@@ -65,11 +68,11 @@ public class SecurityConstants {
             AUTH_CODE,
             AUTH_OIDC_LINK,
             "/favicon.ico",
-            "/api/info/**",
+            API_VERSIONED_PATTERN + "/info/**",
             "/actuator/**",
-            "/api/content/**",
-            "/api/users/reset/**",
-            "/api/mail",
+            API_VERSIONED_PATTERN + "/content/**",
+            API_VERSIONED_PATTERN + "/users/reset/**",
+            API_VERSIONED_PATTERN + "/mail",
             "/api-docs/**"
     };
     /**
@@ -77,19 +80,19 @@ public class SecurityConstants {
      */
     //TODO check that this function will work without commented strings
     protected static final String[] AUTH_AUTHENTICATED_LIST = {
-            "/api/**"
+            API_ANY
     };
     /**
      * Map of HTTP methods to paths that should skip JWT authentication filters.
      */
     static final Map<String, List<String>> SKIPPED_PATHS = Map.of(
             "GET", List.of(
-                    "/api/configuration/**",
-                    "/api/auth/sso",
-                    "/api/monitor/all",
-                    "/api/mail/type",
-                    "/api/i18n/content/**",
-                    "/api/i18n/all/enabled"
+                    API_VERSIONED_PATTERN + "/configuration/**",
+                    API_VERSIONED_PATTERN + "/auth/sso",
+                    API_VERSIONED_PATTERN + "/monitor/all",
+                    API_VERSIONED_PATTERN + "/mail/type",
+                    API_VERSIONED_PATTERN + "/i18n/content/**",
+                    API_VERSIONED_PATTERN + "/i18n/all/enabled"
             ),
             "ANY", List.of(
                     AUTH_BASIC_LOGIN,
@@ -103,12 +106,12 @@ public class SecurityConstants {
                     "/api-docs/**",
                     "/actuator/**",
                     "/favicon.ico",
-                    "/api/info/**",
-                    "/api/dcns/notifications/**/status",
-                    "/api/content/**",
-                    "/api/users/reset/**",
-                    "/api/mail",
-                    "/api/gitlab/webhooks/**"
+                    API_VERSIONED_PATTERN + "/info/**",
+                    API_VERSIONED_PATTERN + "/dcns/notifications/**/status",
+                    API_VERSIONED_PATTERN + "/content/**",
+                    API_VERSIONED_PATTERN + "/users/reset/**",
+                    API_VERSIONED_PATTERN + "/mail",
+                    API_VERSIONED_PATTERN + "/gitlab/webhooks/**"
             )
     );
 
@@ -116,6 +119,6 @@ public class SecurityConstants {
      * Paths that are protected and require UUID-based token authentication.
      */
     static final String[] AUTH_UUID_AUTHENTICATED_LIST = {
-            "/api/**"
+            API_ANY
     };
 }

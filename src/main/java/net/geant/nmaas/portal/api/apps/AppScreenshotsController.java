@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/apps/{appId}")
+@RequestMapping("/api/${nmaas.api.version:v1}/apps/{appId}")
 @Slf4j
 @Tag(name = "Application Screenshots", description = "Operations related to application screenshots")
 public class AppScreenshotsController extends AppBaseController {

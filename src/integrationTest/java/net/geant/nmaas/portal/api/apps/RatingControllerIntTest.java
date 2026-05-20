@@ -53,7 +53,7 @@ public class RatingControllerIntTest extends BaseControllerTestSetup {
 
     @Test
     void shouldSetUserAppRating() throws Exception {
-        MvcResult mvcResult = mvc.perform(post("/api/apps/" + TEST_APP_ID + "/rate/my/4")
+        MvcResult mvcResult = mvc.perform(post("/api/v1/apps/" + TEST_APP_ID + "/rate/my/4")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -63,7 +63,7 @@ public class RatingControllerIntTest extends BaseControllerTestSetup {
 
     @Test
     void shouldNormalizeNegativeUserAppRating() throws Exception {
-        MvcResult mvcResult = mvc.perform(post("/api/apps/" + TEST_APP_ID + "/rate/my/-1")
+        MvcResult mvcResult = mvc.perform(post("/api/v1/apps/" + TEST_APP_ID + "/rate/my/-1")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -73,7 +73,7 @@ public class RatingControllerIntTest extends BaseControllerTestSetup {
 
     @Test
     void shouldNormalizeUserAppRatingOverMax() throws Exception {
-        MvcResult mvcResult = mvc.perform(post("/api/apps/" + TEST_APP_ID + "/rate/my/25")
+        MvcResult mvcResult = mvc.perform(post("/api/v1/apps/" + TEST_APP_ID + "/rate/my/25")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -89,7 +89,7 @@ public class RatingControllerIntTest extends BaseControllerTestSetup {
         when(ratingRepository.findById(appRateId)).thenReturn(Optional.of(appRate));
         when(ratingRepository.getApplicationRating(TEST_APP_ID)).thenReturn(List.of(1, 4, 4).toArray(Integer[]::new));
 
-        MvcResult mvcResult = mvc.perform(get("/api/apps/" + TEST_APP_ID + "/rate/user/" + ADMIN_USER_ID)
+        MvcResult mvcResult = mvc.perform(get("/api/v1/apps/" + TEST_APP_ID + "/rate/user/" + ADMIN_USER_ID)
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -107,7 +107,7 @@ public class RatingControllerIntTest extends BaseControllerTestSetup {
         when(ratingRepository.findById(appRateId)).thenReturn(Optional.of(appRate));
         when(ratingRepository.getApplicationRating(TEST_APP_ID)).thenReturn(List.of(1, 2, 3).toArray(Integer[]::new));
 
-        MvcResult mvcResult = mvc.perform(get("/api/apps/" + TEST_APP_ID + "/rate/my")
+        MvcResult mvcResult = mvc.perform(get("/api/v1/apps/" + TEST_APP_ID + "/rate/my")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -125,7 +125,7 @@ public class RatingControllerIntTest extends BaseControllerTestSetup {
         when(ratingRepository.findById(appRateId)).thenReturn(Optional.of(appRate));
         when(ratingRepository.getApplicationRating(TEST_APP_ID)).thenReturn(List.of(1, 2, 3).toArray(Integer[]::new));
 
-        MvcResult mvcResult = mvc.perform(get("/api/apps/" + TEST_APP_ID + "/rate")
+        MvcResult mvcResult = mvc.perform(get("/api/v1/apps/" + TEST_APP_ID + "/rate")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

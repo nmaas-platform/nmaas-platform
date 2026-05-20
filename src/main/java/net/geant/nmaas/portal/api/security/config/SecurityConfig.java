@@ -110,15 +110,15 @@ public class SecurityConfig {
                 throw new IllegalStateException("SSO is enabled, but no ClientRegistrationRepository bean is configured");
             }
             DefaultOAuth2AuthorizationRequestResolver resolver = new DefaultOAuth2AuthorizationRequestResolver(
-                    clientRegistrationRepository, "/api/oauth2/authorization");
+                    clientRegistrationRepository, apiBasePath() + "/oauth2/authorization");
 
             http.oauth2Login(oauth2 -> oauth2
                     .userInfoEndpoint(Customizer.withDefaults())
                     .authorizationEndpoint(authorization -> authorization
                             .authorizationRequestResolver(resolver))
-                    .defaultSuccessUrl(SecurityConstants.AUTH_OIDC_SUCCESS, true)
+                    .defaultSuccessUrl(apiBasePath() + "/oidc/success", true)
                     .redirectionEndpoint(redirection ->
-                            redirection.baseUri("/api/login/oauth2/code/*"))
+                            redirection.baseUri(apiBasePath() + "/login/oauth2/code/*"))
             );
         }
 
@@ -131,9 +131,13 @@ public class SecurityConfig {
      * @return the configured GitLab authentication filter
      */
     private Filter gitlabTokenFilter() {
-        var filter = new StatelessGitlabAuthenticationFilter("/api/gitlab/webhooks/**", gitLabProjectRepository);
+        var filter = new StatelessGitlabAuthenticationFilter(SecurityConstants.API_VERSIONED_PATTERN + "/gitlab/webhooks/**", gitLabProjectRepository);
         filter.setAuthenticationFailureHandler(failureHandler());
         return filter;
+    }
+
+    private String apiBasePath() {
+        return "/api/" + env.getProperty("nmaas.api.version", "v1");
     }
 
     /**

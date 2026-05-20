@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/resources-limits")
+@RequestMapping("/api/${nmaas.api.version:v1}/resources-limits")
 @RequiredArgsConstructor
 @Tag(name = "Resources Limits", description = "Resources limits management API")
 public class ResourcesLimitController {

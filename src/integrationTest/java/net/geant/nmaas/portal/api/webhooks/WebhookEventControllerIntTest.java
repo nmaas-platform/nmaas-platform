@@ -52,7 +52,7 @@ class WebhookEventControllerIntTest extends BaseControllerTestSetup {
         webhookEvent.setId(44L);
         when(webhookEventService.create(any(WebhookEventDto.class))).thenReturn(webhookEvent);
 
-        mvc.perform(post("/api/webhooks")
+        mvc.perform(post("/api/v1/webhooks")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(webhookEventDto(null, null))))
@@ -62,7 +62,7 @@ class WebhookEventControllerIntTest extends BaseControllerTestSetup {
 
     @Test
     void shouldReturnNotAcceptableWhenWebhookIdsDoNotMatch() throws Exception {
-        mvc.perform(put("/api/webhooks/100")
+        mvc.perform(put("/api/v1/webhooks/100")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(webhookEventDto(99L, null))))
@@ -77,7 +77,7 @@ class WebhookEventControllerIntTest extends BaseControllerTestSetup {
         when(userService.findByUsername(UsersHelper.DOMAIN1_ADMIN.getUsername())).thenReturn(Optional.of(UsersHelper.DOMAIN1_ADMIN));
         when(aclService.isAuthorized(eq(UsersHelper.DOMAIN1_ADMIN.getId()), eq(2L), eq("domain"), any())).thenReturn(true);
 
-        mvc.perform(post("/api/webhooks/domain/2")
+        mvc.perform(post("/api/v1/webhooks/domain/2")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.DOMAIN1_ADMIN))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(webhookEventDto(null, domain(2L)))))
@@ -89,7 +89,7 @@ class WebhookEventControllerIntTest extends BaseControllerTestSetup {
 
     @Test
     void shouldReturnBadRequestWhenWebhookDomainDoesNotMatchPath() throws Exception {
-        mvc.perform(post("/api/webhooks/domain/2")
+        mvc.perform(post("/api/v1/webhooks/domain/2")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(webhookEventDto(null, domain(3L)))))

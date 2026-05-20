@@ -25,7 +25,7 @@ public class NotificationsControllerIntTest extends BaseControllerTestSetup {
     @Test
     void sendValidContactMail() {
         assertDoesNotThrow(() -> {
-            mvc.perform(post("/api/mail?token=mockedCaptcha-notRelevant")
+            mvc.perform(post("/api/v1/mail?token=mockedCaptcha-notRelevant")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content("{\"mailType\": \"CONTACT_FORM\",\"otherAttributes\": {\"text\": \"test\",\"TITLE\":\"Message title\"}}")
                             .accept(MediaType.APPLICATION_JSON))
@@ -36,7 +36,7 @@ public class NotificationsControllerIntTest extends BaseControllerTestSetup {
     @Test
     void sendInvalidContactMail() {
         assertDoesNotThrow(() -> {
-            mvc.perform(post("/api/mail?token=mockedCaptcha-notRelevant")
+            mvc.perform(post("/api/v1/mail?token=mockedCaptcha-notRelevant")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content("{\"mailType\": \"BROADCAST\",\"otherAttributes\": {\"text\": \"test\",\"TITLE\":\"Message title\"}}")
                             .accept(MediaType.APPLICATION_JSON))
@@ -48,7 +48,7 @@ public class NotificationsControllerIntTest extends BaseControllerTestSetup {
     void sendValidAdminNotification() {
         String token = getValidUserTokenFor(Role.ROLE_SYSTEM_ADMIN);
         assertDoesNotThrow(() -> {
-            mvc.perform(post("/api/mail/admin")
+            mvc.perform(post("/api/v1/mail/admin")
                             .header("Authorization", "Bearer " + token)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content("{\"mailType\": \"BROADCAST\",\"otherAttributes\": {\"text\": \"test\",\"TITLE\":\"Message title\"}}")
@@ -60,7 +60,7 @@ public class NotificationsControllerIntTest extends BaseControllerTestSetup {
     @Test
     void unauthorizedAdminNotificationShouldFail() {
         assertDoesNotThrow(() -> {
-            mvc.perform(post("/api/mail/admin")
+            mvc.perform(post("/api/v1/mail/admin")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content("{\"mailType\": \"BROADCAST\",\"otherAttributes\": {\"text\": \"test\",\"TITLE\":\"Message title\"}}")
                             .accept(MediaType.APPLICATION_JSON))

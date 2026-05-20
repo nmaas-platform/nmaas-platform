@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(value = "/api/configuration")
+@RequestMapping(value = "/api/${nmaas.api.version:v1}/configuration")
 @RequiredArgsConstructor
 @Tag(name = "Platform Configuration", description = "Platform configuration management API")
 public class ConfigurationController {

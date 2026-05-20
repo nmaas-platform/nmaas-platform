@@ -44,7 +44,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/groups")
+@RequestMapping("/api/${nmaas.api.version:v1}/groups")
 @Slf4j
 @Tag(name = "Domain Groups", description = "The domain groups API")
 public class GroupController extends BaseController {

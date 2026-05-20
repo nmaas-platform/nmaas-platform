@@ -41,7 +41,7 @@ public class DcnAdminControllerSecTest extends BaseControllerTestSetup {
         when(dcnRepositoryManager.loadAllNetworks())
                 .thenReturn(List.of(dcnInfo()));
         String token = getValidUserTokenFor(Role.ROLE_SYSTEM_ADMIN);
-        MvcResult result = mvc.perform(get("/api/management/dcns")
+        MvcResult result = mvc.perform(get("/api/v1/management/dcns")
                 .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -63,7 +63,7 @@ public class DcnAdminControllerSecTest extends BaseControllerTestSetup {
     void shouldAuthAndForbidSimpleGet() {
         String token = getValidUserTokenFor(Role.ROLE_USER);
         assertDoesNotThrow(() -> {
-            mvc.perform(get("/api/management/dcns")
+            mvc.perform(get("/api/v1/management/dcns")
                     .header("Authorization", "Bearer " + token))
                     .andExpect(status().isUnauthorized());
         });

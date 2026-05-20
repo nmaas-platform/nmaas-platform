@@ -25,7 +25,7 @@ import tools.jackson.databind.json.JsonMapper;
 import java.security.Principal;
 
 @RestController
-@RequestMapping(value = "/api/apps/instances")
+@RequestMapping(value = "/api/${nmaas.api.version:v1}/apps/instances")
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Application Instance Configuration", description = "Operations related to application instance configuration")

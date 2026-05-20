@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
  * Exposes REST API methods to retrieve information on application deployments
  */
 @RestController
-@RequestMapping(value = "/api/orchestration/deployments")
+@RequestMapping(value = "/api/${nmaas.api.version:v1}/orchestration/deployments")
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Application Deployment Monitor", description = "Administrator API for retrieving application deployment details")

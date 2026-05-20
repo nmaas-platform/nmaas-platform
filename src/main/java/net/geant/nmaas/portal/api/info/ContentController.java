@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/content")
+@RequestMapping("/api/${nmaas.api.version:v1}/content")
 @Tag(name = "Content", description = "Static content management API")
 public class ContentController {
 

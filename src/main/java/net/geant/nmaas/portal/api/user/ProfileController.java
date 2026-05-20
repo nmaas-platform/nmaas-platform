@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/profile")
+@RequestMapping("/api/${nmaas.api.version:v1}/profile")
 @RequiredArgsConstructor
 @Tag(name = "User Profiles", description = "User profiles retrieval API")
 public class ProfileController {
