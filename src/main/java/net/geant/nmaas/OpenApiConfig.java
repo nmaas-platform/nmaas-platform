@@ -3,6 +3,7 @@ package net.geant.nmaas;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
 import org.springdoc.core.customizers.OpenApiCustomizer;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -16,11 +17,19 @@ import java.util.Set;
 @OpenAPIDefinition(
         info = @Info(
                 title = "nmaas Platform API",
-                version = "1.10.0",
+                version = "v1",
                 description = "REST API for managing nmaas Platform resources"
         )
 )
 public class OpenApiConfig {
+
+    @Value("${nmaas.api.version:v1}")
+    private String apiVersion;
+
+    @Bean
+    public OpenApiCustomizer apiVersionCustomizer() {
+        return openApi -> openApi.getInfo().setVersion(apiVersion);
+    }
 
     @Bean
     public OpenApiCustomizer tagGroupsCustomizer() {
