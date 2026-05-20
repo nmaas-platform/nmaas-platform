@@ -22,7 +22,7 @@ public class KubernetesClusterControllerSecTest extends BaseControllerTestSetup 
     void shouldAuthorizeAdminProperUser() {
         String token = getValidUserTokenFor(Role.ROLE_SYSTEM_ADMIN);
         assertDoesNotThrow(() -> {
-            mvc.perform(get("/api/management/kubernetes")
+            mvc.perform(get("/api/v1/management/kubernetes")
                             .header("Authorization", "Bearer " + token))
                     .andExpect(status().isOk());
         });
@@ -32,7 +32,7 @@ public class KubernetesClusterControllerSecTest extends BaseControllerTestSetup 
     void shouldRejectNonAdminProperUser() {
         String token = getValidUserTokenFor(Role.ROLE_USER);
         assertDoesNotThrow(() -> {
-            mvc.perform(get("/api/management/kubernetes")
+            mvc.perform(get("/api/v1/management/kubernetes")
                             .header("Authorization", "Bearer " + token))
                     .andExpect(status().isUnauthorized());
         });

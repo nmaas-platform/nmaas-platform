@@ -29,7 +29,7 @@ import java.security.Principal;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/webhooks")
+@RequestMapping("/api/${nmaas.api.version:v1}/webhooks")
 @RequiredArgsConstructor
 @Tag(name = "Webhooks", description = "Webhooks management API")
 public class WebhookEventController {

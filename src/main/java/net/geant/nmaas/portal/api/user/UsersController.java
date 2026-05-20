@@ -78,7 +78,7 @@ import static net.geant.nmaas.portal.persistence.entity.Role.ROLE_TOOL_MANAGER;
 import static net.geant.nmaas.portal.persistence.entity.Role.ROLE_USER;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/${nmaas.api.version:v1}")
 @Slf4j
 @Tag(name = "Users", description = "User and role management API")
 public class UsersController {

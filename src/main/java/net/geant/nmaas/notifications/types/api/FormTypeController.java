@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/mail/type")
+@RequestMapping("/api/${nmaas.api.version:v1}/mail/type")
 @AllArgsConstructor
 @Tag(name = "Contact Forms", description = "Contact forms management API")
 public class FormTypeController {

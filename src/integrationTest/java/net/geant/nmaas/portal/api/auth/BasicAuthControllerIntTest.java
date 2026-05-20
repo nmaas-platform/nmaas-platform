@@ -28,7 +28,7 @@ public class BasicAuthControllerIntTest extends BaseControllerTestSetup {
     @Test
     void shouldLoginSuccessfully() {
         assertDoesNotThrow(() -> {
-            mvc.perform(post("/api/auth/basic/login")
+            mvc.perform(post("/api/v1/auth/basic/login")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content("{\"username\": \"admin\",\"password\": \"admin\"}")
                     .accept(MediaType.APPLICATION_JSON))
@@ -39,7 +39,7 @@ public class BasicAuthControllerIntTest extends BaseControllerTestSetup {
     @Test
     void shouldNotLoginWithWrongCredentials() {
         assertDoesNotThrow(() -> {
-            mvc.perform(post("/api/auth/basic/login")
+            mvc.perform(post("/api/v1/auth/basic/login")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content("{\"username\": \"admin1\",\"password\": \"admin1\"}")
                     .accept(MediaType.APPLICATION_JSON))
@@ -51,7 +51,7 @@ public class BasicAuthControllerIntTest extends BaseControllerTestSetup {
     void shouldAuthPingSuccessfully() {
         String token = getValidUserTokenFor(Role.ROLE_USER);
         assertDoesNotThrow(() -> {
-            mvc.perform(get("/api/auth/basic/ping")
+            mvc.perform(get("/api/v1/auth/basic/ping")
                     .header("Authorization", "Bearer " + token))
                     .andExpect(content().string(containsString(ADMIN_USERNAME)))
                     .andExpect(status().isOk());
@@ -61,7 +61,7 @@ public class BasicAuthControllerIntTest extends BaseControllerTestSetup {
     @Test
     void shouldNotAuthPing() {
         assertDoesNotThrow(() -> {
-            mvc.perform(get("/api/auth/basic/ping"))
+            mvc.perform(get("/api/v1/auth/basic/ping"))
                     .andExpect(status().is4xxClientError());
         });
     }

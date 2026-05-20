@@ -24,7 +24,7 @@ import java.util.List;
 import static net.geant.nmaas.portal.persistence.entity.Role.ROLE_SYSTEM_ADMIN;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/${nmaas.api.version:v1}")
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "User SSH Keys", description = "User SSH keys management API")

@@ -30,6 +30,7 @@ class RemoteClusterManagerControllerAdviceTest {
         RemoteClusterManagerController controller = new RemoteClusterManagerController(remoteClusterManager, objectMapper);
         mvc = MockMvcBuilders
                 .standaloneSetup(controller)
+                .addPlaceholderValue("nmaas.api.version", "v1")
                 .setControllerAdvice(new RemoveClusterManagerAdvice())
                 .build();
     }
@@ -39,7 +40,7 @@ class RemoteClusterManagerControllerAdviceTest {
         when(remoteClusterManager.getCluster(eq(1L), nullable(Principal.class)))
                 .thenThrow(new IllegalArgumentException("No access to cluster 1"));
 
-        mvc.perform(get("/api/management/cluster/1"))
+        mvc.perform(get("/api/v1/management/cluster/1"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("No access to cluster 1"));
     }
@@ -49,7 +50,7 @@ class RemoteClusterManagerControllerAdviceTest {
         when(remoteClusterManager.getCluster(eq(7L), nullable(Principal.class)))
                 .thenThrow(new NoSuchElementException("Cluster not found"));
 
-        mvc.perform(get("/api/management/cluster/7"))
+        mvc.perform(get("/api/v1/management/cluster/7"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("Cluster not found"));
     }

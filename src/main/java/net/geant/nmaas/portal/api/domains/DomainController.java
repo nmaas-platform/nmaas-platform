@@ -59,7 +59,7 @@ import java.security.Principal;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/domains")
+@RequestMapping("/api/${nmaas.api.version:v1}/domains")
 @Slf4j
 @Tag(name = "Domains", description = "The domains API")
 public class DomainController extends BaseController {

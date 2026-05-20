@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
  * REST API endpoint for retrieving Kubernetes cluster-related configuration
  */
 @RestController
-@RequestMapping(value = "/api/management/kubernetes")
+@RequestMapping(value = "/api/${nmaas.api.version:v1}/management/kubernetes")
 @RequiredArgsConstructor
 @Tag(name = "Kubernetes", description = "Kubernetes cluster management API")
 public class KubernetesClusterController {

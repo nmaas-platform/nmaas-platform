@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/mail")
+@RequestMapping("/api/${nmaas.api.version:v1}/mail")
 @Tag(name = "Notifications", description = "Notification management API")
 public class NotificationController {
 

@@ -21,7 +21,7 @@ public class GeneralInformationControllerTest extends BaseControllerTestSetup {
 
     @Test
     void shouldReturnGitProperties() throws Exception {
-        MvcResult result = mvc.perform(get("/api/info/git"))
+        MvcResult result = mvc.perform(get("/api/v1/info/git"))
                 .andExpect(status().isOk())
                 .andReturn();
         assertTrue(result.getResponse().getContentAsString().contains("commitName"));
@@ -29,7 +29,7 @@ public class GeneralInformationControllerTest extends BaseControllerTestSetup {
 
     @Test
     void shouldReturnChangelog() throws Exception {
-        MvcResult result = mvc.perform(get("/api/info/changelog"))
+        MvcResult result = mvc.perform(get("/api/v1/info/changelog"))
                 .andExpect(status().isOk())
                 .andReturn();
         assertTrue(StringUtils.isNotEmpty(result.getResponse().getContentAsString()));

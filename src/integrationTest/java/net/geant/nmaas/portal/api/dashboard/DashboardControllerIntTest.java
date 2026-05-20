@@ -104,7 +104,7 @@ class DashboardControllerIntTest extends BaseControllerTestSetup {
         OffsetDateTime startDate = OffsetDateTime.parse("2026-04-09T09:00:00Z");
         OffsetDateTime endDate = OffsetDateTime.parse("2026-04-09T11:00:00Z");
 
-        MvcResult result = mvc.perform(get("/api/dashboard/admin")
+        MvcResult result = mvc.perform(get("/api/v1/dashboard/admin")
                         .param("startDate", startDate.toString())
                         .param("end", endDate.toString())
                         .header("Authorization", "Bearer " + getValidUserTokenFor(Role.ROLE_SYSTEM_ADMIN)))
@@ -124,7 +124,7 @@ class DashboardControllerIntTest extends BaseControllerTestSetup {
         OffsetDateTime startDate = OffsetDateTime.parse("2026-04-01T00:00:00Z");
         OffsetDateTime endDate = OffsetDateTime.parse("2026-04-07T00:00:00Z");
 
-        mvc.perform(get("/api/dashboard/admin")
+        mvc.perform(get("/api/v1/dashboard/admin")
                         .param("startDate", startDate.toString())
                         .param("end", endDate.toString())
                         .header("Authorization", "Bearer " + getValidUserTokenFor(Role.ROLE_OPERATOR)))
@@ -136,7 +136,7 @@ class DashboardControllerIntTest extends BaseControllerTestSetup {
         OffsetDateTime startDate = OffsetDateTime.parse("2026-04-07T00:00:00Z");
         OffsetDateTime endDate = OffsetDateTime.parse("2026-04-01T00:00:00Z");
 
-        MvcResult result = mvc.perform(get("/api/dashboard/admin")
+        MvcResult result = mvc.perform(get("/api/v1/dashboard/admin")
                         .param("startDate", startDate.toString())
                         .param("end", endDate.toString())
                         .header("Authorization", "Bearer " + getValidUserTokenFor(Role.ROLE_SYSTEM_ADMIN)))
@@ -148,7 +148,7 @@ class DashboardControllerIntTest extends BaseControllerTestSetup {
 
     @Test
     void shouldGetOperatorDashboardAsOperator() throws Exception {
-        MvcResult result = mvc.perform(get("/api/dashboard/operator")
+        MvcResult result = mvc.perform(get("/api/v1/dashboard/operator")
                         .header("Authorization", "Bearer " + getValidUserTokenFor(Role.ROLE_OPERATOR)))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -159,7 +159,7 @@ class DashboardControllerIntTest extends BaseControllerTestSetup {
 
     @Test
     void shouldRejectOperatorDashboardForSystemAdmin() throws Exception {
-        mvc.perform(get("/api/dashboard/operator")
+        mvc.perform(get("/api/v1/dashboard/operator")
                         .header("Authorization", "Bearer " + getValidUserTokenFor(Role.ROLE_SYSTEM_ADMIN)))
                 .andExpect(status().isUnauthorized());
     }
@@ -193,7 +193,7 @@ class DashboardControllerIntTest extends BaseControllerTestSetup {
         OffsetDateTime loginDate = OffsetDateTime.parse("2026-04-09T08:15:30Z");
         userLoginRegisterRepository.saveAndFlush(new UserLoginRegister(loginDate, userWithInstance, UserLoginRegisterType.SUCCESS, "127.0.0.1", "localhost", "JUnit"));
 
-        MvcResult result = mvc.perform(get("/api/dashboard/domain/{id}", domain.getId())
+        MvcResult result = mvc.perform(get("/api/v1/dashboard/domain/{id}", domain.getId())
                         .header("Authorization", "Bearer " + getValidUserTokenFor(Role.ROLE_SYSTEM_ADMIN)))
                 .andExpect(status().isOk())
                 .andReturn();

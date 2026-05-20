@@ -23,7 +23,7 @@ class ProfileControllerTest extends BaseControllerTestSetup {
     void shouldGetUserProfile() {
         User user = UsersHelper.ADMIN;
         assertDoesNotThrow(() -> {
-            mvc.perform(get("/api/profile/user")
+            mvc.perform(get("/api/v1/profile/user")
                     .header("Authorization", "Bearer " + getValidTokenForUser(user)))
                     .andExpect(status().isOk());
         });

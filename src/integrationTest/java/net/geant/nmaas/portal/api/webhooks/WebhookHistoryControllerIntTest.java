@@ -36,7 +36,7 @@ class WebhookHistoryControllerIntTest extends BaseControllerTestSetup {
     void shouldGetWebhookHistoryAsOperator() throws Exception {
         when(webhookHistoryService.getById(5L)).thenReturn(historyDto(5L, 15L));
 
-        mvc.perform(get("/api/webhooks-history/5")
+        mvc.perform(get("/api/v1/webhooks-history/5")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.OPERATOR))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -51,7 +51,7 @@ class WebhookHistoryControllerIntTest extends BaseControllerTestSetup {
         when(webhookHistoryService.search(15L, WebhookEventType.DOMAIN_ACTION, "D1", from, to))
                 .thenReturn(List.of(historyDto(7L, 15L)));
 
-        mvc.perform(get("/api/webhooks-history")
+        mvc.perform(get("/api/v1/webhooks-history")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.OPERATOR))
                         .param("eventId", "15")
                         .param("eventType", "DOMAIN_ACTION")
@@ -68,7 +68,7 @@ class WebhookHistoryControllerIntTest extends BaseControllerTestSetup {
 
     @Test
     void shouldRejectWebhookHistoryForRegularDomainUser() throws Exception {
-        mvc.perform(get("/api/webhooks-history/5")
+        mvc.perform(get("/api/v1/webhooks-history/5")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.DOMAIN1_USER1))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());

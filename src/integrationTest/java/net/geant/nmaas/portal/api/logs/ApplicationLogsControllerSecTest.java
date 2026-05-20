@@ -31,7 +31,7 @@ public class ApplicationLogsControllerSecTest extends BaseControllerTestSetup {
         when(applicationLogsService.isLogAccessEnabled(1L)).thenReturn(true);
         String token = getValidUserTokenFor(Role.ROLE_SYSTEM_ADMIN);
         assertDoesNotThrow(() -> {
-            mvc.perform(get("/api/apps/logs/1/pods")
+            mvc.perform(get("/api/v1/apps/logs/1/pods")
                             .header("Authorization", "Bearer " + token))
                     .andExpect(status().isOk());
         });
@@ -42,7 +42,7 @@ public class ApplicationLogsControllerSecTest extends BaseControllerTestSetup {
         when(applicationLogsService.isLogAccessEnabled(1L)).thenReturn(true);
         String token = getValidUserTokenFor(Role.ROLE_SYSTEM_ADMIN);
         assertDoesNotThrow(() -> {
-            mvc.perform(get("/api/apps/logs/1/pods/pod1/container/container1")
+            mvc.perform(get("/api/v1/apps/logs/1/pods/pod1/container/container1")
                             .header("Authorization", "Bearer " + token))
                     .andExpect(status().isOk());
         });
@@ -54,7 +54,7 @@ public class ApplicationLogsControllerSecTest extends BaseControllerTestSetup {
         when(applicationLogsService.isLogAccessEnabled(1L)).thenReturn(true);
         String token = getValidUserTokenFor(Role.ROLE_SYSTEM_ADMIN);
         assertDoesNotThrow(() -> {
-            mvc.perform(get("/api/apps/logs/1/pods/pod1/container/container1?limit=10")
+            mvc.perform(get("/api/v1/apps/logs/1/pods/pod1/container/container1?limit=10")
                             .header("Authorization", "Bearer " + token))
                     .andExpect(status().isOk());
         });

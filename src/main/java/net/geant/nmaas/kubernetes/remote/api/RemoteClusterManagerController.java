@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Objects;
 
 @RestController
-@RequestMapping(value = "/api/management/cluster")
+@RequestMapping(value = "/api/${nmaas.api.version:v1}/management/cluster")
 @RequiredArgsConstructor
 @Tag(name = "Remote Kubernetes Clusters", description = "Remote Kubernetes cluster management API")
 public class RemoteClusterManagerController {

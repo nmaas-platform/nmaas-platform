@@ -46,7 +46,7 @@ public class I18nControllerTest extends BaseControllerTestSetup {
     @Test
     void shouldSaveNewLanguage() {
         assertDoesNotThrow(() -> {
-            mvc.perform(post("/api/i18n/de?enabled=true")
+            mvc.perform(post("/api/v1/i18n/de?enabled=true")
                     .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                     .accept(MediaType.APPLICATION_JSON)
                     .contentType(MediaType.APPLICATION_JSON)
@@ -58,7 +58,7 @@ public class I18nControllerTest extends BaseControllerTestSetup {
     @Test
     void shouldUpdateLanguage() {
         assertDoesNotThrow(() -> {
-            mvc.perform(patch("/api/i18n/pl")
+            mvc.perform(patch("/api/v1/i18n/pl")
                     .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                     .accept(MediaType.APPLICATION_JSON)
                     .contentType(MediaType.APPLICATION_JSON)
@@ -69,7 +69,7 @@ public class I18nControllerTest extends BaseControllerTestSetup {
 
     @Test
     void shouldGetLanguage() throws Exception {
-        MvcResult result = mvc.perform(get("/api/i18n/pl")
+        MvcResult result = mvc.perform(get("/api/v1/i18n/pl")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -80,7 +80,7 @@ public class I18nControllerTest extends BaseControllerTestSetup {
 
     @Test
     void shouldGetAllSupportedLanguage() throws Exception {
-        MvcResult result = mvc.perform(get("/api/i18n/all")
+        MvcResult result = mvc.perform(get("/api/v1/i18n/all")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -91,7 +91,7 @@ public class I18nControllerTest extends BaseControllerTestSetup {
     @Test
     void shouldDisableLanguage() {
         assertDoesNotThrow(() -> {
-            mvc.perform(put("/api/i18n/state")
+            mvc.perform(put("/api/v1/i18n/state")
                             .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(new ObjectMapper().writeValueAsString(new I18nBaseDto(false, "pl")))
@@ -103,7 +103,7 @@ public class I18nControllerTest extends BaseControllerTestSetup {
 
     @Test
     void shouldGetLanguageContent() throws Exception {
-        MvcResult result = mvc.perform(get("/api/i18n/content/pl")
+        MvcResult result = mvc.perform(get("/api/v1/i18n/content/pl")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -113,7 +113,7 @@ public class I18nControllerTest extends BaseControllerTestSetup {
 
     @Test
     void shouldGetAllEnabledLanguages() throws Exception {
-        MvcResult result = mvc.perform(get("/api/i18n/all/enabled")
+        MvcResult result = mvc.perform(get("/api/v1/i18n/all/enabled")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/api/bulks")
+@RequestMapping("/api/${nmaas.api.version:v1}/bulks")
 @Tag(name = "Bulk Operations", description = "Operations related to bulk deployments")
 public class BulkController {
 

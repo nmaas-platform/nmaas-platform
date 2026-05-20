@@ -29,7 +29,7 @@ import java.util.List;
  * - close connections
  */
 @RestController
-@RequestMapping("/api/pods/shell")
+@RequestMapping("/api/${nmaas.api.version:v1}/pods/shell")
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Application Instance Shell", description = "Access to running application shell")

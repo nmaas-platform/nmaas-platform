@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/webhooks-history")
+@RequestMapping("/api/${nmaas.api.version:v1}/webhooks-history")
 @RequiredArgsConstructor
 @Tag(name = "Webhook History", description = "Webhook history management API")
 public class WebhookHistoryController {

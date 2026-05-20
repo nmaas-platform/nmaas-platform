@@ -137,7 +137,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
     @Test
     @CacheEvict(value = "applicationBaseS", allEntries = true)
     public void shouldGetActiveApplications() throws Exception {
-        MvcResult result = mvc.perform(get("/api/apps/base")
+        MvcResult result = mvc.perform(get("/api/v1/apps/base")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -149,7 +149,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
 
     @Test
     void shouldGetAllApplications() throws Exception {
-        MvcResult result = mvc.perform(get("/api/apps/base/all")
+        MvcResult result = mvc.perform(get("/api/v1/apps/base/all")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -167,7 +167,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
                 new AppDescription(null, "en", "Description", "Full description")
         ));
 
-        MvcResult result = mvc.perform(post("/api/apps")
+        MvcResult result = mvc.perform(post("/api/v1/apps")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
@@ -189,7 +189,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
         ApplicationView applicationView = modelMapper.map(this.testApp1, ApplicationView.class);
         applicationView.setConfigWizardTemplate(new ConfigWizardTemplateDto(null, "{}"));
 
-        mvc.perform(patch("/api/apps/version")
+        mvc.perform(patch("/api/v1/apps/version")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
@@ -211,14 +211,14 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
         applicationView.getAppDeploymentSpec().getStorageVolumes()
                 .add(new AppStorageVolumeDto(null, ServiceStorageVolumeTypeDto.SHARED, 5, new HashMap<>()));
 
-        mvc.perform(patch("/api/apps/version")
+        mvc.perform(patch("/api/v1/apps/version")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(applicationView))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
-        MvcResult result = mvc.perform(get("/api/apps/version/" + applicationView.getId())
+        MvcResult result = mvc.perform(get("/api/v1/apps/version/" + applicationView.getId())
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -232,7 +232,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
     @Test
     void shouldUpdateAppBase() {
         assertDoesNotThrow(() -> {
-            mvc.perform(patch("/api/apps/base")
+            mvc.perform(patch("/api/v1/apps/base")
                             .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(
@@ -246,7 +246,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
     @Test
     void shouldDeleteApplication() throws Exception {
         long id = this.testApp1.getId();
-        mvc.perform(delete("/api/apps/" + id)
+        mvc.perform(delete("/api/v1/apps/" + id)
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
@@ -256,7 +256,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
     @Test
     void shouldGetAppBase() throws Exception {
         long id = this.testApp1Base.getId();
-        MvcResult result = mvc.perform(get("/api/apps/base/" + id)
+        MvcResult result = mvc.perform(get("/api/v1/apps/base/" + id)
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -268,7 +268,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
     @Test
     void shouldGetAppBaseByName() throws Exception {
         String name = this.testApp1Base.getName();
-        MvcResult result = mvc.perform(get("/api/apps/base/name/" + name)
+        MvcResult result = mvc.perform(get("/api/v1/apps/base/name/" + name)
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -281,7 +281,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
     void shouldGetLatestAppVersion() throws Exception {
         this.applicationService.create(getDefaultApplication(APP_1_NAME, "1.3.0", ApplicationState.DISABLED));
         this.applicationService.create(getDefaultApplication(APP_1_NAME, "1.2.0", ApplicationState.ACTIVE));
-        MvcResult result = mvc.perform(get("/api/apps/" + APP_1_NAME + "/latest")
+        MvcResult result = mvc.perform(get("/api/v1/apps/" + APP_1_NAME + "/latest")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -294,7 +294,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
     @Test
     void shouldGetApp() throws Exception {
         long id = applicationRepository.findAll().getFirst().getId();
-        MvcResult result = mvc.perform(get("/api/apps/" + id)
+        MvcResult result = mvc.perform(get("/api/v1/apps/" + id)
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -316,14 +316,14 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
     @Test
     void shouldChangeAppState() throws Exception {
         long id = this.testApp1.getId();
-        mvc.perform(patch("/api/apps/state/" + id)
+        mvc.perform(patch("/api/v1/apps/state/" + id)
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .content(objectMapper.writeValueAsString(new ApplicationStateChangeRequest(ApplicationStateDto.DISABLED, "reason", false)))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
-        MvcResult result = mvc.perform(get("/api/apps/version/" + id)
+        MvcResult result = mvc.perform(get("/api/v1/apps/version/" + id)
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -332,7 +332,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
         assertEquals(ApplicationStateDto.DISABLED, applicationView.getState());
 
         //reverse state to active again
-        mvc.perform(patch("/api/apps/state/" + id)
+        mvc.perform(patch("/api/v1/apps/state/" + id)
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .content(objectMapper.writeValueAsString(new ApplicationStateChangeRequest(ApplicationStateDto.ACTIVE, "reason", false)))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -374,7 +374,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
                 .build();
 
         assertDoesNotThrow(() -> {
-            mvc.perform(post("/api/apps/version")
+            mvc.perform(post("/api/v1/apps/version")
                             .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(view))

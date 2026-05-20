@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Objects;
 
 @RestController
-@RequestMapping("/api/apps/logs")
+@RequestMapping("/api/${nmaas.api.version:v1}/apps/logs")
 @AllArgsConstructor
 @Transactional
 @Slf4j

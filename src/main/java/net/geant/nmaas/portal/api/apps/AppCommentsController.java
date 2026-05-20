@@ -32,7 +32,7 @@ import java.security.Principal;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/apps/{appId}/comments")
+@RequestMapping("/api/${nmaas.api.version:v1}/apps/{appId}/comments")
 @Tag(name = "Application Comments", description = "Operations related to application comments")
 public class AppCommentsController extends AppBaseController {
 

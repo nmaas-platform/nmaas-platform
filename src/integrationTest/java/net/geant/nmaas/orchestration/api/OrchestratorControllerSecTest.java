@@ -33,11 +33,11 @@ public class OrchestratorControllerSecTest extends BaseControllerTestSetup {
     void shouldAuthorizeAdminProperUser() {
         String token = getValidUserTokenFor(Role.ROLE_SYSTEM_ADMIN);
         assertDoesNotThrow(() -> {
-            mvc.perform(get("/api/orchestration/deployments")
+            mvc.perform(get("/api/v1/orchestration/deployments")
                             .header("Authorization", "Bearer " + token))
                     .andExpect(status().isOk());
             when(repository.loadState(any())).thenThrow(new InvalidDeploymentIdException(""));
-            mvc.perform(get("/api/orchestration/deployments/{deploymentId}/state", "id")
+            mvc.perform(get("/api/v1/orchestration/deployments/{deploymentId}/state", "id")
                             .header("Authorization", "Bearer " + token))
                     .andExpect(status().isNotFound());
         });
@@ -47,10 +47,10 @@ public class OrchestratorControllerSecTest extends BaseControllerTestSetup {
     void shouldRejectNonAdminProperUser() {
         String token = getValidUserTokenFor(Role.ROLE_USER);
         assertDoesNotThrow(() -> {
-            mvc.perform(get("/api/orchestration/deployments")
+            mvc.perform(get("/api/v1/orchestration/deployments")
                             .header("Authorization", "Bearer " + token))
                     .andExpect(status().isUnauthorized());
-            mvc.perform(get("/api/orchestration/deployments/{deploymentId}/state", "id")
+            mvc.perform(get("/api/v1/orchestration/deployments/{deploymentId}/state", "id")
                             .header("Authorization", "Bearer " + token))
                     .andExpect(status().isUnauthorized());
         });

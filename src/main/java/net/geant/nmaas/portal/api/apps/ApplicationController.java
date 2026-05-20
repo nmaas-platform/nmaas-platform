@@ -63,7 +63,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/apps")
+@RequestMapping("/api/${nmaas.api.version:v1}/apps")
 @Slf4j
 @Tag(name = "Applications", description = "Operations related to applications")
 public class ApplicationController extends AppBaseController {

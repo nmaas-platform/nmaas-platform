@@ -24,7 +24,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/monitor")
+@RequestMapping("/api/${nmaas.api.version:v1}/monitor")
 @Tag(name = "Platform Monitoring", description = "Internal platform monitoring management API")
 public class MonitorController {
 

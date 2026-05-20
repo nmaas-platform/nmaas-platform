@@ -22,7 +22,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/api/i18n")
+@RequestMapping(value = "/api/${nmaas.api.version:v1}/i18n")
 @Tag(name = "Translations", description = "Translations management API")
 public class I18nController {
 

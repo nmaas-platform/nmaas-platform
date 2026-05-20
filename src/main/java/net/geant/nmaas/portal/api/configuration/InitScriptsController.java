@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(value = "/api/init")
+@RequestMapping(value = "/api/${nmaas.api.version:v1}/init")
 @RequiredArgsConstructor
 @Slf4j
 public class InitScriptsController {

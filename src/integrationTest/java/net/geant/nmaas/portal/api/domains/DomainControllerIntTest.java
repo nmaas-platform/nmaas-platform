@@ -101,7 +101,7 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
     void shouldCreateDomain() throws Exception {
         when(domainService.existsDomain(TEST_DOMAIN_NAME)).thenReturn(false);
         when(domainService.createDomain(any())).thenReturn(getDefaultDomain());
-        MvcResult result = mvc.perform(post("/api/domains")
+        MvcResult result = mvc.perform(post("/api/v1/domains")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(getDefaultDomainRequest("test")))
@@ -118,7 +118,7 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
         domainRequest.setCodename("GLOBAL");
         domainRequest.setName("GLOBAL");
         assertDoesNotThrow(() -> {
-            mvc.perform(post("/api/domains")
+            mvc.perform(post("/api/v1/domains")
                             .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(domainRequest))
@@ -132,7 +132,7 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
         Domain request = getDefaultDomain();
         request.getDomainTechDetails().setKubernetesNamespace("namespace");
         request.setApplicationStatePerDomain(new ArrayList<>());
-        MvcResult result = mvc.perform(put("/api/domains/" + request.getId())
+        MvcResult result = mvc.perform(put("/api/v1/domains/" + request.getId())
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(modelMapper.map(request, DomainDto.class)))
@@ -147,7 +147,7 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
         Domain request = getDefaultDomain();
         request.setApplicationStatePerDomain(new ArrayList<>());
         request.getDomainDcnDetails().setCustomerNetworks(Collections.singletonList(new CustomerNetwork(null, InetAddress.getByName("1.1.1.1"), 24)));
-        mvc.perform(put("/api/domains/" + request.getId())
+        mvc.perform(put("/api/v1/domains/" + request.getId())
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(modelMapper.map(request, DomainDto.class)))
@@ -161,7 +161,7 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
         DomainDto request = modelMapper.map(getDefaultDomainRequest("test"), DomainDto.class);
         request.setId(999L);
         assertDoesNotThrow(() -> {
-            mvc.perform(put("/api/domains/" + TEST_DOMAIN_ID)
+            mvc.perform(put("/api/v1/domains/" + TEST_DOMAIN_ID)
                             .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request))
@@ -175,7 +175,7 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
         Domain request = getDefaultDomain();
         request.getDomainTechDetails().setExternalServiceDomain("external-domain");
         request.setApplicationStatePerDomain(new ArrayList<>());
-        MvcResult result = mvc.perform(put("/api/domains/" + request.getId())
+        MvcResult result = mvc.perform(put("/api/v1/domains/" + request.getId())
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -190,7 +190,7 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
         Domain request = getDefaultDomain();
         request.getDomainTechDetails().setKubernetesNamespace("namespace");
         request.setApplicationStatePerDomain(new ArrayList<>());
-        MvcResult result = mvc.perform(patch("/api/domains/" + request.getId())
+        MvcResult result = mvc.perform(patch("/api/v1/domains/" + request.getId())
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.OPERATOR))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -207,7 +207,7 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
         techDetails.setKubernetesNamespace("namespace");
         request.setDomainTechDetails(techDetails);
         request.setApplicationStatePerDomain(new ArrayList<>());
-        MvcResult result = mvc.perform(patch("/api/domains/" + request.getId())
+        MvcResult result = mvc.perform(patch("/api/v1/domains/" + request.getId())
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.DOMAIN1_ADMIN))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -225,7 +225,7 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
         long id = request.getId();
         request.setId(123L);
         assertDoesNotThrow(() -> {
-            mvc.perform(patch("/api/domains/" + id)
+            mvc.perform(patch("/api/v1/domains/" + id)
                             .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.OPERATOR))
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request))
@@ -237,7 +237,7 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
     @Test
     void shouldChangeDomainState() {
         assertDoesNotThrow(() -> {
-            mvc.perform(patch("/api/domains/" + TEST_DOMAIN_ID + "/state?active=false")
+            mvc.perform(patch("/api/v1/domains/" + TEST_DOMAIN_ID + "/state?active=false")
                             .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                             .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk());
@@ -247,7 +247,7 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
     @Test
     void shouldEnableDcnConfiguredFlag() throws Exception {
         when(domainService.changeDcnConfiguredFlag(TEST_DOMAIN_ID, true)).thenReturn(getDefaultDomain());
-        MvcResult result = mvc.perform(patch("/api/domains/" + TEST_DOMAIN_ID + "/dcn?configured=true")
+        MvcResult result = mvc.perform(patch("/api/v1/domains/" + TEST_DOMAIN_ID + "/dcn?configured=true")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -259,7 +259,7 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
     @Test
     void shouldDisableDcnConfiguredFlag() throws Exception {
         when(domainService.changeDcnConfiguredFlag(TEST_DOMAIN_ID, false)).thenReturn(getDefaultDomain());
-        MvcResult result = mvc.perform(patch("/api/domains/" + TEST_DOMAIN_ID + "/dcn?configured=false")
+        MvcResult result = mvc.perform(patch("/api/v1/domains/" + TEST_DOMAIN_ID + "/dcn?configured=false")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -272,7 +272,7 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
     void shouldDeleteDomain() {
         when(domainService.removeDomain(TEST_DOMAIN_ID)).thenReturn(true);
         assertDoesNotThrow(() -> {
-            mvc.perform(delete("/api/domains/" + TEST_DOMAIN_ID)
+            mvc.perform(delete("/api/v1/domains/" + TEST_DOMAIN_ID)
                             .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                             .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk());
@@ -282,7 +282,7 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
     @Test
     void shouldNotDeleteDomain() {
         assertDoesNotThrow(() -> {
-            mvc.perform(delete("/api/domains/" + 1234)
+            mvc.perform(delete("/api/v1/domains/" + 1234)
                             .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                             .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isNotFound());
@@ -293,7 +293,7 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
     void shouldGetDomain() throws Exception {
         when(userService.findByUsername(ADMIN_USERNAME)).thenReturn(Optional.of(UsersHelper.ADMIN));
         when(userService.findById(1L)).thenReturn(Optional.of(UsersHelper.ADMIN));
-        MvcResult result = mvc.perform(get("/api/domains/{domainId}", TEST_DOMAIN_ID)
+        MvcResult result = mvc.perform(get("/api/v1/domains/{domainId}", TEST_DOMAIN_ID)
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -306,7 +306,7 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
     void shouldGetDomainByName() throws Exception {
         when(userService.findByUsername(ADMIN_USERNAME)).thenReturn(Optional.of(UsersHelper.ADMIN));
         when(userService.findById(1L)).thenReturn(Optional.of(UsersHelper.ADMIN));
-        MvcResult result = mvc.perform(get("/api/domains/name/{domainName}", TEST_DOMAIN_NAME)
+        MvcResult result = mvc.perform(get("/api/v1/domains/name/{domainName}", TEST_DOMAIN_NAME)
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -321,7 +321,7 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
         when(userService.findById(1L)).thenReturn(Optional.of(UsersHelper.ADMIN));
         when(domainService.findDomain(2345L)).thenReturn(Optional.empty());
         assertDoesNotThrow(() -> {
-            mvc.perform(get("/api/domains/{domainId}", 2345)
+            mvc.perform(get("/api/v1/domains/{domainId}", 2345)
                             .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                             .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isInternalServerError());
@@ -330,7 +330,7 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
 
     @Test
     void shouldGetDomains() throws Exception {
-        MvcResult result = mvc.perform(get("/api/domains")
+        MvcResult result = mvc.perform(get("/api/v1/domains")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -345,7 +345,7 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
         user.setId(1L);
         when(userService.findByUsername(any())).thenReturn(Optional.of(user));
         when(domainService.getUserDomains(1L, null)).thenReturn(Sets.newSet(getDefaultDomain(), getGlobalDomain()));
-        MvcResult result = mvc.perform(get("/api/domains/my")
+        MvcResult result = mvc.perform(get("/api/v1/domains/my")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -376,7 +376,7 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
 
         when(domainGroupService.getDomainGroup(any())).thenReturn(group1);
 
-        MvcResult result = mvc.perform(get("/api/groups/1")
+        MvcResult result = mvc.perform(get("/api/v1/groups/1")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ROLE_GROUP_MANAGER))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

@@ -27,7 +27,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/apps/{appId}/rate")
+@RequestMapping("/api/${nmaas.api.version:v1}/apps/{appId}/rate")
 @io.swagger.v3.oas.annotations.tags.Tag(name = "Application Ratings", description = "Application ratings")
 public class RatingController extends AppBaseController {
 

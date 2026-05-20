@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/gitlab/webhooks")
+@RequestMapping("/api/${nmaas.api.version:v1}/gitlab/webhooks")
 public class GitLabWebhookController {
 
     private final KubernetesRepositoryManager repositoryManager;

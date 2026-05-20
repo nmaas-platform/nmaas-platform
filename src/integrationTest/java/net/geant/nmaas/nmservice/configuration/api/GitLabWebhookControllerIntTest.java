@@ -34,7 +34,9 @@ public class GitLabWebhookControllerIntTest {
 
     @BeforeEach
     void setup() {
-        mvc = MockMvcBuilders.standaloneSetup(new GitLabWebhookController(repositoryManager, configurationProvider)).build();
+        mvc = MockMvcBuilders.standaloneSetup(new GitLabWebhookController(repositoryManager, configurationProvider))
+                .addPlaceholderValue("nmaas.api.version", "v1")
+                .build();
     }
 
     @Test
@@ -43,7 +45,7 @@ public class GitLabWebhookControllerIntTest {
         serviceInfo.setDescriptiveDeploymentId(Identifier.newInstance("descriptiveDeploymentId"));
         serviceInfo.setState(ServiceDeploymentState.VERIFICATION_INITIATED);
         when(repositoryManager.loadServiceByGitLabProjectWebhookId("webhookId")).thenReturn(serviceInfo);
-        mvc.perform(post("/api/gitlab/webhooks/webhookId")
+        mvc.perform(post("/api/v1/gitlab/webhooks/webhookId")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
         verifyNoMoreInteractions(configurationProvider);
@@ -55,7 +57,7 @@ public class GitLabWebhookControllerIntTest {
         serviceInfo.setDescriptiveDeploymentId(Identifier.newInstance("descriptiveDeploymentId"));
         serviceInfo.setState(ServiceDeploymentState.VERIFIED);
         when(repositoryManager.loadServiceByGitLabProjectWebhookId("webhookId")).thenReturn(serviceInfo);
-        mvc.perform(post("/api/gitlab/webhooks/webhookId")
+        mvc.perform(post("/api/v1/gitlab/webhooks/webhookId")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
         verify(configurationProvider, times(1)).reloadNmService(any());
@@ -67,7 +69,7 @@ public class GitLabWebhookControllerIntTest {
         serviceInfo.setDescriptiveDeploymentId(Identifier.newInstance("descriptiveDeploymentId"));
         serviceInfo.setState(ServiceDeploymentState.VERIFICATION_FAILED);
         when(repositoryManager.loadServiceByGitLabProjectWebhookId("webhookId")).thenReturn(serviceInfo);
-        mvc.perform(post("/api/gitlab/webhooks/webhookId")
+        mvc.perform(post("/api/v1/gitlab/webhooks/webhookId")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
         verify(configurationProvider, times(1)).reloadNmService(any());

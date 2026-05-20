@@ -21,7 +21,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/mail/templates")
+@RequestMapping("/api/${nmaas.api.version:v1}/mail/templates")
 @Tag(name = "Mail Templates", description = "Mail template management API")
 public class TemplateController {
 
