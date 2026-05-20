@@ -15,6 +15,7 @@ import net.geant.nmaas.portal.api.exceptions.ExternalUserMatchException;
 import net.geant.nmaas.portal.api.exceptions.SignupException;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
 import net.geant.nmaas.portal.exceptions.UndergoingMaintenanceException;
+import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.entity.Role;
 import net.geant.nmaas.portal.persistence.entity.User;
 import net.geant.nmaas.portal.persistence.entity.UserRole;
@@ -43,6 +44,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import static java.lang.String.format;
@@ -69,6 +71,8 @@ public class OIDCAuthController {
     private final ConfigurationManager configurationManager;
     private final ModelMapper modelMapper;
     private final ApplicationEventPublisher eventPublisher;
+    private final DomainService domainService;
+
 
     @Value("${portal.address}")
     private String portalAddress;
@@ -187,7 +191,16 @@ public class OIDCAuthController {
         ConfigurationView configuration = configurationManager.getConfiguration();
         if (configuration != null && configuration.getDefaultDomainForSsoUsers() != null
                 && (user.getRoles() == null || user.getRoles().size() < 2)) {
-            domains.addMemberRole(configuration.getDefaultDomainForSsoUsers(), user.getId(), Role.ROLE_USER);
+            Long defaultDomanId = configuration.getDefaultDomainForSsoUsers();
+            domains.addMemberRole(defaultDomanId, user.getId(), Role.ROLE_USER);
+            Domain global = domainService.getGlobalDomain().get();
+            if (user.getDefaultDomain() == null && !Objects.equals(defaultDomanId, global.getId())) {
+                user.setDefaultDomain(defaultDomanId);
+                userService.update(user);
+                log.info("Set default domain [{}] to user [{}].",
+                        defaultDomanId,
+                        user.getUsername());
+            }
         }
     }
 
