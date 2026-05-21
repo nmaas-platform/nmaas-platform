@@ -38,6 +38,12 @@ public class AppConfigurationTask {
             if (Objects.isNull(nmServiceDeployment.getAppConfiguration())) {
                 log.warn("Application configuration of deployment {} is null", nmServiceDeployment.getDescriptiveDeploymentId());
             }
+            if (event.getUserInitiator() != null) {
+                configurationProvider.configureNmService(nmServiceDeployment, event.getUserInitiator());
+
+            } else {
+                configurationProvider.configureNmService(nmServiceDeployment);
+            }
             configurationProvider.configureNmService(nmServiceDeployment);
         } catch (Exception ex) {
             log.error("Exception during task execution", ex);

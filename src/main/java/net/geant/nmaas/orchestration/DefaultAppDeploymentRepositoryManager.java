@@ -54,6 +54,11 @@ public class DefaultAppDeploymentRepositoryManager implements AppDeploymentRepos
     public void update(AppDeployment appDeployment) {
         repository.save(appDeployment);
     }
+    @Override
+    //@Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void update(AppDeployment appDeployment, User userInitiator) {
+        repository.save(appDeployment);
+    }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)

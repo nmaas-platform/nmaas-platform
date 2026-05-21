@@ -186,7 +186,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
         deploymentRepositoryManager.update(appDeployment);
 
         if (appDeployment.getState().equals(AppDeploymentState.MANAGEMENT_VPN_CONFIGURED)) {
-            eventPublisher.publishEvent(new AppApplyConfigurationActionEvent(this, deploymentId));
+            eventPublisher.publishEvent(new AppApplyConfigurationActionEvent(this, deploymentId, initiator));
         }
     }
 
