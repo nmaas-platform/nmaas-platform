@@ -51,7 +51,7 @@ public class KubernetesApiJanitorService {
     }
 
     public boolean checkIfReady(KCluster kCluster, Identifier deploymentId, String domain) {
-        final String namespace = namespaceService.namespace(domain);
+        final String namespace = getTargetNamespace(kCluster, domain);
         log.info("Checking status of release {} in namespace {}", deploymentId.value(), namespace);
         final List<Deployment> deployments = kubernetesApiClientService.getDeployments(kCluster, namespace, deploymentId.value());
         for (Deployment d : deployments) {
@@ -68,8 +68,15 @@ public class KubernetesApiJanitorService {
         return true;
     }
 
+    private String getTargetNamespace(KCluster kCluster, String domain) {
+        if (kCluster != null) {
+            return namespaceService.namespace(kCluster, domain);
+        }
+        return namespaceService.namespace(domain);
+    }
+
     public String retrieveServiceIp(KCluster kCluster, Identifier serviceName, String domain) {
-        final String namespace = namespaceService.namespace(domain);
+        final String namespace = getTargetNamespace(kCluster, domain);
         final Service service = kubernetesApiClientService.getService(kCluster, namespace, serviceName.value());
         if (Objects.nonNull(service)) {
             try {
@@ -87,13 +94,13 @@ public class KubernetesApiJanitorService {
     }
 
     public boolean checkServiceExists(KCluster kCluster, Identifier serviceName, String domain) {
-        final String namespace = namespaceService.namespace(domain);
+        final String namespace = getTargetNamespace(kCluster, domain);
         final Service service = kubernetesApiClientService.getService(kCluster, namespace, serviceName.value());
         return Objects.nonNull(service);
     }
 
     public List<AppComponentDetails> getPodNames(KCluster kCluster, Identifier deploymentId, String domain) {
-        final String namespace = namespaceService.namespace(domain);
+        final String namespace = getTargetNamespace(kCluster, domain);
         final PodList pods = kubernetesApiClientService.getPods(kCluster, namespace);
         return pods.getItems().stream()
                 .filter(p -> p.getMetadata().getName().startsWith(deploymentId.value()))
@@ -107,14 +114,14 @@ public class KubernetesApiJanitorService {
     }
 
     public List<String> getPodLogs(KCluster kCluster, String podName, String containerName, String domain, int limit) {
-        final String namespace = namespaceService.namespace(domain);
+        final String namespace = getTargetNamespace(kCluster, domain);
         return Collections.singletonList(
                 kubernetesApiClientService.getLogs(kCluster, namespace, podName, containerName, limit)
         );
     }
 
     public void createOrReplaceConfigMaps(KCluster kCluster, Identifier deploymentId, String domain, List<ConfigFile> configFiles) {
-        final String namespace = namespaceService.namespace(domain);
+        final String namespace = getTargetNamespace(kCluster, domain);
         Map<String, List<ConfigFile>> configFilesInConfigMaps = new HashMap<>();
         configFiles.forEach(configFile -> {
             final String configMapName = generateConfigMapName(deploymentId, configFile.getFilePath(), configFile.getFileName());
@@ -137,12 +144,12 @@ public class KubernetesApiJanitorService {
     }
 
     public void deleteConfigMapIfExists(KCluster kCluster, Identifier deploymentId, String domain) {
-        final String namespace = namespaceService.namespace(domain);
+        final String namespace = getTargetNamespace(kCluster, domain);
         kubernetesApiClientService.deleteConfigMapIfExists(kCluster, namespace, deploymentId.value());
     }
 
     public void createOrReplaceBasicAuth(KCluster kCluster, Identifier deploymentId, String domain, String basicAuthUsername, String basicAuthPassword) {
-        final String namespace = namespaceService.namespace(domain);
+        final String namespace = getTargetNamespace(kCluster, domain);
         kubernetesApiClientService.createOrReplaceBasicAuth(kCluster, namespace, generateSecretName(deploymentId), generateBasicAuthCredentials(basicAuthUsername, basicAuthPassword));
     }
 
@@ -156,12 +163,12 @@ public class KubernetesApiJanitorService {
     }
 
     public void deleteBasicAuthIfExists(KCluster kCluster, Identifier deploymentId, String domain) {
-        final String namespace = namespaceService.namespace(domain);
+        final String namespace = getTargetNamespace(kCluster, domain);
         kubernetesApiClientService.deleteSecretIfExists(kCluster, namespace, generateSecretName(deploymentId));
     }
 
     public void deleteTlsIfExists(KCluster kCluster, Identifier deploymentId, String domain) {
-        final String namespace = namespaceService.namespace(domain);
+        final String namespace = getTargetNamespace(kCluster, domain);
         kubernetesApiClientService.deleteSecretIfExists(kCluster, namespace, generateTlsSecretName(deploymentId));
     }
 
