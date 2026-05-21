@@ -1,4 +1,4 @@
-package net.geant.nmaas.portal.api.kubernetes;
+package net.geant.nmaas.portal.api.shell;
 
 import net.geant.nmaas.kubernetes.shell.KubernetesConnectorHelper;
 import net.geant.nmaas.kubernetes.shell.PodSessionsStorage;

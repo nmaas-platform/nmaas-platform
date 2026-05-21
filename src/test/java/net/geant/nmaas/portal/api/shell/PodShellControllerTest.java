@@ -1,4 +1,4 @@
-package net.geant.nmaas.portal.api.kubernetes;
+package net.geant.nmaas.portal.api.shell;
 
 import net.geant.nmaas.api.dto.K8sShellCommandRequest;
 import net.geant.nmaas.portal.service.K8sShellService;

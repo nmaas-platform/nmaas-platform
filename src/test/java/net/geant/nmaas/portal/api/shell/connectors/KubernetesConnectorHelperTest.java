@@ -1,4 +1,4 @@
-package net.geant.nmaas.portal.api.kubernetes.connectors;
+package net.geant.nmaas.portal.api.shell.connectors;
 
 import io.fabric8.kubernetes.api.model.PodBuilder;
 import io.fabric8.kubernetes.api.model.PodListBuilder;

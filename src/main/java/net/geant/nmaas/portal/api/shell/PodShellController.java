@@ -1,4 +1,4 @@
-package net.geant.nmaas.portal.api.kubernetes;
+package net.geant.nmaas.portal.api.shell;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -52,7 +52,7 @@ public class PodShellController {
     }
 
     /**
-     * Returns stream of events happening on the shell
+     * Returns the stream of events happening on the shell
      *
      * @param principal - principal
      * @param sessionId - session identifier
@@ -77,7 +77,7 @@ public class PodShellController {
     }
 
     /**
-     * This method is responsible for completing session, closing and removing connection
+     * This method is responsible for completing the session, closing, and removing connection
      *
      * @param principal - principal
      * @param id        - session identifier

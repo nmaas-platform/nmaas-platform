@@ -42,7 +42,7 @@ public class AppLogsController {
     }
 
     /**
-     * Retrieves logs for given pod of AppInstance
+     * Retrieves logs for a given pod of AppInstance
      *
      * @param appInstanceId identifier of AppInstance to retrieve pod names
      * @param podName       name of a pod

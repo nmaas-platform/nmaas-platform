@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * This object is responsible for creating connectors to instances
- * currently utilizes Kubernetes Connector
+ * currently uses Kubernetes Connector
  */
 @Component
 @RequiredArgsConstructor

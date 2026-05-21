@@ -40,11 +40,9 @@ public class AppConfigurationTask {
             }
             if (event.getUserInitiator() != null) {
                 configurationProvider.configureNmService(nmServiceDeployment, event.getUserInitiator());
-
             } else {
                 configurationProvider.configureNmService(nmServiceDeployment);
             }
-            configurationProvider.configureNmService(nmServiceDeployment);
         } catch (Exception ex) {
             log.error("Exception during task execution", ex);
         }

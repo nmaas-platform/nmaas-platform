@@ -1,4 +1,4 @@
-package net.geant.nmaas.portal.api.kubernetes;
+package net.geant.nmaas.portal.api.shell;
 
 import net.geant.nmaas.kubernetes.shell.AsyncConnector;
 import net.geant.nmaas.kubernetes.shell.AsyncConnectorFactory;
