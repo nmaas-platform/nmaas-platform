@@ -58,7 +58,7 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
             notifyStateChangeListeners(deploymentId, CONFIGURATION_INITIATED,"", userInitiator);
             configureNmService(nsd, deploymentId);
         } catch (Exception e) {
-            notifyStateChangeListeners(deploymentId, CONFIGURATION_FAILED, e.getMessage());
+            notifyStateChangeListeners(deploymentId, CONFIGURATION_FAILED, e.getMessage(), userInitiator);
             throw new NmServiceConfigurationFailedException(e.getMessage(), e);
         }
     }
