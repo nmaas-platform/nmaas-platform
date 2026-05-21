@@ -27,7 +27,7 @@ sonar:
 
 build_and_push_latest_image:
   stage: build
-  image: docker:29.4.3
+  image: docker:29.5.1
   only:
     - develop
   variables:
@@ -40,7 +40,7 @@ build_and_push_latest_image:
 
 build_and_push_alfa_image:
   stage: build
-  image: docker:29.4.3
+  image: docker:29.5.1
   only:
     - /^release/
   before_script:
