@@ -176,7 +176,7 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
         final KubernetesNmServiceInfo serviceInfo = repositoryManager.loadService(deploymentId);
         try {
             HelmPackageStatus status = helmCommandExecutor.executeHelmStatusCommand(
-                    namespaceService.namespace(repositoryManager.loadDomain(deploymentId)),
+                    getTargetNamespace(serviceInfo),
                     repositoryManager.loadDescriptiveDeploymentId(deploymentId).getValue(),
                     serviceInfo.getRemoteCluster() != null ? serviceInfo.getRemoteCluster().getPathConfigFile() : null
             );
@@ -189,9 +189,9 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
     @Override
     @Loggable(LogLevel.TRACE)
     public void deleteServiceIfExists(Identifier deploymentId) {
-        final String namespace = namespaceService.namespace(repositoryManager.loadDomain(deploymentId));
         final Identifier descriptiveDeploymentId = repositoryManager.loadDescriptiveDeploymentId(deploymentId);
         final KubernetesNmServiceInfo serviceInfo = repositoryManager.loadService(deploymentId);
+        final String namespace = getTargetNamespace(serviceInfo);
         try {
             if (checkIfServiceExists(namespace, deploymentId, descriptiveDeploymentId)) {
                 helmCommandExecutor.executeHelmDeleteCommand(
@@ -222,7 +222,7 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
                 updateHelmRepo();
             }
             helmCommandExecutor.executeHelmUpgradeCommand(
-                    namespaceService.namespace(serviceInfo.getDomain()),
+                    getTargetNamespace(serviceInfo),
                     serviceInfo.getDescriptiveDeploymentId().getValue(),
                     targetVersion,
                     serviceInfo.getRemoteCluster() != null ? serviceInfo.getRemoteCluster().getPathConfigFile() : null

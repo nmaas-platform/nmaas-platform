@@ -66,7 +66,7 @@ import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubern
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType.PUBLIC;
 
 /**
- * Implements service deployment mechanism on Kubernetes cluster.
+ * Implements a service deployment mechanism on the Kubernetes cluster
  */
 @Component
 @RequiredArgsConstructor

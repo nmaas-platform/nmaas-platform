@@ -210,6 +210,25 @@ class HelmKServiceManagerTest {
     }
 
     @Test
+    void shouldCheckRemoteServiceDeployedUsingRemoteNamespaceAndKubeconfigPath() {
+        KCluster remoteCluster = remoteCluster();
+        KubernetesNmServiceInfo service = repositoryManager.loadService(deploymentId);
+        service.setRemoteCluster(remoteCluster);
+        when(repositoryManager.loadService(deploymentId)).thenReturn(service);
+        when(namespaceService.namespace(remoteCluster, "domain")).thenReturn("remote-namespace");
+        when(helmCommandExecutor.executeHelmStatusCommand("remote-namespace", "descriptiveDeploymentId", "mock/path/to/kubeconfig"))
+                .thenReturn(HelmPackageStatus.DEPLOYED);
+
+        boolean status = manager.checkServiceDeployed(deploymentId);
+
+        verify(namespaceService, times(1)).namespace(remoteCluster, "domain");
+        verify(namespaceService, never()).namespace("domain");
+        verify(helmCommandExecutor, times(1))
+                .executeHelmStatusCommand(eq("remote-namespace"), eq("descriptiveDeploymentId"), eq("mock/path/to/kubeconfig"));
+        assertTrue(status);
+    }
+
+    @Test
     void shouldDeployOciServiceWithoutRepoUpdate() {
         when(namespaceService.namespace("domain")).thenReturn("namespace");
         when(ingressManager.getResourceConfigOption()).thenReturn(IngressResourceConfigOption.DEPLOY_FROM_CHART);
@@ -257,6 +276,24 @@ class HelmKServiceManagerTest {
     }
 
     @Test
+    void shouldDeleteRemoteServiceSinceExistsUsingRemoteNamespaceAndKubeconfigPath() {
+        KCluster remoteCluster = remoteCluster();
+        KubernetesNmServiceInfo service = repositoryManager.loadService(deploymentId);
+        service.setRemoteCluster(remoteCluster);
+        when(repositoryManager.loadService(deploymentId)).thenReturn(service);
+        when(namespaceService.namespace(remoteCluster, "domain")).thenReturn("remote-namespace");
+        when(helmCommandExecutor.executeHelmListCommand("remote-namespace", "mock/path/to/kubeconfig"))
+                .thenReturn(Arrays.asList("descriptiveDeploymentId", "otherString"));
+
+        manager.deleteServiceIfExists(deploymentId);
+
+        verify(namespaceService, times(1)).namespace(remoteCluster, "domain");
+        verify(namespaceService, never()).namespace("domain");
+        verify(helmCommandExecutor, times(1))
+                .executeHelmDeleteCommand(eq("remote-namespace"), eq("descriptiveDeploymentId"), eq("mock/path/to/kubeconfig"));
+    }
+
+    @Test
     void shouldUpgradeService() {
         when(namespaceService.namespace("domain")).thenReturn("namespace");
         manager.upgradeService(deploymentId, new KubernetesTemplate());
@@ -266,6 +303,27 @@ class HelmKServiceManagerTest {
                 eq("descriptiveDeploymentId"),
                 any(KubernetesTemplate.class),
                 isNull()
+        );
+    }
+
+    @Test
+    void shouldUpgradeRemoteServiceUsingRemoteNamespaceAndKubeconfigPath() {
+        KCluster remoteCluster = remoteCluster();
+        KubernetesNmServiceInfo service = repositoryManager.loadService(deploymentId);
+        service.setRemoteCluster(remoteCluster);
+        when(repositoryManager.loadService(deploymentId)).thenReturn(service);
+        when(namespaceService.namespace(remoteCluster, "domain")).thenReturn("remote-namespace");
+
+        manager.upgradeService(deploymentId, new KubernetesTemplate());
+
+        verify(namespaceService, times(1)).namespace(remoteCluster, "domain");
+        verify(namespaceService, never()).namespace("domain");
+        verify(helmCommandExecutor, times(1)).executeHelmRepoUpdateCommand();
+        verify(helmCommandExecutor, times(1)).executeHelmUpgradeCommand(
+                eq("remote-namespace"),
+                eq("descriptiveDeploymentId"),
+                any(KubernetesTemplate.class),
+                eq("mock/path/to/kubeconfig")
         );
     }
 
@@ -346,6 +404,40 @@ class HelmKServiceManagerTest {
                 kubeconfigPathArg.capture()
         );
         assertThat(kubeconfigPathArg.getValue()).isEqualTo("mock/path/to/kubeconfig");
+    }
+
+    private KCluster remoteCluster() {
+        KClusterDeployment mockDeployment = KClusterDeployment.builder()
+                .namespaceConfigOption(NamespaceConfigOption.CREATE_NAMESPACE)
+                .defaultNamespace("default-namespace")
+                .defaultStorageClass("default-storage-class")
+                .smtpServerHostname("smtp.example.com")
+                .smtpServerPort(587)
+                .smtpServerUsername("user@example.com")
+                .smtpServerPassword("password")
+                .smtpFromDefaultDomain("example.com")
+                .forceDedicatedWorkers(true)
+                .build();
+
+        KClusterIngress mockIngress = KClusterIngress.builder()
+                .resourceConfigOption(IngressResourceConfigOption.NOT_USED)
+                .build();
+
+        return KCluster.builder()
+                .id(1L)
+                .name("TestCluster")
+                .codename("test-cluster")
+                .description("Mocked Kubernetes Cluster")
+                .creationDate(OffsetDateTime.now())
+                .modificationDate(OffsetDateTime.now())
+                .clusterConfigFile("mock-cluster-config")
+                .pathConfigFile("mock/path/to/kubeconfig")
+                .state(KClusterState.UNKNOWN)
+                .currentStateSince(OffsetDateTime.now())
+                .contactEmail("test@example.com")
+                .deployment(mockDeployment)
+                .ingress(mockIngress)
+                .build();
     }
 
 }
