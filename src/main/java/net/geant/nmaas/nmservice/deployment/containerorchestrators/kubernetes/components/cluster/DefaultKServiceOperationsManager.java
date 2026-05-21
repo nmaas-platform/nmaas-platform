@@ -2,9 +2,7 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.c
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.kubernetes.KubernetesApiClientService;
-import net.geant.nmaas.kubernetes.KubernetesClusterNamespaceService;
-import net.geant.nmaas.kubernetes.remote.entities.KCluster;
+import net.geant.nmaas.kubernetes.KubernetesApiJanitorService;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KServiceOperationsManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
@@ -19,9 +17,8 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class DefaultKServiceOperationsManager implements KServiceOperationsManager {
 
-    private final KubernetesClusterNamespaceService namespaceService;
     private final KubernetesRepositoryManager repositoryManager;
-    private final KubernetesApiClientService kubernetesApiClientService;
+    private final KubernetesApiJanitorService kubernetesApiJanitorService;
 
     @Override
     @Loggable(LogLevel.INFO)
@@ -33,15 +30,8 @@ public class DefaultKServiceOperationsManager implements KServiceOperationsManag
     @Loggable(LogLevel.INFO)
     public void scaleService(Identifier deploymentId, int replicas) {
         final KubernetesNmServiceInfo serviceInfo = repositoryManager.loadService(deploymentId);
-        final String namespace = namespaceService.namespace(serviceInfo.getDomain());
-        final String kubernetesReleaseName = serviceInfo.getDescriptiveDeploymentId().getValue();
-        final KCluster remoteCluster = serviceInfo.getRemoteCluster();
-        kubernetesApiClientService.getDeployments(remoteCluster, namespace, kubernetesReleaseName).forEach(
-                d -> kubernetesApiClientService.scaleDeployment(remoteCluster, namespace, d.getMetadata().getName(), replicas)
-        );
-        kubernetesApiClientService.getStatefulSets(remoteCluster, namespace, kubernetesReleaseName).forEach(
-                s -> kubernetesApiClientService.scaleStatefulSet(remoteCluster, namespace, s.getMetadata().getName(), replicas)
-        );
+        kubernetesApiJanitorService.scaleService(serviceInfo.getRemoteCluster(),
+                serviceInfo.getDescriptiveDeploymentId(), serviceInfo.getDomain(), replicas);
     }
 
 }

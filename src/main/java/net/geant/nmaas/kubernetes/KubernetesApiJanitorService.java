@@ -176,4 +176,14 @@ public class KubernetesApiJanitorService {
         return deploymentId.value() + "-tls";
     }
 
+    public void scaleService(KCluster kCluster, Identifier deploymentId, String domain, int replicas) {
+        final String namespace = getTargetNamespace(kCluster, domain);
+        kubernetesApiClientService.getDeployments(kCluster, namespace, deploymentId.value()).forEach(
+                d -> kubernetesApiClientService.scaleDeployment(kCluster, namespace, d.getMetadata().getName(), replicas)
+        );
+        kubernetesApiClientService.getStatefulSets(kCluster, namespace, deploymentId.value()).forEach(
+                s -> kubernetesApiClientService.scaleStatefulSet(kCluster, namespace, s.getMetadata().getName(), replicas)
+        );
+    }
+
 }
