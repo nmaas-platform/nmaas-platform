@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.api.shell;
 
 import net.geant.nmaas.kubernetes.shell.AsyncConnector;
-import net.geant.nmaas.kubernetes.shell.AsyncConnectorFactory;
+import net.geant.nmaas.kubernetes.shell.KubernetesConnectorHelper;
 import net.geant.nmaas.kubernetes.shell.PodSessionsStorage;
 import net.geant.nmaas.kubernetes.shell.observer.ShellSessionObserver;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
@@ -32,21 +32,20 @@ import static org.mockito.Mockito.when;
 class PodSessionsStorageTest {
 
     private final ApplicationInstanceService instanceService = mock(ApplicationInstanceService.class);
-    private final AsyncConnectorFactory connectorFactory = mock(AsyncConnectorFactory.class);
+    private final KubernetesConnectorHelper connectorHelper = mock(KubernetesConnectorHelper.class);
     private final AsyncConnector connector = mock(AsyncConnector.class);
 
     private PodSessionsStorage storage;
 
     @BeforeEach
     void setup() throws IOException {
-        when(connectorFactory.preparePodShellConnection(any(AppInstance.class), anyString())).thenReturn(connector);
-        storage = new PodSessionsStorage(instanceService, connectorFactory);
+        when(connectorHelper.preparePodShellConnection(any(AppInstance.class), anyString())).thenReturn(connector);
+        storage = new PodSessionsStorage(instanceService, connectorHelper);
 
         PipedInputStream inputStream = new PipedInputStream();
         PipedOutputStream outputStream = new PipedOutputStream(inputStream);
 
         PipedInputStream errorStream = new PipedInputStream();
-        PipedOutputStream outputErrorStream = new PipedOutputStream(errorStream);
 
         when(connector.getInputStream()).thenReturn(inputStream);
         when(connector.getErrorStream()).thenReturn(errorStream);
@@ -103,7 +102,7 @@ class PodSessionsStorageTest {
         when(instanceService.find(anyLong())).thenReturn(Optional.of(appInstance));
 
         String sessionId = storage.createSession(1L, "test");
-        verify(connectorFactory, times(1)).preparePodShellConnection(any(AppInstance.class), anyString());
+        verify(connectorHelper, times(1)).preparePodShellConnection(any(AppInstance.class), anyString());
 
         storage.executeCommand(sessionId, new K8sShellCommandRequest("command", ""));
         verify(connector, times(1)).executeCommand(anyString());
