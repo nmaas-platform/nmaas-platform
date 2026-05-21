@@ -3,10 +3,10 @@ package net.geant.nmaas.kubernetes.shell;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import net.geant.nmaas.api.dto.K8sShellCommandRequest;
 import net.geant.nmaas.kubernetes.shell.observable.GenericShellSessionObservable;
 import net.geant.nmaas.kubernetes.shell.observable.SshConnectionShellSessionObservable;
 import net.geant.nmaas.kubernetes.shell.observer.ShellSessionObserver;
-import net.geant.nmaas.api.dto.K8sShellCommandRequest;
 import net.geant.nmaas.portal.persistence.entity.AppInstance;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import org.apache.commons.lang3.StringUtils;
@@ -19,9 +19,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Service layer component for handling connections
- * ShellSessionObservable is in charge of creating ssh connection, by default SshConnectionShellSessionObservable is used
+ * ShellSessionObservable is in charge of creating ssh connection, by default, SshConnectionShellSessionObservable is used
  * ShellSessionObserver observes given observable and is a sink for the command execution results
- * Default sink utilizes SSE to pass results to the client
+ * Default sink uses SSE to pass results to the client
  */
 @Component
 @RequiredArgsConstructor
@@ -30,12 +30,12 @@ public class PodSessionsStorage {
     // dummy storage
     private final Map<String, ObserverObservablePair> storage = new ConcurrentHashMap<>();
 
-    private final ApplicationInstanceService instanceService;
-    private final AsyncConnectorFactory connectorFactory;
+    private final ApplicationInstanceService applicationInstanceService;
+    private final KubernetesConnectorHelper connectorHelper;
 
     /**
-     * this class stores observer-observable pair
-     * in future it can be extended to store multiple observers for single observable
+     * this class stores an observer-observable pair
+     * in future it can be extended to store multiple observers for a single observable
      */
     @Getter
     @AllArgsConstructor
@@ -52,13 +52,13 @@ public class PodSessionsStorage {
 
     /**
      * Creates pod connection and associates it with custom generated session identifier
-     * this method is synchronized, so assigned session id will not be re-assigned in a meantime
+     * this method is synchronized, so the assigned session id will not be re-assigned in a meantime
      *
      * @param appInstanceId app instance identifier
      * @return shell session id
      */
     public synchronized String createSession(Long appInstanceId, String podName) {
-        AppInstance instance = this.instanceService.find(appInstanceId)
+        AppInstance instance = applicationInstanceService.find(appInstanceId)
                 .orElseThrow(() -> new RuntimeException("This application instance does not exists"));
         // check if you can connect to this app instance
         if (!instance.getApplication().getAppDeploymentSpec().isAllowSshAccess()) {
@@ -71,11 +71,11 @@ public class PodSessionsStorage {
 
         String sessionId = UUID.randomUUID().toString();
         // new session id must be unique
-        while (this.storage.containsKey(sessionId)) {
+        while (storage.containsKey(sessionId)) {
             sessionId = UUID.randomUUID().toString();
         }
 
-        AsyncConnector connector = connectorFactory.preparePodShellConnection(instance, podName);
+        AsyncConnector connector = connectorHelper.preparePodShellConnection(instance, podName);
 
         // create observer and observable and bind them
         GenericShellSessionObservable observable = new SshConnectionShellSessionObservable(sessionId, connector);
@@ -83,34 +83,33 @@ public class PodSessionsStorage {
         observable.addObserver(observer);
 
         storage.putIfAbsent(sessionId, new ObserverObservablePair(observer, observable));
-
         return sessionId;
     }
 
     /**
-     * Returns an observer with event emitter for given session
+     * Returns an observer with event emitter for a given session
      *
      * @param sessionId sSession identifier
      * @return observer with event emitter
      */
     public ShellSessionObserver getObserver(String sessionId) {
         isSessionAvailable(sessionId);
-        return this.storage.get(sessionId).getObserver();
+        return storage.get(sessionId).getObserver();
     }
 
     /**
-     * Executes command in given session
+     * Executes command in a given session
      *
      * @param sessionId      Session identifier
      * @param commandRequest Command to be executed
      */
     public void executeCommand(String sessionId, K8sShellCommandRequest commandRequest) {
         isSessionAvailable(sessionId);
-        this.storage.get(sessionId).getObservable().executeCommandAsync(commandRequest);
+        storage.get(sessionId).getObservable().executeCommandAsync(commandRequest);
     }
 
     /**
-     * Completes given session and removes it from storage
+     * Completes a given session and removes it from storage
      *
      * @param sessionId Session identifier
      */
@@ -122,12 +121,12 @@ public class PodSessionsStorage {
     }
 
     /**
-     * Checks if session with given id is available
+     * Checks if a session is available
      *
      * @param sessionId Session identifier
      */
     private void isSessionAvailable(String sessionId) {
-        if (!this.storage.containsKey(sessionId)) {
+        if (!storage.containsKey(sessionId)) {
             throw new RuntimeException("Session with id: " + sessionId + " does not exist");
         }
     }
