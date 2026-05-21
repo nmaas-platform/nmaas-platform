@@ -99,7 +99,7 @@ dependencies {
     runtimeOnly('org.postgresql:postgresql')
 
     // Database audit trail
-    implementation 'org.hibernate.orm:hibernate-envers:7.2.14.Final'
+    implementation 'org.hibernate.orm:hibernate-envers:7.2.15.Final'
 
     // Database migrations
     implementation("org.springframework.boot:spring-boot-starter-flyway")
