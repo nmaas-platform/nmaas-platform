@@ -18,6 +18,8 @@ public interface AppDeploymentRepositoryManager {
 
     void update(AppDeployment appDeployment);
 
+    void update(AppDeployment appDeployment, User userInitiator);
+
     void updateState(Identifier deploymentId, AppDeploymentState currentState);
 
     void updateState(Identifier deploymentId, AppDeploymentState currentState, User userInitiator);

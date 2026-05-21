@@ -44,28 +44,44 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
         Identifier deploymentId = nsd.getDeploymentId();
         try {
             notifyStateChangeListeners(deploymentId, CONFIGURATION_INITIATED);
-            if (nsd.isConfigFileRepositoryRequired()) {
-                List<String> configFileIdentifiers = filePreparer.generateAndStoreConfigFiles(
-                        deploymentId,
-                        nsd.getApplicationId(),
-                        nsd.getAppConfiguration());
-                configHandler.createUser(nsd.getOwnerUsername(), nsd.getOwnerEmail(), nsd.getOwnerName(), nsd.getOwnerSshKeys());
-                configHandler.createRepository(deploymentId, nsd.getOwnerUsername());
-                if ((configFileIdentifiers != null && !configFileIdentifiers.isEmpty()) || nsd.isConfigUpdateEnabled()) {
-                    configHandler.commitConfigFiles(deploymentId, configFileIdentifiers);
-                    final List<ConfigFile> configFilesFromRepository = configHandler.getConfigFiles(deploymentId);
-                    kubernetesApiJanitorService.createOrReplaceConfigMaps(
-                            nsd.getRemoteCluster(),
-                            nsd.getDescriptiveDeploymentId(),
-                            nsd.getDomainName(),
-                            configFilesFromRepository);
-                }
-            }
-            notifyStateChangeListenersWithDelay(deploymentId, CONFIGURED, 1000);
+            configureNmService(nsd, deploymentId);
         } catch (Exception e) {
             notifyStateChangeListeners(deploymentId, CONFIGURATION_FAILED, e.getMessage());
             throw new NmServiceConfigurationFailedException(e.getMessage(), e);
         }
+    }
+    @Override
+    @Loggable(LogLevel.INFO)
+    public void configureNmService(NmServiceDeployment nsd, String userInitiator) {
+        Identifier deploymentId = nsd.getDeploymentId();
+        try {
+            notifyStateChangeListeners(deploymentId, CONFIGURATION_INITIATED,"", userInitiator);
+            configureNmService(nsd, deploymentId);
+        } catch (Exception e) {
+            notifyStateChangeListeners(deploymentId, CONFIGURATION_FAILED, e.getMessage(), userInitiator);
+            throw new NmServiceConfigurationFailedException(e.getMessage(), e);
+        }
+    }
+
+    private void configureNmService(NmServiceDeployment nsd, Identifier deploymentId) {
+        if (nsd.isConfigFileRepositoryRequired()) {
+            List<String> configFileIdentifiers = filePreparer.generateAndStoreConfigFiles(
+                    deploymentId,
+                    nsd.getApplicationId(),
+                    nsd.getAppConfiguration());
+            configHandler.createUser(nsd.getOwnerUsername(), nsd.getOwnerEmail(), nsd.getOwnerName(), nsd.getOwnerSshKeys());
+            configHandler.createRepository(deploymentId, nsd.getOwnerUsername());
+            if ((configFileIdentifiers != null && !configFileIdentifiers.isEmpty()) || nsd.isConfigUpdateEnabled()) {
+                configHandler.commitConfigFiles(deploymentId, configFileIdentifiers);
+                final List<ConfigFile> configFilesFromRepository = configHandler.getConfigFiles(deploymentId);
+                kubernetesApiJanitorService.createOrReplaceConfigMaps(
+                        nsd.getRemoteCluster(),
+                        nsd.getDescriptiveDeploymentId(),
+                        nsd.getDomainName(),
+                        configFilesFromRepository);
+            }
+        }
+        notifyStateChangeListenersWithDelay(deploymentId, CONFIGURED, 1000);
     }
 
     @Override
@@ -150,6 +166,9 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
 
     private void notifyStateChangeListeners(Identifier deploymentId, ServiceDeploymentState state, String errorMessage) {
         eventPublisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, state, errorMessage));
+    }
+    private void notifyStateChangeListeners(Identifier deploymentId, ServiceDeploymentState state, String errorMessage, String userInitiator) {
+        eventPublisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, state, errorMessage, userInitiator));
     }
 
 }

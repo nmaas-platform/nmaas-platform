@@ -18,6 +18,8 @@ public interface NmServiceConfigurationProvider {
      */
     void configureNmService(NmServiceDeployment nmServiceDeployment);
 
+    void configureNmService(NmServiceDeployment nmServiceDeployment, String userInitiator);
+
     /**
      * Coordinates basic authentication configuration for given service
      *
