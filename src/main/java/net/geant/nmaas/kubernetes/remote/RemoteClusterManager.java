@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.api.dto.kubernetes.RemoteKClusterBaseDto;
 import net.geant.nmaas.api.dto.kubernetes.RemoteKClusterDto;
 import net.geant.nmaas.kubernetes.ClusterConfigView;
 import net.geant.nmaas.kubernetes.KubernetesApiClientService;
@@ -63,7 +64,7 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
         if (cluster.isPresent()) {
             if (userService.isAdmin(principal.getName())
                     || userService.isUserAdminInAnyDomain(cluster.get().getDomains(), principal.getName())) {
-                return toView(cluster.get());
+                return toDto(cluster.get());
             } else {
                 throw new IllegalArgumentException("No access to cluster " + id);
             }
@@ -75,7 +76,13 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
     @Override
     public List<RemoteKClusterDto> getAllClusters() {
         List<KCluster> clusters = kClusterRepository.findAll();
-        return clusters.stream().map(this::toView).collect(Collectors.toList());
+        return clusters.stream().map(this::toDto).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<RemoteKClusterBaseDto> getAllClustersBase() {
+        List<KCluster> clusters = kClusterRepository.findAll();
+        return clusters.stream().map(this::toBaseDto).collect(Collectors.toList());
     }
 
     @Override
@@ -102,7 +109,7 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
         } else {
             clusters = kClusterRepository.findByDomains_Id(domainId);
         }
-        return clusters.stream().map(this::toView).collect(Collectors.toList());
+        return clusters.stream().map(this::toDto).collect(Collectors.toList());
     }
 
     @Override
@@ -133,7 +140,7 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
                 log.info("One cluster provided, create view and return ");
                 KClusterDeployment deployment = modelMapper.map(kClusterDeploymentManager.getKClusterDeploymentView(), KClusterDeployment.class);
                 KClusterIngress ingress = modelMapper.map(kClusterIngressManager.getKClusterIngressView(), KClusterIngress.class);
-                return toView(KCluster.builder()
+                return toDto(KCluster.builder()
                         .name(view.getName())
                         .description(view.getDescription())
                         .creationDate(OffsetDateTime.now())
@@ -223,7 +230,7 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
         } else {
             log.debug("Namespace creation flag is disabled");
         }
-        return toView(savedCluster);
+        return toDto(savedCluster);
 
     }
 
@@ -266,7 +273,7 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
 
                 updated = kClusterRepository.save(updated);
                 //TODO : implement file update logic
-                return toView(updated);
+                return toDto(updated);
             }
         }
 
@@ -301,12 +308,16 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
         }
     }
 
-    private RemoteKClusterDto toView(KCluster kCluster) {
+    private RemoteKClusterDto toDto(KCluster kCluster) {
         RemoteKClusterDto view = modelMapper.map(kCluster, RemoteKClusterDto.class);
         if (Objects.nonNull(kCluster.getDomains())) {
             view.setDomainNames(kCluster.getDomains().stream().map(Domain::getName).toList());
         }
         return view;
+    }
+
+    private RemoteKClusterBaseDto toBaseDto(KCluster kCluster) {
+        return modelMapper.map(kCluster, RemoteKClusterBaseDto.class);
     }
 
     @Override

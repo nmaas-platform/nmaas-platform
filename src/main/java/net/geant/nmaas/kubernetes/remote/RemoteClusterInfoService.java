@@ -1,5 +1,6 @@
 package net.geant.nmaas.kubernetes.remote;
 
+import net.geant.nmaas.api.dto.kubernetes.RemoteKClusterBaseDto;
 import net.geant.nmaas.api.dto.kubernetes.RemoteKClusterDto;
 import net.geant.nmaas.kubernetes.remote.entities.KCluster;
 
@@ -16,4 +17,5 @@ public interface RemoteClusterInfoService {
 
     List<RemoteKClusterDto> getClustersInDomain(Long domainId);
 
+    List<RemoteKClusterBaseDto> getAllClustersBase();
 }

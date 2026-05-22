@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.service;
 
-import net.geant.nmaas.api.dto.ResourcesLimitDto;
-import net.geant.nmaas.api.dto.ResourcesLimitUpdateDto;
+import net.geant.nmaas.api.dto.domains.ResourcesLimitDto;
+import net.geant.nmaas.api.dto.domains.ResourcesLimitUpdateDto;
 
 import java.util.List;
 

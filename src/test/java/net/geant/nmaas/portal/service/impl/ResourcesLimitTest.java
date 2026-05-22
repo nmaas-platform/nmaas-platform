@@ -1,8 +1,8 @@
 package net.geant.nmaas.portal.service.impl;
 
-import net.geant.nmaas.api.dto.ResourcesLimitDto;
-import net.geant.nmaas.api.dto.ResourcesLimitTypeDto;
-import net.geant.nmaas.api.dto.ResourcesLimitUpdateDto;
+import net.geant.nmaas.api.dto.domains.ResourcesLimitDto;
+import net.geant.nmaas.api.dto.domains.ResourcesLimitTypeDto;
+import net.geant.nmaas.api.dto.domains.ResourcesLimitUpdateDto;
 import net.geant.nmaas.api.dto.domains.DomainBaseDto;
 import net.geant.nmaas.portal.domain.converters.ResourceLimitConverter;
 import net.geant.nmaas.portal.domain.converters.ResourceLimitInverseConverter;

@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.domain.converters;
 
-import net.geant.nmaas.api.dto.ResourcesLimitDto;
+import net.geant.nmaas.api.dto.domains.ResourcesLimitDto;
 import net.geant.nmaas.portal.persistence.entity.ResourcesLimit;
 import net.geant.nmaas.portal.persistence.entity.ResourcesLimitType;
 import org.modelmapper.AbstractConverter;

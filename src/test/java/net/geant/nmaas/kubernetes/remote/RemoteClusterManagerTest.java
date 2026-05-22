@@ -1,10 +1,13 @@
 package net.geant.nmaas.kubernetes.remote;
 
+import net.geant.nmaas.api.dto.kubernetes.KClusterStateDto;
+import net.geant.nmaas.api.dto.kubernetes.RemoteKClusterBaseDto;
 import net.geant.nmaas.api.dto.kubernetes.RemoteKClusterDto;
 import net.geant.nmaas.kubernetes.KubernetesApiClientService;
 import net.geant.nmaas.kubernetes.KubernetesClusterDeploymentManager;
 import net.geant.nmaas.kubernetes.KubernetesClusterIngressManager;
 import net.geant.nmaas.kubernetes.remote.entities.KCluster;
+import net.geant.nmaas.kubernetes.remote.entities.KClusterState;
 import net.geant.nmaas.kubernetes.remote.repositories.KClusterRepository;
 import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.service.DomainService;
@@ -147,6 +150,38 @@ class RemoteClusterManagerTest {
         List<RemoteKClusterDto> result = remoteClusterManager.getAllClusters();
 
         assertEquals(2, result.size());
+        verify(kClusterRepository, times(1)).findAll();
+    }
+
+    @Test
+    void getAllClustersBase_returnsBaseClusterViews() {
+        KCluster cluster1 = KCluster.builder()
+                .id(1L)
+                .name("Cluster1")
+                .codename("cluster-1")
+                .state(KClusterState.UP)
+                .description("Description")
+                .build();
+        KCluster cluster2 = KCluster.builder()
+                .id(2L)
+                .name("Cluster2")
+                .codename("cluster-2")
+                .state(KClusterState.DOWN)
+                .description("Description")
+                .build();
+        when(kClusterRepository.findAll()).thenReturn(List.of(cluster1, cluster2));
+
+        List<RemoteKClusterBaseDto> result = remoteClusterManager.getAllClustersBase();
+
+        assertEquals(2, result.size());
+        assertEquals(1L, result.getFirst().getId());
+        assertEquals("Cluster1", result.getFirst().getName());
+        assertEquals("cluster-1", result.getFirst().getCodename());
+        assertEquals(KClusterStateDto.UP, result.getFirst().getState());
+        assertEquals(2L, result.get(1).getId());
+        assertEquals("Cluster2", result.get(1).getName());
+        assertEquals("cluster-2", result.get(1).getCodename());
+        assertEquals(KClusterStateDto.DOWN, result.get(1).getState());
         verify(kClusterRepository, times(1)).findAll();
     }
 

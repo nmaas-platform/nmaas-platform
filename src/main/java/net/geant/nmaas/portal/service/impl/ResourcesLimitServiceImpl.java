@@ -2,8 +2,8 @@ package net.geant.nmaas.portal.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.api.dto.ResourcesLimitDto;
-import net.geant.nmaas.api.dto.ResourcesLimitUpdateDto;
+import net.geant.nmaas.api.dto.domains.ResourcesLimitDto;
+import net.geant.nmaas.api.dto.domains.ResourcesLimitUpdateDto;
 import net.geant.nmaas.api.dto.domains.DomainGroupDto;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.persistence.entity.Domain;
@@ -18,9 +18,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
-import static net.geant.nmaas.api.dto.ResourcesLimitTypeDto.DOMAIN;
-import static net.geant.nmaas.api.dto.ResourcesLimitTypeDto.DOMAIN_GROUP;
-import static net.geant.nmaas.api.dto.ResourcesLimitTypeDto.GLOBAL;
+import static net.geant.nmaas.api.dto.domains.ResourcesLimitTypeDto.DOMAIN;
+import static net.geant.nmaas.api.dto.domains.ResourcesLimitTypeDto.DOMAIN_GROUP;
+import static net.geant.nmaas.api.dto.domains.ResourcesLimitTypeDto.GLOBAL;
 
 @Service
 @RequiredArgsConstructor

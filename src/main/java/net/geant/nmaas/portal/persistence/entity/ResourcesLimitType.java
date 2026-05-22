@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.persistence.entity;
 
-import net.geant.nmaas.api.dto.ResourcesLimitTypeDto;
+import net.geant.nmaas.api.dto.domains.ResourcesLimitTypeDto;
 
 public enum ResourcesLimitType {
     GLOBAL,
