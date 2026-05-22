@@ -1,5 +1,7 @@
 package net.geant.nmaas.kubernetes.remote.api;
 
+import net.geant.nmaas.api.dto.kubernetes.KClusterStateDto;
+import net.geant.nmaas.api.dto.kubernetes.RemoteKClusterBaseDto;
 import net.geant.nmaas.kubernetes.remote.RemoteClusterManagementService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -8,11 +10,14 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import tools.jackson.databind.ObjectMapper;
 
 import java.security.Principal;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -53,5 +58,26 @@ class RemoteClusterManagerControllerAdviceTest {
         mvc.perform(get("/api/v1/management/cluster/7"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("Cluster not found"));
+    }
+
+    @Test
+    void shouldReturnRemoteClusterBaseInfo() throws Exception {
+        when(remoteClusterManager.getAllClustersBase()).thenReturn(List.of(
+                RemoteKClusterBaseDto.builder()
+                        .id(1L)
+                        .name("Cluster")
+                        .codename("cluster")
+                        .state(KClusterStateDto.UP)
+                        .build()
+        ));
+
+        mvc.perform(get("/api/v1/management/cluster/base"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].name").value("Cluster"))
+                .andExpect(jsonPath("$[0].codename").value("cluster"))
+                .andExpect(jsonPath("$[0].state").value("UP"));
+
+        verify(remoteClusterManager, times(1)).getAllClustersBase();
     }
 }

@@ -1,8 +1,8 @@
 package net.geant.nmaas.portal.api.domains;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.geant.nmaas.api.dto.ResourcesLimitDto;
-import net.geant.nmaas.api.dto.ResourcesLimitTypeDto;
+import net.geant.nmaas.api.dto.domains.ResourcesLimitDto;
+import net.geant.nmaas.api.dto.domains.ResourcesLimitTypeDto;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
 import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.entity.DomainGroup;

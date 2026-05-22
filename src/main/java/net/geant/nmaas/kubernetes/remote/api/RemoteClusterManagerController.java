@@ -2,6 +2,7 @@ package net.geant.nmaas.kubernetes.remote.api;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import net.geant.nmaas.api.dto.kubernetes.RemoteKClusterBaseDto;
 import net.geant.nmaas.api.dto.kubernetes.RemoteKClusterDto;
 import net.geant.nmaas.kubernetes.remote.RemoteClusterManagementService;
 import org.apache.commons.lang3.StringUtils;
@@ -40,8 +41,13 @@ public class RemoteClusterManagerController {
 
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
     @GetMapping("/all")
-    public List<RemoteKClusterDto> getAllKubernetesClusters() {
+    public List<RemoteKClusterDto> getAllRemoteClusters() {
         return remoteClusterManager.getAllClusters();
+    }
+
+    @GetMapping("/base")
+    public List<RemoteKClusterBaseDto> getAllRemoteClustersBaseInfo() {
+        return remoteClusterManager.getAllClustersBase();
     }
 
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR') || hasPermission(#domainId, 'domain', 'OWNER')")
