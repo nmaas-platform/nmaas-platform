@@ -750,6 +750,7 @@
     "SHELL": "Otwórz konsolę"
   },
   "SHELL": {
+    "TITLE": "Shell",
     "CONNECTED_TO": "Podłączony do",
     "POD_NAME": "nazwa kontenera:",
     "RECONNECT_BUTTON": "Połącz ponownie",

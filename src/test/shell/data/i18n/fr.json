@@ -751,6 +751,7 @@
     "SHELL": "Shell"
   },
   "SHELL": {
+    "TITLE": "Shell",
     "CONNECTED_TO": "Connecté à",
     "POD_NAME": "nom du conteneur :",
     "RECONNECT_BUTTON": "Reconnecter",
