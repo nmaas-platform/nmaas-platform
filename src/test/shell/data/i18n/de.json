@@ -749,6 +749,7 @@
     "SHELL": "Shell öffnen"
   },
   "SHELL": {
+    "TITLE": "Shell",
     "CONNECTED_TO": "Verbunden mit",
     "POD_NAME": "Container-Name:",
     "RECONNECT_BUTTON": "Erneut verbinden",

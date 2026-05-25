@@ -750,6 +750,7 @@
     "SHELL": "Open shell"
   },
   "SHELL": {
+    "TITLE": "Shell",
     "CONNECTED_TO": "Connected to",
     "POD_NAME": "container name:",
     "RECONNECT_BUTTON": "Reconnect",
