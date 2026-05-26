@@ -30,7 +30,7 @@ public class WebhookHistoryController {
 
     @GetMapping("/{id}")
     @Transactional
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR') || hasRole('ROLE_DOMAIN_ADMIN')")
     public ResponseEntity<WebhookHistoryDto> getWebhookHistory(@PathVariable Long id) {
         return ResponseEntity.ok(webhookHistoryService.getById(id));
     }
