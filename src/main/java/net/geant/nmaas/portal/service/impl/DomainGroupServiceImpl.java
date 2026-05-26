@@ -6,7 +6,6 @@ import net.geant.nmaas.api.dto.applications.ApplicationStatePerDomainDto;
 import net.geant.nmaas.api.dto.domains.DomainGroupBaseDto;
 import net.geant.nmaas.api.dto.domains.DomainGroupDto;
 import net.geant.nmaas.api.dto.users.RoleDto;
-import net.geant.nmaas.api.dto.users.UserRoleDto;
 import net.geant.nmaas.api.dto.users.UserViewMinimal;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
@@ -29,11 +28,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,7 +43,6 @@ public class DomainGroupServiceImpl implements DomainGroupService {
     private final ApplicationEventPublisher eventPublisher;
     private final UserRoleRepository userRoleRepository;
 
-
     private final ModelMapper modelMapper;
 
     @Override
@@ -58,25 +54,25 @@ public class DomainGroupServiceImpl implements DomainGroupService {
     }
 
     @Override
-    public DomainGroupDto createDomainGroup(DomainGroupDto domainGroup) {
+    public DomainGroupDto createDomainGroup(DomainGroupDto domainGroupDto) {
         //validation
-        checkParam(domainGroup);
-        if (existDomainGroup(domainGroup.getName(), domainGroup.getCodename())) {
+        checkParam(domainGroupDto);
+        if (existDomainGroup(domainGroupDto.getName(), domainGroupDto.getCodename())) {
             throw new IllegalArgumentException("Domain group with given name or codename already exists");
         }
-        if(!domainGroup.getManagers().isEmpty()) {
+        if (!domainGroupDto.getManagers().isEmpty()) {
             List<UserViewMinimal> validateManagers = new ArrayList<>();
-            domainGroup.getManagers().forEach(manager -> {
+            domainGroupDto.getManagers().forEach(manager -> {
                 if (manager.getRoles().stream().noneMatch(
                         role -> role.getRole() == RoleDto.ROLE_SYSTEM_ADMIN)) {
                     validateManagers.add(manager);
                 }
             });
-            domainGroup.setManagers(validateManagers);
+            domainGroupDto.setManagers(validateManagers);
         }
         //creation
         List<ApplicationStatePerDomain> applicationStatePerDomainList = applicationStatePerDomainService.generateListOfDefaultApplicationStatesPerDomainDisabled();
-        DomainGroup domainGroupEntity = modelMapper.map(domainGroup, DomainGroup.class);
+        DomainGroup domainGroupEntity = modelMapper.map(domainGroupDto, DomainGroup.class);
         domainGroupEntity.setApplicationStatePerDomain(applicationStatePerDomainList);
         domainGroupEntity = domainGroupRepository.save(domainGroupEntity);
 
