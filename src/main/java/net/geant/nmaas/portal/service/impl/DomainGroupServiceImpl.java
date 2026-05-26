@@ -5,6 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.api.dto.applications.ApplicationStatePerDomainDto;
 import net.geant.nmaas.api.dto.domains.DomainGroupBaseDto;
 import net.geant.nmaas.api.dto.domains.DomainGroupDto;
+import net.geant.nmaas.api.dto.users.RoleDto;
+import net.geant.nmaas.api.dto.users.UserRoleDto;
+import net.geant.nmaas.api.dto.users.UserViewMinimal;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.events.DomainGroupChangedEvent;
@@ -26,9 +29,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -58,6 +63,16 @@ public class DomainGroupServiceImpl implements DomainGroupService {
         checkParam(domainGroup);
         if (existDomainGroup(domainGroup.getName(), domainGroup.getCodename())) {
             throw new IllegalArgumentException("Domain group with given name or codename already exists");
+        }
+        if(!domainGroup.getManagers().isEmpty()) {
+            List<UserViewMinimal> validateManagers = new ArrayList<>();
+            domainGroup.getManagers().forEach(manager -> {
+                if (manager.getRoles().stream().noneMatch(
+                        role -> role.getRole() == RoleDto.ROLE_SYSTEM_ADMIN)) {
+                    validateManagers.add(manager);
+                }
+            });
+            domainGroup.setManagers(validateManagers);
         }
         //creation
         List<ApplicationStatePerDomain> applicationStatePerDomainList = applicationStatePerDomainService.generateListOfDefaultApplicationStatesPerDomainDisabled();

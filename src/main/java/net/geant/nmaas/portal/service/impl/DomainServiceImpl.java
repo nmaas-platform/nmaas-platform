@@ -7,7 +7,9 @@ import net.geant.nmaas.api.dto.domains.DomainBaseDto;
 import net.geant.nmaas.api.dto.domains.DomainDto;
 import net.geant.nmaas.api.dto.domains.DomainGroupDto;
 import net.geant.nmaas.api.dto.domains.DomainRequest;
+import net.geant.nmaas.api.dto.users.RoleDto;
 import net.geant.nmaas.api.dto.users.UserDto;
+import net.geant.nmaas.api.dto.users.UserRoleDto;
 import net.geant.nmaas.api.dto.users.UserViewMinimal;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 import net.geant.nmaas.dcn.deployment.DcnRepositoryManager;
@@ -587,7 +589,11 @@ public class DomainServiceImpl implements DomainService {
     public void updateRolesInDomainGroupByUsers(DomainGroupDto view) {
         view.getDomains().forEach(domain -> {
             view.getManagers().forEach(user -> {
-                this.addMemberRole(domain.getId(), user.getId(), Role.ROLE_GROUP_DOMAIN_ADMIN);
+                boolean isNotSystemAdmin = user.getRoles().stream().noneMatch(
+                        role -> role.getRole() == RoleDto.ROLE_SYSTEM_ADMIN);
+                if (isNotSystemAdmin) {
+                    this.addMemberRole(domain.getId(), user.getId(), Role.ROLE_GROUP_DOMAIN_ADMIN);
+                }
             });
         });
     }
