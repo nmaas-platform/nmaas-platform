@@ -72,7 +72,7 @@ public class DashboardServiceImpl implements DashboardService {
 
         return DashboardDto.builder()
                 .domainsCount(domainRepository.count())
-                .userCount(userRepository.count())
+                .userCount(userRepository.findAll().stream().filter(User::isEnabled).count())
                 .instanceCount(appInstanceRepository.count())
                 .instanceCountInPeriod(appInstanceRepository.countAllDeployedInTimePeriod(startTimeStamp, endTimeStamp))
                 .instanceCountInPeriodDetails(deploymentsViews)
