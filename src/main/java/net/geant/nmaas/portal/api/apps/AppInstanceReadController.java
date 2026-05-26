@@ -169,16 +169,16 @@ public class AppInstanceReadController extends AppBaseController {
                     .toList();
         }
 
-        if (status != null && status.equals("deployed")) {
+        List<AppInstanceState> undeployedStates = List.of(AppInstanceState.REMOVED, AppInstanceState.DONE);
+        if (status == null || status.equals("deployed")) {
             return result.stream()
-                    .filter(instance -> instance.getState() != AppInstanceState.REMOVED && instance.getState() != AppInstanceState.DONE)
+                    .filter(instance -> !undeployedStates.contains(instance.getState()))
                     .toList();
-        } else if (status != null && status.equals("undeployed")) {
+        } else if (status.equals("undeployed")) {
             return result.stream()
-                    .filter(instance -> List.of(AppInstanceState.REMOVED, AppInstanceState.DONE).contains(instance.getState()))
+                    .filter(instance -> undeployedStates.contains(instance.getState()))
                     .toList();
         }
-
         return result;
     }
 
