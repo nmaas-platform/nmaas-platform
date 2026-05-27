@@ -2,7 +2,6 @@ package net.geant.nmaas.portal.api.domains;
 
 import net.geant.nmaas.api.dto.Id;
 import net.geant.nmaas.api.dto.domains.DomainBaseDto;
-import net.geant.nmaas.api.dto.domains.DomainBaseWithStateDto;
 import net.geant.nmaas.api.dto.domains.DomainDto;
 import net.geant.nmaas.api.dto.domains.DomainRequest;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
@@ -22,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.modelmapper.ModelMapper;
+import org.mockito.ArgumentCaptor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
 
@@ -31,7 +31,9 @@ import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -100,7 +102,7 @@ class DomainControllerTest {
         when(domainService.getAppStatesFromGroups(domain)).thenReturn(domain);
         when(modelMapper.map(domain, DomainDto.class)).thenReturn(full);
 
-        DomainBaseDto result = controller.getDomain(2L, principal);
+        DomainDto result = controller.getDomain(2L, principal);
 
         assertEquals(full, result);
     }
@@ -112,15 +114,47 @@ class DomainControllerTest {
         Domain domainUser = new Domain(10L, "d10", "d10", true);
         user.setRoles(List.of(new UserRole(user, domainUser, Role.ROLE_USER)));
         Domain domain = new Domain(2L, "domain", "domain", true);
-        DomainBaseWithStateDto base = new DomainBaseWithStateDto();
+        domain.setDomainTechDetails(new net.geant.nmaas.orchestration.entities.DomainTechDetails());
+        domain.setDomainDcnDetails(new DomainDcnDetails());
+        domain.setGroups(List.of(mock(net.geant.nmaas.portal.persistence.entity.DomainGroup.class)));
+        domain.setClusters(List.of(mock(net.geant.nmaas.kubernetes.remote.entities.KCluster.class)));
+        DomainDto dto = new DomainDto();
         when(userService.findByUsername("user")).thenReturn(Optional.of(user));
         when(domainService.findDomain(2L)).thenReturn(Optional.of(domain));
         when(domainService.getAppStatesFromGroups(domain)).thenReturn(domain);
-        when(modelMapper.map(domain, DomainBaseWithStateDto.class)).thenReturn(base);
+        when(modelMapper.map(any(Domain.class), any())).thenReturn(dto);
 
-        DomainBaseDto result = controller.getDomain(2L, principal);
+        DomainDto result = controller.getDomain(2L, principal);
 
-        assertEquals(base, result);
+        assertEquals(dto, result);
+        ArgumentCaptor<Domain> domainCaptor = ArgumentCaptor.forClass(Domain.class);
+        verify(modelMapper).map(domainCaptor.capture(), any());
+        assertRestrictedDomainDataRemoved(domainCaptor.getValue());
+    }
+
+    @Test
+    void shouldReturnRestrictedDomainViewByNameForOperator() {
+        Principal principal = () -> "operator";
+        User user = new User("operator", true);
+        Domain global = new Domain(1L, "global", "global", true);
+        user.setRoles(List.of(new UserRole(user, global, Role.ROLE_OPERATOR)));
+        Domain domain = new Domain(2L, "domain", "domain", true);
+        domain.setDomainTechDetails(new net.geant.nmaas.orchestration.entities.DomainTechDetails());
+        domain.setDomainDcnDetails(new DomainDcnDetails());
+        domain.setGroups(List.of(mock(net.geant.nmaas.portal.persistence.entity.DomainGroup.class)));
+        domain.setClusters(List.of(mock(net.geant.nmaas.kubernetes.remote.entities.KCluster.class)));
+        DomainDto dto = new DomainDto();
+        when(userService.findByUsername("operator")).thenReturn(Optional.of(user));
+        when(domainService.findDomain("domain")).thenReturn(Optional.of(domain));
+        when(domainService.getAppStatesFromGroups(domain)).thenReturn(domain);
+        when(modelMapper.map(any(Domain.class), any())).thenReturn(dto);
+
+        DomainDto result = controller.getDomainByName("domain", principal);
+
+        assertEquals(dto, result);
+        ArgumentCaptor<Domain> domainCaptor = ArgumentCaptor.forClass(Domain.class);
+        verify(modelMapper).map(domainCaptor.capture(), any());
+        assertRestrictedDomainDataRemoved(domainCaptor.getValue());
     }
 
     @ParameterizedTest
@@ -130,7 +164,12 @@ class DomainControllerTest {
         User user = new User("privileged", true);
         Domain global = new Domain(1L, "global", "global", true);
         user.setRoles(List.of(new UserRole(user, global, role)));
-        List<DomainBaseDto> domains = List.of(mock(DomainBaseDto.class));
+        DomainDto domain = new DomainDto();
+        domain.setId(1L);
+        domain.setName("global");
+        domain.setCodename("global");
+        domain.setActive(true);
+        List<DomainBaseDto> domains = List.of(domain);
 
         when(userService.findByUsername("privileged")).thenReturn(Optional.of(user));
         when(domainService.getDomainsBase("search")).thenReturn(domains);
@@ -138,9 +177,21 @@ class DomainControllerTest {
         List<DomainBaseDto> result = controller.getMyDomains(principal, "search");
 
         assertEquals(domains, result);
+        DomainDto resultDomain = assertInstanceOf(DomainDto.class, result.getFirst());
+        assertNull(resultDomain.getDomainTechDetails());
+        assertNull(resultDomain.getDomainDcnDetails());
+        assertNull(resultDomain.getGroups());
+        assertNull(resultDomain.getClusters());
         verify(domainService).getDomainsBase("search");
         verify(domainService, times(0)).getUserDomains(any(), any());
         verify(modelMapper, times(0)).map(any(), any());
+    }
+
+    private void assertRestrictedDomainDataRemoved(Domain domain) {
+        assertNull(domain.getDomainTechDetails());
+        assertNull(domain.getDomainDcnDetails());
+        assertNull(domain.getGroups());
+        assertNull(domain.getClusters());
     }
 
     @Test

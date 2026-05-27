@@ -7,7 +7,6 @@ import net.geant.nmaas.api.dto.Id;
 import net.geant.nmaas.api.dto.KeyValueDto;
 import net.geant.nmaas.api.dto.domains.DomainAnnotationDto;
 import net.geant.nmaas.api.dto.domains.DomainBaseDto;
-import net.geant.nmaas.api.dto.domains.DomainBaseWithStateDto;
 import net.geant.nmaas.api.dto.domains.DomainDto;
 import net.geant.nmaas.api.dto.domains.DomainRequest;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentStateChangeEvent;
@@ -27,6 +26,7 @@ import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.entity.DomainAnnotation;
 import net.geant.nmaas.portal.persistence.entity.Role;
 import net.geant.nmaas.portal.persistence.entity.User;
+import net.geant.nmaas.portal.persistence.entity.UserRole;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
 import net.geant.nmaas.portal.service.DomainService;
@@ -112,43 +112,49 @@ public class DomainController extends BaseController {
     @GetMapping("/{domainId}")
     @Transactional(readOnly = true)
     @PreAuthorize("hasPermission(#domainId, 'domain', 'READ')")
-    public DomainBaseDto getDomain(@PathVariable(value = "domainId") Long domainId, @NotNull Principal principal) {
+    public DomainDto getDomain(@PathVariable(value = "domainId") Long domainId, @NotNull Principal principal) {
         User user = userService.findByUsername(principal.getName()).orElseThrow(() -> new ProcessingException("User not found."));
         Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND));
-        // if is system admin or domain admin than return full view
-
-        // check groups status of app
-        domain = domainService.getAppStatesFromGroups(domain);
-
-        if (user.getRoles().stream().anyMatch(role -> role.getRole() == Role.ROLE_SYSTEM_ADMIN || role.getRole() == Role.ROLE_OPERATOR)
-                || user.getRoles().stream().anyMatch(role -> role.getDomain().getId().equals(domainId)
-                && (role.getRole() == Role.ROLE_DOMAIN_ADMIN) || (role.getRole() == Role.ROLE_GROUP_DOMAIN_ADMIN))) {
-
-            return modelMapper.map(domain, DomainDto.class);
-        }
-        //otherwise base view
-        return modelMapper.map(domain, DomainBaseWithStateDto.class);
+        return getDomainView(user, domain, true);
     }
 
     @GetMapping("/name/{domainName}")
     @Transactional(readOnly = true)
     @PreAuthorize("hasPermission(#domainId, 'domain', 'READ')")
-    public DomainBaseDto getDomainByName(@PathVariable(value = "domainName") String domainName, @NotNull Principal principal) {
+    public DomainDto getDomainByName(@PathVariable(value = "domainName") String domainName, @NotNull Principal principal) {
         User user = userService.findByUsername(principal.getName()).orElseThrow(() -> new ProcessingException("User not found."));
         Domain domain = domainService.findDomain(domainName).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND));
-        // if is system admin or domain admin than return full view
-        Long domainId = domain.getId();
-        // check groups status of app
-        domain = domainService.getAppStatesFromGroups(domain);
+        return getDomainView(user, domain, false);
+    }
 
-        if (user.getRoles().stream().anyMatch(role -> role.getRole() == Role.ROLE_SYSTEM_ADMIN)
-                || user.getRoles().stream().anyMatch(role -> role.getDomain().getId().equals(domainId)
-                && (role.getRole() == Role.ROLE_DOMAIN_ADMIN) || (role.getRole() == Role.ROLE_GROUP_DOMAIN_ADMIN))) {
-
-            return modelMapper.map(domain, DomainDto.class);
+    private DomainDto getDomainView(User user, Domain domain, boolean operatorCanViewFullDomain) {
+        Domain domainWithAppStates = domainService.getAppStatesFromGroups(domain);
+        if (canViewFullDomain(user, domainWithAppStates.getId(), operatorCanViewFullDomain)) {
+            return modelMapper.map(domainWithAppStates, DomainDto.class);
         }
-        //otherwise base view
-        return modelMapper.map(domain, DomainBaseWithStateDto.class);
+        removeRestrictedDomainData(domainWithAppStates);
+        return modelMapper.map(domainWithAppStates, DomainDto.class);
+    }
+
+    private boolean canViewFullDomain(User user, Long domainId, boolean operatorCanViewFullDomain) {
+        return user.getRoles().stream()
+                .anyMatch(role -> hasGlobalFullDomainAccess(role, operatorCanViewFullDomain))
+                || user.getRoles().stream()
+                .anyMatch(role -> role.getDomain().getId().equals(domainId)
+                        && (role.getRole() == Role.ROLE_DOMAIN_ADMIN)
+                        || (role.getRole() == Role.ROLE_GROUP_DOMAIN_ADMIN));
+    }
+
+    private boolean hasGlobalFullDomainAccess(UserRole role, boolean operatorCanViewFullDomain) {
+        return role.getRole() == Role.ROLE_SYSTEM_ADMIN
+                || (operatorCanViewFullDomain && role.getRole() == Role.ROLE_OPERATOR);
+    }
+
+    private void removeRestrictedDomainData(Domain domain) {
+        domain.setDomainTechDetails(null);
+        domain.setDomainDcnDetails(null);
+        domain.setGroups(null);
+        domain.setClusters(null);
     }
 
     @GetMapping("/my")
