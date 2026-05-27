@@ -84,14 +84,7 @@ public class WebhookEventController {
     public ResponseEntity<List<WebhookEventDto>> getAllWebhooks() {
         return ResponseEntity.ok(webhookEventService.getAllWebhooks());
     }
-    @GetMapping(params = {"page"})
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
-    @Transactional
-    public Page<WebhookEventDto> getAllWebhooksPageable(
-            @PageableDefault(page = 0, size = 15, sort = "id") Pageable pageable,
-            @RequestParam(required = false) String searchValue) {
-        return webhookEventService.getAllWebhooks(pageable, searchValue);
-    }
+
 
     @PostMapping("/domain/{domainId}")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasPermission(#domainId, 'domain', 'OWNER')")
@@ -142,10 +135,25 @@ public class WebhookEventController {
         return ResponseEntity.ok(webhookEventService.getAllWebhooks(domainId));
     }
 
+    //-------------------------Pageable
+
+
+    @GetMapping(params = {"page"})
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+    @Transactional
+    public Page<WebhookEventDto> getAllWebhooksPageable(
+            @PageableDefault(page = 0, size = 15, sort = "id") Pageable pageable,
+            @RequestParam(required = false) String searchValue) {
+        return webhookEventService.getAllWebhooks(pageable, searchValue);
+    }
+
     @GetMapping(value = "/domain/{domainId}", params = "page")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasPermission(#domainId, 'domain', 'OWNER')")
-    public ResponseEntity<List<WebhookEventDto>> getWebhooksInDomainPageable(@PathVariable Long domainId) {
-        return ResponseEntity.ok(webhookEventService.getAllWebhooks(domainId));
+    public Page<WebhookEventDto> getWebhooksInDomainPageable(
+            @PathVariable Long domainId,
+            @PageableDefault(page = 0, size = 15, sort = "id") Pageable pageable,
+            @RequestParam(required = false) String searchValue) {
+        return webhookEventService.getAllWebhooks(domainId, pageable, searchValue);
     }
 
 }

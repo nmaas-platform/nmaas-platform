@@ -26,6 +26,10 @@ public interface WebhookEventRepository extends JpaRepository<WebhookEvent, Long
 
     Page<WebhookEvent> findByNameContaining(String name, Pageable pageable);
 
+    Page<WebhookEvent> findAllByDomainId(Long domainId, Pageable pageable);
+
+    Page<WebhookEvent> findAllByDomainIdAndNameContaining(Long domainId, String searchValue, Pageable pageable);
+
     @Query("""
             select w.id
             from WebhookEvent w
