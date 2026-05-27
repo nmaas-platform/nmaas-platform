@@ -3,6 +3,8 @@ package net.geant.nmaas.orchestration.entities;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -40,10 +42,10 @@ public class AppDeploymentHistory {
     @Column(nullable = false)
     private Date timestamp;
 
-    //TODO potential source of an bug related to changes in the enums
+    @Enumerated(EnumType.STRING)
     private AppDeploymentState previousState;
 
-    //TODO potential source of an bug related to changes in the enums
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private AppDeploymentState currentState;
 
