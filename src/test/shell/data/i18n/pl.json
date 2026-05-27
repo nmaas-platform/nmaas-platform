@@ -1431,6 +1431,7 @@
     "REMOVE" : "Remove",
     "AUTH_REQUIRED": "Wymagane uwierzytelnienie",
     "HISTORY": {
+      "DETAILS_TITLE": "Wywołanie webhooka",
       "TITLE": "Historia webhooków",
       "HISTORY": "Historia",
       "EVENT_ID": "Id zdarzenia",
