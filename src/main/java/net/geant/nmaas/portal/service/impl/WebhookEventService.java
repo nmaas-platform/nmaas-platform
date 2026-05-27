@@ -117,6 +117,25 @@ public class WebhookEventService {
             });
         }
     }
+    public Page<WebhookEventDto> getAllWebhooks(Long domainId, Pageable pageable, String searchValue) {
+        if (searchValue == null || searchValue.isEmpty()) {
+            return webhookRepository.findAllByDomainId(domainId, pageable).map(x -> {
+                try {
+                    return getWebhookEventDto(x);
+                } catch (GeneralSecurityException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        }else {
+            return webhookRepository.findAllByDomainIdAndNameContaining(domainId, searchValue, pageable).map(x -> {
+                try {
+                    return getWebhookEventDto(x);
+                } catch (GeneralSecurityException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        }
+    }
 
     public List<WebhookEventDto> getAllWebhooks(Long domainId) {
         return webhookRepository.findByDomain_Id(domainId).stream()
