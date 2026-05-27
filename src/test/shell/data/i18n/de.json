@@ -1428,6 +1428,7 @@
     "REMOVE" : "Remove",
     "AUTH_REQUIRED": "Authentifizierung erforderlich",
     "HISTORY": {
+      "DETAILS_TITLE": "Webhook-Ausführung",
       "TITLE": "Webhooks history",
       "HISTORY": "Webhook-Verlauf",
       "EVENT_ID": "Event id",
