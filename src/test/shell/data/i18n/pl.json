@@ -751,6 +751,7 @@
   },
   "SHELL": {
     "TITLE": "Shell",
+    "POD_INFO": "The platform could not retrieve the list of application pods, or shell access is not enabled for any available pod. If you believe this is incorrect, please contact the administrators using the contact form.",
     "CONNECTED_TO": "Podłączony do",
     "POD_NAME": "nazwa kontenera:",
     "RECONNECT_BUTTON": "Połącz ponownie",
