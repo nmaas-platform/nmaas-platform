@@ -29,6 +29,8 @@ public class PodShellConnector extends KubernetesConnector {
 
     private void initWatch() {
         log.debug("Initializing exec watch");
+        int columns = 120;
+        int lines = 40;
         watch = client.pods()
                 .inNamespace(namespace)
                 .withName(podName)
@@ -37,7 +39,11 @@ public class PodShellConnector extends KubernetesConnector {
                 .redirectingError()
                 .withTTY()
                 .usingListener(new SimpleListener())
-                .exec();
+                .exec("env",
+                        "TERM=xterm",
+                        "COLUMNS=" + columns,
+                        "LINES=" + lines,
+                        "bash");
     }
 
     @Override
