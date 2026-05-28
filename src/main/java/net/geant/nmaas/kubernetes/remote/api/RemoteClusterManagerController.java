@@ -5,9 +5,13 @@ import lombok.RequiredArgsConstructor;
 import net.geant.nmaas.api.dto.kubernetes.RemoteKClusterBaseDto;
 import net.geant.nmaas.api.dto.kubernetes.RemoteKClusterDto;
 import net.geant.nmaas.kubernetes.remote.RemoteClusterManagementService;
+import net.geant.nmaas.kubernetes.remote.api.exceptions.RemoteClusterValidationException;
+import net.geant.nmaas.portal.exceptions.DataConflictException;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,6 +19,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import tools.jackson.core.JacksonException;
@@ -76,6 +81,8 @@ public class RemoteClusterManagerController {
             }
         } catch (JacksonException e) {
             throw new IllegalArgumentException("Invalid cluster request payload", e);
+        } catch (RemoteClusterValidationException e) {
+            throw new DataConflictException(e.getMessage());
         }
     }
 
@@ -116,6 +123,12 @@ public class RemoteClusterManagerController {
     @PostMapping("/{id}/status")
     public void updateClusterStatus(@PathVariable Long id) {
         remoteClusterManager.updateClusterStatus(id);
+    }
+
+    @ExceptionHandler(DataConflictException.class)
+    @ResponseStatus(code = HttpStatus.CONFLICT)
+    public String handleDataConfigException(DataConflictException e) {
+        return e.getMessage();
     }
 
 }

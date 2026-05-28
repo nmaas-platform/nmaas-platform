@@ -1485,6 +1485,7 @@
     "ERROR": {
       "NEW_GROUP": "Échec de l’ajout d’un nouveau groupe.",
       "NEW_DOMAIN": "Échec de l'ajout d'un nouveau domaine",
+      "NEW_CLUSTER": "Échec de l'ajout d'un nouveau cluster",
       "SETTINGS": "La mise à jour des paramètres a échoué",
       "NOTIFICATION": "Le message n'a pas pu être envoyé.",
       "WEBHOOK": "Échec de la mise à jour du Webhook"
