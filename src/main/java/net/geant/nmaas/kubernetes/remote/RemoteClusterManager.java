@@ -10,6 +10,7 @@ import net.geant.nmaas.kubernetes.ClusterConfigView;
 import net.geant.nmaas.kubernetes.KubernetesApiClientService;
 import net.geant.nmaas.kubernetes.KubernetesClusterDeploymentManager;
 import net.geant.nmaas.kubernetes.KubernetesClusterIngressManager;
+import net.geant.nmaas.kubernetes.remote.api.exceptions.RemoteClusterValidationException;
 import net.geant.nmaas.kubernetes.remote.entities.KCluster;
 import net.geant.nmaas.kubernetes.remote.entities.KClusterDeployment;
 import net.geant.nmaas.kubernetes.remote.entities.KClusterIngress;
@@ -22,6 +23,7 @@ import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -217,21 +219,26 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
         String savedPath = saveFileToTmp(data);
         cluster.setPathConfigFile(savedPath);
         log.debug("Configuration kubeConfigFile saved in {}", savedPath);
-        KCluster savedCluster = kClusterRepository.save(cluster);
+        try {
+            KCluster savedCluster = kClusterRepository.save(cluster);
 
-        log.debug("Sending email notification (cluster support)");
-        mailer.sendMail(savedCluster, MailType.REMOTE_CLUSTER_WELCOME_SUPPORT);
 
-        if (createNamespace) {
-            savedCluster.getDomains().forEach(d ->
-                    eventPublisher.publishEvent(
-                            new RemoteClusterNamespaceEvent(this, savedCluster.getId(), d.getCodename(), Collections.emptyList()))
-            );
-        } else {
-            log.debug("Namespace creation flag is disabled");
+            log.debug("Sending email notification (cluster support)");
+            mailer.sendMail(savedCluster, MailType.REMOTE_CLUSTER_WELCOME_SUPPORT);
+
+            if (createNamespace) {
+                savedCluster.getDomains().forEach(d ->
+                        eventPublisher.publishEvent(
+                                new RemoteClusterNamespaceEvent(this, savedCluster.getId(), d.getCodename(), Collections.emptyList()))
+                );
+            } else {
+                log.debug("Namespace creation flag is disabled");
+            }
+            return toDto(savedCluster);
+        } catch (DataIntegrityViolationException e) {
+            log.error("Cluster already exists");
+            throw new RemoteClusterValidationException("Cluster already exists");
         }
-        return toDto(savedCluster);
-
     }
 
     private List<Domain> toListOfDomains(RemoteKClusterDto view) {

@@ -1480,6 +1480,7 @@
     },
     "ERROR": {
       "NEW_DOMAIN": "Das Hinzufügen einer neuen Domäne ist fehlgeschlagen",
+      "NEW_CLUSTER": "Das Hinzufügen einer neuen Cluster ist fehlgeschlagen",
       "NEW_GROUP": "Es war nicht möglich, eine neue Gruppe hinzuzufügen",
       "SETTINGS": "Aktualisierung der Einstellungen fehlgeschlagen ",
       "NOTIFICATION": "Die Nachricht konnte nicht gesendet werden.",

@@ -1485,6 +1485,7 @@
     "ERROR": {
       "NEW_GROUP": "Failed to add new group.",
       "NEW_DOMAIN": "Failed to add new domain",
+      "NEW_CLUSTER": "Failed to add new cluster",
       "SETTINGS": "Settings update failed",
       "NOTIFICATION": "Message could not be sent",
       "WEBHOOK": "Webhook data update failed"
