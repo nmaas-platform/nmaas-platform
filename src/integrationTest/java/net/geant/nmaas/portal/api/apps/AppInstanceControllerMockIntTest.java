@@ -3,8 +3,10 @@ package net.geant.nmaas.portal.api.apps;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.api.dto.applications.AppInstanceRequest;
 import net.geant.nmaas.api.dto.applications.AppInstanceViewExtendedDto;
+import net.geant.nmaas.api.dto.kubernetes.RemoteKClusterDto;
 import net.geant.nmaas.api.dto.users.UserBase;
 import net.geant.nmaas.api.dto.users.UserViewMinimal;
+import net.geant.nmaas.kubernetes.remote.RemoteClusterManager;
 import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
@@ -90,6 +92,9 @@ class AppInstanceControllerMockIntTest extends BaseControllerTestSetup {
     @MockitoBean
     private AppDeploymentMonitor appDeploymentMonitor;
 
+    @MockitoBean
+    private RemoteClusterManager clusterManager;
+
     @BeforeEach
     void setup() {
         this.mvc = this.createMVC();
@@ -127,6 +132,7 @@ class AppInstanceControllerMockIntTest extends BaseControllerTestSetup {
         AppInstanceRequest appInstanceRequest = appInstanceRequest(null);
         when(applicationService.findApplication(1L)).thenReturn(Optional.of(application));
         when(domainService.findDomain(DOMAIN.getId())).thenReturn(Optional.of(DOMAIN));
+        when(clusterManager.getClustersInDomain(DOMAIN.getId())).thenReturn(List.of(remoteCluster(100L)));
         when(applicationInstanceService.create(DOMAIN, application, appInstanceRequest.name(), appInstanceRequest.autoUpgradesEnabled()))
                 .thenReturn(new AppInstance(10L, application, DOMAIN, appInstanceRequest.name(), appInstanceRequest.autoUpgradesEnabled()));
         mvc.perform(post("/api/v1/apps/instances/domain/{domainId}", DOMAIN.getId())
@@ -141,6 +147,12 @@ class AppInstanceControllerMockIntTest extends BaseControllerTestSetup {
         assertThat(appDeployment.getValue().getDescriptiveDeploymentId().getValue(),
                 equalTo(UsersHelper.DOMAIN1.getCodename().toLowerCase() + "-namewithspaces-" + 10));
         assertNotNull(appDeployment.getValue().getRemoteClusterId());
+    }
+
+    private RemoteKClusterDto remoteCluster(Long id) {
+        RemoteKClusterDto cluster = new RemoteKClusterDto();
+        cluster.setId(id);
+        return cluster;
     }
 
     @Test
