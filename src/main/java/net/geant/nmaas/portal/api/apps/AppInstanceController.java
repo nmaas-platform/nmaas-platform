@@ -8,6 +8,7 @@ import net.geant.nmaas.api.dto.Id;
 import net.geant.nmaas.api.dto.applications.AppInstanceRequest;
 import net.geant.nmaas.api.dto.applications.AppInstanceState;
 import net.geant.nmaas.api.dto.users.UserBase;
+import net.geant.nmaas.kubernetes.remote.RemoteClusterManager;
 import net.geant.nmaas.nmservice.configuration.gitlab.events.AddUserToRepositoryGitlabEvent;
 import net.geant.nmaas.nmservice.configuration.gitlab.events.RemoveUserFromRepositoryGitlabEvent;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
@@ -68,6 +69,7 @@ public class AppInstanceController extends AppBaseController {
     private final AppDeploymentMonitor appDeploymentMonitor;
     private final ApplicationInstanceService instanceService;
     private final DomainService domainService;
+    private final RemoteClusterManager clusterManager;
 
     private final ConfigurationManager configurationManager;
     private final ApplicationEventPublisher eventPublisher;
@@ -83,7 +85,7 @@ public class AppInstanceController extends AppBaseController {
                                  AppLifecycleManager appLifecycleManager,
                                  AppDeploymentMonitor appDeploymentMonitor,
                                  ApplicationInstanceService instanceService,
-                                 DomainService domainService,
+                                 DomainService domainService, RemoteClusterManager clusterManager,
                                  ApplicationEventPublisher eventPublisher,
                                  ConfigurationManager configurationManager) {
         super(modelMapper, userService, applicationService, appBaseService);
@@ -91,6 +93,7 @@ public class AppInstanceController extends AppBaseController {
         this.appDeploymentMonitor = appDeploymentMonitor;
         this.instanceService = instanceService;
         this.domainService = domainService;
+        this.clusterManager = clusterManager;
         this.eventPublisher = eventPublisher;
         this.configurationManager = configurationManager;
     }
@@ -111,6 +114,10 @@ public class AppInstanceController extends AppBaseController {
                 domain.getCodename(),
                 Objects.isNull(clusterId) ? "central cluster" : "remote cluster: " + clusterId);
         verifyName(appInstanceRequest, domain);
+        if (Objects.nonNull(clusterId)
+                && clusterManager.getClustersInDomain(domainId)
+                .stream().noneMatch(cluster -> Objects.equals(cluster.getId(), clusterId)))
+            throw new ProcessingException("Cluster does not belong to domain:  " + domain.getCodename());
 
         AppInstance appInstance;
         try {
