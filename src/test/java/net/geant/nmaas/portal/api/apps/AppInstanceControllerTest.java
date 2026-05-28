@@ -2,6 +2,7 @@ package net.geant.nmaas.portal.api.apps;
 
 import net.geant.nmaas.api.dto.applications.AppInstanceRequest;
 import net.geant.nmaas.api.dto.users.UserBase;
+import net.geant.nmaas.kubernetes.remote.RemoteClusterManager;
 import net.geant.nmaas.nmservice.configuration.gitlab.events.AddUserToRepositoryGitlabEvent;
 import net.geant.nmaas.nmservice.configuration.gitlab.events.RemoveUserFromRepositoryGitlabEvent;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
@@ -54,6 +55,8 @@ public class AppInstanceControllerTest {
     private final ApplicationBaseService applicationBaseService = mock(ApplicationBaseService.class);
     private final ApplicationEventPublisher applicationEventPublisher = mock(ApplicationEventPublisher.class);
     private final ConfigurationManager configurationManager = mock(ConfigurationManager.class);
+    private final RemoteClusterManager clusterManager = mock(RemoteClusterManager.class);
+
 
     private AppInstanceController appInstanceController;
 
@@ -92,6 +95,7 @@ public class AppInstanceControllerTest {
                 appDeploymentMonitor,
                 applicationInstanceService,
                 domainService,
+                clusterManager,
                 applicationEventPublisher,
                 configurationManager
         );
