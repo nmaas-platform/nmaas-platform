@@ -48,8 +48,7 @@ public class PodShellConnector extends KubernetesConnector {
                         "LINES=" + rows,
                         "bash",
                         "-lc",
-                        "stty cols " + columns + " rows " + rows
-                        //+ " 2>/dev/null; exec bash"
+                        "stty cols " + columns + " rows " + rows + "; exec bash -i"
 
                 );
     }
