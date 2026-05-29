@@ -11,6 +11,9 @@ import java.util.Objects;
 @Slf4j
 public class PodShellConnector extends KubernetesConnector {
 
+    private static final int DEFAULT_COLUMNS = 120;
+    private static final int DEFAULT_ROWS = 40;
+
     protected ExecWatch watch;
 
     public PodShellConnector(KubernetesClient client, String namespace, String podName) {
@@ -30,9 +33,6 @@ public class PodShellConnector extends KubernetesConnector {
     private void initWatch() {
         log.debug("Initializing exec watch");
 
-        int columns = 120;
-        int rows = 40;
-
         watch = client.pods()
                 .inNamespace(namespace)
                 .withName(podName)
@@ -44,12 +44,11 @@ public class PodShellConnector extends KubernetesConnector {
                 .exec(
                         "env",
                         "TERM=xterm",
-                        "COLUMNS=" + columns,
-                        "LINES=" + rows,
+                        "COLUMNS=" + DEFAULT_COLUMNS,
+                        "LINES=" + DEFAULT_ROWS,
                         "bash",
                         "-lc",
-                        "stty cols " + columns + " rows " + rows + "; exec bash -i"
-
+                        "stty cols " + DEFAULT_COLUMNS + " rows " + DEFAULT_ROWS + "; exec bash -i"
                 );
     }
 

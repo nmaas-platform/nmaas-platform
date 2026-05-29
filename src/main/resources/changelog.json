@@ -1,6 +1,62 @@
 {
   "versions" : [
     {
+      "verNo": "1.10.0",
+      "date": "(2026/05/29)",
+      "topic": [
+        {
+          "title" : "API versioning and generated API documentation",
+          "tags" : "[New Feature]",
+          "description" : "REST API endpoints are now exposed under a versioned API path and the OpenAPI specification is generated as part of the build and CI workflow"
+        },
+        {
+          "title" : "New library with DTO classes",
+          "tags" : "[New Feature]",
+          "description" : "Extracted common DTO classes into a dedicated library to facilitate reuse and maintainability"
+        },
+        {
+          "title" : "Application history improvements",
+          "tags" : "[Enhancement]",
+          "description" : "Application instance history now stores the user that triggered each state change    "
+        },
+        {
+          "title" : "Remote cluster namespace handling",
+          "tags" : "[Enhancement]",
+          "description" : "Helm, Kubernetes API and shell operations now consistently use the proper namespace when working with applications deployed on remote clusters"
+        },
+        {
+          "title" : "Domain group API improvements",
+          "tags" : "[Enhancement]",
+          "description" : "Domain group endpoints now support pagination, optional search values, detailed DTO responses and improved domain assignment updates"
+        },
+        {
+          "title" : "Webhook history API improvements",
+          "tags" : "[Enhancement]",
+          "description" : "Webhook history endpoints now support pagination, domain-specific retrieval and additional access checks for domain administrators"
+        },
+        {
+          "title" : "Configurable application instance name length",
+          "tags" : "[Enhancement]",
+          "description" : "Administrators can configure the maximum length allowed for application instance names"
+        },
+        {
+          "title" : "External access URL suffix support",
+          "tags" : "[Enhancement]",
+          "description" : "Application access configuration now supports an external access method suffix that can be applied to generated user access URLs"
+        },
+        {
+          "title" : "Email template updates",
+          "tags" : "[Enhancement]",
+          "description" : "Added dedicated email template for application instance ready notifications for applications without external access methods"
+        },
+        {
+          "title" : "Platform and dependency upgrades",
+          "tags" : "[Enhancement]",
+          "description" : "Upgraded the platform to Spring Boot 4 and other supporting dependencies"
+        }
+      ]
+    },
+    {
       "verNo": "1.9.0",
       "date": "(2026/01/28)",
       "topic": [
