@@ -52,6 +52,7 @@ build_and_push_alfa_image:
 
 build_and_push_release_image:
   stage: build
+  image: docker:29.5.2
   only:
     - tags
   before_script:
