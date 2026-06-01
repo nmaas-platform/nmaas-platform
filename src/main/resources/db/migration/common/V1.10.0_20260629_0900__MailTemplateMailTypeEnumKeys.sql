@@ -1,0 +1,42 @@
+CREATE OR REPLACE FUNCTION mail_type_from_ordinal(mail_type_ordinal integer)
+RETURNS varchar(255)
+LANGUAGE sql
+IMMUTABLE
+AS $$
+SELECT CASE mail_type_ordinal
+           WHEN 0 THEN 'REGISTRATION'
+           WHEN 1 THEN 'ACCOUNT_ACTIVATED'
+           WHEN 2 THEN 'ACCOUNT_BLOCKED'
+           WHEN 3 THEN 'APP_DEPLOYED'
+           WHEN 4 THEN 'EXTERNAL_SERVICE_HEALTH_CHECK'
+           WHEN 5 THEN 'PASSWORD_RESET'
+           WHEN 6 THEN 'CONTACT_FORM'
+           WHEN 7 THEN 'APP_ACTIVE'
+           WHEN 8 THEN 'APP_REJECTED'
+           WHEN 9 THEN 'APP_NEW'
+           WHEN 10 THEN 'APP_DELETED'
+           WHEN 11 THEN 'APP_NOT_ACTIVE'
+           WHEN 12 THEN 'NEW_SSO_LOGIN'
+           WHEN 13 THEN 'BROADCAST'
+           WHEN 14 THEN 'APP_DEPLOYMENT_FAILED'
+           WHEN 15 THEN 'NEW_DOMAIN_REQUEST'
+           WHEN 16 THEN 'ISSUE_REPORT'
+           WHEN 17 THEN 'APP_UPGRADE_POSSIBLE'
+           WHEN 18 THEN 'APP_UPGRADED'
+           WHEN 19 THEN 'APP_UPGRADE_SUMMARY'
+           WHEN 20 THEN 'NEW_ACTIVE_APP'
+           WHEN 21 THEN 'NEW_BULK_SSO_LOGIN'
+           WHEN 22 THEN 'NEW_BULK_LOGIN'
+           WHEN 23 THEN 'VLAB_REQUEST'
+           WHEN 24 THEN 'REMOTE_CLUSTER_UNAVAILABLE'
+           WHEN 25 THEN 'REMOTE_CLUSTER_WELCOME_SUPPORT'
+           WHEN 26 THEN 'APP_DEPLOYED_PORTAL_ACCESS'
+           ELSE NULL
+           END
+           $$;
+
+ALTER TABLE mail_template
+ALTER COLUMN mail_type TYPE varchar(255)
+    USING mail_type_from_ordinal(mail_type);
+
+DROP FUNCTION mail_type_from_ordinal(integer);
