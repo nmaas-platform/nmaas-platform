@@ -17,7 +17,7 @@
         {
           "title" : "Application history improvements",
           "tags" : "[Enhancement]",
-          "description" : "Application instance history now stores the user that triggered each state change    "
+          "description" : "Application instance history now stores the user that triggered each state change"
         },
         {
           "title" : "Remote cluster namespace handling",
@@ -27,12 +27,12 @@
         {
           "title" : "Domain group API improvements",
           "tags" : "[Enhancement]",
-          "description" : "Domain group endpoints now support pagination, optional search values, detailed DTO responses and improved domain assignment updates"
+          "description" : "Domain group endpoints now support pagination and optional search values"
         },
         {
           "title" : "Webhook history API improvements",
           "tags" : "[Enhancement]",
-          "description" : "Webhook history endpoints now support pagination, domain-specific retrieval and additional access checks for domain administrators"
+          "description" : "Webhook history endpoints now support pagination, search option, retrieval by domain and additional access checks for domain administrators"
         },
         {
           "title" : "Configurable application instance name length",
