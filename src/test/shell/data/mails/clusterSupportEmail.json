@@ -11,7 +11,7 @@
       "subject": "nmaas: Remote cluster support",
       "template": {
         "HEADER": "Dear ${username}",
-        "CONTENT": "<p>Your email address was set as a support contact for remote cluster <b>${clusterCodename}</b> added to nmaas.</p>  <p>If you do not agree or consider this as a mistake please contact the nmaas administrator for further information.</p>",
+        "CONTENT": "<p>Your email address was set as a support contact for remote cluster <b>${clusterName}</b> added to nmaas.</p>  <p>If you do not agree or consider this as a mistake please contact the nmaas administrator for further information.</p>",
         "SENDER": "Best regards,<br />nmaas Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": ""
@@ -22,7 +22,7 @@
       "subject": "nmaas: Remote cluster support",
       "template": {
         "HEADER": "Dear ${username}",
-        "CONTENT": "<p>Your email address was set as a support contact for remote cluster <b>${clusterCodename}</b> added to nmaas.</p>  <p>If you do not agree or consider this as a mistake please contact the nmaas administrator for further information.</p>",
+        "CONTENT": "<p>Your email address was set as a support contact for remote cluster <b>${clusterName}</b> added to nmaas.</p>  <p>If you do not agree or consider this as a mistake please contact the nmaas administrator for further information.</p>",
         "SENDER": "Best regards,<br />nmaas Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": ""
@@ -33,7 +33,7 @@
       "subject": "nmaas: Remote cluster support",
       "template": {
         "HEADER": "Dear ${username}",
-        "CONTENT": "<p>Your email address was set as a support contact for remote cluster <b>${clusterCodename}</b> added to nmaas.</p>  <p>If you do not agree or consider this as a mistake please contact the nmaas administrator for further information.</p>",
+        "CONTENT": "<p>Your email address was set as a support contact for remote cluster <b>${clusterName}</b> added to nmaas.</p>  <p>If you do not agree or consider this as a mistake please contact the nmaas administrator for further information.</p>",
         "SENDER": "Best regards,<br />nmaas Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": ""
@@ -44,7 +44,7 @@
       "subject": "nmaas: Wsparcie zdalnego klastra",
       "template": {
         "HEADER": "Drogi ${username}",
-        "CONTENT": "<p>Twój adres e-mail został ustawiony jako kontakt pomocy technicznej dla zdalnego klastra <b>${clusterCodename}</b> dodanego do nmaas.</p> <p>Jeśli się z tym nie zgadzasz lub uważasz to za pomyłkę, skontaktuj się z administratorem nmaas, aby uzyskać dalsze informacje.</p>",
+        "CONTENT": "<p>Twój adres e-mail został ustawiony jako kontakt pomocy technicznej dla zdalnego klastra <b>${clusterName}</b> dodanego do nmaas.</p> <p>Jeśli się z tym nie zgadzasz lub uważasz to za pomyłkę, skontaktuj się z administratorem nmaas, aby uzyskać dalsze informacje.</p>",
         "SENDER": "Z pozdrowieniami,<br />Zespół nmaas",
         "NOREPLY": "Ta wiadomość została wygenerowana automatycznie.",
         "SENDER_POLICY": ""
