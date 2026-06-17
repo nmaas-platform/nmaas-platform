@@ -1,13 +1,13 @@
 package net.geant.nmaas.portal.service.impl;
 
 import jakarta.transaction.Transactional;
+import net.geant.nmaas.api.dto.users.UserInfoDto;
 import net.geant.nmaas.kubernetes.DummyKubernetesApiClientServiceConfig;
 import net.geant.nmaas.nmservice.deployment.limits.ResourcesLimitUsageService;
 import net.geant.nmaas.portal.api.bulk.BulkType;
 import net.geant.nmaas.portal.api.bulk.CsvDomain;
 import net.geant.nmaas.portal.api.bulk.model.BulkDeploymentViewS;
 import net.geant.nmaas.portal.api.configuration.model.ConfigurationView;
-import net.geant.nmaas.api.dto.users.UserViewMinimal;
 import net.geant.nmaas.portal.persistence.entity.BulkDeployment;
 import net.geant.nmaas.portal.persistence.entity.BulkDeploymentState;
 import net.geant.nmaas.portal.persistence.entity.Configuration;
@@ -81,7 +81,7 @@ public class BulkDomainServiceIntTest {
         CsvDomain csvDomain3 = new CsvDomain("test3", "user3", "user3@test.com", null, "group1", true);
         List<CsvDomain> input = List.of(csvDomain1, csvDomain2, csvDomain3);
 
-        UserViewMinimal creator = new UserViewMinimal();
+        UserInfoDto creator = new UserInfoDto();
         creator.setId(1L);
         creator.setUsername("admin");
 
@@ -116,7 +116,7 @@ public class BulkDomainServiceIntTest {
                         .healthCheckJobCron(" 0 */1 * * * ?")
                         .appInstanceNameLengthLimit(10).build(),
                 Configuration.class));
-        UserViewMinimal creator = new UserViewMinimal();
+        UserInfoDto creator = new UserInfoDto();
         creator.setId(1L);
         creator.setUsername("admin");
 
@@ -140,7 +140,7 @@ public class BulkDomainServiceIntTest {
         CsvDomain csvDomain3 = new CsvDomain("Test.Domain.102", "user1", "user1@test.com", null, "group1", null);
         List<CsvDomain> input = List.of(csvDomain1, csvDomain2, csvDomain3);
 
-        UserViewMinimal creator = new UserViewMinimal();
+        UserInfoDto creator = new UserInfoDto();
         creator.setId(1L);
         creator.setUsername("admin");
         BulkDeploymentViewS result = bulkDomainService.handleBulkCreation(input, creator);
@@ -175,7 +175,7 @@ public class BulkDomainServiceIntTest {
                 List.of(csvDomain1, csvDomain2, csvDomain3, csvDomain4, csvDomain5, csvDomain6,
                         csvDomain7, csvDomain8, csvDomain9, csvDomain10, csvDomain11, csvDomain12);
 
-        UserViewMinimal creator = new UserViewMinimal();
+        UserInfoDto creator = new UserInfoDto();
         creator.setId(1L);
         creator.setUsername("admin");
         bulkDomainService.handleBulkCreation(input, creator);

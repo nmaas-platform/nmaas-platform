@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.api.dto.applications.AppInstanceRequest;
 import net.geant.nmaas.api.dto.applications.AppInstanceViewExtendedDto;
 import net.geant.nmaas.api.dto.kubernetes.RemoteKClusterDto;
-import net.geant.nmaas.api.dto.users.UserBase;
-import net.geant.nmaas.api.dto.users.UserViewMinimal;
+import net.geant.nmaas.api.dto.users.UserBaseDto;
+import net.geant.nmaas.api.dto.users.UserInfoDto;
 import net.geant.nmaas.kubernetes.remote.RemoteClusterManager;
 import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
@@ -438,10 +438,10 @@ class AppInstanceControllerMockIntTest extends BaseControllerTestSetup {
         User u2 = UsersHelper.DOMAIN1_USER1;
         User u3 = UsersHelper.DOMAIN2_USER1;
 
-        List<UserBase> members = new ArrayList<>();
-        members.add(modelMapper.map(u1, UserBase.class));
-        members.add(modelMapper.map(u2, UserBase.class));
-        members.add(modelMapper.map(u3, UserBase.class));
+        List<UserBaseDto> members = new ArrayList<>();
+        members.add(modelMapper.map(u1, UserBaseDto.class));
+        members.add(modelMapper.map(u2, UserBaseDto.class));
+        members.add(modelMapper.map(u3, UserBaseDto.class));
 
         when(userService.findById(user.getId())).thenReturn(Optional.of(user));
         when(userService.findById(u1.getId())).thenReturn(Optional.of(u1));
@@ -466,7 +466,7 @@ class AppInstanceControllerMockIntTest extends BaseControllerTestSetup {
                         .header("Authorization", "Bearer " + getValidTokenForUser(user)))
                 .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
 
-        Set<UserViewMinimal> retrieved = objectMapper.readValue(data, AppInstanceViewExtendedDto.class).getMembers();
+        Set<UserInfoDto> retrieved = objectMapper.readValue(data, AppInstanceViewExtendedDto.class).getMembers();
         assertEquals(1, retrieved.size());
     }
 

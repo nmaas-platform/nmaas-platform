@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.api.apps;
 
 import net.geant.nmaas.api.dto.applications.AppInstanceRequest;
-import net.geant.nmaas.api.dto.users.UserBase;
+import net.geant.nmaas.api.dto.users.UserBaseDto;
 import net.geant.nmaas.kubernetes.remote.RemoteClusterManager;
 import net.geant.nmaas.nmservice.configuration.gitlab.events.AddUserToRepositoryGitlabEvent;
 import net.geant.nmaas.nmservice.configuration.gitlab.events.RemoveUserFromRepositoryGitlabEvent;
@@ -127,7 +127,7 @@ public class AppInstanceControllerTest {
         when(userService.findByUsername(user3domain2.getUsername())).thenReturn(Optional.of(user3domain2));
 
         List<User> users = List.of(user1domain1, user2domain1, user3domain2, user5domain1);
-        List<UserBase> members = users.stream().map(u -> modelMapper.map(u, UserBase.class)).toList();
+        List<UserBaseDto> members = users.stream().map(u -> modelMapper.map(u, UserBaseDto.class)).toList();
 
         appInstanceController.updateMembers(appInstance.getId(), members);
 

@@ -6,7 +6,7 @@ import net.geant.nmaas.api.dto.domains.DomainBaseDto;
 import net.geant.nmaas.api.dto.domains.DomainGroupDto;
 import net.geant.nmaas.api.dto.domains.DomainRequest;
 import net.geant.nmaas.api.dto.users.UserDto;
-import net.geant.nmaas.api.dto.users.UserViewMinimal;
+import net.geant.nmaas.api.dto.users.UserInfoDto;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
 import net.geant.nmaas.portal.persistence.entity.ApplicationBase;
@@ -91,7 +91,7 @@ public interface DomainService {
 
     void updateRolesInDomainGroupByUsers(DomainGroupDto view);
 
-    DomainGroupDto updateMembers(List<UserViewMinimal> newMembers, DomainGroupDto view);
+    DomainGroupDto updateMembers(List<UserInfoDto> newMembers, DomainGroupDto view);
 
     void addAnnotation(KeyValueDto annotation);
 

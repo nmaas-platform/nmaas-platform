@@ -7,7 +7,7 @@ import net.geant.nmaas.api.dto.domains.DomainGroupDto;
 import net.geant.nmaas.api.dto.domains.DomainRequest;
 import net.geant.nmaas.api.dto.domains.DomainTechDetailsDto;
 import net.geant.nmaas.api.dto.users.UserDto;
-import net.geant.nmaas.api.dto.users.UserViewMinimal;
+import net.geant.nmaas.api.dto.users.UserInfoDto;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 import net.geant.nmaas.dcn.deployment.DcnRepositoryManager;
 import net.geant.nmaas.dcn.deployment.entities.DomainDcnDetails;
@@ -526,10 +526,10 @@ class DomainServiceTest {
         when(userService.findById(1L)).thenReturn(Optional.of(new User("test")));
         when(userService.findById(2L)).thenReturn(Optional.of(new User("test2")));
 
-        UserViewMinimal userView = new UserViewMinimal();
+        UserInfoDto userView = new UserInfoDto();
         userView.setId(1L);
 
-        UserViewMinimal userView2 = new UserViewMinimal();
+        UserInfoDto userView2 = new UserInfoDto();
         userView2.setId(2L);
         DomainGroupDto domainGroupView = new DomainGroupDto(1L, "test", "test1", List.of(domain1), null, List.of(userView));
 
@@ -557,10 +557,10 @@ class DomainServiceTest {
         when(userService.findById(1L)).thenReturn(Optional.of(new User("test")));
         when(userService.findById(2L)).thenReturn(Optional.of(new User("test2")));
 
-        UserViewMinimal userView = new UserViewMinimal();
+        UserInfoDto userView = new UserInfoDto();
         userView.setId(1L);
 
-        UserViewMinimal userView2 = new UserViewMinimal();
+        UserInfoDto userView2 = new UserInfoDto();
         userView2.setId(2L);
 
         DomainGroupDto domainGroupView = new DomainGroupDto(1L, "test", "test1", List.of(domain1), null, List.of(userView));
@@ -586,7 +586,7 @@ class DomainServiceTest {
         when(userService.findById(1L)).thenReturn(Optional.of(new User("test")));
         when(userService.findById(2L)).thenReturn(Optional.of(new User("test2")));
 
-        UserViewMinimal userView = new UserViewMinimal();
+        UserInfoDto userView = new UserInfoDto();
         userView.setId(1L);
 
         DomainGroupDto domainGroupView = new DomainGroupDto(1L, "test", "test1", List.of(domain1), null, List.of(userView));

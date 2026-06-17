@@ -4,7 +4,7 @@ import net.geant.nmaas.api.dto.Id;
 import net.geant.nmaas.api.dto.applications.ApplicationStatePerDomainDto;
 import net.geant.nmaas.api.dto.domains.DomainGroupBaseDto;
 import net.geant.nmaas.api.dto.domains.DomainGroupDto;
-import net.geant.nmaas.api.dto.users.UserViewMinimal;
+import net.geant.nmaas.api.dto.users.UserInfoDto;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.entity.Role;
@@ -103,11 +103,11 @@ class GroupControllerTest {
         User user = new User("user", true);
         user.setRoles(List.of());
         when(userService.findByUsername("user")).thenReturn(Optional.of(user));
-        UserViewMinimal managerView = new UserViewMinimal();
-        managerView.setId(1L);
-        managerView.setUsername("manager");
+        UserInfoDto managerDto = new UserInfoDto();
+        managerDto.setId(1L);
+        managerDto.setUsername("manager");
         DomainGroupDto group = new DomainGroupDto();
-        group.setManagers(List.of(managerView));
+        group.setManagers(List.of(managerDto));
         when(domainGroupService.getDomainGroup(10L)).thenReturn(group);
 
         assertThrows(AccessDeniedException.class, () -> controller.getDomainGroup(10L, principal));

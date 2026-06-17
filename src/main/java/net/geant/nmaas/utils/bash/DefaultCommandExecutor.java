@@ -35,7 +35,7 @@ public class DefaultCommandExecutor implements CommandExecutor {
                 validateOutput(errorOutput, command.isOutputCorrect());
             }
             final String output = new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
-            log.warn("Verifying standard output");
+            log.trace("Verifying standard output");
             validateOutput(output, command.isOutputCorrect());
             return output;
         } catch (IOException e) {

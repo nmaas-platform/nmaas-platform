@@ -2,8 +2,8 @@ package net.geant.nmaas.portal.service.impl;
 
 import net.geant.nmaas.api.dto.domains.DomainGroupDto;
 import net.geant.nmaas.api.dto.users.RoleDto;
+import net.geant.nmaas.api.dto.users.UserInfoDto;
 import net.geant.nmaas.api.dto.users.UserRoleDto;
-import net.geant.nmaas.api.dto.users.UserViewMinimal;
 import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.entity.DomainGroup;
 import net.geant.nmaas.portal.persistence.entity.Role;
@@ -44,7 +44,7 @@ class DomainGroupServiceTest {
 
     @BeforeEach
     void setup() {
-        domainGroupService = new DomainGroupServiceImpl(domainGroupRepository, applicationStatePerDomainService, eventPublisher,userRoleRepository, modelMapper);
+        domainGroupService = new DomainGroupServiceImpl(domainGroupRepository, applicationStatePerDomainService, eventPublisher, userRoleRepository, modelMapper);
     }
 
     @Test
@@ -139,8 +139,8 @@ class DomainGroupServiceTest {
         assertFalse(domainGroup.getDomains().contains(domain));
     }
 
-    private static UserViewMinimal userView(Long id, String username, RoleDto role) {
-        UserViewMinimal user = new UserViewMinimal();
+    private static UserInfoDto userView(Long id, String username, RoleDto role) {
+        UserInfoDto user = new UserInfoDto();
         user.setId(id);
         user.setUsername(username);
         user.setRoles(Set.of(new UserRoleDto(role, 1L, "domain")));

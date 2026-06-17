@@ -5,7 +5,7 @@ import net.geant.nmaas.api.dto.domains.DcnDeploymentTypeDto;
 import net.geant.nmaas.api.dto.domains.DomainDto;
 import net.geant.nmaas.api.dto.domains.DomainGroupDto;
 import net.geant.nmaas.api.dto.domains.DomainRequest;
-import net.geant.nmaas.api.dto.users.UserViewMinimal;
+import net.geant.nmaas.api.dto.users.UserInfoDto;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 import net.geant.nmaas.dcn.deployment.entities.CustomerNetwork;
 import net.geant.nmaas.dcn.deployment.entities.DomainDcnDetails;
@@ -367,12 +367,7 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
         group1.setId(1L);
         User user1 = new User("gmanager", true);
         user1.setId(1L);
-
-        group1.setManagers(List.of(modelMapper.map(user1, UserViewMinimal.class)));
-        DomainGroupDto group2 = new DomainGroupDto();
-        User user2 = new User("testUser2", true);
-        user2.setId(1L);
-        group2.setManagers(List.of((modelMapper.map(user2, UserViewMinimal.class))));
+        group1.setManagers(List.of(modelMapper.map(user1, UserInfoDto.class)));
 
         when(domainGroupService.getDomainGroup(any())).thenReturn(group1);
 

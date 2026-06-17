@@ -1,14 +1,14 @@
 package net.geant.nmaas.portal.service;
 
+import net.geant.nmaas.api.dto.users.UserInfoDto;
 import net.geant.nmaas.nmservice.deployment.bulks.BulkDeploymentQueueEntry;
 import net.geant.nmaas.orchestration.events.app.AppAutoDeploymentReviewEvent;
 import net.geant.nmaas.orchestration.events.app.AppAutoDeploymentStatusUpdateEvent;
+import net.geant.nmaas.portal.api.bulk.CsvApplication;
 import net.geant.nmaas.portal.api.bulk.model.BulkAppDetails;
 import net.geant.nmaas.portal.api.bulk.model.BulkDeploymentView;
 import net.geant.nmaas.portal.api.bulk.model.BulkDeploymentViewS;
 import net.geant.nmaas.portal.api.bulk.model.BulkQueueDetails;
-import net.geant.nmaas.portal.api.bulk.CsvApplication;
-import net.geant.nmaas.api.dto.users.UserViewMinimal;
 import net.geant.nmaas.portal.persistence.entity.BulkDeployment;
 import net.geant.nmaas.portal.persistence.entity.BulkDeploymentEntry;
 import org.springframework.context.ApplicationEvent;
@@ -20,7 +20,7 @@ import java.util.Set;
 
 public interface BulkApplicationService {
 
-    BulkDeploymentViewS handleBulkDeployment(String applicationName, List<CsvApplication> appInstanceSpecs, UserViewMinimal creator, Integer limit);
+    BulkDeploymentViewS handleBulkDeployment(String applicationName, List<CsvApplication> appInstanceSpecs, UserInfoDto creator, Integer limit);
 
     ApplicationEvent handleDeploymentStatusUpdate(AppAutoDeploymentStatusUpdateEvent event);
 

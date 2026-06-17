@@ -5,7 +5,7 @@ import net.geant.nmaas.api.dto.users.RoleDto;
 import net.geant.nmaas.api.dto.users.UserDto;
 import net.geant.nmaas.api.dto.users.UserRequest;
 import net.geant.nmaas.api.dto.users.UserRoleDto;
-import net.geant.nmaas.api.dto.users.UserViewMinimal;
+import net.geant.nmaas.api.dto.users.UserInfoDto;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
@@ -170,7 +170,7 @@ class UsersControllerTest {
     @Test
     void shouldUpdateUserWithNullEmail() {
         when(principal.getName()).thenReturn(userList.getFirst().getUsername());
-        UserRequest userRequest = new UserRequest(userList.getFirst().getId(), userList.getFirst().getUsername(), userList.get(0).getPassword());
+        UserRequest userRequest = new UserRequest(userList.getFirst().getId(), userList.getFirst().getUsername(), userList.getFirst().getPassword());
         userRequest.setEmail(null);
         userRequest.setFirstname("test");
         usersController.updateUser(userList.getFirst().getId(), userRequest, principal);
@@ -274,7 +274,7 @@ class UsersControllerTest {
     void shouldNotChangePasswordOnPreviousPasswordMismatch() {
         assertThrows(ProcessingException.class, () -> {
             when(principal.getName()).thenReturn(userList.getFirst().getUsername());
-            when(userService.findByUsername(userList.getFirst().getUsername())).thenReturn(Optional.of(userList.get(0)));
+            when(userService.findByUsername(userList.getFirst().getUsername())).thenReturn(Optional.of(userList.getFirst()));
             PasswordChangeRequest passwordChange = new PasswordChangeRequest("wrongpass", "test1234");
             when(passwordEncoder.matches(userList.getFirst().getPassword(), passwordChange.password())).thenReturn(false);
             usersController.changePassword(principal, passwordChange);
@@ -286,7 +286,7 @@ class UsersControllerTest {
     void shouldGetDomainUsers() {
         Long domainId = 1L;
         when(domainService.getMembers(domainId)).thenReturn(userList);
-        List<UserViewMinimal> users = usersController.getDomainUsers(domainId);
+        List<UserInfoDto> users = usersController.getDomainUsers(domainId);
         assertThat("List size mismatch", users.size() == userList.size());
     }
 

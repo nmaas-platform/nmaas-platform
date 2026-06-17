@@ -1,12 +1,12 @@
 package net.geant.nmaas.portal.service.impl;
 
+import net.geant.nmaas.api.dto.users.UserInfoDto;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 import net.geant.nmaas.dcn.deployment.entities.DomainDcnDetails;
 import net.geant.nmaas.kubernetes.KubernetesClusterIngressManager;
 import net.geant.nmaas.portal.api.bulk.BulkType;
 import net.geant.nmaas.portal.api.bulk.CsvDomain;
 import net.geant.nmaas.portal.api.configuration.model.ConfigurationView;
-import net.geant.nmaas.api.dto.users.UserViewMinimal;
 import net.geant.nmaas.portal.persistence.entity.BulkDeployment;
 import net.geant.nmaas.portal.persistence.entity.BulkDeploymentEntry;
 import net.geant.nmaas.portal.persistence.entity.BulkDeploymentState;
@@ -52,8 +52,8 @@ class BulkDomainServiceImplTest {
     @Test
     void shouldHandleBulkCreationWhenAllCreated() {
         CsvDomain csvDomain = new CsvDomain("domain1", "user1", "user1@test.com", null, "group1", null);
-        Domain domain = new Domain(1L,"domain1", "domain1");
-        Domain global = new Domain(0L,"GLOBAL", "GLOBAL");
+        Domain domain = new Domain(1L, "domain1", "domain1");
+        Domain global = new Domain(0L, "GLOBAL", "GLOBAL");
         when(domainService.findDomain(anyString())).thenReturn(Optional.of(domain));
         when(domainService.getGlobalDomain()).thenReturn(Optional.of(global));
         when(domainGroupService.existDomainGroup("group1", "group1")).thenReturn(Boolean.TRUE);
@@ -63,7 +63,7 @@ class BulkDomainServiceImplTest {
         user.setId(1L);
         user.setEmail("user1@test.com");
         when(userService.findByUsername("user1")).thenReturn(Optional.of(user));
-        when(userService.hasPrivilege((User) any(),any(),any())).thenReturn(true);
+        when(userService.hasPrivilege((User) any(), any(), any())).thenReturn(true);
         when(bulkDeploymentRepository.save(any())).thenReturn(new BulkDeployment());
         when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView());
         when(userService.findById(10L)).thenReturn(Optional.of(testUser()));
@@ -71,7 +71,7 @@ class BulkDomainServiceImplTest {
         when(userService.findById(1L)).thenReturn(Optional.of(user));
 
 
-        bulkDomainService.handleBulkCreation(List.of(csvDomain), testUserView());
+        bulkDomainService.handleBulkCreation(List.of(csvDomain), testUserDto());
 
         ArgumentCaptor<BulkDeployment> bulkDeploymentArgumentCaptor = ArgumentCaptor.forClass(BulkDeployment.class);
         verify(bulkDeploymentRepository).save(bulkDeploymentArgumentCaptor.capture());
@@ -87,9 +87,9 @@ class BulkDomainServiceImplTest {
     @Test
     void shouldHandleBulkCreationWhenDomainCreated() {
         CsvDomain csvDomain = new CsvDomain("domain1", "user1", "user1@test.com", null, "group1", null);
-        Domain domain = new Domain(1L,"domain1", "domain1");
+        Domain domain = new Domain(1L, "domain1", "domain1");
         domain.setDomainDcnDetails(new DomainDcnDetails(10L, "domain1", true, DcnDeploymentType.MANUAL, null));
-        Domain global = new Domain(0L,"GLOBAL", "GLOBAL");
+        Domain global = new Domain(0L, "GLOBAL", "GLOBAL");
         when(domainService.findDomain(anyString())).thenReturn(Optional.empty());
         when(domainService.createDomain(any())).thenReturn(domain);
         when(domainService.getGlobalDomain()).thenReturn(Optional.of(global));
@@ -100,14 +100,14 @@ class BulkDomainServiceImplTest {
         user.setId(1L);
         user.setEmail("user1@test.com");
         when(userService.findByUsername("user1")).thenReturn(Optional.of(user));
-        when(userService.hasPrivilege((User) any(),any(),any())).thenReturn(true);
+        when(userService.hasPrivilege((User) any(), any(), any())).thenReturn(true);
         when(bulkDeploymentRepository.save(any())).thenReturn(new BulkDeployment());
         when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView());
         when(userService.findById(10L)).thenReturn(Optional.of(testUser()));
         when(userService.findById(1L)).thenReturn(Optional.of(user));
         when(userService.findByUsername("username")).thenReturn(Optional.of(testUser()));
 
-        bulkDomainService.handleBulkCreation(List.of(csvDomain), testUserView());
+        bulkDomainService.handleBulkCreation(List.of(csvDomain), testUserDto());
 
         ArgumentCaptor<BulkDeployment> bulkDeploymentArgumentCaptor = ArgumentCaptor.forClass(BulkDeployment.class);
         verify(bulkDeploymentRepository).save(bulkDeploymentArgumentCaptor.capture());
@@ -124,12 +124,12 @@ class BulkDomainServiceImplTest {
     void shouldHandleBulkCreationWhenUserCreated() {
         CsvDomain csvDomain1 = new CsvDomain("domain1", "user1", "user1@test.com", null, "group1", false);
         CsvDomain csvDomain2 = new CsvDomain("domain2", "user2", "user2@test.com", null, "group1", true);
-        Domain global = new Domain(0L,"GLOBAL", "GLOBAL");
+        Domain global = new Domain(0L, "GLOBAL", "GLOBAL");
         when(domainService.getGlobalDomain()).thenReturn(Optional.of(global));
-        Domain domain1 = new Domain(1L,"domain1", "domain1");
+        Domain domain1 = new Domain(1L, "domain1", "domain1");
         domain1.setDomainDcnDetails(new DomainDcnDetails(10L, "domain1", true, DcnDeploymentType.MANUAL, null));
         when(domainService.findDomain(domain1.getName())).thenReturn(Optional.of(domain1));
-        Domain domain2 = new Domain(2L,"domain2", "domain2");
+        Domain domain2 = new Domain(2L, "domain2", "domain2");
         domain2.setDomainDcnDetails(new DomainDcnDetails(11L, "domain2", true, DcnDeploymentType.MANUAL, null));
         when(domainService.findDomain(domain2.getName())).thenReturn(Optional.of(domain2));
         when(domainGroupService.existDomainGroup("group1", "group1")).thenReturn(Boolean.TRUE);
@@ -147,7 +147,7 @@ class BulkDomainServiceImplTest {
         when(userService.findByUsername("username")).thenReturn(Optional.of(testUser()));
 
 
-        bulkDomainService.handleBulkCreation(List.of(csvDomain1, csvDomain2), testUserView());
+        bulkDomainService.handleBulkCreation(List.of(csvDomain1, csvDomain2), testUserDto());
 
         ArgumentCaptor<BulkDeployment> bulkDeploymentArgumentCaptor = ArgumentCaptor.forClass(BulkDeployment.class);
         verify(bulkDeploymentRepository).save(bulkDeploymentArgumentCaptor.capture());
@@ -157,11 +157,11 @@ class BulkDomainServiceImplTest {
         assertEquals(4, bulkDeployment.getEntries().size());
         assertThat(bulkDeployment.getEntries().stream().filter(e -> e.getType() == BulkType.USER)).allMatch(BulkDeploymentEntry::getCreated);
         assertThat(bulkDeployment.getEntries().stream().filter(e -> e.getType() == BulkType.DOMAIN)).noneMatch(BulkDeploymentEntry::getCreated);
-        assertEquals(testUserView().getId(), bulkDeployment.getCreator().getId());
+        assertEquals(testUserDto().getId(), bulkDeployment.getCreator().getId());
     }
 
-    private static UserViewMinimal testUserView() {
-        UserViewMinimal testUser = new UserViewMinimal();
+    private static UserInfoDto testUserDto() {
+        UserInfoDto testUser = new UserInfoDto();
         testUser.setId(10L);
         testUser.setUsername("username");
         return testUser;

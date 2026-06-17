@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.api.dto.applications.AppConfigurationDto;
-import net.geant.nmaas.api.dto.users.UserViewMinimal;
+import net.geant.nmaas.api.dto.users.UserInfoDto;
 import net.geant.nmaas.nmservice.deployment.bulks.BulkDeploymentQueueEntry;
 import net.geant.nmaas.nmservice.deployment.bulks.BulkDeploymentQueueRepository;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
@@ -108,7 +108,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
     private boolean useDeploymentPrefix;
 
     @Override
-    public BulkDeploymentViewS handleBulkDeployment(String applicationName, List<CsvApplication> appInstanceSpecs, UserViewMinimal creator, Integer limit) {
+    public BulkDeploymentViewS handleBulkDeployment(String applicationName, List<CsvApplication> appInstanceSpecs, UserInfoDto creator, Integer limit) {
         log.info("Handling bulk application deployment for {} with {} entries", applicationName, appInstanceSpecs.size());
 
         if (!applicationBaseService.exists(applicationName)) {
@@ -506,7 +506,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
         }
     }
 
-    private BulkDeployment createBulkDeployment(UserViewMinimal creator) {
+    private BulkDeployment createBulkDeployment(UserInfoDto creator) {
         BulkDeployment bulkDeployment = new BulkDeployment();
         bulkDeployment.setType(BulkType.APPLICATION);
         bulkDeployment.setState(BulkDeploymentState.PROCESSING);
@@ -646,7 +646,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
         List<String> header = new ArrayList<>(List.of("domainCodeName", "appName", "appInstanceName", "userName", "appVersion"));
 
         // access methods header
-        header.addAll(details.get(0).getAccessMethod().keySet());
+        header.addAll(details.getFirst().getAccessMethod().keySet());
 
         // config parameters header
         details.getFirst().getParameters().keySet().forEach(param -> {

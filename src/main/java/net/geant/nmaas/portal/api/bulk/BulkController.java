@@ -4,13 +4,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.api.dto.users.UserInfoDto;
 import net.geant.nmaas.portal.api.bulk.model.BulkAppDetails;
 import net.geant.nmaas.portal.api.bulk.model.BulkDeploymentEntryView;
 import net.geant.nmaas.portal.api.bulk.model.BulkDeploymentView;
 import net.geant.nmaas.portal.api.bulk.model.BulkDeploymentViewS;
 import net.geant.nmaas.portal.api.bulk.model.BulkQueueDetails;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
-import net.geant.nmaas.api.dto.users.UserViewMinimal;
 import net.geant.nmaas.portal.persistence.entity.BulkDeployment;
 import net.geant.nmaas.portal.persistence.entity.BulkDeploymentEntry;
 import net.geant.nmaas.portal.persistence.entity.BulkDeploymentState;
@@ -68,7 +68,7 @@ public class BulkController {
             try {
                 List<CsvDomain> csvDomains = bulkCsvProcessor.processDomainSpecs(file);
                 User userFromDb = userService.findByUsername(principal.getName()).orElseThrow();
-                UserViewMinimal user = modelMapper.map(userFromDb, UserViewMinimal.class);
+                UserInfoDto user = modelMapper.map(userFromDb, UserInfoDto.class);
                 return ResponseEntity.ok(bulkDomainService.handleBulkCreation(csvDomains, user));
             } catch (Exception e) {
                 throw new IllegalArgumentException(e.getMessage());
@@ -90,7 +90,7 @@ public class BulkController {
         if (bulkCsvProcessor.isCSVFormat(file)) {
             List<CsvApplication> csvApplications = bulkCsvProcessor.processApplicationSpecs(file);
             User userFromDb = userService.findByUsername(principal.getName()).orElseThrow();
-            UserViewMinimal user = modelMapper.map(userFromDb, UserViewMinimal.class);
+            UserInfoDto user = modelMapper.map(userFromDb, UserInfoDto.class);
 
             // validate domains before processing bulk
             if (!bulkApplicationService.validateDomainsList(csvApplications.stream()
@@ -125,7 +125,7 @@ public class BulkController {
         log.info("Processing bulk application deployment details request");
         BulkDeployment bulk = bulkDeploymentRepository.findById(id).orElseThrow();
         BulkDeploymentView bulkView = modelMapper.map(bulk, BulkDeploymentView.class);
-        bulkView.setCreator(getUserView(bulk.getCreator().getId()));
+        bulkView.setCreator(getUserInfo(bulk.getCreator().getId()));
         mapDetails(bulk, bulkView);
         List<BulkAppDetails> details = bulkApplicationService.getAppsBulkDetails(bulkView);
         InputStreamResource inputStreamResource = bulkApplicationService.getInputStreamAppBulkDetails(details);
@@ -216,7 +216,7 @@ public class BulkController {
     private <T extends BulkDeploymentViewS> T mapToView(BulkDeployment bulk, Class<T> viewType) {
         T bulkView = modelMapper.map(bulk, viewType);
         try {
-            bulkView.setCreator(getUserView(bulk.getCreator().getId()));
+            bulkView.setCreator(getUserInfo(bulk.getCreator().getId()));
         } catch (Exception ex) {
             log.error("Can't find user who requested bulk {} (provided id: {})", bulk.getId(), bulk.getCreator().getId());
             return null;
@@ -228,7 +228,7 @@ public class BulkController {
     private BulkDeploymentView mapToView(BulkDeployment deployment) {
         BulkDeploymentView bulkView = modelMapper.map(deployment, BulkDeploymentView.class);
         try {
-            bulkView.setCreator(getUserView(deployment.getCreator().getId()));
+            bulkView.setCreator(getUserInfo(deployment.getCreator().getId()));
         } catch (Exception ex) {
             log.error("Can't find user who requested bulk {} (provided id: {})", deployment.getId(), deployment.getCreator().getId());
         }
@@ -254,9 +254,9 @@ public class BulkController {
         }
     }
 
-    private UserViewMinimal getUserView(Long id) {
+    private UserInfoDto getUserInfo(Long id) {
         User user = userService.findById(id).orElseThrow();
-        return modelMapper.map(user, UserViewMinimal.class);
+        return modelMapper.map(user, UserInfoDto.class);
     }
 
     private List<BulkDeployment> filter(Boolean showDeleted, List<BulkDeployment> deployments) {

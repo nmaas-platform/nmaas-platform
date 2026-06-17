@@ -6,7 +6,7 @@ import net.geant.nmaas.api.dto.applications.ApplicationStatePerDomainDto;
 import net.geant.nmaas.api.dto.domains.DomainGroupBaseDto;
 import net.geant.nmaas.api.dto.domains.DomainGroupDto;
 import net.geant.nmaas.api.dto.users.RoleDto;
-import net.geant.nmaas.api.dto.users.UserViewMinimal;
+import net.geant.nmaas.api.dto.users.UserInfoDto;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.events.DomainGroupChangedEvent;
@@ -61,7 +61,7 @@ public class DomainGroupServiceImpl implements DomainGroupService {
             throw new IllegalArgumentException("Domain group with given name or codename already exists");
         }
         if (!domainGroupDto.getManagers().isEmpty()) {
-            List<UserViewMinimal> validateManagers = new ArrayList<>();
+            List<UserInfoDto> validateManagers = new ArrayList<>();
             domainGroupDto.getManagers().forEach(manager -> {
                 if (manager.getRoles().stream().noneMatch(
                         role -> role.getRole() == RoleDto.ROLE_SYSTEM_ADMIN)) {

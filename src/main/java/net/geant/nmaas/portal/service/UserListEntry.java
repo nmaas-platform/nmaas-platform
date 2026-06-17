@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.geant.nmaas.api.dto.users.RoleDto;
-import net.geant.nmaas.api.dto.users.UserBase;
+import net.geant.nmaas.api.dto.users.UserBaseDto;
 import net.geant.nmaas.api.dto.users.UserListEntryDto;
 import net.geant.nmaas.portal.persistence.entity.Role;
 import net.geant.nmaas.portal.persistence.entity.User;
@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserListEntry extends UserBase implements Serializable {
+public class UserListEntry extends UserBaseDto implements Serializable {
 
     protected String name;
     protected String email;

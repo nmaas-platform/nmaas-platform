@@ -1,9 +1,7 @@
 package net.geant.nmaas.portal.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.api.dto.users.UserViewMinimal;
+import net.geant.nmaas.api.dto.users.UserInfoDto;
 import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
 import net.geant.nmaas.nmservice.deployment.bulks.BulkDeploymentQueueEntry;
 import net.geant.nmaas.nmservice.deployment.bulks.BulkDeploymentQueueRepository;
@@ -56,6 +54,7 @@ import static net.geant.nmaas.portal.persistence.entity.BulkDeploymentState.COMP
 import static net.geant.nmaas.portal.persistence.entity.BulkDeploymentState.PENDING;
 import static net.geant.nmaas.portal.persistence.entity.BulkDeploymentState.PROCESSING;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -273,8 +272,8 @@ class BulkApplicationServiceImplTest {
         assertEquals(1, details.getJobDone());
     }
 
-    private static UserViewMinimal testUser() {
-        UserViewMinimal testUser = new UserViewMinimal();
+    private static UserInfoDto testUser() {
+        UserInfoDto testUser = new UserInfoDto();
         testUser.setId(1L);
         testUser.setUsername("username");
         return testUser;
@@ -285,7 +284,7 @@ class BulkApplicationServiceImplTest {
         when(domainService.existsDomain("d1")).thenReturn(true);
         when(domainService.existsDomain("d2")).thenReturn(false);
 
-        assertTrue(!bulkApplicationService.validateDomainsList(Set.of("d1", "d2")));
+        assertFalse(bulkApplicationService.validateDomainsList(Set.of("d1", "d2")));
         assertTrue(bulkApplicationService.validateDomainsList(Set.of("d1")));
     }
 

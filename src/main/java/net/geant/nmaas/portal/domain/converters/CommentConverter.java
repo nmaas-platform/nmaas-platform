@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.domain.converters;
 
 import net.geant.nmaas.api.dto.applications.CommentDto;
-import net.geant.nmaas.api.dto.users.UserBase;
+import net.geant.nmaas.api.dto.users.UserBaseDto;
 import net.geant.nmaas.portal.persistence.entity.Comment;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
@@ -26,7 +26,7 @@ public class CommentConverter extends AbstractConverter<Comment, CommentDto> {
         return new CommentDto(
                 source.getId(),
                 parentId,
-                modelMapper.map(source.getOwner(), UserBase.class),
+                modelMapper.map(source.getOwner(), UserBaseDto.class),
                 Objects.nonNull(source.getCreatedAt()) ? new Date(source.getCreatedAt()) : null,
                 commentText, source.isDeleted(),
                 source.getSubComments().stream().map(this::convert).toList()

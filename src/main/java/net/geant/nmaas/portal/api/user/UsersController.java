@@ -6,12 +6,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.api.dto.PasswordChangeRequest;
 import net.geant.nmaas.api.dto.PasswordResetRequest;
-import net.geant.nmaas.api.dto.users.UserBase;
+import net.geant.nmaas.api.dto.users.UserBaseDto;
 import net.geant.nmaas.api.dto.users.UserDto;
+import net.geant.nmaas.api.dto.users.UserInfoDto;
 import net.geant.nmaas.api.dto.users.UserListEntryDto;
 import net.geant.nmaas.api.dto.users.UserRequest;
 import net.geant.nmaas.api.dto.users.UserRoleDto;
-import net.geant.nmaas.api.dto.users.UserViewMinimal;
 import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
 import net.geant.nmaas.notifications.templates.MailType;
@@ -134,7 +134,7 @@ public class UsersController {
     @GetMapping("/users")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') or hasRole('ROLE_DOMAIN_ADMIN')")
     @Transactional
-    public List<UserBase> getUsers(Pageable pageable, Principal principal) {
+    public List<UserBaseDto> getUsers(Pageable pageable, Principal principal) {
 
         User owner = userService.findByUsername(principal.getName())
                 .orElseThrow(() -> new RuntimeException("User with username: " + principal.getName() + " does not exist"));
@@ -148,7 +148,7 @@ public class UsersController {
                                             domainService.getGlobalDomain().orElseThrow(
                                                     () -> new RuntimeException("Global domain does not exist")).getId()))
                     )
-                    .map(user -> modelMapper.map(user, UserViewMinimal.class)).collect(Collectors.toList());
+                    .map(user -> modelMapper.map(user, UserInfoDto.class)).collect(Collectors.toList());
         }
 
         /* reads all users first and last successful login, transforms it to map */
@@ -189,16 +189,16 @@ public class UsersController {
 
     @GetMapping(value = "/users/{userId}")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') or hasRole('ROLE_DOMAIN_ADMIN')")
-    public UserBase getUser(@PathVariable("userId") Long userId, Principal principal) {
+    public UserBaseDto getUser(@PathVariable("userId") Long userId, Principal principal) {
         User user = getUser(userId);
         User owner = this.userService.findByUsername(principal.getName()).orElseThrow(
                 () -> new RuntimeException("User with username: " + principal.getName() + " does not exist"));
         /* calculate set of common domains between principal and user */
         Set<Long> common = user.getRoles().stream().map(role -> role.getDomain().getId()).collect(Collectors.toSet());
         common.retainAll(owner.getRoles().stream().map(role -> role.getDomain().getId()).collect(Collectors.toSet()));
-        /* if no common domain return only basic set of user information */
+        /* if no common domain returns only basic set of user information */
         if (common.isEmpty()) {
-            return modelMapper.map(user, UserViewMinimal.class);
+            return modelMapper.map(user, UserInfoDto.class);
         }
         UserDto uv = modelMapper.map(user, UserDto.class);
         /* updates user view with first and last login date */
@@ -403,9 +403,9 @@ public class UsersController {
 
     @GetMapping("/domains/{domainId}/users")
     @PreAuthorize("hasPermission(#domainId, 'domain', 'OWNER')")
-    public List<UserViewMinimal> getDomainUsers(@PathVariable Long domainId) {
+    public List<UserInfoDto> getDomainUsers(@PathVariable Long domainId) {
         return domainService.getMembers(domainId).stream()
-                .map(this::mapMinimalUser)
+                .map(this::mapUserInfo)
                 .toList();
     }
 
@@ -602,7 +602,7 @@ public class UsersController {
 
     @GetMapping(value = "/users/search", params = {"searchPart"})
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') or hasRole('ROLE_DOMAIN_ADMIN') or hasRole('ROLE_GROUP_MANAGER')")
-    public List<UserViewMinimal> searchUser(@RequestParam(required = false) String searchPart, @RequestParam(required = false) Long domainId) {
+    public List<UserInfoDto> searchUser(@RequestParam(required = false) String searchPart, @RequestParam(required = false) Long domainId) {
         String search = searchPart.toLowerCase();
 
         List<User> allUsers = this.userService.findAll().stream()
@@ -613,26 +613,26 @@ public class UsersController {
             return allUsers.stream()
                     .filter(user -> user.getEmail().toLowerCase().contentEquals(search))
                     .filter(user -> user.getRoles().stream().noneMatch(roles -> roles.getDomain().getId().equals(domainId)))
-                    .map(this::mapMinimalUser)
+                    .map(this::mapUserInfo)
                     .toList();
         } else {
             return allUsers.stream()
                     .filter(user -> user.getEmail().toLowerCase().contentEquals(search))
-                    .map(this::mapMinimalUser)
+                    .map(this::mapUserInfo)
                     .toList();
         }
     }
 
     @GetMapping(value = "/users/search/managers", params = {"searchPart"})
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') or hasRole('ROLE_GROUP_MANAGER')")
-    public List<UserViewMinimal> searchGroupManagers(@RequestParam(required = false) String searchPart) {
+    public List<UserInfoDto> searchGroupManagers(@RequestParam(required = false) String searchPart) {
         String search = searchPart.toLowerCase();
         return userService.findAll().stream()
                 .filter(User::isEnabled)
                 .filter(user -> Objects.nonNull(user.getEmail()))
                 .filter(user -> user.getRoles().stream().anyMatch(role -> role.getRole().equals(ROLE_GROUP_MANAGER)))
                 .filter(user -> user.getEmail().toLowerCase().contentEquals(search))
-                .map(this::mapMinimalUser)
+                .map(this::mapUserInfo)
                 .toList();
     }
 
@@ -730,10 +730,10 @@ public class UsersController {
         return uv;
     }
 
-    private UserViewMinimal mapMinimalUser(User user) {
-        UserViewMinimal userViewMinimal = modelMapper.map(user, UserViewMinimal.class);
-        userViewMinimal.setHasSshKeys(!user.getSshKeys().isEmpty());
-        return userViewMinimal;
+    private UserInfoDto mapUserInfo(User user) {
+        UserInfoDto dto = modelMapper.map(user, UserInfoDto.class);
+        dto.setHasSshKeys(!user.getSshKeys().isEmpty());
+        return dto;
     }
 
     private UserListEntryDto mapUser(UserListEntryDto entry, final Map<Long, UserLoginDate> userLoginDateMap) {

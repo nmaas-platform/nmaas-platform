@@ -8,7 +8,7 @@ import net.geant.nmaas.api.dto.applications.AppInstanceViewExtended;
 import net.geant.nmaas.api.dto.applications.AppInstanceViewExtendedDto;
 import net.geant.nmaas.api.dto.applications.ApplicationDto;
 import net.geant.nmaas.api.dto.domains.DomainBaseDto;
-import net.geant.nmaas.api.dto.users.UserBase;
+import net.geant.nmaas.api.dto.users.UserBaseDto;
 import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesChart;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
@@ -45,7 +45,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -153,7 +152,7 @@ class AppInstanceReadControllerTest {
         appInstance.setName(NAME);
         appInstance.setAutoUpgradesEnabled(true);
         appInstance.setDomainId(domain1.getId());
-        appInstance.setOwner(new UserBase(owner.getId(), owner.getUsername(), true));
+        appInstance.setOwner(new UserBaseDto(owner.getId(), owner.getUsername(), true));
         Page<AppInstanceBase> appInstancePage = new PageImpl<>(List.of(appInstance));
 
         when(instanceBaseService.findAll(pageable)).thenReturn(appInstancePage);

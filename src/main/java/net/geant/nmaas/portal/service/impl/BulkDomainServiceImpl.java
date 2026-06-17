@@ -7,7 +7,7 @@ import net.geant.nmaas.api.dto.domains.DomainDcnDetailsDto;
 import net.geant.nmaas.api.dto.domains.DomainGroupDto;
 import net.geant.nmaas.api.dto.domains.DomainRequest;
 import net.geant.nmaas.api.dto.domains.DomainTechDetailsDto;
-import net.geant.nmaas.api.dto.users.UserViewMinimal;
+import net.geant.nmaas.api.dto.users.UserInfoDto;
 import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
 import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
 import net.geant.nmaas.kubernetes.KubernetesClusterIngressManager;
@@ -93,7 +93,7 @@ public class BulkDomainServiceImpl implements BulkDomainService {
         this.configurationManager = configurationManager;
     }
 
-    public BulkDeploymentViewS handleBulkCreation(List<CsvDomain> domainSpecs, UserViewMinimal creator) {
+    public BulkDeploymentViewS handleBulkCreation(List<CsvDomain> domainSpecs, UserInfoDto creator) {
         log.info("Handling bulk domain creation with {} entries", domainSpecs.size());
         BulkDeployment bulkDeployment = createBulkDeployment(creator);
 
@@ -199,7 +199,7 @@ public class BulkDomainServiceImpl implements BulkDomainService {
         return dcnInfo;
     }
 
-    private void createMissingGroupsAndAssignDomain(CsvDomain csvDomain, Domain domain, UserViewMinimal creator) {
+    private void createMissingGroupsAndAssignDomain(CsvDomain csvDomain, Domain domain, UserInfoDto creator) {
         List<String> groupNames = Arrays.stream(csvDomain.getDomainGroups().replace("\\s", "").split(",")).collect(Collectors.toList());
         groupNames.removeAll(Arrays.asList("", null));
         groupNames.forEach(groupName -> {
@@ -245,7 +245,7 @@ public class BulkDomainServiceImpl implements BulkDomainService {
         }
     }
 
-    private BulkDeployment createBulkDeployment(UserViewMinimal creator) {
+    private BulkDeployment createBulkDeployment(UserInfoDto creator) {
         BulkDeployment bulkDeployment = new BulkDeployment();
         bulkDeployment.setType(DOMAIN);
         bulkDeployment.setState(PENDING);

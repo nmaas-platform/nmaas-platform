@@ -9,8 +9,7 @@ import net.geant.nmaas.api.dto.domains.DomainGroupDto;
 import net.geant.nmaas.api.dto.domains.DomainRequest;
 import net.geant.nmaas.api.dto.users.RoleDto;
 import net.geant.nmaas.api.dto.users.UserDto;
-import net.geant.nmaas.api.dto.users.UserRoleDto;
-import net.geant.nmaas.api.dto.users.UserViewMinimal;
+import net.geant.nmaas.api.dto.users.UserInfoDto;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 import net.geant.nmaas.dcn.deployment.DcnRepositoryManager;
 import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
@@ -599,9 +598,9 @@ public class DomainServiceImpl implements DomainService {
     }
 
     @Override
-    public DomainGroupDto updateMembers(List<UserViewMinimal> newMembers, DomainGroupDto view) {
+    public DomainGroupDto updateMembers(List<UserInfoDto> newMembers, DomainGroupDto view) {
         //delete roles
-        List<UserViewMinimal> toDeleteRole = new ArrayList<>(view.getManagers());
+        List<UserInfoDto> toDeleteRole = new ArrayList<>(view.getManagers());
         toDeleteRole.removeAll(newMembers);
 
         toDeleteRole.forEach(user -> {

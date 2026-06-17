@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.api.dto.Id;
 import net.geant.nmaas.api.dto.applications.AppInstanceRequest;
 import net.geant.nmaas.api.dto.applications.AppInstanceState;
-import net.geant.nmaas.api.dto.users.UserBase;
+import net.geant.nmaas.api.dto.users.UserBaseDto;
 import net.geant.nmaas.kubernetes.remote.RemoteClusterManager;
 import net.geant.nmaas.nmservice.configuration.gitlab.events.AddUserToRepositoryGitlabEvent;
 import net.geant.nmaas.nmservice.configuration.gitlab.events.RemoveUserFromRepositoryGitlabEvent;
@@ -312,12 +312,12 @@ public class AppInstanceController extends AppBaseController {
 
     @PostMapping("/{appInstanceId}/members")
     @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
-    public void updateMembers(@PathVariable(value = "appInstanceId") Long appInstanceId, @RequestBody @Valid List<UserBase> members) {
+    public void updateMembers(@PathVariable(value = "appInstanceId") Long appInstanceId, @RequestBody @Valid List<UserBaseDto> members) {
         AppInstance appInstance = getAppInstance(appInstanceId);
         Set<User> oldMembers = new HashSet<>(appInstance.getMembers()); // copy members set
 
         Set<String> oldMemberUsernames = appInstance.getMembers().stream().map(User::getUsername).collect(Collectors.toSet());
-        Set<String> newMemberUsernames = members.stream().map(UserBase::getUsername).collect(Collectors.toSet());
+        Set<String> newMemberUsernames = members.stream().map(UserBaseDto::getUsername).collect(Collectors.toSet());
 
         Set<String> commonMemberUsernames = new HashSet<>(oldMemberUsernames);
         commonMemberUsernames.retainAll(newMemberUsernames); // retrieve intersection of old and new members - these users won't be affected
