@@ -6,6 +6,7 @@ import net.geant.nmaas.nmservice.configuration.entities.ConfigFileTemplate;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 
+import java.util.Collections;
 import java.util.Objects;
 
 public class AppConfigurationSpecInverseConverter extends AbstractConverter<AppConfigurationSpecDto, AppConfigurationSpec> {
@@ -16,10 +17,10 @@ public class AppConfigurationSpecInverseConverter extends AbstractConverter<AppC
     protected AppConfigurationSpec convert(AppConfigurationSpecDto source) {
         return new AppConfigurationSpec(
                 source.id(),
-                source.configFileRepositoryRequired(),
+                Boolean.TRUE.equals(source.configFileRepositoryRequired()),
                 Objects.nonNull(source.templates()) ?
-                        source.templates().stream().map(t -> modelMapper.map(t, ConfigFileTemplate.class)).toList() : null,
-                source.configUpdateEnabled(),
-                source.termsAcceptanceRequired());
+                        source.templates().stream().map(t -> modelMapper.map(t, ConfigFileTemplate.class)).toList() : Collections.emptyList(),
+                Boolean.TRUE.equals(source.configUpdateEnabled()),
+                Boolean.TRUE.equals(source.termsAcceptanceRequired()));
     }
 }

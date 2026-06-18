@@ -30,7 +30,8 @@ public class HelmRepoAddCommand extends HelmCommand {
 
     @Override
     public Predicate<String> isOutputCorrect() {
-        return o -> o.contains("has been added to your repositories");
+        return o -> o.contains("has been added to your repositories")
+                || o.contains("already exists with the same configuration, skipping");
     }
 
 }
