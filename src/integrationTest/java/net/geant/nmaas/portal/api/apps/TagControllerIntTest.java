@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.api.dto.applications.AppDescriptionDto;
 import net.geant.nmaas.api.dto.applications.AppTagDto;
-import net.geant.nmaas.api.dto.applications.ApplicationBaseView;
+import net.geant.nmaas.api.dto.applications.ApplicationBaseDto;
 import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.HelmChartRepositoryEmbeddable;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesChart;
@@ -130,7 +130,7 @@ public class TagControllerIntTest extends BaseControllerTestSetup {
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN)))
                 .andExpect(status().isOk())
                 .andReturn();
-        Set<ApplicationBaseView> resultSet = new ObjectMapper().readValue(result.getResponse().getContentAsByteArray(), new TypeReference<Set<ApplicationBaseView>>() {
+        Set<ApplicationBaseDto> resultSet = new ObjectMapper().readValue(result.getResponse().getContentAsByteArray(), new TypeReference<Set<ApplicationBaseDto>>() {
         });
 
         assertEquals(2, resultSet.size());
@@ -142,13 +142,13 @@ public class TagControllerIntTest extends BaseControllerTestSetup {
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN)))
                 .andExpect(status().isOk())
                 .andReturn();
-        Set<ApplicationBaseView> resultSet = new ObjectMapper().readValue(result.getResponse().getContentAsByteArray(), new TypeReference<Set<ApplicationBaseView>>() {
+        Set<ApplicationBaseDto> resultSet = new ObjectMapper().readValue(result.getResponse().getContentAsByteArray(), new TypeReference<Set<ApplicationBaseDto>>() {
         });
         assertTrue(resultSet.isEmpty());
     }
 
-    private ApplicationBaseView getDefaultApplicationBaseView(String name) {
-        return ApplicationBaseView.builder()
+    private ApplicationBaseDto getDefaultApplicationBaseView(String name) {
+        return ApplicationBaseDto.builder()
                 .name(name)
                 .owner("admin")
                 .descriptions(

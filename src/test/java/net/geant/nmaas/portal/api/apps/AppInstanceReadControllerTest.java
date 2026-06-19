@@ -6,7 +6,7 @@ import net.geant.nmaas.api.dto.applications.AppInstanceStatus;
 import net.geant.nmaas.api.dto.applications.AppInstanceView;
 import net.geant.nmaas.api.dto.applications.AppInstanceViewExtended;
 import net.geant.nmaas.api.dto.applications.AppInstanceViewExtendedDto;
-import net.geant.nmaas.api.dto.applications.ApplicationDto;
+import net.geant.nmaas.api.dto.applications.ApplicationCompleteDto;
 import net.geant.nmaas.api.dto.domains.DomainBaseDto;
 import net.geant.nmaas.api.dto.users.UserBaseDto;
 import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
@@ -352,7 +352,7 @@ class AppInstanceReadControllerTest {
         assertEquals(application.getId(), appInstanceView.getApplicationId());
         assertEquals(domain1.getId(), appInstanceView.getDomainId());
 
-        ApplicationDto av = appInstanceView.getApplication();
+        ApplicationCompleteDto av = appInstanceView.getApplication();
         assertEquals(application.getId(), av.getApplication().getId());
         assertEquals(application.getName(), av.getApplication().getName());
 

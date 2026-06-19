@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.api.apps;
 
 import lombok.RequiredArgsConstructor;
-import net.geant.nmaas.api.dto.applications.ApplicationBaseView;
+import net.geant.nmaas.api.dto.applications.ApplicationBaseDto;
 import net.geant.nmaas.portal.persistence.entity.ApplicationState;
 import net.geant.nmaas.portal.persistence.entity.Tag;
 import net.geant.nmaas.portal.persistence.repositories.TagRepository;
@@ -40,10 +40,10 @@ public class TagController {
 
     @GetMapping(value = "/{tagName}")
     @Transactional
-    public Set<ApplicationBaseView> getByTag(@PathVariable("tagName") String tagName) {
+    public Set<ApplicationBaseDto> getByTag(@PathVariable("tagName") String tagName) {
         return tagRepo.findByName(tagName)
                 .map(value -> value.getApplications().stream()
-                        .map(app -> modelMapper.map(app, ApplicationBaseView.class))
+                        .map(app -> modelMapper.map(app, ApplicationBaseDto.class))
                         .collect(Collectors.toSet()))
                 .orElse(Collections.emptySet());
     }

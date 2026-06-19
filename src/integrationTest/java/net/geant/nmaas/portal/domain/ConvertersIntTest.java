@@ -3,10 +3,10 @@ package net.geant.nmaas.portal.domain;
 import net.geant.nmaas.api.dto.applications.AppConfigurationSpecDto;
 import net.geant.nmaas.api.dto.applications.AppDeploymentSpecDto;
 import net.geant.nmaas.api.dto.applications.AppTagDto;
-import net.geant.nmaas.api.dto.applications.ApplicationBaseView;
+import net.geant.nmaas.api.dto.applications.ApplicationBaseDto;
+import net.geant.nmaas.api.dto.applications.ApplicationDto;
 import net.geant.nmaas.api.dto.applications.ApplicationStateDto;
 import net.geant.nmaas.api.dto.applications.ApplicationSubscriptionBase;
-import net.geant.nmaas.api.dto.applications.ApplicationView;
 import net.geant.nmaas.api.dto.applications.ConfigWizardTemplateDto;
 import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
@@ -62,7 +62,7 @@ public class ConvertersIntTest {
     void testConvertAppToAppView() {
         ApplicationBase defaultAppBase = getDefaultAppBase();
         applicationBaseRepository.save(defaultAppBase);
-        ApplicationView appView = modelMapper.map(getDefaultApp(), ApplicationView.class);
+        ApplicationDto appView = modelMapper.map(getDefaultApp(), ApplicationDto.class);
         assertNotNull(appView.getConfigWizardTemplate());
         assertNull(appView.getConfigUpdateWizardTemplate());
         assertEquals(getDefaultApp().getAppDeploymentSpec().isExposesWebUI(), appView.getAppDeploymentSpec().isExposesWebUI());
@@ -70,7 +70,7 @@ public class ConvertersIntTest {
 
     @Test
     void testConvertAppViewToAppBase() {
-        ApplicationBaseView appView = getDefaultAppBaseView();
+        ApplicationBaseDto appView = getDefaultAppBaseView();
         ApplicationBase appBase = modelMapper.map(appView, ApplicationBase.class);
         assertEquals(appView.getId(), appBase.getId());
         assertEquals(appView.getName(), appBase.getName());
@@ -80,7 +80,7 @@ public class ConvertersIntTest {
     @Test
     void testConvertAppBaseToAppBaseView() {
         ApplicationBase appBase = getDefaultAppBase();
-        ApplicationBaseView applicationBaseView = modelMapper.map(appBase, ApplicationBaseView.class);
+        ApplicationBaseDto applicationBaseView = modelMapper.map(appBase, ApplicationBaseDto.class);
         assertEquals(appBase.getName(), applicationBaseView.getName());
         assertNotNull(applicationBaseView.getTags());
         assertEquals(1, applicationBaseView.getVersions().size());
@@ -92,7 +92,7 @@ public class ConvertersIntTest {
 
     @Test
     void testConvertAppViewToApp() {
-        ApplicationView appView = getDefaultAppView();
+        ApplicationDto appView = getDefaultAppView();
         Application app = modelMapper.map(appView, Application.class);
         assertEquals(appView.getState(), ApplicationStateDto.valueOf(app.getState().name()));
         assertNotNull(app.getConfigWizardTemplate());
@@ -105,7 +105,7 @@ public class ConvertersIntTest {
     void testConvertAppBaseViewToAppBase() {
         tagRepository.save(new Tag("network"));
 
-        ApplicationBaseView appDto = new ApplicationBaseView();
+        ApplicationBaseDto appDto = new ApplicationBaseDto();
         appDto.setId(1L);
         appDto.setName("myApp");
         appDto.setLicense("GNL");
@@ -121,7 +121,7 @@ public class ConvertersIntTest {
         assertEquals(appDto.getTags().size(), appEntity.getTags().size());
         assertInstanceOf(Tag.class, (appEntity.getTags().toArray()[0]));
 
-        appDto = modelMapper.map(appEntity, ApplicationBaseView.class);
+        appDto = modelMapper.map(appEntity, ApplicationBaseDto.class);
         assertEquals(2, appDto.getTags().size());
         assertEquals(appEntity.getTags().size(), appDto.getTags().size());
         assertTrue(appDto.getTags().contains(new AppTagDto(null, "network")));
@@ -165,8 +165,8 @@ public class ConvertersIntTest {
         assertEquals(Role.ROLE_SYSTEM_ADMIN, role);
     }
 
-    private ApplicationBaseView getDefaultAppBaseView() {
-        ApplicationBaseView appView = new ApplicationBaseView();
+    private ApplicationBaseDto getDefaultAppBaseView() {
+        ApplicationBaseDto appView = new ApplicationBaseDto();
         appView.setName("testApp");
         appView.setLicense("MIT");
         appView.setLicenseUrl("MIT.org");
@@ -177,8 +177,8 @@ public class ConvertersIntTest {
         return appView;
     }
 
-    private ApplicationView getDefaultAppView() {
-        ApplicationView app = new ApplicationView();
+    private ApplicationDto getDefaultAppView() {
+        ApplicationDto app = new ApplicationDto();
         app.setId(1L);
         app.setName("testApp");
         app.setVersion("0.0.1");

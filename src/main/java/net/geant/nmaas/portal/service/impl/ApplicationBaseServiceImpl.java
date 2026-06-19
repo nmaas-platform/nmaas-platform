@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.api.dto.applications.AppDescriptionDto;
 import net.geant.nmaas.api.dto.applications.AppTagDto;
-import net.geant.nmaas.api.dto.applications.ApplicationBaseViewS;
+import net.geant.nmaas.api.dto.applications.ApplicationBaseInfoDto;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.events.ApplicationActivatedEvent;
@@ -136,15 +136,15 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
     }
 
     @Override
-    public List<ApplicationBaseViewS> findAllActiveAppsSmall() {
+    public List<ApplicationBaseInfoDto> findAllActiveAppsSmall() {
         log.trace("Loading information about all applications");
         LocalDateTime beginning = LocalDateTime.now();
         List<ApplicationBaseS> allSmall = appBaseRepository.findAllSmall();
         LocalDateTime end = LocalDateTime.now();
         log.trace("Loaded base data from db in {}ms", end.toInstant(ZoneOffset.UTC).toEpochMilli() - beginning.toInstant(ZoneOffset.UTC).toEpochMilli());
-        List<ApplicationBaseViewS> result = allSmall.stream()
-                .map(app -> ApplicationBaseViewS.builder().
-                        id(app.getId())
+        List<ApplicationBaseInfoDto> result = allSmall.stream()
+                .map(app -> ApplicationBaseInfoDto.builder()
+                        .id(app.getId())
                         .name(app.getName())
                         .descriptions(mapList(modelMapper, app.getDescriptions(), AppDescriptionDto.class))
                         .tags(mapSet(modelMapper, app.getTags(), AppTagDto.class))

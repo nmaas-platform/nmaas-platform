@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.api.apps;
 
 import net.geant.nmaas.api.dto.applications.AppRateDto;
-import net.geant.nmaas.api.dto.applications.ApplicationBaseView;
+import net.geant.nmaas.api.dto.applications.ApplicationBaseDto;
 import net.geant.nmaas.api.dto.applications.ApplicationSubscriptionBase;
 import net.geant.nmaas.api.dto.applications.ApplicationSubscriptionDto;
 import net.geant.nmaas.portal.persistence.repositories.RatingRepository;
@@ -93,18 +93,18 @@ public class ApplicationSubscriptionController extends AppBaseController {
     @GetMapping("/domains/{domainId}/apps")
     @Transactional(readOnly = true)
     @PreAuthorize("hasPermission(#domainId, 'domain', 'READ')")
-    public List<ApplicationBaseView> getDomainSubscribedApplications(@PathVariable Long domainId) {
+    public List<ApplicationBaseDto> getDomainSubscribedApplications(@PathVariable Long domainId) {
         return appSubscriptions.getSubscribedApplications(domainId).stream()
-                .map(app -> modelMapper.map(app, ApplicationBaseView.class))
+                .map(app -> modelMapper.map(app, ApplicationBaseDto.class))
                 .map(this::setAppRating)
                 .toList();
     }
 
     @GetMapping("/apps")
     @Transactional(readOnly = true)
-    public List<ApplicationBaseView> getSubscribedApplications() {
+    public List<ApplicationBaseDto> getSubscribedApplications() {
         return appSubscriptions.getSubscribedApplications().stream()
-                .map(app -> modelMapper.map(app, ApplicationBaseView.class))
+                .map(app -> modelMapper.map(app, ApplicationBaseDto.class))
                 .map(this::setAppRating)
                 .toList();
     }
@@ -116,7 +116,7 @@ public class ApplicationSubscriptionController extends AppBaseController {
                 .map(appSub -> modelMapper.map(appSub, ApplicationSubscriptionBase.class)).collect(Collectors.toList());
     }
 
-    private ApplicationBaseView setAppRating(ApplicationBaseView baseView) {
+    private ApplicationBaseDto setAppRating(ApplicationBaseDto baseView) {
         Integer[] rating = this.ratingRepository.getApplicationRating(baseView.getId());
         baseView.setRate(createAppRateView(rating));
         return baseView;

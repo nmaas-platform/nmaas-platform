@@ -6,12 +6,11 @@ import net.geant.nmaas.api.dto.applications.AppAccessMethodDto;
 import net.geant.nmaas.api.dto.applications.AppConfigurationSpecDto;
 import net.geant.nmaas.api.dto.applications.AppDeploymentSpecDto;
 import net.geant.nmaas.api.dto.applications.AppStorageVolumeDto;
-import net.geant.nmaas.api.dto.applications.ApplicationBaseView;
-import net.geant.nmaas.api.dto.applications.ApplicationBaseViewS;
+import net.geant.nmaas.api.dto.applications.ApplicationBaseDto;
+import net.geant.nmaas.api.dto.applications.ApplicationBaseInfoDto;
 import net.geant.nmaas.api.dto.applications.ApplicationDto;
 import net.geant.nmaas.api.dto.applications.ApplicationStateChangeRequest;
 import net.geant.nmaas.api.dto.applications.ApplicationStateDto;
-import net.geant.nmaas.api.dto.applications.ApplicationView;
 import net.geant.nmaas.api.dto.applications.ConfigFileTemplateDto;
 import net.geant.nmaas.api.dto.applications.ConfigWizardTemplateDto;
 import net.geant.nmaas.api.dto.applications.HelmChartRepositoryDto;
@@ -142,7 +141,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
-        ApplicationBaseViewS[] resultView = objectMapper.readValue(result.getResponse().getContentAsByteArray(), ApplicationBaseViewS[].class);
+        ApplicationBaseInfoDto[] resultView = objectMapper.readValue(result.getResponse().getContentAsByteArray(), ApplicationBaseInfoDto[].class);
         assertEquals(1, resultView.length);
         assertEquals(APP_1_NAME, resultView[0].getName());
     }
@@ -154,7 +153,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
-        ApplicationBaseView[] resultView = objectMapper.readValue(result.getResponse().getContentAsByteArray(), ApplicationBaseView[].class);
+        ApplicationBaseDto[] resultView = objectMapper.readValue(result.getResponse().getContentAsByteArray(), ApplicationBaseDto[].class);
         assertEquals(2, resultView.length);
         assertTrue(Arrays.stream(resultView).anyMatch(app -> app.getName().equals(APP_1_NAME)));
         assertTrue(Arrays.stream(resultView).anyMatch(app -> app.getName().equals(APP_2_NAME)));
@@ -171,9 +170,9 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
-                                new ApplicationDto(
-                                        modelMapper.map(newApplicationBase, ApplicationBaseView.class),
-                                        modelMapper.map(getNewApplication(newApplicationBase.getName(), "1.2.3"), ApplicationView.class)
+                                new ApplicationController.ApplicationCompleteView(
+                                        modelMapper.map(newApplicationBase, ApplicationBaseDto.class),
+                                        modelMapper.map(getNewApplication(newApplicationBase.getName(), "1.2.3"), ApplicationDto.class)
                                 )
                         ))
                         .accept(MediaType.APPLICATION_JSON))
@@ -186,14 +185,14 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
 
     @Test
     void shouldUpdateApplicationVersion() throws Exception {
-        ApplicationView applicationView = modelMapper.map(this.testApp1, ApplicationView.class);
+        ApplicationDto applicationView = modelMapper.map(this.testApp1, ApplicationDto.class);
         applicationView.setConfigWizardTemplate(new ConfigWizardTemplateDto(null, "{}"));
 
         mvc.perform(patch("/api/v1/apps/version")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
-                                modelMapper.map(this.testApp1, ApplicationView.class)
+                                modelMapper.map(this.testApp1, ApplicationDto.class)
                         ))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
@@ -223,7 +222,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
-        ApplicationView test = objectMapper.readValue(result.getResponse().getContentAsByteArray(), ApplicationView.class);
+        ApplicationDto test = objectMapper.readValue(result.getResponse().getContentAsByteArray(), ApplicationDto.class);
 
         assertEquals(applicationView.getAppDeploymentSpec().getStorageVolumes().size(), test.getAppDeploymentSpec().getStorageVolumes().size());
         assertEquals(applicationView.getAppDeploymentSpec().getAccessMethods().size(), test.getAppDeploymentSpec().getAccessMethods().size());
@@ -261,7 +260,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
-        ApplicationBaseView app = objectMapper.readValue(result.getResponse().getContentAsString(), ApplicationBaseView.class);
+        ApplicationBaseDto app = objectMapper.readValue(result.getResponse().getContentAsString(), ApplicationBaseDto.class);
         assertEquals(APP_1_NAME, app.getName());
     }
 
@@ -273,7 +272,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
-        ApplicationBaseView app = objectMapper.readValue(result.getResponse().getContentAsString(), ApplicationBaseView.class);
+        ApplicationBaseDto app = objectMapper.readValue(result.getResponse().getContentAsString(), ApplicationBaseDto.class);
         assertEquals(APP_1_NAME, app.getName());
     }
 
@@ -286,7 +285,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
-        ApplicationDto app = objectMapper.readValue(result.getResponse().getContentAsString(), ApplicationDto.class);
+        ApplicationController.ApplicationCompleteView app = objectMapper.readValue(result.getResponse().getContentAsString(), ApplicationController.ApplicationCompleteView.class);
         assertEquals(APP_1_NAME, app.getApplicationBase().getName());
         assertEquals("1.2.0", app.getApplication().getVersion());
     }
@@ -299,7 +298,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
-        ApplicationDto app = objectMapper.readValue(result.getResponse().getContentAsString(), ApplicationDto.class);
+        ApplicationController.ApplicationCompleteView app = objectMapper.readValue(result.getResponse().getContentAsString(), ApplicationController.ApplicationCompleteView.class);
         assertEquals(APP_1_NAME, app.getApplicationBase().getName());
         assertEquals("1.1.0", app.getApplication().getVersion());
 
@@ -328,7 +327,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
-        ApplicationView applicationView = objectMapper.readValue(result.getResponse().getContentAsByteArray(), ApplicationView.class);
+        ApplicationDto applicationView = objectMapper.readValue(result.getResponse().getContentAsByteArray(), ApplicationDto.class);
         assertEquals(ApplicationStateDto.DISABLED, applicationView.getState());
 
         //reverse state to active again
@@ -364,7 +363,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
         AppConfigurationSpecDto appConfigurationSpec = new AppConfigurationSpecDto(null, new ArrayList<>(), true, false, false);
         appConfigurationSpec.templates().add(new ConfigFileTemplateDto(null, null, "name", "dir", "content"));
 
-        ApplicationView view = ApplicationView.builder()
+        ApplicationDto view = ApplicationDto.builder()
                 .name(APP_1_NAME)
                 .version("3.0.0")
                 .appConfigurationSpec(appConfigurationSpec)

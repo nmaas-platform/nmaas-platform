@@ -9,7 +9,7 @@ import net.geant.nmaas.api.dto.applications.AppInstanceStatus;
 import net.geant.nmaas.api.dto.applications.AppInstanceView;
 import net.geant.nmaas.api.dto.applications.AppInstanceViewExtended;
 import net.geant.nmaas.api.dto.applications.AppInstanceViewExtendedDto;
-import net.geant.nmaas.api.dto.applications.ApplicationBaseView;
+import net.geant.nmaas.api.dto.applications.ApplicationBaseDto;
 import net.geant.nmaas.api.dto.applications.ConfigWizardTemplateDto;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
@@ -467,7 +467,7 @@ public class AppInstanceReadController extends AppBaseController {
         }
         AppInstanceViewExtended ai = modelMapper.map(appInstance, AppInstanceViewExtended.class);
         ApplicationBase applicationBase = applicationBaseService.findByVersionId(appInstance.getApplication().getId());
-        ai.getApplication().setApplicationBase(modelMapper.map(applicationBase, ApplicationBaseView.class));
+        ai.getApplication().setApplicationBase(modelMapper.map(applicationBase, ApplicationBaseDto.class));
         return (AppInstanceViewExtended) addAppInstanceProperties(ai, appInstance);
     }
 

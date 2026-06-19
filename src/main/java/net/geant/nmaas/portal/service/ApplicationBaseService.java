@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.service;
 
-import net.geant.nmaas.api.dto.applications.ApplicationBaseViewS;
+import net.geant.nmaas.api.dto.applications.ApplicationBaseInfoDto;
 import net.geant.nmaas.portal.persistence.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistence.entity.ApplicationState;
 
@@ -20,7 +20,7 @@ public interface ApplicationBaseService {
 
     List<ApplicationBase> findAllActiveApps();
 
-    List<ApplicationBaseViewS> findAllActiveAppsSmall();
+    List<ApplicationBaseInfoDto> findAllActiveAppsSmall();
 
     ApplicationBase getBaseApp(Long id);
 
