@@ -46,7 +46,7 @@ public class ResourcesLimitController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || (hasRole('ROLE_GROUP_MANAGER') && #resourcesLimit.limitType()?.name() == 'DOMAIN_GROUP')")
     @Transactional
     public ResponseEntity<Id> createResourcesLimit(@RequestBody @Valid ResourcesLimitDto resourcesLimit) {
         resourcesLimit = resourcesLimitService.create(resourcesLimit);
@@ -54,7 +54,7 @@ public class ResourcesLimitController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || (hasRole('ROLE_GROUP_MANAGER') && @resourcesLimitAccessPolicy.isGroupResourcesLimit(#id))")
     @Transactional
     public ResponseEntity<Id> updateResourcesLimit(@PathVariable Long id, @RequestBody @Valid ResourcesLimitUpdateDto resourcesLimit) {
         if (!id.equals(resourcesLimit.id())) {
