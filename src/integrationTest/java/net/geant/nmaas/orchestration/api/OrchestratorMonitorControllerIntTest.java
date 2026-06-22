@@ -6,7 +6,7 @@ import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppLifecycleState;
 import net.geant.nmaas.orchestration.AppUiAccessDetails;
 import net.geant.nmaas.orchestration.Identifier;
-import net.geant.nmaas.orchestration.api.model.AppDeploymentView;
+import net.geant.nmaas.orchestration.api.model.AppDeploymentDto;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
@@ -99,14 +99,14 @@ public class OrchestratorMonitorControllerIntTest {
     @Test
     void shouldRetrieveAllDeployments() throws Exception {
         when(deploymentMonitor.allDeployments()).thenReturn(deployments).thenReturn(deployments);
-        JavaType type = objectMapper.getTypeFactory().constructCollectionType(ArrayList.class, AppDeploymentView.class);
+        JavaType type = objectMapper.getTypeFactory().constructCollectionType(ArrayList.class, AppDeploymentDto.class);
         MvcResult result = mvc.perform(get("/api/v1/orchestration/deployments"))
                 .andExpect(status().isOk())
                 .andReturn();
-        List<AppDeploymentView> retrievedDeployments = objectMapper.readValue(result.getResponse().getContentAsString(), type);
+        List<AppDeploymentDto> retrievedDeployments = objectMapper.readValue(result.getResponse().getContentAsString(), type);
         assertThat(retrievedDeployments.size(), equalTo(deployments.size()));
         assertThat(
-                retrievedDeployments.stream().map(AppDeploymentView::getDeploymentId).collect(Collectors.toList()),
+                retrievedDeployments.stream().map(AppDeploymentDto::getDeploymentId).collect(Collectors.toList()),
                 contains("deploymentId1", "deploymentId2", "deploymentId3"));
     }
 
@@ -160,7 +160,7 @@ public class OrchestratorMonitorControllerIntTest {
                 .configFileRepositoryRequired(true)
                 .build();
 
-        AppDeploymentView output = modelMapper.map(source, AppDeploymentView.class);
+        AppDeploymentDto output = modelMapper.map(source, AppDeploymentDto.class);
         assertThat(output.getDeploymentId(), equalTo(source.getDeploymentId().value()));
         assertThat(output.getDomain(), equalTo(source.getDomain()));
         assertThat(output.getDeploymentName(), equalTo(source.getDeploymentName()));

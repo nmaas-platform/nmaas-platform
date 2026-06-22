@@ -10,8 +10,9 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class AppDeploymentHistoryView {
+public class AppDeploymentHistoryDto {
     private Date timestamp;
     private String previousState;
     private String currentState;
+    private String initiator;
 }

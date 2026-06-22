@@ -4,7 +4,7 @@ import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppLifecycleState;
 import net.geant.nmaas.orchestration.AppUiAccessDetails;
 import net.geant.nmaas.orchestration.Identifier;
-import net.geant.nmaas.orchestration.api.model.AppDeploymentView;
+import net.geant.nmaas.orchestration.api.model.AppDeploymentDto;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
@@ -40,13 +40,13 @@ class AppDeploymentMonitorRestControllerTest {
     void shouldListAllDeploymentsMappedToView() {
         AppDeployment deployment1 = AppDeployment.builder().deploymentId(Identifier.newInstance("dep-1")).build();
         AppDeployment deployment2 = AppDeployment.builder().deploymentId(Identifier.newInstance("dep-2")).build();
-        AppDeploymentView view1 = new AppDeploymentView("dep-1",
+        AppDeploymentDto view1 = new AppDeploymentDto("dep-1",
                 "name-1",
                 "domain-1",
                 "REQUESTED",
                 "owner-1",
                 "app-1");
-        AppDeploymentView view2 = new AppDeploymentView("dep-2",
+        AppDeploymentDto view2 = new AppDeploymentDto("dep-2",
                 "name-2",
                 "domain-2",
                 "REQUESTED",
@@ -54,10 +54,10 @@ class AppDeploymentMonitorRestControllerTest {
                 "app-2");
 
         when(deploymentMonitor.allDeployments()).thenReturn(List.of(deployment1, deployment2));
-        when(modelMapper.map(deployment1, AppDeploymentView.class)).thenReturn(view1);
-        when(modelMapper.map(deployment2, AppDeploymentView.class)).thenReturn(view2);
+        when(modelMapper.map(deployment1, AppDeploymentDto.class)).thenReturn(view1);
+        when(modelMapper.map(deployment2, AppDeploymentDto.class)).thenReturn(view2);
 
-        List<AppDeploymentView> result = controller.listAllDeployments();
+        List<AppDeploymentDto> result = controller.listAllDeployments();
 
         assertEquals(2, result.size());
         assertSame(view1, result.get(0));

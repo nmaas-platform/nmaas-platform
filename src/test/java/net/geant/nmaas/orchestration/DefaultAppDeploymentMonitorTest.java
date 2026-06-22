@@ -5,11 +5,12 @@ import net.geant.nmaas.nmservice.configuration.NmServiceConfigurationProvider;
 import net.geant.nmaas.nmservice.configuration.exceptions.ConfigRepositoryAccessDetailsNotFoundException;
 import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRetrieveServiceAccessDetailsException;
-import net.geant.nmaas.orchestration.api.model.AppDeploymentHistoryView;
+import net.geant.nmaas.orchestration.api.model.AppDeploymentHistoryDto;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentHistory;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
+import net.geant.nmaas.portal.persistence.entity.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -28,6 +29,7 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -68,6 +70,7 @@ class DefaultAppDeploymentMonitorTest {
                         .currentState(APPLICATION_DEPLOYED)
                         .previousState(APPLICATION_DEPLOYMENT_IN_PROGRESS)
                         .timestamp(Date.from(Instant.now().minusSeconds(60)))
+                        .triggerredUser(new User("initiator"))
                         .build(),
                 AppDeploymentHistory.builder()
                         .currentState(APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS)
@@ -141,6 +144,7 @@ class DefaultAppDeploymentMonitorTest {
                         .currentState(APPLICATION_DEPLOYED)
                         .previousState(APPLICATION_DEPLOYMENT_IN_PROGRESS)
                         .timestamp(Date.from(Instant.now().minusSeconds(60)))
+                        .triggerredUser(new User("initiator"))
                         .build(),
                 AppDeploymentHistory.builder()
                         .currentState(APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS)
@@ -149,10 +153,11 @@ class DefaultAppDeploymentMonitorTest {
                         .build()
         );
         when(repositoryManager.loadStateHistory(deploymentId)).thenReturn(stubHistory);
-        List<AppDeploymentHistoryView> history = monitor.appDeploymentHistory(deploymentId);
+        List<AppDeploymentHistoryDto> history = monitor.appDeploymentHistory(deploymentId);
         assertThat(history.size(), is(2));
-        assertThat(history.stream().map(AppDeploymentHistoryView::getCurrentState).toList(),
+        assertThat(history.stream().map(AppDeploymentHistoryDto::getCurrentState).toList(),
                 contains(APPLICATION_DEPLOYED.lifecycleState().getUserFriendlyState(),
                         APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS.lifecycleState().getUserFriendlyState()));
+        assertIterableEquals(Arrays.asList("initiator", null), history.stream().map(AppDeploymentHistoryDto::getInitiator).toList());
     }
 }

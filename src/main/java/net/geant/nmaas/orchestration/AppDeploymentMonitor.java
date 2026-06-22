@@ -1,7 +1,7 @@
 package net.geant.nmaas.orchestration;
 
 import net.geant.nmaas.api.dto.applications.AppConfigRepositoryAccessDetails;
-import net.geant.nmaas.orchestration.api.model.AppDeploymentHistoryView;
+import net.geant.nmaas.orchestration.api.model.AppDeploymentHistoryDto;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
@@ -76,7 +76,7 @@ public interface AppDeploymentMonitor {
      * @return all state changes of the application
      * @throws InvalidDeploymentIdException if provided deploymentId does not match any processed application
      */
-    List<AppDeploymentHistoryView> appDeploymentHistory(Identifier deploymentId);
+    List<AppDeploymentHistoryDto> appDeploymentHistory(Identifier deploymentId);
 
     /**
      * Retrieves list of application deployment components.
