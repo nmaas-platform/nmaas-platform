@@ -9,7 +9,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class AppDeploymentView {
+public class AppDeploymentDto {
 
     private String deploymentId;
     private String deploymentName;

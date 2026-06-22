@@ -7,7 +7,7 @@ import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppLifecycleState;
 import net.geant.nmaas.orchestration.AppUiAccessDetails;
 import net.geant.nmaas.orchestration.Identifier;
-import net.geant.nmaas.orchestration.api.model.AppDeploymentView;
+import net.geant.nmaas.orchestration.api.model.AppDeploymentDto;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.modelmapper.ModelMapper;
@@ -43,9 +43,9 @@ public class AppDeploymentMonitorRestController {
      */
     @GetMapping(value = "")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
-    public List<AppDeploymentView> listAllDeployments() {
+    public List<AppDeploymentDto> listAllDeployments() {
         return deploymentMonitor.allDeployments().stream()
-                .map(d -> modelMapper.map(d, AppDeploymentView.class))
+                .map(d -> modelMapper.map(d, AppDeploymentDto.class))
                 .collect(Collectors.toList());
     }
 

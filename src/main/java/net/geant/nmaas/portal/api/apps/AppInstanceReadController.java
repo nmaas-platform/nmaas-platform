@@ -15,7 +15,7 @@ import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.AppLifecycleState;
 import net.geant.nmaas.orchestration.Identifier;
-import net.geant.nmaas.orchestration.api.model.AppDeploymentHistoryView;
+import net.geant.nmaas.orchestration.api.model.AppDeploymentHistoryDto;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
@@ -352,7 +352,7 @@ public class AppInstanceReadController extends AppBaseController {
     @GetMapping("/{appInstanceId}/state/history")
     @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'READ')")
     @Transactional
-    public List<AppDeploymentHistoryView> getStateHistory(@PathVariable(value = "appInstanceId") Long appInstanceId) {
+    public List<AppDeploymentHistoryDto> getStateHistory(@PathVariable(value = "appInstanceId") Long appInstanceId) {
         try {
             AppInstance appInstance = findAppInstance(appInstanceId);
             return appDeploymentMonitor.appDeploymentHistory(appInstance.getInternalId());

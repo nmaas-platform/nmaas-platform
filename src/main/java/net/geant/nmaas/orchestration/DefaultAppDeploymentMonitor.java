@@ -6,7 +6,7 @@ import net.geant.nmaas.nmservice.configuration.NmServiceConfigurationProvider;
 import net.geant.nmaas.nmservice.configuration.exceptions.ConfigRepositoryAccessDetailsNotFoundException;
 import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRetrieveServiceAccessDetailsException;
-import net.geant.nmaas.orchestration.api.model.AppDeploymentHistoryView;
+import net.geant.nmaas.orchestration.api.model.AppDeploymentHistoryDto;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentHistory;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
@@ -95,9 +95,13 @@ public class DefaultAppDeploymentMonitor implements AppDeploymentMonitor {
     }
 
     @Override
-    public List<AppDeploymentHistoryView> appDeploymentHistory(Identifier deploymentId) {
+    public List<AppDeploymentHistoryDto> appDeploymentHistory(Identifier deploymentId) {
         return appDeploymentRepositoryManager.loadStateHistory(deploymentId).stream()
-                .map(value -> new AppDeploymentHistoryView(value.getTimestamp(), value.getPreviousStateString(), value.getCurrentStateString()))
+                .map(value -> new AppDeploymentHistoryDto(
+                        value.getTimestamp(),
+                        value.getPreviousStateString(),
+                        value.getCurrentStateString(),
+                        value.getTriggerredUser() == null ? null : value.getTriggerredUser().getUsername()))
                 .collect(Collectors.toList());
     }
 
