@@ -144,6 +144,7 @@ class DefaultAppDeploymentMonitorTest {
                         .currentState(APPLICATION_DEPLOYED)
                         .previousState(APPLICATION_DEPLOYMENT_IN_PROGRESS)
                         .timestamp(Date.from(Instant.now().minusSeconds(60)))
+                        .triggerredUser(new User("initiator"))
                         .build(),
                 AppDeploymentHistory.builder()
                         .currentState(APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS)
