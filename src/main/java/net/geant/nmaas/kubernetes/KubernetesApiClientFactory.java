@@ -27,6 +27,9 @@ class KubernetesApiClientFactory {
     @Value("${nmaas.kubernetes.apiserver.url:none}")
     private String master;
 
+    @Value("${nmaas.kubernetes.kubeconfig:none}")
+    private String kubeconfigPath;
+
     // currently only used for testing purposes
     private static final String OAUTH_TOKEN = "TODO REPLACE";
 
@@ -68,8 +71,15 @@ class KubernetesApiClientFactory {
 
     private Config makeConfig() {
         if (inCluster) {
-            log.info("Using in cluster Kubernetes client configuration");
+            log.info("Using in-cluster Kubernetes client configuration");
             return new ConfigBuilder().build();
+        } else if (!"none".equals(kubeconfigPath)) {
+            log.info("Using kubeconfig file: {}", kubeconfigPath);
+            try {
+                return Config.fromKubeconfig(Files.readString(Path.of(kubeconfigPath)));
+            } catch (IOException e) {
+                throw new KubernetesClientSetupException(e);
+            }
         } else {
             log.info("Kubernetes API server master url: {}", master);
             return new ConfigBuilder().withMasterUrl(master)
