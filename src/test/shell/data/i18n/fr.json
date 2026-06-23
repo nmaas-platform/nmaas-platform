@@ -663,7 +663,8 @@
     "DEPLOYMENT_HISTORY": {
       "HEADER": "Historique des éeploiements",
       "TIMESTAMP": "Date/heure",
-      "STATE_TRANSITIONS": "Status"
+      "STATE_TRANSITIONS": "Status",
+      "INITIATOR": "Initiator"
     },
     "CONFIGURATION": {
       "HEADER": "Configuration",

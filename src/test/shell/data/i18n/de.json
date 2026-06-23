@@ -661,7 +661,8 @@
     "DEPLOYMENT_HISTORY": {
       "HEADER": "Installationshistorie",
       "TIMESTAMP": "Zeitstempel",
-      "STATE_TRANSITIONS": "Statuswechsel"
+      "STATE_TRANSITIONS": "Statuswechsel",
+      "INITIATOR": "Initiator"
     },
     "CONFIGURATION": {
       "HEADER": "Konfiguration",

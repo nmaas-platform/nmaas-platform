@@ -662,7 +662,8 @@
     "DEPLOYMENT_HISTORY": {
       "HEADER": "Historia uruchomienia aplikacji",
       "TIMESTAMP": "Timestamp",
-      "STATE_TRANSITIONS": "Przejścia stanu"
+      "STATE_TRANSITIONS": "Przejścia stanu",
+      "INITIATOR": "Użytkownik"
     },
     "CONFIGURATION": {
       "HEADER": "Konfiguracja",
