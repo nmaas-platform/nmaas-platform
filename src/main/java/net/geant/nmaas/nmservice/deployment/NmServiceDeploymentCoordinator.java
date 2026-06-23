@@ -1,6 +1,7 @@
 package net.geant.nmaas.nmservice.deployment;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import net.geant.nmaas.kubernetes.KubernetesClientSetupException;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
@@ -112,7 +113,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
         try {
             notifyStateChangeListeners(deploymentId, ENVIRONMENT_PREPARATION_INITIATED);
             orchestrator.prepareDeploymentEnvironment(deploymentId, configFileRepositoryRequired);
-            notifyStateChangeListeners(deploymentId, ENVIRONMENT_PREPARED);
+            notifyStateChangeListenersWithDelay(deploymentId, ENVIRONMENT_PREPARED, 1000);
         } catch (CouldNotPrepareEnvironmentException
                  | ContainerOrchestratorInternalErrorException e) {
             notifyStateChangeListeners(deploymentId, ENVIRONMENT_PREPARATION_FAILED, e.getMessage());
@@ -330,6 +331,12 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
 
     private void notifyStateChangeListeners(Identifier deploymentId, ServiceDeploymentState state, String errorMessage, String userInitiator) {
         applicationEventPublisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, state, errorMessage, userInitiator));
+    }
+
+    @SneakyThrows
+    private void notifyStateChangeListenersWithDelay(Identifier deploymentId, ServiceDeploymentState state, int delayInMilis) {
+        Thread.sleep(delayInMilis);
+        notifyStateChangeListeners(deploymentId, state);
     }
 
 }

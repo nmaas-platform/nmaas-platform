@@ -52,7 +52,12 @@ public class AppDeploymentStateChangeManager {
     @Loggable(LogLevel.INFO)
     public synchronized ApplicationEvent notifyStateChange(NmServiceDeploymentStateChangeEvent event) {
         try {
-            AppDeploymentState newDeploymentState = deploymentRepositoryManager.loadState(event.getDeploymentId()).nextState(event.getState());
+            AppDeploymentState currentDeploymentState = deploymentRepositoryManager.loadState(event.getDeploymentId());
+            AppDeploymentState newDeploymentState = currentDeploymentState.nextState(event.getState());
+            if (newDeploymentState == currentDeploymentState) {
+                log.info("Ignoring duplicate deployment state notification {} for deployment {}", event.getState(), event.getDeploymentId());
+                return null;
+            }
             User user = userService.findByUsername(event.getUserInitiator()).orElse(null);
             if (user != null) {
                 deploymentRepositoryManager.updateState(event.getDeploymentId(), newDeploymentState, user);

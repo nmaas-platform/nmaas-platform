@@ -80,6 +80,7 @@ public enum AppDeploymentState {
         @Override
         public AppDeploymentState nextState(ServiceDeploymentState state) {
             return switch (state) {
+                case ENVIRONMENT_PREPARATION_INITIATED -> DEPLOYMENT_ENVIRONMENT_PREPARED;
                 case CONFIGURED -> APPLICATION_CONFIGURED;
                 case READY_FOR_DEPLOYMENT -> MANAGEMENT_VPN_CONFIGURED;
                 default -> nextStateForNotMatchingNmServiceDeploymentState(this, state);

@@ -8,6 +8,7 @@ import net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState;
 import net.geant.nmaas.notifications.NotificationEvent;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentHistory;
+import net.geant.nmaas.orchestration.entities.AppDeploymentState;
 import net.geant.nmaas.orchestration.events.app.AppDeployServiceActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppPrepareEnvironmentActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppRemoveDcnIfRequiredEvent;
@@ -95,6 +96,19 @@ class AppDeploymentStateChangeManagerTest {
         assertThat(newEvent, is(nullValue()));
         verify(deployments, times(1)).loadState(deploymentId);
         verify(deployments, times(1)).updateState(deploymentId, APPLICATION_CONFIGURATION_IN_PROGRESS);
+    }
+
+    @Test
+    void shouldIgnoreLateEnvironmentPreparationInitiatedEventWhenEnvironmentIsAlreadyPrepared() {
+        when(deployments.loadState(deploymentId)).thenReturn(DEPLOYMENT_ENVIRONMENT_PREPARED);
+        when(event.getState()).thenReturn(ServiceDeploymentState.ENVIRONMENT_PREPARATION_INITIATED);
+
+        ApplicationEvent newEvent = manager.notifyStateChange(event);
+
+        assertThat(newEvent, is(nullValue()));
+        verify(deployments, never()).updateState(any(Identifier.class), any(AppDeploymentState.class));
+        verify(deployments, never()).updateErrorMessage(any(Identifier.class), anyString());
+        verify(publisher, never()).publishEvent(any());
     }
 
     @Test
