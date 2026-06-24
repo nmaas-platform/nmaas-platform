@@ -32,6 +32,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -193,6 +194,30 @@ public class ResourcesLimitControllerIntTest extends BaseControllerTestSetup {
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ROLE_GROUP_MANAGER))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(new ResourcesLimitUpdateDto(1L, 300, 150, 15, 25)))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void shouldAllowGroupManagerToDeleteGroupLimit() throws Exception {
+        ResourcesLimit groupLimit = new ResourcesLimit(1L, 100, 200, 5, 10,
+                ResourcesLimitType.DOMAIN_GROUP, new DomainGroup(100L), null);
+        when(resourcesLimitRepository.findById(1L)).thenReturn(Optional.of(groupLimit));
+
+        mvc.perform(delete("/api/v1/resources-limits/1")
+                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ROLE_GROUP_MANAGER))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void shouldRejectGroupManagerDeletingDomainLimit() throws Exception {
+        ResourcesLimit domainLimit = new ResourcesLimit(1L, 100, 200, 5, 10,
+                ResourcesLimitType.DOMAIN, null, new Domain(100L));
+        when(resourcesLimitRepository.findById(1L)).thenReturn(Optional.of(domainLimit));
+
+        mvc.perform(delete("/api/v1/resources-limits/1")
+                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ROLE_GROUP_MANAGER))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());
     }

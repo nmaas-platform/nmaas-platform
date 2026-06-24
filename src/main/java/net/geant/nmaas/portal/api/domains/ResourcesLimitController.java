@@ -65,7 +65,7 @@ public class ResourcesLimitController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || (hasRole('ROLE_GROUP_MANAGER') && @resourcesLimitAccessPolicy.isGroupResourcesLimit(#id))")
     @Transactional
     public void deleteResourcesLimit(@PathVariable Long id) {
         resourcesLimitService.delete(id);
