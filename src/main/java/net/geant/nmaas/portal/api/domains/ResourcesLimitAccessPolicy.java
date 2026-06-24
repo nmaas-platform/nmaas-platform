@@ -11,7 +11,8 @@ public class ResourcesLimitAccessPolicy {
 
     private final ResourcesLimitService resourcesLimitService;
 
-    public boolean isGroupResourcesLimit(Long id) {
-        return ResourcesLimitTypeDto.DOMAIN_GROUP.equals(resourcesLimitService.getResourcesLimit(id).limitType());
+    public boolean isDomainOrGroupResourcesLimit(Long id) {
+        ResourcesLimitTypeDto limitType = resourcesLimitService.getResourcesLimit(id).limitType();
+        return ResourcesLimitTypeDto.DOMAIN.equals(limitType) || ResourcesLimitTypeDto.DOMAIN_GROUP.equals(limitType);
     }
 }

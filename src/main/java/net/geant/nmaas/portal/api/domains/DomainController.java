@@ -177,7 +177,7 @@ public class DomainController extends BaseController {
 
     @PostMapping
     @Transactional
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
     public Id createDomain(@RequestBody DomainRequest domainRequest) {
         if (domainService.existsDomain(domainRequest.getName())) {
             throw new ProcessingException("Domain already exists.");
@@ -203,7 +203,7 @@ public class DomainController extends BaseController {
 
     @PutMapping("/{domainId}")
     @Transactional
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
     public Id updateDomain(@PathVariable Long domainId, @RequestBody(required = true) DomainDto domainUpdate) {
         if (!domainId.equals(domainUpdate.getId())) {
             throw new ProcessingException(UNABLE_TO_CHANGE_DOMAIN_ID);
@@ -276,7 +276,7 @@ public class DomainController extends BaseController {
 
     @DeleteMapping("/{domainId}")
     @Transactional
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
     public void deleteDomain(@PathVariable Long domainId, @RequestParam(required = false, name = "softRemove") Boolean softRemove) throws InterruptedException {
         try {
             applicationInstanceService.deleteAllByDomain(domainId);

@@ -46,7 +46,7 @@ public class ResourcesLimitController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || (hasRole('ROLE_GROUP_MANAGER') && #resourcesLimit.limitType()?.name() == 'DOMAIN_GROUP')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || (hasRole('ROLE_GROUP_MANAGER') && (#resourcesLimit.limitType()?.name() == 'DOMAIN' || #resourcesLimit.limitType()?.name() == 'DOMAIN_GROUP'))")
     @Transactional
     public ResponseEntity<Id> createResourcesLimit(@RequestBody @Valid ResourcesLimitDto resourcesLimit) {
         resourcesLimit = resourcesLimitService.create(resourcesLimit);
@@ -54,7 +54,7 @@ public class ResourcesLimitController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || (hasRole('ROLE_GROUP_MANAGER') && @resourcesLimitAccessPolicy.isGroupResourcesLimit(#id))")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || (hasRole('ROLE_GROUP_MANAGER') && @resourcesLimitAccessPolicy.isDomainOrGroupResourcesLimit(#id))")
     @Transactional
     public ResponseEntity<Id> updateResourcesLimit(@PathVariable Long id, @RequestBody @Valid ResourcesLimitUpdateDto resourcesLimit) {
         if (!id.equals(resourcesLimit.id())) {
@@ -65,7 +65,7 @@ public class ResourcesLimitController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || (hasRole('ROLE_GROUP_MANAGER') && @resourcesLimitAccessPolicy.isGroupResourcesLimit(#id))")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || (hasRole('ROLE_GROUP_MANAGER') && @resourcesLimitAccessPolicy.isDomainOrGroupResourcesLimit(#id))")
     @Transactional
     public void deleteResourcesLimit(@PathVariable Long id) {
         resourcesLimitService.delete(id);

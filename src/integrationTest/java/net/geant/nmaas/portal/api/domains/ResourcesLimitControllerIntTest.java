@@ -161,13 +161,21 @@ public class ResourcesLimitControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    void shouldRejectGroupManagerCreatingDomainLimit() throws Exception {
+    void shouldAllowGroupManagerToCreateDomainLimit() throws Exception {
+        when(resourcesLimitRepository.existsByDomain_Id(100L)).thenReturn(false);
+        when(resourcesLimitRepository.save(org.mockito.ArgumentMatchers.any(ResourcesLimit.class)))
+                .thenAnswer(invocation -> {
+                    ResourcesLimit limit = invocation.getArgument(0);
+                    limit.setId(1L);
+                    return limit;
+                });
+
         mvc.perform(post("/api/v1/resources-limits")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ROLE_GROUP_MANAGER))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(getDefaultDomainLimitRequest()))
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -185,7 +193,7 @@ public class ResourcesLimitControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    void shouldRejectGroupManagerUpdatingDomainLimit() throws Exception {
+    void shouldAllowGroupManagerToUpdateDomainLimit() throws Exception {
         ResourcesLimit domainLimit = new ResourcesLimit(1L, 100, 200, 5, 10,
                 ResourcesLimitType.DOMAIN, null, new Domain(100L));
         when(resourcesLimitRepository.findById(1L)).thenReturn(Optional.of(domainLimit));
@@ -195,7 +203,7 @@ public class ResourcesLimitControllerIntTest extends BaseControllerTestSetup {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(new ResourcesLimitUpdateDto(1L, 300, 150, 15, 25)))
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -211,7 +219,7 @@ public class ResourcesLimitControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    void shouldRejectGroupManagerDeletingDomainLimit() throws Exception {
+    void shouldAllowGroupManagerToDeleteDomainLimit() throws Exception {
         ResourcesLimit domainLimit = new ResourcesLimit(1L, 100, 200, 5, 10,
                 ResourcesLimitType.DOMAIN, null, new Domain(100L));
         when(resourcesLimitRepository.findById(1L)).thenReturn(Optional.of(domainLimit));
@@ -219,7 +227,7 @@ public class ResourcesLimitControllerIntTest extends BaseControllerTestSetup {
         mvc.perform(delete("/api/v1/resources-limits/1")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ROLE_GROUP_MANAGER))
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isOk());
     }
 
     private ResourcesLimitDto getDefaultGroupLimitRequest() {

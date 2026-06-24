@@ -112,6 +112,20 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
+    void shouldCreateDomainAsGroupManager() throws Exception {
+        when(domainService.existsDomain(TEST_DOMAIN_NAME)).thenReturn(false);
+        when(domainService.createDomain(any())).thenReturn(getDefaultDomain());
+        MvcResult result = mvc.perform(post("/api/v1/domains")
+                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ROLE_GROUP_MANAGER))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(getDefaultDomainRequest("test")))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+        assertTrue(StringUtils.isNotEmpty(result.getResponse().getContentAsString()));
+    }
+
+    @Test
     void shouldNotCreateDomainWhenNameIsTaken() throws Exception {
         when(domainService.existsDomain("GLOBAL")).thenReturn(true);
         DomainRequest domainRequest = getDefaultDomainRequest("test");
@@ -134,6 +148,21 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
         request.setApplicationStatePerDomain(new ArrayList<>());
         MvcResult result = mvc.perform(put("/api/v1/domains/" + request.getId())
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(modelMapper.map(request, DomainDto.class)))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+        assertTrue(StringUtils.isNotEmpty(result.getResponse().getContentAsString()));
+    }
+
+    @Test
+    void shouldUpdateDomainAsGroupManager() throws Exception {
+        Domain request = getDefaultDomain();
+        request.getDomainTechDetails().setKubernetesNamespace("namespace");
+        request.setApplicationStatePerDomain(new ArrayList<>());
+        MvcResult result = mvc.perform(put("/api/v1/domains/" + request.getId())
+                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ROLE_GROUP_MANAGER))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(modelMapper.map(request, DomainDto.class)))
                         .accept(MediaType.APPLICATION_JSON))
@@ -274,6 +303,17 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
         assertDoesNotThrow(() -> {
             mvc.perform(delete("/api/v1/domains/" + TEST_DOMAIN_ID)
                             .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                            .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk());
+        });
+    }
+
+    @Test
+    void shouldDeleteDomainAsGroupManager() {
+        when(domainService.removeDomain(TEST_DOMAIN_ID)).thenReturn(true);
+        assertDoesNotThrow(() -> {
+            mvc.perform(delete("/api/v1/domains/" + TEST_DOMAIN_ID)
+                            .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ROLE_GROUP_MANAGER))
                             .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk());
         });
