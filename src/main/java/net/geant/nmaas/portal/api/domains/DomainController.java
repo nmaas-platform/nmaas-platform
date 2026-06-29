@@ -167,6 +167,12 @@ public class DomainController extends BaseController {
                     .anyMatch(role -> List.of(Role.ROLE_SYSTEM_ADMIN, Role.ROLE_OPERATOR).contains(role.getRole()))) {
                 return domainService.getDomainsBase(searchValue);
             }
+            if (user.getRoles().stream().anyMatch(role -> role.getRole() == Role.ROLE_GROUP_MANAGER)) {
+                return domainService.getDomains(searchValue).stream()
+                        .filter(Domain::isActive)
+                        .map(d -> modelMapper.map(d, DomainBaseDto.class))
+                        .toList();
+            }
             return domainService.getUserDomains(user.getId(), searchValue).stream()
                     .map(d -> modelMapper.map(d, DomainBaseDto.class))
                     .toList();

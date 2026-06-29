@@ -395,6 +395,25 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
+    void shouldGetAllActiveDomainsAsMyDomainsForGroupManager() throws Exception {
+        Domain inactiveDomain = new Domain(20L, "inactive", "inactive", false);
+        when(userService.findByUsername(any())).thenReturn(Optional.of(UsersHelper.ROLE_GROUP_MANAGER));
+        when(domainService.getDomains((String) null)).thenReturn(List.of(getDefaultDomain(), inactiveDomain, getGlobalDomain()));
+
+        MvcResult result = mvc.perform(get("/api/v1/domains/my")
+                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ROLE_GROUP_MANAGER))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String response = result.getResponse().getContentAsString();
+        assertTrue(StringUtils.isNotEmpty(response));
+        assertTrue(response.contains(TEST_DOMAIN_NAME));
+        assertTrue(response.contains("GLOBAL"));
+        assertTrue(!response.contains("inactive"));
+    }
+
+    @Test
     void shouldGetOneDomainGroupAsGroupManager() throws Exception {
         when(principalMock.getName()).thenReturn("admin");
         User user = new User("admin");

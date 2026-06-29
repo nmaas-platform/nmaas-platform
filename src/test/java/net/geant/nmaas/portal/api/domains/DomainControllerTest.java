@@ -217,6 +217,29 @@ class DomainControllerTest {
     }
 
     @Test
+    void shouldGetMyDomainsFromActiveDomainsForGroupManager() {
+        Principal principal = () -> "group-manager";
+        User user = new User("group-manager", true);
+        Domain global = new Domain(1L, "global", "global", true);
+        user.setRoles(List.of(new UserRole(user, global, Role.ROLE_GROUP_MANAGER)));
+        Domain activeDomain = new Domain(2L, "active", "active", true);
+        Domain inactiveDomain = new Domain(3L, "inactive", "inactive", false);
+        DomainBaseDto activeBase = new DomainBaseDto();
+
+        when(userService.findByUsername("group-manager")).thenReturn(Optional.of(user));
+        when(domainService.getDomains("search")).thenReturn(List.of(activeDomain, inactiveDomain));
+        when(modelMapper.map(activeDomain, DomainBaseDto.class)).thenReturn(activeBase);
+
+        List<DomainBaseDto> result = controller.getMyDomains(principal, "search");
+
+        assertEquals(1, result.size());
+        assertEquals(activeBase, result.getFirst());
+        verify(domainService).getDomains("search");
+        verify(domainService, times(0)).getDomainsBase("search");
+        verify(domainService, times(0)).getUserDomains(any(), any());
+    }
+
+    @Test
     void shouldCreateDomainAndPublishEventsWhenDcnConfigured() {
         DomainRequest request = mock(DomainRequest.class);
         when(request.getName()).thenReturn("new-domain");
