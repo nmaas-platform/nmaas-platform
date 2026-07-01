@@ -1420,6 +1420,7 @@
     "NAME": "Name",
     "TARGET_URL": "Target URL",
     "TYPE": "Webhook event",
+    "TEMPLATE": "Webhook template",
     "TOKEN": "Token value",
     "AUTH": "Authorization header",
     "DOMAIN": "Domain",
