@@ -2,8 +2,8 @@ package net.geant.nmaas.portal.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.api.dto.applications.AppConfigurationDto;
+import net.geant.nmaas.api.dto.applications.AppInstanceDto;
 import net.geant.nmaas.api.dto.applications.AppInstanceState;
-import net.geant.nmaas.api.dto.applications.AppInstanceView;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.orchestration.Identifier;
@@ -294,7 +294,7 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
     @Override
     @Transactional
     @Loggable(LogLevel.DEBUG)
-    public AppInstanceView.AppInstanceUpgradeInfo obtainUpgradeInfo(Long appInstanceId) {
+    public AppInstanceDto.AppInstanceUpgradeInfo obtainUpgradeInfo(Long appInstanceId) {
         Optional<AppInstance> appInstance = appInstanceRepository.findById(appInstanceId);
         if (appInstance.isPresent()) {
             String currentHelmChartVersion = appInstance.get().getApplication().getAppDeploymentSpec().getKubernetesTemplate().getChart().getVersion();
@@ -303,7 +303,7 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
             if (nextVersionId.isPresent()) {
                 Optional<Application> nextApplication = applicationService.findApplication(nextVersionId.get());
                 if (nextApplication.isPresent()) {
-                    return new AppInstanceView.AppInstanceUpgradeInfo(
+                    return new AppInstanceDto.AppInstanceUpgradeInfo(
                             nextVersionId.get(),
                             nextApplication.get().getVersion(),
                             nextApplication.get().getAppDeploymentSpec().getKubernetesTemplate().getChart().getVersion());

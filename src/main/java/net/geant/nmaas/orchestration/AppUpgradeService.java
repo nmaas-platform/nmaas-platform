@@ -11,7 +11,7 @@ import net.geant.nmaas.orchestration.events.app.AppUpgradeActionEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidApplicationIdException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.orchestration.repositories.AppUpgradeHistoryRepository;
-import net.geant.nmaas.api.dto.applications.AppInstanceView;
+import net.geant.nmaas.api.dto.applications.AppInstanceDto;
 import net.geant.nmaas.portal.events.ApplicationActivatedEvent;
 import net.geant.nmaas.portal.persistence.entity.AppInstance;
 import net.geant.nmaas.portal.persistence.entity.Application;
@@ -59,7 +59,7 @@ public class AppUpgradeService {
                 .filter(instance -> applicationInstanceService.checkUpgradePossible(instance.getId()))
                 .forEach(instance -> {
                     log.debug("Processing application instance: {}/{}", instance.getId(), instance.getInternalId());
-                    AppInstanceView.AppInstanceUpgradeInfo upgradeInfo = applicationInstanceService.obtainUpgradeInfo(instance.getId());
+                    AppInstanceDto.AppInstanceUpgradeInfo upgradeInfo = applicationInstanceService.obtainUpgradeInfo(instance.getId());
                     if (Objects.nonNull(upgradeInfo)) {
                         logUpgradeTriggerDetails(instance);
                         eventPublisher.publishEvent(getAppUpgradeActionEvent(instance, upgradeInfo));
@@ -75,7 +75,7 @@ public class AppUpgradeService {
                 instance.getInternalId().toString());
     }
 
-    private AppUpgradeActionEvent getAppUpgradeActionEvent(AppInstance instance, AppInstanceView.AppInstanceUpgradeInfo upgradeInfo) {
+    private AppUpgradeActionEvent getAppUpgradeActionEvent(AppInstance instance, AppInstanceDto.AppInstanceUpgradeInfo upgradeInfo) {
         return new AppUpgradeActionEvent(this, instance.getInternalId(), Identifier.newInstance(upgradeInfo.getApplicationId()), AppUpgradeMode.AUTO);
     }
 
@@ -95,7 +95,7 @@ public class AppUpgradeService {
                 .filter(instance -> applicationInstanceService.checkUpgradePossible(instance.getId(), event.getVersion()))
                 .forEach(instance -> {
                     log.debug("Processing application instance: {}/{}", instance.getId(), instance.getInternalId());
-                    AppInstanceView.AppInstanceUpgradeInfo upgradeInfo = applicationInstanceService.obtainUpgradeInfo(instance.getId());
+                    AppInstanceDto.AppInstanceUpgradeInfo upgradeInfo = applicationInstanceService.obtainUpgradeInfo(instance.getId());
                     if (Objects.nonNull(upgradeInfo)) {
                         MailAttributes attributes = MailAttributes.builder()
                                 .otherAttributes(Map.of(

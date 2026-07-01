@@ -1,8 +1,8 @@
 package net.geant.nmaas.portal.api.apps;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import net.geant.nmaas.api.dto.applications.AppInstanceCompleteDto;
 import net.geant.nmaas.api.dto.applications.AppInstanceRequest;
-import net.geant.nmaas.api.dto.applications.AppInstanceViewExtendedDto;
 import net.geant.nmaas.api.dto.kubernetes.RemoteKClusterDto;
 import net.geant.nmaas.api.dto.users.UserBaseDto;
 import net.geant.nmaas.api.dto.users.UserInfoDto;
@@ -466,7 +466,7 @@ class AppInstanceControllerMockIntTest extends BaseControllerTestSetup {
                         .header("Authorization", "Bearer " + getValidTokenForUser(user)))
                 .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
 
-        Set<UserInfoDto> retrieved = objectMapper.readValue(data, AppInstanceViewExtendedDto.class).getMembers();
+        Set<UserInfoDto> retrieved = objectMapper.readValue(data, AppInstanceCompleteDto.class).getMembers();
         assertEquals(1, retrieved.size());
     }
 
