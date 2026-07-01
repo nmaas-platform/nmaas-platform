@@ -4,11 +4,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.api.dto.applications.AppInstanceBase;
+import net.geant.nmaas.api.dto.applications.AppInstanceCompleteDto;
+import net.geant.nmaas.api.dto.applications.AppInstanceDto;
+import net.geant.nmaas.api.dto.applications.AppInstanceExtendedDto;
 import net.geant.nmaas.api.dto.applications.AppInstanceState;
 import net.geant.nmaas.api.dto.applications.AppInstanceStatus;
-import net.geant.nmaas.api.dto.applications.AppInstanceView;
-import net.geant.nmaas.api.dto.applications.AppInstanceViewExtended;
-import net.geant.nmaas.api.dto.applications.AppInstanceViewExtendedDto;
 import net.geant.nmaas.api.dto.applications.ApplicationBaseDto;
 import net.geant.nmaas.api.dto.applications.ConfigWizardTemplateDto;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
@@ -212,7 +212,7 @@ public class AppInstanceReadController extends AppBaseController {
     @GetMapping("/running/domain/{domainId}")
     @PreAuthorize("hasPermission(#domainId, 'domain', 'ANY')")
     @Transactional
-    public List<AppInstanceView> getRunningAppInstances(@PathVariable(value = "domainId") long domainId,
+    public List<AppInstanceDto> getRunningAppInstances(@PathVariable(value = "domainId") long domainId,
                                                         @NotNull Principal principal) {
         Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new InvalidDomainException("Domain not found"));
         return getAllRunningByDomain(domain);
@@ -221,7 +221,7 @@ public class AppInstanceReadController extends AppBaseController {
     @GetMapping(value = "/running/domain/{domainId}", params = {"page"})
     @PreAuthorize("hasPermission(#domainId, 'domain', 'ANY')")
     @Transactional
-    public Page<AppInstanceView> getRunningAppInstances(@PathVariable(value = "domainId") long domainId,
+    public Page<AppInstanceDto> getRunningAppInstances(@PathVariable(value = "domainId") long domainId,
                                                         @NotNull Principal principal,
                                                         Pageable pageable) {
         logPageable(pageable);
@@ -333,11 +333,11 @@ public class AppInstanceReadController extends AppBaseController {
     @GetMapping("/{appInstanceId}")
     @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'READ')")
     @Transactional
-    public AppInstanceViewExtendedDto getAppInstance(@PathVariable(value = "appInstanceId") Long appInstanceId,
+    public AppInstanceCompleteDto getAppInstance(@PathVariable(value = "appInstanceId") Long appInstanceId,
                                                      @NotNull Principal principal) {
         AppInstance appInstance = applicationInstanceService.find(appInstanceId)
                 .orElseThrow(() -> new MissingElementException("App instance not found."));
-        return new AppInstanceViewExtendedDto(mapAppInstanceExtended(appInstance));
+        return new AppInstanceCompleteDto(mapAppInstanceExtended(appInstance));
     }
 
     @GetMapping("/{appInstanceId}/state")
@@ -373,16 +373,16 @@ public class AppInstanceReadController extends AppBaseController {
         return appDeploymentMonitor.appDeploymentParameters(internalId);
     }
 
-    private List<AppInstanceView> getAllRunningByDomain(Domain domain) {
+    private List<AppInstanceDto> getAllRunningByDomain(Domain domain) {
         return applicationInstanceService.findAllByDomain(domain).stream()
                 .filter(this::isInstanceRunning)
                 .map(this::mapAppInstance)
                 .toList();
     }
 
-    private Page<AppInstanceView> getAllRunningByDomain(Domain domain, Pageable pageable) {
+    private Page<AppInstanceDto> getAllRunningByDomain(Domain domain, Pageable pageable) {
         Page<AppInstance> page = applicationInstanceService.findAllByDomain(domain, pageable);
-        List<AppInstanceView> filtered = page.getContent()
+        List<AppInstanceDto> filtered = page.getContent()
                 .stream()
                 .filter(this::isInstanceRunning)
                 .map(this::mapAppInstance)
@@ -453,22 +453,22 @@ public class AppInstanceReadController extends AppBaseController {
         return applicationInstanceService.find(appInstanceId).orElseThrow(() -> new MissingElementException("App instance not found."));
     }
 
-    private AppInstanceView mapAppInstance(AppInstance appInstance) {
+    private AppInstanceDto mapAppInstance(AppInstance appInstance) {
         if (appInstance == null) {
             return null;
         }
-        AppInstanceView ai = modelMapper.map(appInstance, AppInstanceView.class);
+        AppInstanceDto ai = modelMapper.map(appInstance, AppInstanceDto.class);
         return this.addAppInstanceProperties(ai, appInstance);
     }
 
-    private AppInstanceViewExtended mapAppInstanceExtended(AppInstance appInstance) {
+    private AppInstanceExtendedDto mapAppInstanceExtended(AppInstance appInstance) {
         if (appInstance == null) {
             return null;
         }
-        AppInstanceViewExtended ai = modelMapper.map(appInstance, AppInstanceViewExtended.class);
+        AppInstanceExtendedDto ai = modelMapper.map(appInstance, AppInstanceExtendedDto.class);
         ApplicationBase applicationBase = applicationBaseService.findByVersionId(appInstance.getApplication().getId());
         ai.getApplication().setApplicationBase(modelMapper.map(applicationBase, ApplicationBaseDto.class));
-        return (AppInstanceViewExtended) addAppInstanceProperties(ai, appInstance);
+        return (AppInstanceExtendedDto) addAppInstanceProperties(ai, appInstance);
     }
 
     private AppInstanceBase mapAppInstanceBase(AppInstance appInstance) {
@@ -500,7 +500,7 @@ public class AppInstanceReadController extends AppBaseController {
         return ai;
     }
 
-    private AppInstanceView addAppInstanceProperties(AppInstanceView ai, AppInstance appInstance) {
+    private AppInstanceDto addAppInstanceProperties(AppInstanceDto ai, AppInstance appInstance) {
         addAppInstanceBaseProperties(ai, appInstance);
 
         Identifier identifier = appInstance.getInternalId();

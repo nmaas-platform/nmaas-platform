@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.service.impl;
 
-import net.geant.nmaas.api.dto.applications.AppInstanceView;
+import net.geant.nmaas.api.dto.applications.AppInstanceDto;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesChart;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
@@ -589,7 +589,7 @@ class ApplicationInstanceServiceTest {
 
         assertTrue(applicationInstanceService.checkUpgradePossible(test1.getId()));
 
-        AppInstanceView.AppInstanceUpgradeInfo upgradeInfo = applicationInstanceService.obtainUpgradeInfo(test1.getId());
+        AppInstanceDto.AppInstanceUpgradeInfo upgradeInfo = applicationInstanceService.obtainUpgradeInfo(test1.getId());
         assertEquals(2L, upgradeInfo.getApplicationId());
         assertEquals("1.2.0", upgradeInfo.getApplicationVersion());
         assertEquals("1.1.0", upgradeInfo.getHelmChartVersion());

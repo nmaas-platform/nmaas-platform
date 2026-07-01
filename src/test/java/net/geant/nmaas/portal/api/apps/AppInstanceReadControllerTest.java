@@ -1,11 +1,11 @@
 package net.geant.nmaas.portal.api.apps;
 
 import net.geant.nmaas.api.dto.applications.AppInstanceBase;
+import net.geant.nmaas.api.dto.applications.AppInstanceCompleteDto;
+import net.geant.nmaas.api.dto.applications.AppInstanceDto;
+import net.geant.nmaas.api.dto.applications.AppInstanceExtendedDto;
 import net.geant.nmaas.api.dto.applications.AppInstanceState;
 import net.geant.nmaas.api.dto.applications.AppInstanceStatus;
-import net.geant.nmaas.api.dto.applications.AppInstanceView;
-import net.geant.nmaas.api.dto.applications.AppInstanceViewExtended;
-import net.geant.nmaas.api.dto.applications.AppInstanceViewExtendedDto;
 import net.geant.nmaas.api.dto.applications.ApplicationCompleteDto;
 import net.geant.nmaas.api.dto.domains.DomainBaseDto;
 import net.geant.nmaas.api.dto.users.UserBaseDto;
@@ -293,7 +293,7 @@ class AppInstanceReadControllerTest {
         when(principal.getName()).thenReturn(owner.getUsername());
         when(appDeploymentMonitor.state(any())).thenReturn(AppLifecycleState.APPLICATION_DEPLOYMENT_VERIFIED);
 
-        List<AppInstanceView> result = appInstanceReadController.getRunningAppInstances(domain1.getId(), principal);
+        List<AppInstanceDto> result = appInstanceReadController.getRunningAppInstances(domain1.getId(), principal);
 
         assertEquals(1, result.size());
         AppInstanceBase appInstanceView = result.getFirst();
@@ -321,7 +321,7 @@ class AppInstanceReadControllerTest {
         Principal principal = mock(Principal.class);
         when(principal.getName()).thenReturn(owner.getUsername());
 
-        AppInstanceViewExtendedDto appInstanceView = appInstanceReadController.getAppInstance(1L, principal);
+        AppInstanceCompleteDto appInstanceView = appInstanceReadController.getAppInstance(1L, principal);
 
         assertEquals(NAME, appInstanceView.appBaseName());
         assertEquals(IDENTIFIER_VALUE, appInstanceView.descriptiveDeploymentId());
@@ -335,19 +335,19 @@ class AppInstanceReadControllerTest {
     }
 
     @Test
-    void shouldConvertAppInstanceToAppInstanceViewWithApplicationIdAndDomainId() {
+    void shouldConvertAppInstanceToAppInstanceDtoWithApplicationIdAndDomainId() {
         ModelMapper modelMapper = new ModelMapper();
         AppInstance appInstance = new AppInstance(application, NAME, domain1, owner, false);
-        AppInstanceView appInstanceView = modelMapper.map(appInstance, AppInstanceView.class);
+        AppInstanceDto appInstanceView = modelMapper.map(appInstance, AppInstanceDto.class);
         assertEquals(application.getId(), appInstanceView.getApplicationId());
         assertEquals(domain1.getId(), appInstanceView.getDomainId());
     }
 
     @Test
-    void shouldConvertAppInstanceToAppInstanceViewExtendedWithApplicationViewAndDomainView() {
+    void shouldConvertAppInstanceToAppInstanceExtendedDtoWithApplicationViewAndDomainView() {
         ModelMapper modelMapper = new ModelMapper();
         AppInstance appInstance = new AppInstance(application, NAME, domain1, owner, false);
-        AppInstanceViewExtended appInstanceView = modelMapper.map(appInstance, AppInstanceViewExtended.class);
+        AppInstanceExtendedDto appInstanceView = modelMapper.map(appInstance, AppInstanceExtendedDto.class);
 
         assertEquals(application.getId(), appInstanceView.getApplicationId());
         assertEquals(domain1.getId(), appInstanceView.getDomainId());

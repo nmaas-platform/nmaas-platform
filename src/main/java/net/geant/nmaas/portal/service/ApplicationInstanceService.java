@@ -2,7 +2,7 @@ package net.geant.nmaas.portal.service;
 
 import net.geant.nmaas.api.dto.applications.AppConfigurationDto;
 import net.geant.nmaas.api.dto.applications.AppInstanceState;
-import net.geant.nmaas.api.dto.applications.AppInstanceView;
+import net.geant.nmaas.api.dto.applications.AppInstanceDto;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.portal.persistence.entity.AppInstance;
 import net.geant.nmaas.portal.persistence.entity.Application;
@@ -68,7 +68,7 @@ public interface ApplicationInstanceService {
 
     boolean checkUpgradePossible(Long appInstanceId, String targetVersion);
 
-    AppInstanceView.AppInstanceUpgradeInfo obtainUpgradeInfo(Long appInstanceId);
+    AppInstanceDto.AppInstanceUpgradeInfo obtainUpgradeInfo(Long appInstanceId);
 
     boolean isNameAvailableInDomain(String name, Domain domain);
 

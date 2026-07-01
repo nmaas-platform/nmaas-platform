@@ -9,7 +9,7 @@ import net.geant.nmaas.orchestration.entities.AppDeploymentState;
 import net.geant.nmaas.orchestration.entities.AppUpgradeHistory;
 import net.geant.nmaas.orchestration.events.app.AppUpgradeActionEvent;
 import net.geant.nmaas.orchestration.repositories.AppUpgradeHistoryRepository;
-import net.geant.nmaas.api.dto.applications.AppInstanceView;
+import net.geant.nmaas.api.dto.applications.AppInstanceDto;
 import net.geant.nmaas.portal.events.ApplicationActivatedEvent;
 import net.geant.nmaas.portal.persistence.entity.AppInstance;
 import net.geant.nmaas.portal.persistence.entity.Application;
@@ -99,8 +99,8 @@ class AppUpgradeServiceTest {
         when(applicationInstanceService.checkUpgradePossible(APPINSTANCE_ID2)).thenReturn(Boolean.TRUE);
         when(applicationInstanceService.checkUpgradePossible(APPINSTANCE_ID2, "newappversion1")).thenReturn(Boolean.TRUE);
         when(applicationInstanceService.checkUpgradePossible(APPINSTANCE_ID3)).thenReturn(Boolean.FALSE);
-        when(applicationInstanceService.obtainUpgradeInfo(APP_INSTANCE1.getId())).thenReturn(new AppInstanceView.AppInstanceUpgradeInfo(APPLICATION_ID3, "appversion3", ""));
-        when(applicationInstanceService.obtainUpgradeInfo(APP_INSTANCE2.getId())).thenReturn(new AppInstanceView.AppInstanceUpgradeInfo(APPLICATION_ID3, "appversion3", ""));
+        when(applicationInstanceService.obtainUpgradeInfo(APP_INSTANCE1.getId())).thenReturn(new AppInstanceDto.AppInstanceUpgradeInfo(APPLICATION_ID3, "appversion3", ""));
+        when(applicationInstanceService.obtainUpgradeInfo(APP_INSTANCE2.getId())).thenReturn(new AppInstanceDto.AppInstanceUpgradeInfo(APPLICATION_ID3, "appversion3", ""));
         when(applicationService.findApplication(APPLICATION_ID1)).thenReturn(Optional.of(APPLICATION1));
         when(applicationService.findApplication(APPLICATION_ID2)).thenReturn(Optional.of(APPLICATION2));
     }
