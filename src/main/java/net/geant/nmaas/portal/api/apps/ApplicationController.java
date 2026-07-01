@@ -2,16 +2,11 @@ package net.geant.nmaas.portal.api.apps;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.api.dto.Id;
 import net.geant.nmaas.api.dto.applications.AppInstanceState;
-import net.geant.nmaas.api.dto.applications.AppRateDto;
 import net.geant.nmaas.api.dto.applications.ApplicationBaseDto;
-import net.geant.nmaas.api.dto.applications.ApplicationBaseInfoDto;
+import net.geant.nmaas.api.dto.applications.ApplicationCompleteDto;
 import net.geant.nmaas.api.dto.applications.ApplicationDto;
 import net.geant.nmaas.api.dto.applications.ApplicationStateChangeRequest;
 import net.geant.nmaas.api.dto.applications.ApplicationStateDto;
@@ -20,20 +15,16 @@ import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
 import net.geant.nmaas.notifications.templates.MailType;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
-import net.geant.nmaas.portal.api.exceptions.PortalException;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
 import net.geant.nmaas.portal.persistence.entity.Application;
 import net.geant.nmaas.portal.persistence.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistence.entity.ApplicationState;
 import net.geant.nmaas.portal.persistence.entity.ApplicationVersion;
-import net.geant.nmaas.portal.persistence.entity.Role;
 import net.geant.nmaas.portal.persistence.entity.User;
-import net.geant.nmaas.portal.persistence.repositories.RatingRepository;
 import net.geant.nmaas.portal.service.ApplicationBaseService;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import net.geant.nmaas.portal.service.ApplicationService;
-import net.geant.nmaas.portal.service.ApplicationSubscriptionService;
 import net.geant.nmaas.portal.service.UserService;
 import net.geant.nmaas.portal.service.impl.ApplicationServiceImpl;
 import org.modelmapper.ModelMapper;
@@ -54,13 +45,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/${nmaas.api.version:v1}/apps")
@@ -68,135 +57,16 @@ import java.util.stream.Collectors;
 @Tag(name = "Applications", description = "Operations related to applications")
 public class ApplicationController extends AppBaseController {
 
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Getter
-    @Setter
-    public static class ApplicationCompleteView {
-        @Valid
-        private ApplicationBaseDto applicationBase;
-        @Valid
-        private ApplicationDto application;
-    }
-
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Getter
-    @Setter
-    public static class ApplicationDtoVersionList {
-        private ApplicationBaseDto applicationBase;
-        private List<ApplicationDto> applications;
-    }
-
     private final ApplicationEventPublisher eventPublisher;
-    private final RatingRepository ratingRepository;
     private final ApplicationInstanceService applicationInstanceService;
-    private final ApplicationSubscriptionService applicationSubscriptionService;
 
     @Autowired
     public ApplicationController(ModelMapper modelMapper, ApplicationService applicationService, ApplicationBaseService applicationBaseService,
-                                 UserService userService, ApplicationEventPublisher eventPublisher, RatingRepository ratingRepository,
-                                 ApplicationInstanceService applicationInstanceService, ApplicationSubscriptionService applicationSubscriptionService) {
+                                 UserService userService, ApplicationEventPublisher eventPublisher,
+                                 ApplicationInstanceService applicationInstanceService) {
         super(modelMapper, userService, applicationService, applicationBaseService);
         this.eventPublisher = eventPublisher;
-        this.ratingRepository = ratingRepository;
         this.applicationInstanceService = applicationInstanceService;
-        this.applicationSubscriptionService = applicationSubscriptionService;
-    }
-
-    /*
-     * Application Base Part
-     */
-
-    @GetMapping("/base")
-    @Transactional
-    public List<ApplicationBaseInfoDto> getAllActiveApplicationBase() {
-        return applicationBaseService.findAllActiveAppsSmall();
-    }
-
-    @GetMapping("/base/all")
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
-    @Transactional
-    public List<ApplicationBaseDto> getAllApplicationBaseBasedOnRole(Principal principal) {
-        // user with Tool Manager role should only see applications he owns
-        boolean isSystemAdmin = this.getUser(principal.getName()).getRoles().stream()
-                .anyMatch(userRole -> userRole.getRole().equals(Role.ROLE_SYSTEM_ADMIN));
-
-        return applicationBaseService.findAll().stream()
-                // system admin should see all the applications
-                .filter(app -> isSystemAdmin || app.getOwner().equals(principal.getName()))
-                .map(app -> modelMapper.map(app, ApplicationBaseDto.class))
-                .map(this::setAppRating)
-                .toList();
-    }
-
-    private ApplicationBaseDto setAppRating(ApplicationBaseDto baseView) {
-        Integer[] rating = ratingRepository.getApplicationRating(baseView.getId());
-        baseView.setRate(createAppRateView(rating));
-        return baseView;
-    }
-
-    private ApplicationBaseInfoDto setAppRating(ApplicationBaseInfoDto baseView) {
-        Integer[] rating = ratingRepository.getApplicationRating(baseView.getId());
-        baseView.setRate(createAppRateView(rating));
-        return baseView;
-    }
-
-    private static AppRateDto createAppRateView(Integer[] rating) {
-        return new AppRateDto(
-                Arrays.stream(rating).mapToInt(Integer::intValue).average().orElse(0.0),
-                Arrays.stream(rating).collect(Collectors.groupingBy(s -> s, Collectors.counting()))
-        );
-    }
-
-    @GetMapping(value = "/base/{id}")
-    @Transactional
-    public ApplicationBaseDto getApplicationBase(@PathVariable Long id) {
-        ApplicationBaseDto app = modelMapper.map(applicationBaseService.getBaseApp(id), ApplicationBaseDto.class);
-        return this.setAppRating(app);
-    }
-
-    @PatchMapping(value = "/base")
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
-    @Transactional
-    public void updateApplicationBase(@RequestBody ApplicationBaseDto baseView, Principal principal) {
-        // only system admin and owner can update application base
-        this.applicationBaseOwnerCheck(baseView.getName(), principal);
-        applicationBaseService.update(modelMapper.map(baseView, ApplicationBase.class));
-    }
-
-    @PatchMapping(value = "/base/{id}/owner/{owner}")
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
-    @Transactional
-    public void updateApplicationBaseOwner(@PathVariable Long id, @PathVariable String owner, Principal principal) {
-        log.info("Updating owner of application {} to {}", id, owner);
-        this.applicationBaseOwnerCheck(id, principal);
-        applicationBaseService.updateOwner(id, owner);
-    }
-
-    @DeleteMapping(value = "/base/{id}")
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
-    @Transactional
-    public void deleteApplicationBase(@PathVariable Long id, Principal principal) {
-        ApplicationBase base = applicationBaseService.getBaseApp(id);
-        // only system admin and owner can update application base
-        this.applicationBaseOwnerCheck(base.getName(), principal);
-        for (ApplicationVersion appVersion : base.getVersions()) {
-            Application app = getApp(appVersion.getAppVersionId());
-            if (app.getState() != ApplicationState.DELETED) {
-                throw new ProcessingException("Can't delete " + base.getName() + " application base since version " + app.getVersion() + " is not deleted");
-            }
-        }
-        applicationSubscriptionService.unsubscribeAll(base);
-        applicationBaseService.deleteAppBase(base);
-    }
-
-    @GetMapping(value = "/base/name/{name}")
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
-    @Transactional
-    public ApplicationBaseDto getApplicationBase(@PathVariable String name) {
-        ApplicationBaseDto app = modelMapper.map(applicationBaseService.findByName(name), ApplicationBaseDto.class);
-        return this.setAppRating(app);
     }
 
     /*
@@ -206,7 +76,7 @@ public class ApplicationController extends AppBaseController {
     @PostMapping
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
     @Transactional
-    public Id addApplication(@RequestBody @Valid ApplicationController.ApplicationCompleteView request, Principal principal) {
+    public Id addApplication(@RequestBody @Valid ApplicationCompleteDto request, Principal principal) {
         ApplicationBaseDto creationRequest = request.getApplicationBase();
         creationRequest.setOwner(principal.getName());
         // create new application base
@@ -220,10 +90,10 @@ public class ApplicationController extends AppBaseController {
     @GetMapping(value = "/{name}/latest")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
     @Transactional
-    public ApplicationCompleteView getLatestAppVersion(@PathVariable String name) {
+    public ApplicationCompleteDto getLatestAppVersion(@PathVariable String name) {
         ApplicationBase base = applicationBaseService.findByName(name);
         Application application = applicationService.findApplicationLatestVersion(name);
-        return new ApplicationCompleteView(
+        return new ApplicationCompleteDto(
                 modelMapper.map(base, ApplicationBaseDto.class),
                 modelMapper.map(application, ApplicationDto.class)
         );
@@ -232,13 +102,13 @@ public class ApplicationController extends AppBaseController {
     @GetMapping(value = "/{name}/version/{version}")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
     @Transactional
-    public ApplicationCompleteView getApplicationByNameAndVersion(@PathVariable String name, @PathVariable String version) {
+    public ApplicationCompleteDto getApplicationByNameAndVersion(@PathVariable String name, @PathVariable String version) {
         ApplicationBase base = applicationBaseService.findByName(name);
 
         Optional<Application> application = applicationService.findApplication(name, version);
 
         if (application.isPresent()) {
-            return new ApplicationCompleteView(
+            return new ApplicationCompleteDto(
                     modelMapper.map(base, ApplicationBaseDto.class),
                     modelMapper.map(application.get(), ApplicationDto.class)
             );
@@ -250,27 +120,12 @@ public class ApplicationController extends AppBaseController {
 
     @GetMapping(value = "/{id}")
     @Transactional
-    public ApplicationCompleteView getApplicationDTO(@PathVariable Long id) {
+    public ApplicationCompleteDto getApplicationDTO(@PathVariable Long id) {
         Application app = getApp(id);
         ApplicationBase base = applicationBaseService.findByName(app.getName());
-        return new ApplicationCompleteView(
+        return new ApplicationCompleteDto(
                 modelMapper.map(base, ApplicationBaseDto.class),
                 modelMapper.map(app, ApplicationDto.class)
-        );
-    }
-
-    @GetMapping(value = "/base/allversions/{id}")
-    @Transactional
-    public ApplicationDtoVersionList getApplicationDTOWithAllVersions(@PathVariable Long id) {
-        ApplicationBase base = applicationBaseService.getBaseApp(id);
-        List<Application> versionList = applicationService.findAll().stream()
-                .filter(app -> app.getName().equalsIgnoreCase(base.getName()))
-                .toList();
-        return new ApplicationDtoVersionList(
-                modelMapper.map(base, ApplicationBaseDto.class),
-                versionList.stream()
-                        .map(app -> modelMapper.map(app, ApplicationDto.class))
-                        .toList()
         );
     }
 
@@ -461,25 +316,6 @@ public class ApplicationController extends AppBaseController {
                     .build();
             this.eventPublisher.publishEvent(new NotificationEvent(this, mailAttributes));
         }
-    }
-
-    private void applicationBaseOwnerCheck(ApplicationBase applicationBase, Principal principal) {
-        boolean isSystemAdmin = this.getUser(principal.getName()).getRoles().stream()
-                .anyMatch(userRole -> userRole.getRole().equals(Role.ROLE_SYSTEM_ADMIN));
-        boolean isOwner = applicationBase.getOwner().equals(principal.getName());
-        if (!isOwner && !isSystemAdmin) {
-            throw new PortalException("The user is not application owner");
-        }
-    }
-
-    private void applicationBaseOwnerCheck(String applicationBaseName, Principal principal) {
-        ApplicationBase applicationBase = this.applicationBaseService.findByName(applicationBaseName);
-        this.applicationBaseOwnerCheck(applicationBase, principal);
-    }
-
-    private void applicationBaseOwnerCheck(Long id, Principal principal) {
-        ApplicationBase applicationBase = this.applicationBaseService.getBaseApp(id);
-        this.applicationBaseOwnerCheck(applicationBase, principal);
     }
 
 }
