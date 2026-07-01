@@ -8,6 +8,7 @@ import net.geant.nmaas.api.dto.applications.AppDeploymentSpecDto;
 import net.geant.nmaas.api.dto.applications.AppStorageVolumeDto;
 import net.geant.nmaas.api.dto.applications.ApplicationBaseDto;
 import net.geant.nmaas.api.dto.applications.ApplicationBaseInfoDto;
+import net.geant.nmaas.api.dto.applications.ApplicationCompleteDto;
 import net.geant.nmaas.api.dto.applications.ApplicationDto;
 import net.geant.nmaas.api.dto.applications.ApplicationStateChangeRequest;
 import net.geant.nmaas.api.dto.applications.ApplicationStateDto;
@@ -170,7 +171,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
-                                new ApplicationController.ApplicationCompleteView(
+                                new ApplicationCompleteDto(
                                         modelMapper.map(newApplicationBase, ApplicationBaseDto.class),
                                         modelMapper.map(getNewApplication(newApplicationBase.getName(), "1.2.3"), ApplicationDto.class)
                                 )
@@ -285,7 +286,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
-        ApplicationController.ApplicationCompleteView app = objectMapper.readValue(result.getResponse().getContentAsString(), ApplicationController.ApplicationCompleteView.class);
+        ApplicationCompleteDto app = objectMapper.readValue(result.getResponse().getContentAsString(), ApplicationCompleteDto.class);
         assertEquals(APP_1_NAME, app.getApplicationBase().getName());
         assertEquals("1.2.0", app.getApplication().getVersion());
     }
@@ -298,7 +299,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
-        ApplicationController.ApplicationCompleteView app = objectMapper.readValue(result.getResponse().getContentAsString(), ApplicationController.ApplicationCompleteView.class);
+        ApplicationCompleteDto app = objectMapper.readValue(result.getResponse().getContentAsString(), ApplicationCompleteDto.class);
         assertEquals(APP_1_NAME, app.getApplicationBase().getName());
         assertEquals("1.1.0", app.getApplication().getVersion());
 
