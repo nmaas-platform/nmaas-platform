@@ -115,7 +115,6 @@ public class ApplicationController extends AppBaseController {
         } else {
             throw new MissingElementException("Application " + name + " version " + version + " not found");
         }
-
     }
 
     @GetMapping(value = "/{id}")

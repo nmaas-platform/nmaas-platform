@@ -14,6 +14,7 @@ import net.geant.nmaas.portal.service.DomainGroupService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
+import org.mockito.ArgumentCaptor;
 
 import java.util.Collections;
 import java.util.List;
@@ -26,6 +27,7 @@ import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
 
 public class ResourcesLimitTest {
 
@@ -86,6 +88,54 @@ public class ResourcesLimitTest {
     }
 
     @Test
+    void shouldUseDefaultValuesWhenCreatingResourcesLimitWithNullOrZeroValues() {
+        DomainBaseDto domainView2 = new DomainBaseDto();
+        domainView2.setId(2L);
+        ResourcesLimitDto dto = new ResourcesLimitDto(2L, null, 0, null, 0,
+                ResourcesLimitTypeDto.DOMAIN, null, domainView2);
+        when(resourcesLimitRepository.save(isA(ResourcesLimit.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        resourcesLimitService.create(dto);
+
+        ResourcesLimit saved = lastSavedResourcesLimit();
+        assertEquals(200, saved.getMemory());
+        assertEquals(100, saved.getCpu());
+        assertEquals(10, saved.getInstancesNo());
+        assertEquals(20, saved.getContainersNo());
+    }
+
+    @Test
+    void shouldUseDefaultValuesWhenUpdatingResourcesLimitWithNullOrZeroValues() {
+        ResourcesLimit existing = new ResourcesLimit(2L, 500, 100, 10, 50);
+        when(resourcesLimitRepository.findById(2L)).thenReturn(Optional.of(existing));
+        ResourcesLimitUpdateDto updateDto = new ResourcesLimitUpdateDto(2L, 0, null, 0, null);
+
+        resourcesLimitService.update(updateDto);
+
+        ResourcesLimit saved = lastSavedResourcesLimit();
+        assertEquals(200, saved.getMemory());
+        assertEquals(100, saved.getCpu());
+        assertEquals(10, saved.getInstancesNo());
+        assertEquals(20, saved.getContainersNo());
+    }
+
+    @Test
+    void shouldUseDefaultValuesWhenSettingGlobalResourcesLimitWithNullOrZeroValues() {
+        ResourcesLimit existing = new ResourcesLimit(2L, 500, 100, 10, 50);
+        when(resourcesLimitRepository.findByLimitType(ResourcesLimitType.GLOBAL)).thenReturn(List.of(existing));
+        ResourcesLimitDto dto = new ResourcesLimitDto(2L, null, 0, null, 0,
+                ResourcesLimitTypeDto.GLOBAL, null, null);
+
+        resourcesLimitService.setGlobalResourcesLimit(dto);
+
+        ResourcesLimit saved = lastSavedResourcesLimit();
+        assertEquals(200, saved.getMemory());
+        assertEquals(100, saved.getCpu());
+        assertEquals(10, saved.getInstancesNo());
+        assertEquals(20, saved.getContainersNo());
+    }
+
+    @Test
     void shouldGetAllResourcesLimits() {
         when(resourcesLimitRepository.findAll()).thenReturn(Collections.singletonList(resourcesLimit));
 
@@ -106,6 +156,12 @@ public class ResourcesLimitTest {
         assertThrows(RuntimeException.class, () -> {
             resourcesLimitService.getResourcesLimit(999L);
         });
+    }
+
+    private ResourcesLimit lastSavedResourcesLimit() {
+        ArgumentCaptor<ResourcesLimit> captor = ArgumentCaptor.forClass(ResourcesLimit.class);
+        verify(resourcesLimitRepository, org.mockito.Mockito.atLeastOnce()).save(captor.capture());
+        return captor.getAllValues().getLast();
     }
 
 }
