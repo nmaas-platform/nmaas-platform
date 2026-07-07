@@ -13,10 +13,14 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.security.Principal;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -24,6 +28,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@ExtendWith(OutputCaptureExtension.class)
 class AppLifecycleManagerRestControllerTest {
 
     @Mock
@@ -31,6 +36,8 @@ class AppLifecycleManagerRestControllerTest {
 
     @Mock
     private ApplicationRepository applicationRepository;
+
+    private final JsonMapper jsonMapper = new JsonMapper();
 
     @InjectMocks
     private AppLifecycleManagerRestController controller;
@@ -78,6 +85,24 @@ class AppLifecycleManagerRestControllerTest {
 
         verify(lifecycleManager).applyConfiguration(
                 Identifier.newInstance("dep-1"), configuration, "test-user");
+    }
+
+    @Test
+    void shouldPrintReceivedParameterCountsForEachConfigurationField(CapturedOutput output) throws Exception {
+        AppConfigurationDto configuration = AppConfigurationDto.builder()
+                .jsonInput(jsonMapper.readTree("{\"one\":\"1\",\"two\":\"2\"}"))
+                .storageSpace(10)
+                .additionalParameters(jsonMapper.readTree("{\"one\":\"1\"}"))
+                .mandatoryParameters(jsonMapper.readTree("{\"one\":\"1\",\"two\":\"2\",\"three\":\"3\"}"))
+                .accessCredentials(jsonMapper.readTree("{}"))
+                .termsAcceptance(jsonMapper.readTree("true"))
+                .build();
+        Principal principal = () -> "test-user";
+
+        controller.applyConfiguration("dep-1", configuration, principal);
+
+        assertThat(output.getOut())
+                .contains("Received application configuration parameters: jsonInput=2, storageSpace=1, additionalParameters=1, mandatoryParameters=3, accessCredentials=0, termsAcceptance=1");
     }
 
     @Test

@@ -98,8 +98,8 @@ public class ResourcesLimitTest {
         resourcesLimitService.create(dto);
 
         ResourcesLimit saved = lastSavedResourcesLimit();
-        assertEquals(200, saved.getMemory());
-        assertEquals(100, saved.getCpu());
+        assertEquals(2000, saved.getMemory());
+        assertEquals(1000, saved.getCpu());
         assertEquals(10, saved.getInstancesNo());
         assertEquals(20, saved.getContainersNo());
     }
@@ -113,8 +113,8 @@ public class ResourcesLimitTest {
         resourcesLimitService.update(updateDto);
 
         ResourcesLimit saved = lastSavedResourcesLimit();
-        assertEquals(200, saved.getMemory());
-        assertEquals(100, saved.getCpu());
+        assertEquals(2000, saved.getMemory());
+        assertEquals(1000, saved.getCpu());
         assertEquals(10, saved.getInstancesNo());
         assertEquals(20, saved.getContainersNo());
     }
@@ -129,8 +129,8 @@ public class ResourcesLimitTest {
         resourcesLimitService.setGlobalResourcesLimit(dto);
 
         ResourcesLimit saved = lastSavedResourcesLimit();
-        assertEquals(200, saved.getMemory());
-        assertEquals(100, saved.getCpu());
+        assertEquals(2000, saved.getMemory());
+        assertEquals(1000, saved.getCpu());
         assertEquals(10, saved.getInstancesNo());
         assertEquals(20, saved.getContainersNo());
     }
