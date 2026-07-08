@@ -115,7 +115,7 @@ public class DomainController extends BaseController {
     public DomainDto getDomain(@PathVariable(value = "domainId") Long domainId, @NotNull Principal principal) {
         User user = userService.findByUsername(principal.getName()).orElseThrow(() -> new ProcessingException("User not found."));
         Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND));
-        return getDomainView(user, domain, true);
+        return getDomainDto(user, domain, true);
     }
 
     @GetMapping("/name/{domainName}")
@@ -124,10 +124,10 @@ public class DomainController extends BaseController {
     public DomainDto getDomainByName(@PathVariable(value = "domainName") String domainName, @NotNull Principal principal) {
         User user = userService.findByUsername(principal.getName()).orElseThrow(() -> new ProcessingException("User not found."));
         Domain domain = domainService.findDomain(domainName).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND));
-        return getDomainView(user, domain, false);
+        return getDomainDto(user, domain, false);
     }
 
-    private DomainDto getDomainView(User user, Domain domain, boolean operatorCanViewFullDomain) {
+    private DomainDto getDomainDto(User user, Domain domain, boolean operatorCanViewFullDomain) {
         Domain domainWithAppStates = domainService.getAppStatesFromGroups(domain);
         if (canViewFullDomain(user, domainWithAppStates.getId(), operatorCanViewFullDomain)) {
             return modelMapper.map(domainWithAppStates, DomainDto.class);
