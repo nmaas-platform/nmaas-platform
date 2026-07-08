@@ -24,7 +24,9 @@ import org.modelmapper.ModelMapper;
 import org.mockito.ArgumentCaptor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 
+import java.lang.reflect.Method;
 import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
@@ -35,6 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -352,5 +355,14 @@ class DomainControllerTest {
         update.setId(2L);
 
         assertThrows(ProcessingException.class, () -> controller.updateDomain(1L, update));
+    }
+
+    @Test
+    void shouldAllowGroupManagerToPatchDomainTechDetails() throws Exception {
+        Method method = DomainController.class.getMethod("updateDomainTechDetails", Long.class, DomainDto.class);
+        PreAuthorize preAuthorize = method.getAnnotation(PreAuthorize.class);
+
+        assertNotNull(preAuthorize);
+        assertTrue(preAuthorize.value().contains("hasRole('ROLE_GROUP_MANAGER')"));
     }
 }

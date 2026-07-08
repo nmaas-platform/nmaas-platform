@@ -242,7 +242,7 @@ public class DomainController extends BaseController {
 
     @PatchMapping("/{domainId}")
     @Transactional
-    @PreAuthorize("hasRole('ROLE_OPERATOR')")
+    @PreAuthorize("hasRole('ROLE_OPERATOR') || hasRole('ROLE_GROUP_MANAGER')")
     public Id updateDomainTechDetails(@PathVariable Long domainId, @RequestBody DomainDto domainUpdate) {
         if (!domainId.equals(domainUpdate.getId())) {
             throw new ProcessingException(UNABLE_TO_CHANGE_DOMAIN_ID);
