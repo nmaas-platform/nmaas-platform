@@ -142,7 +142,7 @@ public class DomainController extends BaseController {
                 || user.getRoles().stream()
                 .anyMatch(role -> role.getDomain().getId().equals(domainId)
                         && (role.getRole() == Role.ROLE_DOMAIN_ADMIN)
-                        || (role.getRole() == Role.ROLE_GROUP_DOMAIN_ADMIN));
+                        || (role.getRole() == Role.ROLE_GROUP_MANAGER));
     }
 
     private boolean hasGlobalFullDomainAccess(UserRole role, boolean operatorCanViewFullDomain) {

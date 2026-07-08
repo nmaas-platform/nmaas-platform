@@ -108,6 +108,47 @@ class DomainControllerTest {
     }
 
     @Test
+    void shouldReturnFullDomainViewForGroupManager() {
+        Principal principal = () -> "group-manager";
+        User groupManager = new User("group-manager", true);
+        Domain global = new Domain(1L, "global", "global", true);
+        groupManager.setRoles(List.of(new UserRole(groupManager, global, Role.ROLE_GROUP_MANAGER)));
+        Domain domain = domainWithRestrictedData();
+        DomainDto full = new DomainDto();
+        when(userService.findByUsername("group-manager")).thenReturn(Optional.of(groupManager));
+        when(domainService.findDomain(2L)).thenReturn(Optional.of(domain));
+        when(domainService.getAppStatesFromGroups(domain)).thenReturn(domain);
+        when(modelMapper.map(any(Domain.class), any())).thenReturn(full);
+
+        DomainDto result = controller.getDomain(2L, principal);
+
+        assertEquals(full, result);
+        ArgumentCaptor<Domain> domainCaptor = ArgumentCaptor.forClass(Domain.class);
+        verify(modelMapper).map(domainCaptor.capture(), any());
+        assertFullDomainDataAvailable(domainCaptor.getValue());
+    }
+
+    @Test
+    void shouldReturnRestrictedDomainViewForGroupDomainAdmin() {
+        Principal principal = () -> "group-domain-admin";
+        User groupDomainAdmin = new User("group-domain-admin", true);
+        Domain domain = domainWithRestrictedData();
+        groupDomainAdmin.setRoles(List.of(new UserRole(groupDomainAdmin, domain, Role.ROLE_GROUP_DOMAIN_ADMIN)));
+        DomainDto dto = new DomainDto();
+        when(userService.findByUsername("group-domain-admin")).thenReturn(Optional.of(groupDomainAdmin));
+        when(domainService.findDomain(2L)).thenReturn(Optional.of(domain));
+        when(domainService.getAppStatesFromGroups(domain)).thenReturn(domain);
+        when(modelMapper.map(any(Domain.class), any())).thenReturn(dto);
+
+        DomainDto result = controller.getDomain(2L, principal);
+
+        assertEquals(dto, result);
+        ArgumentCaptor<Domain> domainCaptor = ArgumentCaptor.forClass(Domain.class);
+        verify(modelMapper).map(domainCaptor.capture(), any());
+        assertRestrictedDomainDataRemoved(domainCaptor.getValue());
+    }
+
+    @Test
     void shouldReturnBaseDomainViewForRegularUser() {
         Principal principal = () -> "user";
         User user = new User("user", true);
@@ -192,6 +233,22 @@ class DomainControllerTest {
         assertNull(domain.getDomainDcnDetails());
         assertNull(domain.getGroups());
         assertNull(domain.getClusters());
+    }
+
+    private void assertFullDomainDataAvailable(Domain domain) {
+        assertNotNull(domain.getDomainTechDetails());
+        assertNotNull(domain.getDomainDcnDetails());
+        assertNotNull(domain.getGroups());
+        assertNotNull(domain.getClusters());
+    }
+
+    private Domain domainWithRestrictedData() {
+        Domain domain = new Domain(2L, "domain", "domain", true);
+        domain.setDomainTechDetails(new net.geant.nmaas.orchestration.entities.DomainTechDetails());
+        domain.setDomainDcnDetails(new DomainDcnDetails());
+        domain.setGroups(List.of(mock(net.geant.nmaas.portal.persistence.entity.DomainGroup.class)));
+        domain.setClusters(List.of(mock(net.geant.nmaas.kubernetes.remote.entities.KCluster.class)));
+        return domain;
     }
 
     @Test
