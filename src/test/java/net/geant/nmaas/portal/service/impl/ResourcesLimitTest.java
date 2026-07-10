@@ -7,13 +7,16 @@ import net.geant.nmaas.api.dto.domains.DomainBaseDto;
 import net.geant.nmaas.portal.domain.converters.ResourceLimitConverter;
 import net.geant.nmaas.portal.domain.converters.ResourceLimitInverseConverter;
 import net.geant.nmaas.portal.persistence.entity.Domain;
+import net.geant.nmaas.portal.persistence.entity.DomainGroup;
 import net.geant.nmaas.portal.persistence.entity.ResourcesLimit;
 import net.geant.nmaas.portal.persistence.entity.ResourcesLimitType;
+import net.geant.nmaas.portal.persistence.repositories.DomainGroupRepository;
+import net.geant.nmaas.portal.persistence.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistence.repositories.ResourcesLimitRepository;
-import net.geant.nmaas.portal.service.DomainGroupService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
+import org.mockito.ArgumentCaptor;
 
 import java.util.Collections;
 import java.util.List;
@@ -21,19 +24,22 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
 
 public class ResourcesLimitTest {
 
     private final ResourcesLimitRepository resourcesLimitRepository = mock(ResourcesLimitRepository.class);
+    private final DomainRepository domainRepository = mock(DomainRepository.class);
+    private final DomainGroupRepository domainGroupRepository = mock(DomainGroupRepository.class);
 
     private final DomainBaseDto domainView = new DomainBaseDto();
     private final ModelMapper mapper = new ModelMapper();
-    private final DomainGroupService groupService = mock(DomainGroupService.class);
 
     private ResourcesLimitDto resourcesLimitDto;
     private ResourcesLimit resourcesLimit;
@@ -44,8 +50,10 @@ public class ResourcesLimitTest {
     void setUp() {
         mapper.addConverter(new ResourceLimitConverter());
         mapper.addConverter(new ResourceLimitInverseConverter());
-        resourcesLimitService = new ResourcesLimitServiceImpl(resourcesLimitRepository, mapper,groupService);
+        resourcesLimitService = new ResourcesLimitServiceImpl(resourcesLimitRepository, domainRepository, domainGroupRepository, mapper);
         domainView.setId(1L);
+        when(domainRepository.getReferenceById(org.mockito.ArgumentMatchers.anyLong()))
+                .thenAnswer(invocation -> new Domain(invocation.getArgument(0)));
         resourcesLimitDto = new ResourcesLimitDto(1L, 500, 100, 10, 50,
                 ResourcesLimitTypeDto.DOMAIN, null, domainView);
         resourcesLimit = new ResourcesLimit(1L, 500, 100, 10, 50, new Domain(1L));
@@ -86,6 +94,76 @@ public class ResourcesLimitTest {
     }
 
     @Test
+    void shouldClearDomainGroupRelationBeforeDeletingResourcesLimit() {
+        DomainGroup domainGroup = new DomainGroup(10L);
+        ResourcesLimit resourcesLimit = ResourcesLimit.builder()
+                .id(20L)
+                .memory(500)
+                .cpu(100)
+                .instancesNo(10)
+                .containersNo(50)
+                .limitType(ResourcesLimitType.DOMAIN_GROUP)
+                .domainGroup(domainGroup)
+                .build();
+        domainGroup.setResourcesLimit(resourcesLimit);
+        when(resourcesLimitRepository.findById(20L)).thenReturn(Optional.of(resourcesLimit));
+
+        resourcesLimitService.delete(20L);
+
+        assertNull(domainGroup.getResourcesLimit());
+        assertNull(resourcesLimit.getDomainGroup());
+        verify(resourcesLimitRepository).delete(resourcesLimit);
+    }
+
+    @Test
+    void shouldUseDefaultValuesWhenCreatingResourcesLimitWithNullOrZeroValues() {
+        DomainBaseDto domainView2 = new DomainBaseDto();
+        domainView2.setId(2L);
+        ResourcesLimitDto dto = new ResourcesLimitDto(2L, null, 0, null, 0,
+                ResourcesLimitTypeDto.DOMAIN, null, domainView2);
+        when(resourcesLimitRepository.save(isA(ResourcesLimit.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        resourcesLimitService.create(dto);
+
+        ResourcesLimit saved = lastSavedResourcesLimit();
+        assertEquals(2000, saved.getMemory());
+        assertEquals(1000, saved.getCpu());
+        assertEquals(10, saved.getInstancesNo());
+        assertEquals(20, saved.getContainersNo());
+    }
+
+    @Test
+    void shouldUseDefaultValuesWhenUpdatingResourcesLimitWithNullOrZeroValues() {
+        ResourcesLimit existing = new ResourcesLimit(2L, 500, 100, 10, 50);
+        when(resourcesLimitRepository.findById(2L)).thenReturn(Optional.of(existing));
+        ResourcesLimitUpdateDto updateDto = new ResourcesLimitUpdateDto(2L, 0, null, 0, null);
+
+        resourcesLimitService.update(updateDto);
+
+        ResourcesLimit saved = lastSavedResourcesLimit();
+        assertEquals(2000, saved.getMemory());
+        assertEquals(1000, saved.getCpu());
+        assertEquals(10, saved.getInstancesNo());
+        assertEquals(20, saved.getContainersNo());
+    }
+
+    @Test
+    void shouldUseDefaultValuesWhenSettingGlobalResourcesLimitWithNullOrZeroValues() {
+        ResourcesLimit existing = new ResourcesLimit(2L, 500, 100, 10, 50);
+        when(resourcesLimitRepository.findByLimitType(ResourcesLimitType.GLOBAL)).thenReturn(List.of(existing));
+        ResourcesLimitDto dto = new ResourcesLimitDto(2L, null, 0, null, 0,
+                ResourcesLimitTypeDto.GLOBAL, null, null);
+
+        resourcesLimitService.setGlobalResourcesLimit(dto);
+
+        ResourcesLimit saved = lastSavedResourcesLimit();
+        assertEquals(2000, saved.getMemory());
+        assertEquals(1000, saved.getCpu());
+        assertEquals(10, saved.getInstancesNo());
+        assertEquals(20, saved.getContainersNo());
+    }
+
+    @Test
     void shouldGetAllResourcesLimits() {
         when(resourcesLimitRepository.findAll()).thenReturn(Collections.singletonList(resourcesLimit));
 
@@ -106,6 +184,12 @@ public class ResourcesLimitTest {
         assertThrows(RuntimeException.class, () -> {
             resourcesLimitService.getResourcesLimit(999L);
         });
+    }
+
+    private ResourcesLimit lastSavedResourcesLimit() {
+        ArgumentCaptor<ResourcesLimit> captor = ArgumentCaptor.forClass(ResourcesLimit.class);
+        verify(resourcesLimitRepository, org.mockito.Mockito.atLeastOnce()).save(captor.capture());
+        return captor.getAllValues().getLast();
     }
 
 }

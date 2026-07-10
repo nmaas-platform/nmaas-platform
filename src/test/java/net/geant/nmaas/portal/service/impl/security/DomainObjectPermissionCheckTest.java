@@ -69,6 +69,18 @@ class DomainObjectPermissionCheckTest {
 		assertEquals(1, perms.size());
 		assertThat(perms, hasItems(Permissions.READ));
 	}
+
+	@Test
+	void testGroupManagerEvaluatePermissions() {
+		Set<Permissions> perms = dopch.evaluatePermissions(UsersHelper.GROUP_MANAGER, UsersHelper.DOMAIN1.getId(), DomainObjectPermissionCheck.DOMAIN);
+		assertEquals(3, perms.size());
+		assertThat(perms, hasItems(Permissions.READ, Permissions.WRITE, Permissions.OWNER));
+
+		perms = dopch.evaluatePermissions(UsersHelper.GROUP_MANAGER, UsersHelper.GLOBAL.getId(), DomainObjectPermissionCheck.DOMAIN);
+		assertEquals(2, perms.size());
+		assertThat(perms, hasItems(Permissions.READ, Permissions.WRITE));
+		assertFalse(perms.contains(Permissions.OWNER));
+	}
 	
 	@Test
 	void testDomainUserEvaluatePermissions() {

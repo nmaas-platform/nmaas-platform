@@ -4,16 +4,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.api.dto.domains.ResourcesLimitDto;
 import net.geant.nmaas.api.dto.domains.ResourcesLimitUpdateDto;
-import net.geant.nmaas.api.dto.domains.DomainGroupDto;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
-import net.geant.nmaas.portal.persistence.entity.Domain;
-import net.geant.nmaas.portal.persistence.entity.DomainGroup;
 import net.geant.nmaas.portal.persistence.entity.ResourcesLimit;
+import net.geant.nmaas.portal.persistence.repositories.DomainGroupRepository;
+import net.geant.nmaas.portal.persistence.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistence.repositories.ResourcesLimitRepository;
-import net.geant.nmaas.portal.service.DomainGroupService;
 import net.geant.nmaas.portal.service.ResourcesLimitService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -32,13 +31,19 @@ public class ResourcesLimitServiceImpl implements ResourcesLimitService {
     private static final String DOMAIN_UNIQUE_RESOURCES_LIMIT = "You can define only one resources limit per domain";
     private static final String DOMAIN_GROUP_RESOURCES_LIMIT = "You must define a domain group";
     private static final String DOMAIN_GROUP_UNIQUE_RESOURCES_LIMIT = "You can define only one resources limit per domain group";
+    private static final Integer DEFAULT_MEMORY = 2000;
+    private static final Integer DEFAULT_CPU = 1000;
+    private static final Integer DEFAULT_INSTANCES_NO = 10;
+    private static final Integer DEFAULT_CONTAINERS_NO = 20;
 
     private final ResourcesLimitRepository resourcesLimitRepository;
+    private final DomainRepository domainRepository;
+    private final DomainGroupRepository domainGroupRepository;
     private final ModelMapper modelMapper;
-    private final DomainGroupService groupService;
 
     @Override
     public void setGlobalResourcesLimit(ResourcesLimitDto dto) {
+        dto = withDefaultValues(dto);
         List<ResourcesLimit> limits = resourcesLimitRepository.findByLimitType(
                 net.geant.nmaas.portal.persistence.entity.ResourcesLimitType.GLOBAL);
         if (limits.size() == 1) {
@@ -71,6 +76,7 @@ public class ResourcesLimitServiceImpl implements ResourcesLimitService {
 
     @Override
     public ResourcesLimitDto create(ResourcesLimitDto dto) {
+        dto = withDefaultValues(dto);
         log.info("Creating resources limit of type {}", dto.limitType());
 
         if (GLOBAL.equals(dto.limitType()) && resourcesLimitRepository.existsByLimitType(
@@ -88,19 +94,25 @@ public class ResourcesLimitServiceImpl implements ResourcesLimitService {
 
         ResourcesLimit entity = modelMapper.map(dto, ResourcesLimit.class);
         if (dto.limitType().equals(DOMAIN_GROUP)) {
-//          A simple mapping using `dto.domainGroup()` returns null
-            DomainGroupDto domainGroupDto = groupService.getDomainGroup(dto.domainGroup().id());
-            DomainGroup domainGroup = modelMapper.map(domainGroupDto, DomainGroup.class);
-            entity.setDomainGroup(domainGroup);
+            entity.setDomainGroup(domainGroupRepository.getReferenceById(dto.domainGroup().id()));
         } else if (dto.limitType().equals(DOMAIN)) {
-            entity.setDomain(modelMapper.map(dto.domain(), Domain.class));
+            entity.setDomain(domainRepository.getReferenceById(dto.domain().getId()));
         }
         ResourcesLimit result = resourcesLimitRepository.save(entity);
-        return modelMapper.map(result, ResourcesLimitDto.class);
+        return new ResourcesLimitDto(
+                result.getId(),
+                result.getMemory(),
+                result.getCpu(),
+                result.getInstancesNo(),
+                result.getContainersNo(),
+                dto.limitType(),
+                dto.domainGroup(),
+                dto.domain());
     }
 
     @Override
     public void update(ResourcesLimitUpdateDto dto) {
+        dto = withDefaultValues(dto);
         ResourcesLimit entity = resourcesLimitRepository.findById(dto.id())
                 .orElseThrow(() -> new MissingElementException("Resources Limit not found"));
         entity.setCpu(dto.cpu());
@@ -111,8 +123,19 @@ public class ResourcesLimitServiceImpl implements ResourcesLimitService {
     }
 
     @Override
+    @Transactional
     public void delete(Long id) {
-        resourcesLimitRepository.deleteById(id);
+        ResourcesLimit entity = resourcesLimitRepository.findById(id)
+                .orElseThrow(() -> new MissingElementException("Resources Limit not found"));
+        if (entity.getDomainGroup() != null) {
+            entity.getDomainGroup().setResourcesLimit(null);
+            entity.setDomainGroup(null);
+        }
+        if (entity.getDomain() != null) {
+            entity.getDomain().setResourcesLimit(null);
+            entity.setDomain(null);
+        }
+        resourcesLimitRepository.delete(entity);
     }
 
     @Override
@@ -150,5 +173,30 @@ public class ResourcesLimitServiceImpl implements ResourcesLimitService {
         } else {
             throw new MissingElementException("Resources Limit not found");
         }
+    }
+
+    private ResourcesLimitDto withDefaultValues(ResourcesLimitDto dto) {
+        return new ResourcesLimitDto(
+                dto.id(),
+                valueOrDefault(dto.memory(), DEFAULT_MEMORY),
+                valueOrDefault(dto.cpu(), DEFAULT_CPU),
+                valueOrDefault(dto.instancesNo(), DEFAULT_INSTANCES_NO),
+                valueOrDefault(dto.containersNo(), DEFAULT_CONTAINERS_NO),
+                dto.limitType(),
+                dto.domainGroup(),
+                dto.domain());
+    }
+
+    private ResourcesLimitUpdateDto withDefaultValues(ResourcesLimitUpdateDto dto) {
+        return new ResourcesLimitUpdateDto(
+                dto.id(),
+                valueOrDefault(dto.memory(), DEFAULT_MEMORY),
+                valueOrDefault(dto.cpu(), DEFAULT_CPU),
+                valueOrDefault(dto.instancesNo(), DEFAULT_INSTANCES_NO),
+                valueOrDefault(dto.containersNo(), DEFAULT_CONTAINERS_NO));
+    }
+
+    private Integer valueOrDefault(Integer value, Integer defaultValue) {
+        return value == null || value == 0 ? defaultValue : value;
     }
 }

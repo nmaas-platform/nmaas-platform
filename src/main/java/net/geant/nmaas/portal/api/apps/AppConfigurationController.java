@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
 
 import java.security.Principal;
@@ -43,6 +44,13 @@ public class AppConfigurationController {
     public void applyConfiguration(@PathVariable(value = "appInstanceId") Long appInstanceId,
                                    @RequestBody AppConfigurationDto configuration,
                                    @NotNull Principal principal) {
+        log.info("Received application configuration parameters: jsonInput={}, storageSpace={}, additionalParameters={}, mandatoryParameters={}, accessCredentials={}, termsAcceptance={}",
+                countParameters(configuration.getJsonInput()),
+                configuration.getStorageSpace() == null ? 0 : 1,
+                countParameters(configuration.getAdditionalParameters()),
+                countParameters(configuration.getMandatoryParameters()),
+                countParameters(configuration.getAccessCredentials()),
+                countParameters(configuration.getTermsAcceptance()));
         AppInstance appInstance = instances.find(appInstanceId).orElseThrow(() -> new MissingElementException(INSTANCE_NOT_FOUND_MESSAGE));
 
         boolean valid = validJSON(jsonMapper.writeValueAsString(configuration.getJsonInput()));
@@ -76,6 +84,16 @@ public class AppConfigurationController {
         } catch (JacksonException e) {
             return false;
         }
+    }
+
+    private int countParameters(JsonNode node) {
+        if (node == null || node.isNull()) {
+            return 0;
+        }
+        if (node.isObject() || node.isArray()) {
+            return node.size();
+        }
+        return 1;
     }
 
     @PostMapping("/{appInstanceId}/configure/update")

@@ -20,6 +20,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -97,6 +99,23 @@ class AppScreenshotsControllerTest {
     }
 
     @Test
+    void shouldGetLogoWhenDefined() throws Exception {
+        Path logoFile = Files.createTempFile("logo", ".png");
+        Files.write(logoFile, new byte[]{1, 2, 3, 4});
+        when(fileStorageService.getFile(1L)).thenReturn(logoFile.toFile());
+
+        ResponseEntity<InputStreamResource> response = this.appScreenshotsController.getLogo(appWithLogo.getId());
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("image/png", response.getHeaders().getContentType().toString());
+        assertEquals(4L, response.getHeaders().getContentLength());
+        assertNotNull(response.getBody());
+        response.getBody().getInputStream().close();
+
+        Files.deleteIfExists(logoFile);
+    }
+
+    @Test
     void shouldUpdateLogoWhenExists() {
 
         MultipartFile mf = mock(MultipartFile.class);
@@ -161,10 +180,43 @@ class AppScreenshotsControllerTest {
     }
 
     @Test
+    void shouldReturnStoredScreenshotFile() throws Exception {
+        Path screenshotFile = Files.createTempFile("screenshot", ".png");
+        Files.write(screenshotFile, new byte[]{9, 8, 7});
+        when(fileStorageService.getFile(0L)).thenReturn(screenshotFile.toFile());
+
+        ResponseEntity<InputStreamResource> response = this.appScreenshotsController.getScreenshot(appWithLogo.getId(), 0L);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("image/png", response.getHeaders().getContentType().toString());
+        assertEquals(3L, response.getHeaders().getContentLength());
+        assertNotNull(response.getBody());
+        response.getBody().getInputStream().close();
+
+        Files.deleteIfExists(screenshotFile);
+    }
+
+    @Test
+    void shouldNotAddDuplicateScreenshotReference() {
+        MultipartFile mf = mock(MultipartFile.class);
+        FileInfo existingScreenshot = appWithLogo.getScreenshots().getFirst();
+        when(fileStorageService.store(mf)).thenReturn(existingScreenshot);
+        when(applicationBaseService.getByIdForUpdate(appWithLogo.getId())).thenReturn(appWithLogo);
+
+        List<FileInfoDto> result = this.appScreenshotsController.uploadScreenshot(appWithLogo.getId(), List.of(mf));
+
+        assertEquals(1, result.size());
+        assertEquals(existingScreenshot.getFilename(), result.getFirst().getFilename());
+        assertEquals(2, appWithLogo.getScreenshots().size());
+        verify(applicationBaseService, times(1)).update(appWithLogo);
+    }
+
+    @Test
     void shouldDeleteAllScreenshots() {
         this.appScreenshotsController.deleteScreenshots(appWithLogo.getId());
 
         verify(fileStorageService, times(2)).remove(any(FileInfo.class));
+        verify(applicationBaseService, times(1)).update(appWithLogo);
         assertEquals(0L, appWithLogo.getScreenshots().size());
     }
 

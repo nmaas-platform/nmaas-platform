@@ -230,6 +230,21 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
+    void shouldUpdateDomainTechDetailsAsGroupManager() throws Exception {
+        Domain request = getDefaultDomain();
+        request.getDomainTechDetails().setKubernetesNamespace("namespace");
+        request.setApplicationStatePerDomain(new ArrayList<>());
+        MvcResult result = mvc.perform(patch("/api/v1/domains/" + request.getId())
+                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ROLE_GROUP_MANAGER))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+        assertTrue(StringUtils.isNotEmpty(result.getResponse().getContentAsString()));
+    }
+
+    @Test
     void shouldNotUpdateDomainTechDetailsAsDomainAdmin() throws Exception {
         Domain request = UsersHelper.DOMAIN1;
         DomainTechDetails techDetails = new DomainTechDetails();

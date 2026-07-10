@@ -334,7 +334,7 @@ public class AppInstanceReadController extends AppBaseController {
     @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'READ')")
     @Transactional
     public AppInstanceCompleteDto getAppInstance(@PathVariable(value = "appInstanceId") Long appInstanceId,
-                                                     @NotNull Principal principal) {
+                                                 @NotNull Principal principal) {
         AppInstance appInstance = applicationInstanceService.find(appInstanceId)
                 .orElseThrow(() -> new MissingElementException("App instance not found."));
         return new AppInstanceCompleteDto(mapAppInstanceExtended(appInstance));
