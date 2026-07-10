@@ -2,8 +2,8 @@ package net.geant.nmaas.webhooks.jobs;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.orchestration.exceptions.WebServiceCommunicationException;
 import net.geant.nmaas.api.dto.webhooks.WebhookEventDto;
+import net.geant.nmaas.orchestration.exceptions.WebServiceCommunicationException;
 import net.geant.nmaas.portal.service.AutoWebhookTemplateService;
 import net.geant.nmaas.portal.service.WebhookHistoryService;
 import net.geant.nmaas.portal.service.impl.WebhookEventService;
@@ -40,7 +40,6 @@ public abstract class WebhookJob implements Job {
                 request.header(webhook.getAuthorizationHeader(), webhook.getTokenValue());
             }
 
-
             ResponseEntity<String> response = request
                     .retrieve()
                     .toEntity(String.class);
@@ -54,6 +53,7 @@ public abstract class WebhookJob implements Job {
                 throw new WebServiceCommunicationException(errorMessage, response.getStatusCode().value(), response.getBody());
             }
             log.info("Webhook call for {} was successful. Response: {}", webhook.getEventType(), body);
+
         } catch (Exception e) {
             log.error("Webhook call failed: {}", e.getMessage(), e);
             if (e instanceof WebServiceCommunicationException we) {
@@ -64,7 +64,6 @@ public abstract class WebhookJob implements Job {
             webhookHistoryService.create(webhook, payload, null, null);
             throw new WebServiceCommunicationException("Webhook call failed: " + e.getMessage());
         }
-
     }
 
 }

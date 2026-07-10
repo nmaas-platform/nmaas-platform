@@ -350,9 +350,10 @@ public class AutoWebhookTemplateService {
      * Validates a given template string, throwing IllegalArgumentException for any of the possible validation errors.
      * 1. Checks if the template is valid JSON.
      * 2. Checks if all $variables are valid for the given event type.
-     * * @param template The user-provided template string.
-     * @param eventType The type of webhook event.
-     * @return true if the template is valid JSON and contains only valid variables, false otherwise.
+     *
+     * @param template The user-provided template string
+     * @param eventType The type of webhook event
+     * @throws IllegalArgumentException if validation check failed
      */
     public void validateTemplate(String template, WebhookEventType eventType) {
         if (template != null && !template.isBlank()) {

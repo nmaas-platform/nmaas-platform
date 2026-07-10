@@ -21,7 +21,10 @@ public interface ResourcesLimitRepository extends JpaRepository<ResourcesLimit, 
 
     List<ResourcesLimit> findByLimitType(ResourcesLimitType limitType);
 
-    Optional<ResourcesLimit> findByDomain_Codename(String codename);
+    @Query("SELECT rl FROM ResourcesLimit rl " +
+            "JOIN rl.domain d " +
+            "WHERE :codename IS NOT NULL AND d.codename = :codename")
+    Optional<ResourcesLimit> findByDomain_Codename(@Param("codename") String codename);
 
     Optional<ResourcesLimit> findByDomain_Id(Long domainId);
 
