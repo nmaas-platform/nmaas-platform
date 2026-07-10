@@ -14,6 +14,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.GeneralSecurityException;
 import java.util.List;
@@ -88,6 +89,7 @@ public class WebhookEventService {
         webhookRepository.delete(webhookEvent);
     }
 
+    @Transactional(readOnly = true)
     public List<WebhookEventDto> getAllWebhooks() {
         return webhookRepository.findAll().stream()
                 .map(x -> {
@@ -98,6 +100,7 @@ public class WebhookEventService {
                     }
                 }).toList();
     }
+    @Transactional(readOnly = true)
     public Page<WebhookEventDto> getAllWebhooks(Pageable pageable, String searchValue) {
         if (searchValue == null || searchValue.isEmpty()) {
             return webhookRepository.findAll(pageable).map(x -> {
@@ -117,6 +120,7 @@ public class WebhookEventService {
             });
         }
     }
+    @Transactional(readOnly = true)
     public Page<WebhookEventDto> getAllWebhooks(Long domainId, Pageable pageable, String searchValue) {
         if (searchValue == null || searchValue.isEmpty()) {
             return webhookRepository.findAllByDomainId(domainId, pageable).map(x -> {
@@ -137,6 +141,7 @@ public class WebhookEventService {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<WebhookEventDto> getAllWebhooks(Long domainId) {
         return webhookRepository.findByDomain_Id(domainId).stream()
                 .map(x -> {
@@ -148,12 +153,14 @@ public class WebhookEventService {
                 }).toList();
     }
 
+    @Transactional(readOnly = true)
     public WebhookEventDto getById(Long id) throws GeneralSecurityException {
         WebhookEvent event = webhookRepository.findById(id)
                 .orElseThrow(() -> new MissingElementException(String.format("WebhookEventType with id: %d cannot be found", id)));
         return getWebhookEventDto(event);
     }
 
+    @Transactional(readOnly = true)
     public WebhookEventDto getById(Long domainId, Long id) throws GeneralSecurityException {
         WebhookEvent event = webhookRepository.findByIdAndDomain_Id(id, domainId)
                 .orElseThrow(() -> new MissingElementException(String.format("WebhookEventType with id: %d cannot be found", id)));
