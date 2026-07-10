@@ -1417,6 +1417,8 @@
     "TARGET_URL" : "Target URL",
     "TYPE" : "Webhook event",
     "TEMPLATE" : "Webhook template",
+    "TEMPLATE_REQUIRED" : "Template required",
+    "SUPPORTED_VARIABLES" : "Supported variables",
     "TOKEN" : "Token value",
     "AUTH" : "Authorization header",
     "DOMAIN": "Domain",
