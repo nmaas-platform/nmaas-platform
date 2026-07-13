@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.api.domains;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import net.geant.nmaas.api.dto.KeyValueDto;
 import net.geant.nmaas.api.dto.domains.DcnDeploymentTypeDto;
 import net.geant.nmaas.api.dto.domains.DomainDto;
 import net.geant.nmaas.api.dto.domains.DomainGroupDto;
@@ -123,6 +124,20 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
                 .andExpect(status().isOk())
                 .andReturn();
         assertTrue(StringUtils.isNotEmpty(result.getResponse().getContentAsString()));
+    }
+
+    @Test
+    void shouldAddDomainAnnotationAsGroupManager() throws Exception {
+        KeyValueDto annotation = new KeyValueDto("managed-by", "group-manager");
+
+        mvc.perform(post("/api/v1/domains/annotations")
+                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ROLE_GROUP_MANAGER))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(annotation))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        verify(domainService).addAnnotation(annotation);
     }
 
     @Test

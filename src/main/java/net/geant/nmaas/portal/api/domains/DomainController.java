@@ -310,7 +310,7 @@ public class DomainController extends BaseController {
 
     @PostMapping("/annotations")
     @Transactional
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
     public void addAnnotation(@RequestBody KeyValueDto annotation) {
         this.domainService.addAnnotation(annotation);
     }
