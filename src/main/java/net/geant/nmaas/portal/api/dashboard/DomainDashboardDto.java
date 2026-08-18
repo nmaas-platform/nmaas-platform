@@ -24,39 +24,7 @@ public class DomainDashboardDto {
     private List<ApplicationDeployedDto> applicationDeployed;
     private List<DomainAppInstanceDto> applicationUpgradeStatus;
 
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Getter
-    @Setter
-    @Builder
-    @ToString
-    public static class DomainAppInstanceDto {
 
-        private String appName;
-        private String instanceName;
-        private Long appId;
-        private Long baseAppId;
-        private String appVersion;
-        private Boolean upgradePossible;
-    }
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Getter
-    @Setter
-    @Builder
-    @ToString
-    public static class ApplicationDeployedDto {
-        private String userName;
-        private Integer count;
-    }
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Getter
-    @Setter
-    @Builder
-    @ToString
-    public static class UserLoginsDto {
-        private String userName;
-        private OffsetDateTime lastLogin;
-    }
+
+
 }

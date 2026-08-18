@@ -27,6 +27,8 @@
     "PAST_BULK_DOMAIN" : "Past domains bulk",
     "PAST_BULK_APP" : "Past application bulk",
     "DASHBOARD": "Dashboard",
+    "DASHBOARD-GROUP": "Domain group dashboard",
+    "DOMAIN_NAME": "Domain",
     "LIST": "Liste",
     "GROUP": "Groupe",
     "CATALOG": "Catalogue",

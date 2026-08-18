@@ -40,6 +40,10 @@ public class DashboardController {
     public DomainDashboardDto getDashboardDomain(@PathVariable Long id) {
         return dashboardService.getDomainDashboard(id);
     }
+    @GetMapping("/group/{id}")
+    public DomainGroupDashboardDto getDashboardGroup(@PathVariable Long id) {
+        return dashboardService.getDomainGroupDashboard(id);
+    }
 
     private void validateRequestedPeriod(OffsetDateTime startDate, OffsetDateTime endDate) {
         if (startDate == null) {

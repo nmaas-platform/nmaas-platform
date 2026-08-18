@@ -27,6 +27,8 @@
     "PAST_BULK_DOMAIN" : "Historia grupowego utworzenia domen",
     "PAST_BULK_APP" : "Historia grupowego uruchomienia aplikacji",
     "DASHBOARD": "Dashboard",
+    "DASHBOARD-GROUP": "Dashboard grup domen",
+    "DOMAIN_NAME": "Domena",
     "LIST": "Lista",
     "GROUP": "Grupy",
     "CATALOG": "Katalog",
