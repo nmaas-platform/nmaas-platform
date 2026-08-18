@@ -12,6 +12,7 @@ import net.geant.nmaas.portal.persistence.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistence.repositories.UserRepository;
 import net.geant.nmaas.portal.service.ApplicationBaseService;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
+import net.geant.nmaas.portal.service.DomainGroupService;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserLoginRegisterService;
 import org.junit.jupiter.api.Test;
@@ -43,6 +44,7 @@ class DashboardServiceImplTest {
     private final ApplicationBaseRepository applicationBaseRepository = mock(ApplicationBaseRepository.class);
     private final UserLoginRegisterService userLoginRegisterService = mock(UserLoginRegisterService.class);
     private final ApplicationBaseService appBaseService = mock(ApplicationBaseService.class);
+    private final DomainGroupService domainGroupService = mock(DomainGroupService.class);
 
     private final DashboardServiceImpl dashboardService = new DashboardServiceImpl(
             userRepository,
@@ -52,7 +54,8 @@ class DashboardServiceImplTest {
             appInstanceRepository,
             applicationBaseRepository,
             userLoginRegisterService,
-            appBaseService
+            appBaseService,
+            domainGroupService
     );
 
     @Test
