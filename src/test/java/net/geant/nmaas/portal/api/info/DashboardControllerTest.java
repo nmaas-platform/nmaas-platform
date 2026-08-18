@@ -1,8 +1,8 @@
 package net.geant.nmaas.portal.api.info;
 
 import net.geant.nmaas.portal.api.dashboard.DashboardController;
-import net.geant.nmaas.portal.api.dashboard.DashboardDto;
-import net.geant.nmaas.portal.api.dashboard.DomainDashboardDto;
+import net.geant.nmaas.api.dto.DashboardDto;
+import net.geant.nmaas.api.dto.DomainDashboardDto;
 import net.geant.nmaas.portal.service.DashboardService;
 import org.junit.jupiter.api.Test;
 

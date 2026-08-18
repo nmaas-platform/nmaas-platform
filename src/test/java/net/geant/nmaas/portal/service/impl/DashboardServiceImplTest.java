@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.service.impl;
 
-import net.geant.nmaas.portal.api.dashboard.DashboardDto;
-import net.geant.nmaas.portal.api.dashboard.DomainDashboardDto;
+import net.geant.nmaas.api.dto.DashboardDto;
+import net.geant.nmaas.api.dto.DomainDashboardDto;
 import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.entity.User;
 import net.geant.nmaas.portal.persistence.entity.UserLoginRegister;
