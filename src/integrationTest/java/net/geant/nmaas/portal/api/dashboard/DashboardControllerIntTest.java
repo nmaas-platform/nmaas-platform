@@ -1,6 +1,8 @@
 package net.geant.nmaas.portal.api.dashboard;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import net.geant.nmaas.api.dto.dashboard.DashboardDto;
+import net.geant.nmaas.api.dto.dashboard.DomainDashboardDto;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
