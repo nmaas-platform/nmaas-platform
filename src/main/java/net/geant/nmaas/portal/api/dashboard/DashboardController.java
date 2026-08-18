@@ -3,6 +3,9 @@ package net.geant.nmaas.portal.api.dashboard;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.api.dto.dashboard.DashboardDto;
+import net.geant.nmaas.api.dto.dashboard.DomainDashboardDto;
+import net.geant.nmaas.api.dto.dashboard.DomainGroupDashboardDto;
 import net.geant.nmaas.portal.service.DashboardService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,6 +42,10 @@ public class DashboardController {
     @GetMapping("/domain/{id}")
     public DomainDashboardDto getDashboardDomain(@PathVariable Long id) {
         return dashboardService.getDomainDashboard(id);
+    }
+    @GetMapping("/group/{id}")
+    public DomainGroupDashboardDto getDashboardGroup(@PathVariable Long id) {
+        return dashboardService.getDomainGroupDashboard(id);
     }
 
     private void validateRequestedPeriod(OffsetDateTime startDate, OffsetDateTime endDate) {

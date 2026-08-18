@@ -2,11 +2,18 @@ package net.geant.nmaas.portal.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.portal.api.dashboard.DashboardDeploymentsDto;
-import net.geant.nmaas.portal.api.dashboard.DashboardDto;
-import net.geant.nmaas.portal.api.dashboard.DomainDashboardDto;
+import net.geant.nmaas.api.dto.domains.DomainBaseDto;
+import net.geant.nmaas.api.dto.domains.DomainGroupDto;
+import net.geant.nmaas.api.dto.dashboard.ApplicationDeployedDto;
+import net.geant.nmaas.api.dto.dashboard.DashboardDeploymentsDto;
+import net.geant.nmaas.api.dto.dashboard.DashboardDto;
+import net.geant.nmaas.api.dto.dashboard.DomainAppInstanceDto;
+import net.geant.nmaas.api.dto.dashboard.DomainDashboardDto;
+import net.geant.nmaas.api.dto.dashboard.DomainGroupDashboardDto;
+import net.geant.nmaas.api.dto.dashboard.UserLoginsDto;
 import net.geant.nmaas.portal.persistence.entity.AppInstance;
 import net.geant.nmaas.portal.persistence.entity.Domain;
+import net.geant.nmaas.portal.persistence.entity.DomainGroup;
 import net.geant.nmaas.portal.persistence.entity.User;
 import net.geant.nmaas.portal.persistence.entity.UserLoginRegister;
 import net.geant.nmaas.portal.persistence.repositories.AppInstanceRepository;
@@ -16,6 +23,7 @@ import net.geant.nmaas.portal.persistence.repositories.UserRepository;
 import net.geant.nmaas.portal.service.ApplicationBaseService;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import net.geant.nmaas.portal.service.DashboardService;
+import net.geant.nmaas.portal.service.DomainGroupService;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserLoginRegisterService;
 import org.apache.commons.lang3.StringUtils;
@@ -24,10 +32,12 @@ import org.springframework.stereotype.Service;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,6 +53,7 @@ public class DashboardServiceImpl implements DashboardService {
     private final ApplicationBaseRepository applicationBaseRepository;
     private final UserLoginRegisterService userLoginRegisterService;
     private final ApplicationBaseService appBaseService;
+    private final DomainGroupService domainGroupService;
 
     @Override
     public DashboardDto getSystemDashboard(OffsetDateTime startDate, OffsetDateTime endDate) {
@@ -63,9 +74,7 @@ public class DashboardServiceImpl implements DashboardService {
                         .build())
                 .toList();
 
-        baseNames.forEach(name -> {
-            applicationDeploymentCountPerName.put(name, appInstanceRepository.countByName(name));
-        });
+        baseNames.forEach(name -> applicationDeploymentCountPerName.put(name, appInstanceRepository.countByName(name)));
 
         // filter not deployed application
         applicationDeploymentCountPerName.entrySet().removeIf(app -> app.getValue() == 0);
@@ -86,7 +95,7 @@ public class DashboardServiceImpl implements DashboardService {
         Optional<Domain> domain = domainService.findDomain(domainId);
         Map<String, OffsetDateTime> userLogins = new HashMap<>();
         Map<String, Integer> appsDeployed = new HashMap<>();
-        List<DomainDashboardDto.DomainAppInstanceDto> upgradePossible = new ArrayList<>();
+        List<DomainAppInstanceDto> upgradePossible = new ArrayList<>();
 
         if (domain.isPresent()) {
             Domain dom = domain.get();
@@ -99,31 +108,29 @@ public class DashboardServiceImpl implements DashboardService {
                 register.ifPresent(userLoginRegister -> userLogins.put(getUserPreferredUsername(user), userLoginRegister.getDate()));
                 appsDeployed.put(getUserPreferredUsername(user), appInstanceRepository.countAllByOwnerAndDomain(user, dom));
             });
-            apps.forEach(app -> {
-                upgradePossible.add(DomainDashboardDto.DomainAppInstanceDto.builder()
-                        .appId(app.getId())
-                        .baseAppId(appBaseService.findByName(app.getApplication().getName()).getId())
-                        .appName(app.getApplication().getName())
-                        .instanceName(app.getName())
-                        .appVersion(app.getApplication().getVersion())
-                        .upgradePossible(applicationInstanceService.checkUpgradePossible(app.getId())).build());
-            });
+            apps.forEach(app -> upgradePossible.add(DomainAppInstanceDto.builder()
+                    .appId(app.getId())
+                    .baseAppId(appBaseService.findByName(app.getApplication().getName()).getId())
+                    .appName(app.getApplication().getName())
+                    .instanceName(app.getName())
+                    .appVersion(app.getApplication().getVersion())
+                    .upgradePossible(applicationInstanceService.checkUpgradePossible(app.getId())).build()));
 
             Map<String, Integer> sortedAppsDeployed = appsDeployed.entrySet().stream()
                     .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a, LinkedHashMap::new));
-            List<DomainDashboardDto.ApplicationDeployedDto> sortedAppsDeployedDto = sortedAppsDeployed.entrySet().stream()
-                    .map(entry -> DomainDashboardDto.ApplicationDeployedDto.builder()
+            List<ApplicationDeployedDto> sortedAppsDeployedDto = sortedAppsDeployed.entrySet().stream()
+                    .map(entry -> ApplicationDeployedDto.builder()
                             .userName(entry.getKey())
                             .count(entry.getValue())
                             .build())
-                    .collect(Collectors.toList());
-            List<DomainDashboardDto.UserLoginsDto> userLoginsDto = userLogins.entrySet().stream()
-                    .map(entry -> DomainDashboardDto.UserLoginsDto.builder()
+                    .toList();
+            List<UserLoginsDto> userLoginsDto = userLogins.entrySet().stream()
+                    .map(entry -> UserLoginsDto.builder()
                             .userName(entry.getKey())
                             .lastLogin(entry.getValue())
                             .build())
-                    .collect(Collectors.toList());
+                    .toList();
             return DomainDashboardDto.builder()
                     .userLogins(userLoginsDto)
                     .applicationDeployed(sortedAppsDeployedDto)
@@ -133,6 +140,40 @@ public class DashboardServiceImpl implements DashboardService {
             log.error("Domain {} not present. Returning empty...", domainId);
             return DomainDashboardDto.builder().build();
         }
+    }
+    @Override
+    public DomainGroupDashboardDto getDomainGroupDashboard(Long groupId) {
+        DomainGroupDashboardDto result = new DomainGroupDashboardDto();
+        List<DomainGroupDashboardDto.DomainDto> domains = new ArrayList<>();
+        Map<String, OffsetDateTime> userLogins = new HashMap<>();
+        DomainGroupDto domainGroup = domainGroupService.getDomainGroup(groupId);
+
+        Set<User> groupUsers = new HashSet<>();
+
+
+        for(DomainBaseDto domain: domainGroup.getDomains()){
+            DomainDashboardDto domainDashboardDto = getDomainDashboard(domain.getId());
+            groupUsers.addAll(domainService.getMembers(domain.getId()));
+            domains.add(
+                    new DomainGroupDashboardDto.DomainDto(
+                    domain.getName(),
+                    domainDashboardDto.getApplicationDeployed(),
+                    domainDashboardDto.getApplicationUpgradeStatus())
+            );
+        }
+        groupUsers.forEach(user -> {
+            Optional<UserLoginRegister> register = userLoginRegisterService.getLastLogin(user);
+            register.ifPresent(userLoginRegister -> userLogins.put(getUserPreferredUsername(user), userLoginRegister.getDate()));
+        });
+        List<UserLoginsDto> userLoginsDto = userLogins.entrySet().stream()
+                .map(entry -> UserLoginsDto.builder()
+                        .userName(entry.getKey())
+                        .lastLogin(entry.getValue())
+                        .build())
+                .toList();
+        result.setDomains(domains);
+        result.setUserLogins(userLoginsDto);
+        return result;
     }
 
     @Override

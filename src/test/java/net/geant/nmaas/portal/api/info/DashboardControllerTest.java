@@ -1,15 +1,18 @@
 package net.geant.nmaas.portal.api.info;
 
+import net.geant.nmaas.api.dto.dashboard.DashboardDto;
+import net.geant.nmaas.api.dto.dashboard.DomainDashboardDto;
 import net.geant.nmaas.portal.api.dashboard.DashboardController;
-import net.geant.nmaas.portal.api.dashboard.DashboardDto;
-import net.geant.nmaas.portal.api.dashboard.DomainDashboardDto;
 import net.geant.nmaas.portal.service.DashboardService;
 import org.junit.jupiter.api.Test;
 
 import java.time.OffsetDateTime;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class DashboardControllerTest {
 
