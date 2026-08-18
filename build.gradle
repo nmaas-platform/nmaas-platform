@@ -158,44 +158,29 @@ test {
     }
 }
 
-tasks.register('integrationTestOnly', Test) {
-    useJUnitPlatform()
-    testClassesDirs = sourceSets.integrationTest.output.classesDirs
-    classpath = sourceSets.integrationTest.runtimeClasspath
-    outputs.upToDateWhen { false }
-    addTestListener(testLoggingListener)
+['integrationTest', 'integrationTestOnly'].each { name ->
+    tasks.register(name, Test) {
+        useJUnitPlatform()
+        testClassesDirs = sourceSets.integrationTest.output.classesDirs
+        classpath = sourceSets.integrationTest.runtimeClasspath
+        outputs.upToDateWhen { false }
+        addTestListener(testLoggingListener)
 
-    minHeapSize = "512m"
-    maxHeapSize = "2g"
-    maxParallelForks = 1
-    jvmArgs '-XX:+HeapDumpOnOutOfMemoryError', '-XX:HeapDumpPath=build/heapdumps'
+        minHeapSize = "512m"
+        maxHeapSize = "2g"
+        maxParallelForks = 1
+        jvmArgs '-XX:+HeapDumpOnOutOfMemoryError', '-XX:HeapDumpPath=build/heapdumps'
 
-    jacoco {
-        destinationFile = layout.buildDirectory.file("jacoco/integrationTest.exec").get().asFile
-        excludes = [
-                '**/exceptions/**'
-        ]
+        jacoco {
+            destinationFile = layout.buildDirectory.file("jacoco/integrationTest.exec").get().asFile
+            excludes = [
+                    '**/exceptions/**'
+            ]
+        }
     }
 }
 
-tasks.register('integrationTest', Test) {
-    useJUnitPlatform()
-    testClassesDirs = sourceSets.integrationTest.output.classesDirs
-    classpath = sourceSets.integrationTest.runtimeClasspath
-    outputs.upToDateWhen { false }
-    addTestListener(testLoggingListener)
-
-    minHeapSize = "512m"
-    maxHeapSize = "2g"
-    maxParallelForks = 1
-    jvmArgs '-XX:+HeapDumpOnOutOfMemoryError', '-XX:HeapDumpPath=build/heapdumps'
-
-    jacoco {
-        destinationFile = layout.buildDirectory.file("jacoco/integrationTest.exec").get().asFile
-        excludes = [
-                '**/exceptions/**'
-        ]
-    }
+tasks.named('integrationTest') {
     dependsOn(test)
 }
 
