@@ -44,8 +44,9 @@ Script will load the following data:
 + set of content translation data (from *src/test/shell/data/i18n*)
 + set of default email templates (from *src/test/shell/data/mails*)
 + set of default contact form templates (from *src/test/shell/data/contact_forms*)
-+ set of test nmaas user domains (from *src/test/shell/data/domains*)
-+ set of nmaas-compatible application definitions with test subscriptions and comments (from *src/test/shell/data/apps*)
++ set of nmaas-compatible application definitions (from *src/test/shell/data/apps*)
+
+Please note that translations, email templates, and contact forms are loaded from the *src/test/shell/data* directory using relative paths, while application definitions are loaded from the */nmaas/init/data/apps* absolute path by *src/test/shell/scripts/app.sh* (a path typically mounted in the container runtime).
 
 
 ### Complete deployment environment setup for Kubernetes
