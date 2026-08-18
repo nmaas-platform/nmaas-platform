@@ -1,8 +1,8 @@
 package net.geant.nmaas.portal.service;
 
-import net.geant.nmaas.api.dto.DashboardDto;
-import net.geant.nmaas.api.dto.DomainDashboardDto;
-import net.geant.nmaas.api.dto.DomainGroupDashboardDto;
+import net.geant.nmaas.api.dto.dashboard.DashboardDto;
+import net.geant.nmaas.api.dto.dashboard.DomainDashboardDto;
+import net.geant.nmaas.api.dto.dashboard.DomainGroupDashboardDto;
 
 import java.time.OffsetDateTime;
 
