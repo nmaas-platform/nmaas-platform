@@ -7,7 +7,7 @@ stages:
 
 test:
   stage: test
-  image: eclipse-temurin:21.0.11_10-jdk-alpine
+  image: eclipse-temurin:21.0.12_8-jdk-alpine
   tags:
     - docker
   script:
@@ -16,7 +16,7 @@ test:
 
 sonar:
   stage: sonar
-  image: eclipse-temurin:21.0.11_10-jdk-alpine
+  image: eclipse-temurin:21.0.12_8-jdk-alpine
   only:
     - develop
     - /^release/
@@ -64,7 +64,7 @@ build_and_push_release_image:
 
 generate_api_docs:
   stage: api-docs
-  image: eclipse-temurin:21.0.11_10-jdk-alpine
+  image: eclipse-temurin:21.0.12_8-jdk-alpine
   only:
     - develop
     - /^release/
@@ -102,7 +102,7 @@ sync_api_docs:
 
 mend:
   stage: mend
-  image: eclipse-temurin:21.0.11_10-jdk-jammy
+  image: eclipse-temurin:21.0.12_8-jdk-jammy
   only:
     - /^release/
   variables:
