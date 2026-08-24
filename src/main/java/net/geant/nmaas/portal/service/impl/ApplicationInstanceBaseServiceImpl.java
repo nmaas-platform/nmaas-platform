@@ -2,10 +2,12 @@ package net.geant.nmaas.portal.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.orchestration.AppDeploymentMonitor;
-import net.geant.nmaas.orchestration.AppLifecycleState;
 import net.geant.nmaas.api.dto.applications.AppInstanceBase;
 import net.geant.nmaas.api.dto.applications.AppInstanceState;
+import net.geant.nmaas.api.dto.applications.ServiceAccessMethodTypeDto;
+import net.geant.nmaas.orchestration.AppDeploymentMonitor;
+import net.geant.nmaas.orchestration.AppLifecycleState;
+import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.portal.persistence.entity.AppInstance;
 import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.entity.User;
@@ -34,7 +36,6 @@ public class ApplicationInstanceBaseServiceImpl implements ApplicationInstanceBa
     protected final ApplicationBaseService appBaseService;
     private final AppDeploymentMonitor appDeploymentMonitor;
     private final ApplicationInstanceService instanceService;
-
 
     @Override
     public Page<AppInstanceBase> findAll(Pageable pageable) {
@@ -186,7 +187,20 @@ public class ApplicationInstanceBaseServiceImpl implements ApplicationInstanceBa
             ai.setUpgradePossible(instanceService.checkUpgradePossible(appInstance.getId()));
         }
 
+        ai.setExternalAccessEnabled(hasExternalOrDefaultAccessMethod(appInstance.getInternalId()));
+
         return ai;
+    }
+
+    private boolean hasExternalOrDefaultAccessMethod(Identifier internalId) {
+        try {
+            return appDeploymentMonitor.userAccessDetails(internalId).getServiceAccessMethods().stream()
+                    .anyMatch(accessMethod ->
+                            ServiceAccessMethodTypeDto.EXTERNAL.equals(accessMethod.getType())
+                                    || ServiceAccessMethodTypeDto.DEFAULT.equals(accessMethod.getType()));
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public static AppInstanceState mapAppInstanceState(AppLifecycleState state) {
@@ -288,11 +302,12 @@ public class ApplicationInstanceBaseServiceImpl implements ApplicationInstanceBa
                 .toList();
         return new PageImpl<>(filtered, pageable, page.getTotalElements());
     }
-    private Pageable mapPageable(Pageable pageable){
+
+    private Pageable mapPageable(Pageable pageable) {
         Sort mapped = Sort.by(
                 pageable.getSort().stream().map(order -> {
                     String p = order.getProperty();
-                    String mappedProp = switch (p){
+                    String mappedProp = switch (p) {
                         case "owner" -> "owner.username";
                         case "state" -> "l.state";
                         case "application" -> "application.name";
