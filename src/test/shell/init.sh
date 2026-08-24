@@ -10,7 +10,7 @@ until $(curl --output /dev/null --silent --head --fail http://localhost:9000/act
     sleep 1s
 done
 
-export API_URL=http://localhost:9000/api
+export API_URL=http://localhost:9000/api/v1
 
 echo nmaas API: $API_URL
 echo ----------------------
