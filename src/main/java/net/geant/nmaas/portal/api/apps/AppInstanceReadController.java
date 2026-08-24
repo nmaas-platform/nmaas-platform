@@ -11,6 +11,7 @@ import net.geant.nmaas.api.dto.applications.AppInstanceState;
 import net.geant.nmaas.api.dto.applications.AppInstanceStatus;
 import net.geant.nmaas.api.dto.applications.ApplicationBaseDto;
 import net.geant.nmaas.api.dto.applications.ConfigWizardTemplateDto;
+import net.geant.nmaas.api.dto.applications.ServiceAccessMethodTypeDto;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.AppLifecycleState;
@@ -497,7 +498,20 @@ public class AppInstanceReadController extends AppBaseController {
             ai.setUpgradePossible(applicationInstanceService.checkUpgradePossible(appInstance.getId()));
         }
 
+        ai.setExternalAccessEnabled(hasExternalOrDefaultAccessMethod(appInstance.getInternalId()));
+
         return ai;
+    }
+
+    private boolean hasExternalOrDefaultAccessMethod(Identifier internalId) {
+        try {
+            return appDeploymentMonitor.userAccessDetails(internalId).getServiceAccessMethods().stream()
+                    .anyMatch(accessMethod ->
+                            ServiceAccessMethodTypeDto.EXTERNAL.equals(accessMethod.getType())
+                                    || ServiceAccessMethodTypeDto.DEFAULT.equals(accessMethod.getType()));
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     private AppInstanceDto addAppInstanceProperties(AppInstanceDto ai, AppInstance appInstance) {

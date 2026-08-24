@@ -7,6 +7,8 @@ import net.geant.nmaas.api.dto.applications.AppInstanceExtendedDto;
 import net.geant.nmaas.api.dto.applications.AppInstanceState;
 import net.geant.nmaas.api.dto.applications.AppInstanceStatus;
 import net.geant.nmaas.api.dto.applications.ApplicationCompleteDto;
+import net.geant.nmaas.api.dto.applications.ServiceAccessMethodDto;
+import net.geant.nmaas.api.dto.applications.ServiceAccessMethodTypeDto;
 import net.geant.nmaas.api.dto.domains.DomainBaseDto;
 import net.geant.nmaas.api.dto.users.UserBaseDto;
 import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
@@ -15,6 +17,7 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.en
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.AppLifecycleState;
+import net.geant.nmaas.orchestration.AppUiAccessDetails;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
@@ -57,6 +60,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -163,7 +167,7 @@ class AppInstanceReadControllerTest {
         AppInstanceBase appInstanceView = result.getContent().getFirst();
         assertEquals(NAME, appInstanceView.getApplicationName());
         assertEquals(owner.getUsername(), appInstanceView.getOwner().getUsername());
-        assertTrue(appInstanceView.isAutoUpgradesEnabled());
+        assertTrue(appInstanceView.getAutoUpgradesEnabled());
     }
 
     @Test
@@ -216,7 +220,7 @@ class AppInstanceReadControllerTest {
         AppInstanceBase appInstanceView = result.getFirst();
         assertEquals(NAME, appInstanceView.getApplicationName());
         assertEquals(admin.getUsername(), appInstanceView.getOwner().getUsername());
-        assertFalse(appInstanceView.isAutoUpgradesEnabled());
+        assertFalse(appInstanceView.getAutoUpgradesEnabled());
     }
 
     @Test
@@ -380,6 +384,70 @@ class AppInstanceReadControllerTest {
         AppInstanceStatus ais = appInstanceReadController.getState(1L, principal);
 
         assertEquals(appInstance.getId(), ais.appInstanceId());
+    }
+
+    @Test
+    void shouldSetExternalAccessEnabledTrueWhenInstanceHasExternalAccessMethod() {
+        AppInstance running = appInstance("running", 1L, domain1, admin, "running-id");
+        when(applicationInstanceService.findAll()).thenReturn(List.of(running));
+        when(appDeploymentMonitor.state(running.getInternalId())).thenReturn(AppLifecycleState.APPLICATION_DEPLOYMENT_VERIFIED);
+        doReturn(new AppUiAccessDetails(new HashSet<>(Set.of(
+                accessMethod(ServiceAccessMethodTypeDto.EXTERNAL, "ui", "https", "https://app.example.com"),
+                accessMethod(ServiceAccessMethodTypeDto.INTERNAL, "ssh", "ssh", "ssh://app.example.com")
+        )))).when(appDeploymentMonitor).userAccessDetails(running.getInternalId());
+
+        List<AppInstanceBase> result = appInstanceReadController.getAllInstances((String) null);
+
+        assertEquals(1, result.size());
+        assertTrue(result.getFirst().getExternalAccessEnabled());
+    }
+
+    @Test
+    void shouldSetExternalAccessEnabledTrueWhenInstanceHasDefaultAccessMethod() {
+        AppInstance running = appInstance("running", 1L, domain1, admin, "running-id");
+        when(applicationInstanceService.findAll()).thenReturn(List.of(running));
+        when(appDeploymentMonitor.state(running.getInternalId())).thenReturn(AppLifecycleState.APPLICATION_DEPLOYMENT_VERIFIED);
+        doReturn(new AppUiAccessDetails(new HashSet<>(Set.of(
+                accessMethod(ServiceAccessMethodTypeDto.DEFAULT, "ui", "https", "https://app.example.com")
+        )))).when(appDeploymentMonitor).userAccessDetails(running.getInternalId());
+
+        List<AppInstanceBase> result = appInstanceReadController.getAllInstances((String) null);
+
+        assertEquals(1, result.size());
+        assertTrue(result.getFirst().getExternalAccessEnabled());
+    }
+
+    @Test
+    void shouldSetExternalAccessEnabledFalseWhenInstanceHasNoExternalOrDefaultAccessMethod() {
+        AppInstance running = appInstance("running", 1L, domain1, admin, "running-id");
+        when(applicationInstanceService.findAll()).thenReturn(List.of(running));
+        when(appDeploymentMonitor.state(running.getInternalId())).thenReturn(AppLifecycleState.APPLICATION_DEPLOYMENT_VERIFIED);
+        doReturn(new AppUiAccessDetails(new HashSet<>(Set.of(
+                accessMethod(ServiceAccessMethodTypeDto.INTERNAL, "ssh", "ssh", "ssh://app.example.com"),
+                accessMethod(ServiceAccessMethodTypeDto.LOCAL, "local", "http", "http://app.local")
+        )))).when(appDeploymentMonitor).userAccessDetails(running.getInternalId());
+
+        List<AppInstanceBase> result = appInstanceReadController.getAllInstances((String) null);
+
+        assertEquals(1, result.size());
+        assertFalse(result.getFirst().getExternalAccessEnabled());
+    }
+
+    @Test
+    void shouldSetExternalAccessEnabledFalseWhenAccessDetailsNotAvailable() {
+        AppInstance running = appInstance("running", 1L, domain1, admin, "running-id");
+        when(applicationInstanceService.findAll()).thenReturn(List.of(running));
+        when(appDeploymentMonitor.state(running.getInternalId())).thenReturn(AppLifecycleState.APPLICATION_DEPLOYMENT_VERIFIED);
+        // userAccessDetails(any()) already stubbed to throw in setup()
+
+        List<AppInstanceBase> result = appInstanceReadController.getAllInstances((String) null);
+
+        assertEquals(1, result.size());
+        assertFalse(result.getFirst().getExternalAccessEnabled());
+    }
+
+    private ServiceAccessMethodDto accessMethod(ServiceAccessMethodTypeDto type, String name, String protocol, String url) {
+        return new ServiceAccessMethodDto(type, name, protocol, url);
     }
 
     private AppInstance appInstance(String name, Long id, Domain domain, User owner, String internalId) {
