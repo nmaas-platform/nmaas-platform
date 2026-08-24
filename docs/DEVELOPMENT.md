@@ -2,7 +2,7 @@
 
 ### Technologies
 
-* Java 21
+* Java 25
 * Spring Boot 4
 * Gitlab4j
 * Kubernetes API client from fabric8
@@ -12,7 +12,7 @@
 ### Running nmaas Platform on local machine
 
 #### Prerequisites
-Install Java 21 jdk
+Install Java 25 jdk
 
 #### Running the software
 To build and run the nmaas Platform software locally, execute *./gradlew bootRun* in the project root directory.

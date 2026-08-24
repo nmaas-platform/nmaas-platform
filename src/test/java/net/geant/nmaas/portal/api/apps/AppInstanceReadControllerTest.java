@@ -163,7 +163,7 @@ class AppInstanceReadControllerTest {
         AppInstanceBase appInstanceView = result.getContent().getFirst();
         assertEquals(NAME, appInstanceView.getApplicationName());
         assertEquals(owner.getUsername(), appInstanceView.getOwner().getUsername());
-        assertTrue(appInstanceView.isAutoUpgradesEnabled());
+        assertTrue(appInstanceView.getAutoUpgradesEnabled());
     }
 
     @Test
@@ -216,7 +216,7 @@ class AppInstanceReadControllerTest {
         AppInstanceBase appInstanceView = result.getFirst();
         assertEquals(NAME, appInstanceView.getApplicationName());
         assertEquals(admin.getUsername(), appInstanceView.getOwner().getUsername());
-        assertFalse(appInstanceView.isAutoUpgradesEnabled());
+        assertFalse(appInstanceView.getAutoUpgradesEnabled());
     }
 
     @Test
