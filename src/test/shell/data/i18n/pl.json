@@ -356,6 +356,7 @@
     "UNDEPLOYED_VISIBLE": "Pokaż zatrzymane instancje",
     "SORT": "Sortuj",
     "SHOW_CONFIG_BUTTON" : "Pokaż konfigurację",
+    "ACCESS": "Dostęp",
     "MANUAL_UPDATE" : {
       "HEADER" : "Ręczna zmiana wersji",
       "BODY" : "Aktualizacja wersji aplikacji dla instacji zgodnie z procesem aktualizacji przeprowadzonym ręcznie. Wybierz odpowiednią wersję z poniższej listy.",
