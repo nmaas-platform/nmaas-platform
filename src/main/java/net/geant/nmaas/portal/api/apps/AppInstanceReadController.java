@@ -11,6 +11,7 @@ import net.geant.nmaas.api.dto.applications.AppInstanceState;
 import net.geant.nmaas.api.dto.applications.AppInstanceStatus;
 import net.geant.nmaas.api.dto.applications.ApplicationBaseDto;
 import net.geant.nmaas.api.dto.applications.ConfigWizardTemplateDto;
+import net.geant.nmaas.api.dto.applications.ServiceAccessMethodDto;
 import net.geant.nmaas.api.dto.applications.ServiceAccessMethodTypeDto;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
@@ -506,12 +507,25 @@ public class AppInstanceReadController extends AppBaseController {
     private boolean hasExternalOrDefaultAccessMethod(Identifier internalId) {
         try {
             return appDeploymentMonitor.userAccessDetails(internalId).getServiceAccessMethods().stream()
-                    .anyMatch(accessMethod ->
-                            ServiceAccessMethodTypeDto.EXTERNAL.equals(accessMethod.getType())
-                                    || ServiceAccessMethodTypeDto.DEFAULT.equals(accessMethod.getType()));
+                    .anyMatch(this::isExternallyAccessible);
         } catch (Exception e) {
             return false;
         }
+    }
+
+    /**
+     * An access method exposes the application externally when it is of type {@link ServiceAccessMethodTypeDto#EXTERNAL}
+     * or {@link ServiceAccessMethodTypeDto#DEFAULT}. A {@link ServiceAccessMethodTypeDto#PUBLIC} method is also
+     * externally accessible, but only once its external URL has been populated (a public method without a URL is not
+     * reachable from the outside).
+     */
+    private boolean isExternallyAccessible(ServiceAccessMethodDto accessMethod) {
+        ServiceAccessMethodTypeDto type = accessMethod.getType();
+        if (ServiceAccessMethodTypeDto.EXTERNAL.equals(type) || ServiceAccessMethodTypeDto.DEFAULT.equals(type)) {
+            return true;
+        }
+        return ServiceAccessMethodTypeDto.PUBLIC.equals(type)
+                && accessMethod.getUrl() != null && !accessMethod.getUrl().isBlank();
     }
 
     private AppInstanceDto addAppInstanceProperties(AppInstanceDto ai, AppInstance appInstance) {

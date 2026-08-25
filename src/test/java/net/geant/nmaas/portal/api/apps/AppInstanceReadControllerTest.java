@@ -434,6 +434,36 @@ class AppInstanceReadControllerTest {
     }
 
     @Test
+    void shouldSetExternalAccessEnabledTrueWhenInstanceHasPublicAccessMethodWithUrl() {
+        AppInstance running = appInstance("running", 1L, domain1, admin, "running-id");
+        when(applicationInstanceService.findAll()).thenReturn(List.of(running));
+        when(appDeploymentMonitor.state(running.getInternalId())).thenReturn(AppLifecycleState.APPLICATION_DEPLOYMENT_VERIFIED);
+        doReturn(new AppUiAccessDetails(new HashSet<>(Set.of(
+                accessMethod(ServiceAccessMethodTypeDto.PUBLIC, "public", "https", "https://app.public.example.com")
+        )))).when(appDeploymentMonitor).userAccessDetails(running.getInternalId());
+
+        List<AppInstanceBase> result = appInstanceReadController.getAllInstances((String) null);
+
+        assertEquals(1, result.size());
+        assertTrue(result.getFirst().getExternalAccessEnabled());
+    }
+
+    @Test
+    void shouldSetExternalAccessEnabledFalseWhenInstanceHasPublicAccessMethodWithoutUrl() {
+        AppInstance running = appInstance("running", 1L, domain1, admin, "running-id");
+        when(applicationInstanceService.findAll()).thenReturn(List.of(running));
+        when(appDeploymentMonitor.state(running.getInternalId())).thenReturn(AppLifecycleState.APPLICATION_DEPLOYMENT_VERIFIED);
+        doReturn(new AppUiAccessDetails(new HashSet<>(Set.of(
+                accessMethod(ServiceAccessMethodTypeDto.PUBLIC, "public", "https", null)
+        )))).when(appDeploymentMonitor).userAccessDetails(running.getInternalId());
+
+        List<AppInstanceBase> result = appInstanceReadController.getAllInstances((String) null);
+
+        assertEquals(1, result.size());
+        assertFalse(result.getFirst().getExternalAccessEnabled());
+    }
+
+    @Test
     void shouldSetExternalAccessEnabledFalseWhenAccessDetailsNotAvailable() {
         AppInstance running = appInstance("running", 1L, domain1, admin, "running-id");
         when(applicationInstanceService.findAll()).thenReturn(List.of(running));
