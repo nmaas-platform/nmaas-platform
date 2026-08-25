@@ -355,6 +355,7 @@
     "HIDE_UNDEPLOYED": "Hide undeployed instances",
     "UNDEPLOYED_VISIBLE": "Show undeployed",
     "SORT": "Sort",
+    "ACCESS": "Access",
     "SHOW_CONFIG_BUTTON": "Show configuration",
     "MANUAL_UPDATE": {
       "HEADER": "Manual version update",
