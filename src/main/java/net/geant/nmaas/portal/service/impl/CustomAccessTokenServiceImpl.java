@@ -54,8 +54,8 @@ public class CustomAccessTokenServiceImpl implements CustomAccessTokenService {
         UserApiTokenDto view = mapToView(token);
         token.setTokenValue(hashedValued);
         log.warn("Token value is: {}, hashed: {}", view.tokenValue(), hashedValued);
-        token = userApiTokenRepository.save(token);
-        return mapToView(token);
+        userApiTokenRepository.save(token);
+        return view;
     }
 
     @Override
