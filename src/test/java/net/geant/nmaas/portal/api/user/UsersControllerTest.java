@@ -22,6 +22,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.security.Principal;
@@ -32,6 +35,8 @@ import java.util.Optional;
 import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -439,6 +444,40 @@ class UsersControllerTest {
         when(instanceService.findAllByOwner(tester.getId())).thenReturn(new ArrayList<>());
         usersController.deleteUser(tester.getId());
         verify(userService, times(1)).deleteById(tester.getId());
+    }
+
+    @Test
+    void shouldApplyNullsFirstForAscendingLoginDateSort() {
+        Pageable input = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "firstLoginDate"));
+        Pageable output = UsersController.withNullsFirstLoginDateSort(input);
+        Sort.Order order = output.getSort().getOrderFor("firstLoginDate");
+        assertThat(order, is(notNullValue()));
+        assertEquals(Sort.NullHandling.NULLS_FIRST, order.getNullHandling());
+    }
+
+    @Test
+    void shouldApplyNullsLastForDescendingLoginDateSort() {
+        Pageable input = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "lastSuccessfulLoginDate"));
+        Pageable output = UsersController.withNullsFirstLoginDateSort(input);
+        Sort.Order order = output.getSort().getOrderFor("lastSuccessfulLoginDate");
+        assertThat(order, is(notNullValue()));
+        assertEquals(Sort.NullHandling.NULLS_LAST, order.getNullHandling());
+    }
+
+    @Test
+    void shouldNotAlterNullHandlingForOtherSortProperties() {
+        Pageable input = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id"));
+        Pageable output = UsersController.withNullsFirstLoginDateSort(input);
+        Sort.Order order = output.getSort().getOrderFor("id");
+        assertThat(order, is(notNullValue()));
+        assertEquals(Sort.NullHandling.NATIVE, order.getNullHandling());
+    }
+
+    @Test
+    void shouldLeaveUnsortedPageableUntouched() {
+        Pageable input = PageRequest.of(0, 10);
+        Pageable output = UsersController.withNullsFirstLoginDateSort(input);
+        assertEquals(input, output);
     }
 
 }
