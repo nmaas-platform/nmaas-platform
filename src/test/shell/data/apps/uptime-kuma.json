@@ -40,7 +40,7 @@
     "application": {
         "id": null,
         "name": "Uptime Kuma",
-        "version": "2.2.1",
+        "version": "2.5.0",
         "configWizardTemplate": {
             "template": {
                 "components": [
@@ -100,7 +100,7 @@
             "kubernetesTemplate": {
                 "chart": {
                     "name": "nmaas-uptimekuma",
-                    "version": "4.0.5"
+                    "version": "4.0.7"
                 }
             },
             "deployParameters": {
