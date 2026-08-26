@@ -247,4 +247,89 @@ class DefaultAppLifecycleManagerTest {
         assertThat(map.get("key2"), allOf(is(notNullValue()), is(equalTo("val2"))));
     }
 
+    @Test
+    void shouldFlattenNestedJsonIntoDottedBracketKeys() {
+        String json = "{"
+                + "\"persistence_dot_size\": \"8Gi\","
+                + "\"targets\": ["
+                + "  {"
+                + "    \"scrape_interval\": \"15s\","
+                + "    \"metrics_path\": \"/metrics\","
+                + "    \"Addresses\": ["
+                + "      {\"ipAddress\": \"1.1.1.1:1000\"},"
+                + "      {\"ipAddress\": \"2.2.2.2:2000\"}"
+                + "    ],"
+                + "    \"jobName\": \"job1\""
+                + "  },"
+                + "  {"
+                + "    \"jobName\": \"job2\","
+                + "    \"scrape_interval\": \"15s\","
+                + "    \"metrics_path\": \"/metrics\","
+                + "    \"Addresses\": ["
+                + "      {\"ipAddress\": \"3.3.3.3:3000\"}"
+                + "    ]"
+                + "  }"
+                + "]"
+                + "}";
+        Map<String, String> map = appLifecycleManager.getMapFromJson(json);
+        assertThat(map.size(), is(10));
+        assertThat(map.get("persistence_dot_size"), is(equalTo("8Gi")));
+        assertThat(map.get("targets[0].scrape_interval"), is(equalTo("15s")));
+        assertThat(map.get("targets[0].metrics_path"), is(equalTo("/metrics")));
+        assertThat(map.get("targets[0].Addresses[0].ipAddress"), is(equalTo("1.1.1.1:1000")));
+        assertThat(map.get("targets[0].Addresses[1].ipAddress"), is(equalTo("2.2.2.2:2000")));
+        assertThat(map.get("targets[0].jobName"), is(equalTo("job1")));
+        assertThat(map.get("targets[1].jobName"), is(equalTo("job2")));
+        assertThat(map.get("targets[1].Addresses[0].ipAddress"), is(equalTo("3.3.3.3:3000")));
+    }
+
+    @Test
+    void shouldHandleEmptyAndNullJsonInput() {
+        assertThat(appLifecycleManager.getMapFromJson(null).isEmpty(), is(true));
+        assertThat(appLifecycleManager.getMapFromJson("").isEmpty(), is(true));
+        assertThat(appLifecycleManager.getMapFromJson("null").isEmpty(), is(true));
+        assertThat(appLifecycleManager.getMapFromJson("{}").isEmpty(), is(true));
+    }
+
+    @Test
+    void shouldSkipNullLeafValuesWhenFlattening() {
+        String json = "{\"a\": \"1\", \"b\": null, \"c\": {\"d\": null, \"e\": \"2\"}}";
+        Map<String, String> map = appLifecycleManager.getMapFromJson(json);
+        assertThat(map.size(), is(2));
+        assertThat(map.get("a"), is(equalTo("1")));
+        assertThat(map.get("c.e"), is(equalTo("2")));
+        assertThat(map.containsKey("b"), is(false));
+        assertThat(map.containsKey("c.d"), is(false));
+    }
+
+    @Test
+    void shouldIndexArrayElementsWithBracketsWhenFlattening() {
+        // arrays are turned into multiple map entries, one per element, using
+        // a zero-based index inside square brackets appended to the key prefix
+        String json = "{"
+                + "\"targets\": ["
+                + "  {\"jobName\": \"job1\", \"Addresses\": ["
+                + "      {\"ipAddress\": \"1.1.1.1:1000\"},"
+                + "      {\"ipAddress\": \"2.2.2.2:2000\"}"
+                + "  ]},"
+                + "  {\"jobName\": \"job2\", \"Addresses\": ["
+                + "      {\"ipAddress\": \"3.3.3.3:3000\"}"
+                + "  ]}"
+                + "],"
+                + "\"simple\": [\"a\", \"b\", \"c\"]"
+                + "}";
+        Map<String, String> map = appLifecycleManager.getMapFromJson(json);
+        // each array element becomes its own bracketed entry -> no value is lost
+        assertThat(map.size(), is(8));
+        assertThat(map.get("targets[0].jobName"), is(equalTo("job1")));
+        assertThat(map.get("targets[0].Addresses[0].ipAddress"), is(equalTo("1.1.1.1:1000")));
+        assertThat(map.get("targets[0].Addresses[1].ipAddress"), is(equalTo("2.2.2.2:2000")));
+        assertThat(map.get("targets[1].jobName"), is(equalTo("job2")));
+        assertThat(map.get("targets[1].Addresses[0].ipAddress"), is(equalTo("3.3.3.3:3000")));
+        // arrays of scalars are indexed the same way
+        assertThat(map.get("simple[0]"), is(equalTo("a")));
+        assertThat(map.get("simple[1]"), is(equalTo("b")));
+        assertThat(map.get("simple[2]"), is(equalTo("c")));
+    }
+
 }

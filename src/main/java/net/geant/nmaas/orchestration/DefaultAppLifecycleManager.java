@@ -32,7 +32,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.core.JacksonException;
-import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -240,11 +239,40 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
             return Collections.emptyMap();
         }
         try {
-            Map<String, String> mappedParameters = jsonMapper.readValue(inputJson, new TypeReference<Map<String, String>>() {
-            });
-            return mappedParameters != null ? mappedParameters : Collections.emptyMap();
+            JsonNode root = jsonMapper.readTree(inputJson);
+            if (root == null || root.isNull()) {
+                return Collections.emptyMap();
+            }
+            Map<String, String> mappedParameters = new HashMap<>();
+            flattenJsonNode("", root, mappedParameters);
+            return mappedParameters;
         } catch (JacksonException e) {
             throw new UserConfigHandlingException("Wasn't able to map additional parameters to model map -> " + e.getMessage());
+        }
+    }
+
+    /**
+     * Recursively flattens a JSON tree into a flat {@code Map<String, String>}
+     * using Helm-compatible dotted/bracket key notation, so that nested objects
+     * and arrays are represented as leaf entries (e.g. {@code targets[0].Addresses[0].ipAddress}).
+     */
+    private void flattenJsonNode(String prefix, JsonNode node, Map<String, String> result) {
+        if (node.isObject()) {
+            for (var entry : node.properties()) {
+                String key = prefix.isEmpty() ? entry.getKey() : prefix + "." + entry.getKey();
+                flattenJsonNode(key, entry.getValue(), result);
+            }
+        } else if (node.isArray()) {
+            for (int i = 0; i < node.size(); i++) {
+                String key = prefix + "[" + i + "]";
+                flattenJsonNode(key, node.get(i), result);
+            }
+        } else {
+            // leaf value: nulls are skipped to mirror the empty-value filtering
+            // applied later by preprocessParameters(Map)
+            if (!node.isNull()) {
+                result.put(prefix, node.asText());
+            }
         }
     }
 
