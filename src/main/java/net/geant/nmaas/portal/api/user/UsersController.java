@@ -38,7 +38,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -174,7 +176,7 @@ public class UsersController {
     public Page<UserListEntryDto> getUsersList(@PageableDefault(page = 0, size = 15, sort = "id") Pageable pageable,
                                                @RequestParam(required = false) String searchValue,
                                                Principal principal) {
-        return userEntryListRepository.findAll(searchValue, pageable)
+        return userEntryListRepository.findAll(searchValue, withNullsFirstLoginDateSort(pageable))
                 .map(UserListEntry::toDto);
     }
 
@@ -183,8 +185,35 @@ public class UsersController {
     public Page<UserListEntryDto> getUsersListDomain(@PageableDefault(page = 0, size = 15, sort = "id") Pageable pageable,
                                                      @RequestParam(required = false) String searchValue,
                                                      @PathVariable Long domainId) {
-        return userEntryListRepository.findAllByDomainId(domainId, searchValue, pageable)
+        return userEntryListRepository.findAllByDomainId(domainId, searchValue, withNullsFirstLoginDateSort(pageable))
                 .map(UserListEntry::toDto);
+    }
+
+    /**
+     * Login date columns whose NULL values must be treated as the oldest when
+     * sorting.
+     */
+    private static final Set<String> NULLS_FIRST_SORT_PROPERTIES =
+            Set.of("firstLoginDate", "lastSuccessfulLoginDate");
+
+    /**
+     * Returns a {@link Pageable} equivalent to the given one but whose
+     * {@code firstLoginDate}/{@code lastSuccessfulLoginDate} sort orders carry
+     * explicit NULL handling
+     */
+    static Pageable withNullsFirstLoginDateSort(Pageable pageable) {
+        if (pageable.isUnpaged() || pageable.getSort().isUnsorted()) {
+            return pageable;
+        }
+        Sort rewritten = Sort.by(pageable.getSort().stream()
+                .map(order -> {
+                    if (!NULLS_FIRST_SORT_PROPERTIES.contains(order.getProperty())) {
+                        return order;
+                    }
+                    return order.getDirection().isDescending() ? order.nullsLast() : order.nullsFirst();
+                })
+                .toList());
+        return PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), rewritten);
     }
 
     @GetMapping(value = "/users/{userId}")
