@@ -106,7 +106,7 @@ dependencies {
     implementation("org.flywaydb:flyway-database-postgresql")
 
     // Templates
-    implementation('org.freemarker:freemarker:2.3.34')
+    implementation('org.freemarker:freemarker:2.3.35')
 
     implementation('com.vdurmont:semver4j:3.1.0')
 
