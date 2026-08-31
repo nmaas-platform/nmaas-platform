@@ -57,6 +57,7 @@ public class DomainGroupRepositorySortingIntTest {
         beta = domainGroupRepository.save(new DomainGroup("Beta Group", "beta"));
 
         manager = new User("groupsortmanager", true, "pass123", domain, Role.ROLE_USER);
+        manager.setEmail("groupsortmanager@nmaas.test");
         manager = userRepository.save(manager);
 
         alpha.setManagers(List.of(manager));
