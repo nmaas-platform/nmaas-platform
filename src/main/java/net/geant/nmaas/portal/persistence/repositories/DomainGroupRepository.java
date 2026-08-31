@@ -3,7 +3,6 @@ package net.geant.nmaas.portal.persistence.repositories;
 import net.geant.nmaas.api.dto.domains.DomainGroupBaseDto;
 import net.geant.nmaas.portal.persistence.entity.DomainGroup;
 import net.geant.nmaas.portal.persistence.entity.User;
-import org.apache.commons.lang3.EnumUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -33,6 +32,7 @@ public interface DomainGroupRepository extends JpaRepository<DomainGroup, Long> 
             OR LOWER(dg.name) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%'))
             OR LOWER(dg.codename) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%')))
             GROUP BY dg.id, dg.name, dg.codename
+            ORDER BY LOWER(dg.name)
             """)
     List<DomainGroup> findAllWithSearch(@Param("search") String search);
 
@@ -45,6 +45,7 @@ public interface DomainGroupRepository extends JpaRepository<DomainGroup, Long> 
             OR LOWER(dg.name) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%'))
             OR LOWER(dg.codename) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%')))
             GROUP BY dg.id, dg.name, dg.codename
+            ORDER BY LOWER(dg.name)
             """)
     List<DomainGroup> findAllByManagersWithSearch(User manager, @Param("search") String search);
 
