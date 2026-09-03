@@ -28,14 +28,16 @@ public abstract class WebhookJob implements Job {
 
     protected void callWebhook(WebhookEventDto webhook, Object payload) {
         // throw WebServiceCommunicationException for any possible error in calling webhook
+        String requestBody = "";
         try {
+            requestBody = templateService.render(webhook.getTemplate(), payload);
             RestClient.RequestBodySpec request = restClient.post()
                     .uri(webhook.getTargetUrl())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .body(templateService.render(webhook.getTemplate(), payload));
+                    .body(requestBody);
 
             if (AUTHORIZATION_HEADER.equals(webhook.getAuthorizationHeader())) {
-                request.header("Authorization", "Bearer " + webhook.getTokenValue());
+                request.header(AUTHORIZATION_HEADER, "Bearer " + webhook.getTokenValue());
             } else if (webhook.getAuthorizationHeader() != null) {
                 request.header(webhook.getAuthorizationHeader(), webhook.getTokenValue());
             }
@@ -45,7 +47,7 @@ public abstract class WebhookJob implements Job {
                     .toEntity(String.class);
 
             String body = response.getBody();
-            webhookHistoryService.create(webhook, payload, response.getStatusCode().value(), body);
+            webhookHistoryService.create(webhook, payload, response.getStatusCode().value(), body, requestBody);
 
             if (!response.getStatusCode().is2xxSuccessful()) {
                 String errorMessage = "Webhook call failed with status: " + response.getStatusCode().value() + ", body: " + body;
@@ -57,11 +59,11 @@ public abstract class WebhookJob implements Job {
         } catch (Exception e) {
             log.error("Webhook call failed: {}", e.getMessage(), e);
             if (e instanceof WebServiceCommunicationException we) {
-                webhookHistoryService.create(webhook, payload, we.getResponseStatus(), we.getResponseBody());
+                webhookHistoryService.create(webhook, payload, we.getResponseStatus(), we.getResponseBody(), requestBody);
             } else if (e instanceof HttpClientErrorException he) {
-                webhookHistoryService.create(webhook, payload, he.getStatusCode().value(), he.getResponseBodyAsString());
+                webhookHistoryService.create(webhook, payload, he.getStatusCode().value(), he.getResponseBodyAsString(), requestBody);
             }
-            webhookHistoryService.create(webhook, payload, null, null);
+            webhookHistoryService.create(webhook, payload, null, null, requestBody);
             throw new WebServiceCommunicationException("Webhook call failed: " + e.getMessage());
         }
     }

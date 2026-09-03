@@ -15,7 +15,8 @@ public interface WebhookHistoryService {
             WebhookEventDto webhook,
             Object payload,
             Integer responseStatus,
-            String responseBody
+            String responseBody,
+            String requestBody
     );
 
     WebhookHistoryDto getById(Long id);
