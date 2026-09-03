@@ -34,8 +34,9 @@ public class WebhookHistoryServiceImpl implements WebhookHistoryService {
     private final ModelMapper modelMapper;
     private final JsonMapper jsonMapper;
 
+
     @Override
-    public void create(WebhookEventDto webhook, Object payload, Integer responseStatus, String responseBody) {
+    public void create(WebhookEventDto webhook, Object payload, Integer responseStatus, String responseBody, String requestBody) {
         WebhookHistory webhookHistory = new WebhookHistory();
         webhookHistory.setWebhookEventId(webhook.getId());
         webhookHistory.setEventType(WebhookEventType.from(webhook.getEventType()));
@@ -43,10 +44,14 @@ public class WebhookHistoryServiceImpl implements WebhookHistoryService {
             webhookHistory.setDomainCodename(webhook.getDomain().getCodename());
         }
         webhookHistory.setUrl(webhook.getTargetUrl());
-        try {
-            webhookHistory.setRequestBody(jsonMapper.writeValueAsString(payload));
-        } catch (JacksonException e) {
-            log.warn("Failed to write webhook request body to json String with error: {}", e.getMessage());
+        if(requestBody != null && !requestBody.isBlank()) {
+        webhookHistory.setRequestBody(requestBody);
+        }else{
+            try {
+                webhookHistory.setRequestBody(jsonMapper.writeValueAsString(payload));
+            } catch (JacksonException e) {
+                log.warn("Failed to write webhook request body to json String with error: {}", e.getMessage());
+            }
         }
         webhookHistory.setResponseStatus(responseStatus);
         webhookHistory.setResponseBody(responseBody);
