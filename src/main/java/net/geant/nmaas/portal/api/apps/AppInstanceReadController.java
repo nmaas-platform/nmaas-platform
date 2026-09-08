@@ -95,9 +95,11 @@ public class AppInstanceReadController extends AppBaseController {
     @GetMapping
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @Transactional
-    public List<AppInstanceBase> getAllInstances(@RequestParam(required = false) String status) {
+    public List<AppInstanceBase> getAllInstances(@RequestParam(required = false) String status,
+                                                 @RequestParam(required = false) Long remoteClusterId) {
         List<AppInstanceBase> result = applicationInstanceService.findAll().stream()
                 .map(this::mapAppInstanceBase)
+                .filter(instance -> matchesRemoteCluster(instance, remoteClusterId))
                 .toList();
         List<AppInstanceState> undeployedStates = List.of(AppInstanceState.REMOVED, AppInstanceState.DONE);
         if (status == null || status.equals("deployed")) {
@@ -138,15 +140,16 @@ public class AppInstanceReadController extends AppBaseController {
     public Page<AppInstanceBase> getMyAllInstances(@NotNull Principal principal,
                                                    @RequestParam(required = false) String status,
                                                    @RequestParam(required = false, defaultValue = "") String search,
+                                                   @RequestParam(required = false) Long remoteClusterId,
                                                    Pageable pageable) {
         logPageable(pageable);
         pageable = pageableValidator(pageable);
         User user = userService.findByUsername(principal.getName()).orElseThrow(() ->
                 new MissingElementException(MISSING_USER_MESSAGE));
         if (status != null) {
-            return instanceBaseService.findAllByOwner(user, pageable, status.equals("deployed"), search);
+            return instanceBaseService.findAllByOwner(user, pageable, status.equals("deployed"), search, remoteClusterId);
         }
-        return instanceBaseService.findAllByOwner(user, pageable, search);
+        return instanceBaseService.findAllByOwner(user, pageable, search, remoteClusterId);
     }
 
     @GetMapping("/domain/{domainId}")
@@ -154,7 +157,8 @@ public class AppInstanceReadController extends AppBaseController {
     @Transactional
     public List<AppInstanceBase> getAllInstances(@PathVariable Long domainId,
                                                  @NotNull Principal principal,
-                                                 @RequestParam(required = false) String status) {
+                                                 @RequestParam(required = false) String status,
+                                                 @RequestParam(required = false) Long remoteClusterId) {
         List<AppInstanceBase> result;
         Domain domain = domainService.findDomain(domainId)
                 .orElseThrow(() -> new MissingElementException(String.format(DOMAIN_NOT_FOUND_MESSAGE, domainId)));
@@ -164,10 +168,12 @@ public class AppInstanceReadController extends AppBaseController {
         if (this.isSystemAdminAndIsDomainGlobal(user, domainId)) {
             result = applicationInstanceService.findAll().stream()
                     .map(this::mapAppInstanceBase)
+                    .filter(instance -> matchesRemoteCluster(instance, remoteClusterId))
                     .toList();
         } else {
             result = applicationInstanceService.findAllByDomain(domain).stream()
                     .map(this::mapAppInstanceBase)
+                    .filter(instance -> matchesRemoteCluster(instance, remoteClusterId))
                     .toList();
         }
 
@@ -191,7 +197,8 @@ public class AppInstanceReadController extends AppBaseController {
                                                  @NotNull Principal principal,
                                                  Pageable pageable,
                                                  @RequestParam(required = false) String status,
-                                                 @RequestParam(required = false, defaultValue = "") String search) {
+                                                 @RequestParam(required = false, defaultValue = "") String search,
+                                                 @RequestParam(required = false) Long remoteClusterId) {
         logPageable(pageable);
         Domain domain = domainService.findDomain(domainId)
                 .orElseThrow(() -> new MissingElementException(String.format(DOMAIN_NOT_FOUND_MESSAGE, domainId)));
@@ -200,14 +207,14 @@ public class AppInstanceReadController extends AppBaseController {
 
         if (this.isSystemAdminAndIsDomainGlobal(user, domainId)) {
             if (status != null) {
-                return instanceBaseService.findAll(pageable, status.equals("deployed"), search);
+                return instanceBaseService.findAll(pageable, status.equals("deployed"), search, remoteClusterId);
             }
-            return instanceBaseService.findAll(pageable);
+            return instanceBaseService.findAll(pageable, remoteClusterId);
         } else {
             if (status != null) {
-                return instanceBaseService.findAllByDomain(domain, pageable, status.equals("deployed"), search);
+                return instanceBaseService.findAllByDomain(domain, pageable, status.equals("deployed"), search, remoteClusterId);
             }
-            return instanceBaseService.findAllByDomain(domain, pageable, search);
+            return instanceBaseService.findAllByDomain(domain, pageable, search, remoteClusterId);
         }
     }
 
@@ -215,7 +222,7 @@ public class AppInstanceReadController extends AppBaseController {
     @PreAuthorize("hasPermission(#domainId, 'domain', 'ANY')")
     @Transactional
     public List<AppInstanceDto> getRunningAppInstances(@PathVariable(value = "domainId") long domainId,
-                                                        @NotNull Principal principal) {
+                                                       @NotNull Principal principal) {
         Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new InvalidDomainException("Domain not found"));
         return getAllRunningByDomain(domain);
     }
@@ -224,8 +231,8 @@ public class AppInstanceReadController extends AppBaseController {
     @PreAuthorize("hasPermission(#domainId, 'domain', 'ANY')")
     @Transactional
     public Page<AppInstanceDto> getRunningAppInstances(@PathVariable(value = "domainId") long domainId,
-                                                        @NotNull Principal principal,
-                                                        Pageable pageable) {
+                                                       @NotNull Principal principal,
+                                                       Pageable pageable) {
         logPageable(pageable);
         pageable = pageableValidator(pageable);
         Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new InvalidDomainException("Domain not found"));
@@ -249,13 +256,15 @@ public class AppInstanceReadController extends AppBaseController {
     @Transactional
     public List<AppInstanceBase> getMyAllInstances(@PathVariable Long domainId,
                                                    @NotNull Principal principal,
-                                                   @RequestParam(required = false) String status) {
+                                                   @RequestParam(required = false) String status,
+                                                   @RequestParam(required = false) Long remoteClusterId) {
         User user = userService.findByUsername(principal.getName()).orElseThrow(() -> new UsernameNotFoundException(MISSING_USER_MESSAGE));
 
         if (this.isSystemAdminAndIsDomainGlobal(user, domainId)) {
             if (status != null && status.equals("deployed")) {
                 return applicationInstanceService.findAllByOwner(user).stream()
                         .map(this::mapAppInstanceBase)
+                        .filter(instance -> matchesRemoteCluster(instance, remoteClusterId))
                         .filter(appInstanceBase ->
                                 appInstanceBase.getState() != AppInstanceState.REMOVED &&
                                         appInstanceBase.getState() != AppInstanceState.DONE)
@@ -263,6 +272,7 @@ public class AppInstanceReadController extends AppBaseController {
             } else if (status != null && status.equals("undeployed")) {
                 return applicationInstanceService.findAllByOwner(user).stream()
                         .map(this::mapAppInstanceBase)
+                        .filter(instance -> matchesRemoteCluster(instance, remoteClusterId))
                         .filter(appInstanceBase ->
                                 appInstanceBase.getState() == AppInstanceState.REMOVED ||
                                         appInstanceBase.getState() == AppInstanceState.DONE)
@@ -270,22 +280,27 @@ public class AppInstanceReadController extends AppBaseController {
             }
             return applicationInstanceService.findAllByOwner(user).stream()
                     .map(this::mapAppInstanceBase)
+                    .filter(instance -> matchesRemoteCluster(instance, remoteClusterId))
                     .toList();
         } else {
             if (status != null && status.equals("deployed")) {
-                return getUserDomainAppInstances(domainId, principal.getName())
-                        .stream().filter(appInstanceBase ->
+                return getUserDomainAppInstances(domainId, principal.getName()).stream()
+                        .filter(instance -> matchesRemoteCluster(instance, remoteClusterId))
+                        .filter(appInstanceBase ->
                                 appInstanceBase.getState() != AppInstanceState.REMOVED &&
                                         appInstanceBase.getState() != AppInstanceState.DONE)
                         .toList();
             } else if (status != null && status.equals("undeployed")) {
-                return getUserDomainAppInstances(domainId, principal.getName())
-                        .stream().filter(appInstanceBase ->
+                return getUserDomainAppInstances(domainId, principal.getName()).stream()
+                        .filter(instance -> matchesRemoteCluster(instance, remoteClusterId))
+                        .filter(appInstanceBase ->
                                 appInstanceBase.getState() == AppInstanceState.REMOVED ||
                                         appInstanceBase.getState() == AppInstanceState.DONE)
                         .toList();
             }
-            return getUserDomainAppInstances(domainId, principal.getName());
+            return getUserDomainAppInstances(domainId, principal.getName()).stream()
+                    .filter(instance -> matchesRemoteCluster(instance, remoteClusterId))
+                    .toList();
         }
     }
 
@@ -296,21 +311,22 @@ public class AppInstanceReadController extends AppBaseController {
                                                    @NotNull Principal principal,
                                                    Pageable pageable,
                                                    @RequestParam(required = false) String status,
-                                                   @RequestParam(required = false, defaultValue = "") String search) {
+                                                   @RequestParam(required = false, defaultValue = "") String search,
+                                                   @RequestParam(required = false) Long remoteClusterId) {
         logPageable(pageable);
         pageable = pageableValidator(pageable);
         User user = userService.findByUsername(principal.getName()).orElseThrow(() -> new UsernameNotFoundException(MISSING_USER_MESSAGE));
 
         if (this.isSystemAdminAndIsDomainGlobal(user, domainId)) {
             if (status != null) {
-                return instanceBaseService.findAllByOwner(user, pageable, status.equals("deployed"), search);
+                return instanceBaseService.findAllByOwner(user, pageable, status.equals("deployed"), search, remoteClusterId);
             }
-            return instanceBaseService.findAllByOwner(user, pageable);
+            return instanceBaseService.findAllByOwner(user, pageable, remoteClusterId);
         } else {
             if (status != null) {
-                return getPageUserDomainAppInstances(domainId, principal.getName(), pageable, status.equals("deployed"), search);
+                return getPageUserDomainAppInstances(domainId, principal.getName(), pageable, status.equals("deployed"), search, remoteClusterId);
             }
-            return getPageUserDomainAppInstances(domainId, principal.getName(), pageable);
+            return getPageUserDomainAppInstances(domainId, principal.getName(), pageable, remoteClusterId);
         }
     }
 
@@ -396,6 +412,10 @@ public class AppInstanceReadController extends AppBaseController {
         return appDeploymentMonitor.state(app.getInternalId()).equals(AppLifecycleState.APPLICATION_DEPLOYMENT_VERIFIED);
     }
 
+    private boolean matchesRemoteCluster(AppInstanceBase instance, Long remoteClusterId) {
+        return remoteClusterId == null || remoteClusterId.equals(instance.getRemoteClusterId());
+    }
+
     private List<AppInstanceBase> getUserDomainAppInstances(Long domainId, String username) {
         Domain domain = domainService.findDomain(domainId)
                 .orElseThrow(() -> new MissingElementException(String.format(DOMAIN_NOT_FOUND_MESSAGE, domainId)));
@@ -409,23 +429,31 @@ public class AppInstanceReadController extends AppBaseController {
     private Page<AppInstanceBase> getPageUserDomainAppInstances(Long domainId,
                                                                 String username,
                                                                 Pageable pageable) {
+        return getPageUserDomainAppInstances(domainId, username, pageable, null);
+    }
+
+    private Page<AppInstanceBase> getPageUserDomainAppInstances(Long domainId,
+                                                                String username,
+                                                                Pageable pageable,
+                                                                Long remoteClusterId) {
         Domain domain = domainService.findDomain(domainId)
                 .orElseThrow(() -> new MissingElementException(String.format(DOMAIN_NOT_FOUND_MESSAGE, domainId)));
         User user = userService.findByUsername(username)
                 .orElseThrow(() -> new MissingElementException(MISSING_USER_MESSAGE));
-        return instanceBaseService.findAllByOwner(user, domain, pageable);
+        return instanceBaseService.findAllByOwner(user, domain, pageable, remoteClusterId);
     }
 
     private Page<AppInstanceBase> getPageUserDomainAppInstances(Long domainId,
                                                                 String username,
                                                                 Pageable pageable,
                                                                 boolean deployed,
-                                                                String search) {
+                                                                String search,
+                                                                Long remoteClusterId) {
         Domain domain = domainService.findDomain(domainId)
                 .orElseThrow(() -> new MissingElementException(String.format(DOMAIN_NOT_FOUND_MESSAGE, domainId)));
         User user = userService.findByUsername(username)
                 .orElseThrow(() -> new MissingElementException(MISSING_USER_MESSAGE));
-        return instanceBaseService.findAllByOwner(user, domain, pageable, deployed, search);
+        return instanceBaseService.findAllByOwner(user, domain, pageable, deployed, search, remoteClusterId);
     }
 
     private AppInstanceStatus getAppInstanceState(AppInstance appInstance) {

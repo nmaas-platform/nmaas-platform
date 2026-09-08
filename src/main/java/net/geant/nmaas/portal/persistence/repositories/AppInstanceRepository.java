@@ -75,6 +75,13 @@ public interface AppInstanceRepository extends JpaRepository<AppInstance, Long> 
             """)
     Page<AppInstance> findAllNotDeleted(Pageable pageable);
 
+    @Query("""
+            SELECT a FROM AppInstance a
+                        WHERE a.domain.deleted = false
+                        AND (:remoteClusterId IS NULL OR a.remoteClusterId = :remoteClusterId)
+            """)
+    Page<AppInstance> findAllNotDeletedByRemoteClusterId(@Param("remoteClusterId") Long remoteClusterId, Pageable pageable);
+
     Page<AppInstance> findAllByDomain(Domain domain, Pageable pageable);
 
     Page<AppInstance> findAllByOwner(User owner, Pageable pageable);
@@ -105,8 +112,12 @@ public interface AppInstanceRepository extends JpaRepository<AppInstance, Long> 
                              )
                        )
                   )
+                  AND (:remoteClusterId IS NULL OR a.remoteClusterId = :remoteClusterId)
             """)
-    Page<AppInstance> findAllNotDeletedByDeploy(@Param("search") String search, Pageable pageable, boolean deployed);
+    Page<AppInstance> findAllNotDeletedByDeploy(@Param("search") String search,
+                                                Pageable pageable,
+                                                boolean deployed,
+                                                @Param("remoteClusterId") Long remoteClusterId);
 
     @Query("""
             SELECT a
@@ -124,10 +135,12 @@ public interface AppInstanceRepository extends JpaRepository<AppInstance, Long> 
             WHERE a.domain = :domain
             AND a.domain.deleted = false
             AND (:search IS NULL OR LOWER(a.name) LIKE LOWER(CONCAT('%', :search, '%')))
+            AND (:remoteClusterId IS NULL OR a.remoteClusterId = :remoteClusterId)
             """)
     Page<AppInstance> findAllNotDeletedByDomainAndSearch(@Param("domain") Domain domain,
                                                          @Param("search") String search,
-                                                         Pageable pageable);
+                                                         Pageable pageable,
+                                                         @Param("remoteClusterId") Long remoteClusterId);
 
     @Query("""
             SELECT a
@@ -154,11 +167,13 @@ public interface AppInstanceRepository extends JpaRepository<AppInstance, Long> 
                              )
                        )
                   )
+                  AND (:remoteClusterId IS NULL OR a.remoteClusterId = :remoteClusterId)
             """)
     Page<AppInstance> findAllNotDeletedByDomainAndByDeployAndSearch(@Param("domain") Domain domain,
                                                                     @Param("search") String search,
                                                                     boolean deployed,
-                                                                    Pageable pageable);
+                                                                    Pageable pageable,
+                                                                    @Param("remoteClusterId") Long remoteClusterId);
 
     @Query("""
             SELECT a
@@ -166,10 +181,12 @@ public interface AppInstanceRepository extends JpaRepository<AppInstance, Long> 
             WHERE a.owner = :user
             AND a.domain.deleted = false
             AND (:search IS NULL OR LOWER(a.name) LIKE LOWER(CONCAT('%', :search, '%')))
+            AND (:remoteClusterId IS NULL OR a.remoteClusterId = :remoteClusterId)
             """)
     Page<AppInstance> findAllNotDeletedByOwnerAndSearch(@Param("user") User user,
                                                         @Param("search") String search,
-                                                        Pageable pageable);
+                                                        Pageable pageable,
+                                                        @Param("remoteClusterId") Long remoteClusterId);
 
     @Query("""
             SELECT a
@@ -201,11 +218,13 @@ public interface AppInstanceRepository extends JpaRepository<AppInstance, Long> 
                              )
                        ))
                   )
+                  AND (:remoteClusterId IS NULL OR a.remoteClusterId = :remoteClusterId)
             """)
     Page<AppInstance> findAllNotDeletedByOwnerAndByDeployAndSearch(@Param("user") User user,
                                                                    @Param("search") String search,
                                                                    boolean deployed,
-                                                                   Pageable pageable);
+                                                                   Pageable pageable,
+                                                                   @Param("remoteClusterId") Long remoteClusterId);
 
     @Query("""
             SELECT a
@@ -238,12 +257,14 @@ public interface AppInstanceRepository extends JpaRepository<AppInstance, Long> 
                              )
                        ))
                   )
+                  AND (:remoteClusterId IS NULL OR a.remoteClusterId = :remoteClusterId)
             """)
     Page<AppInstance> findAllNotDeletedByOwnerAndDomainAndByDeployAndSearch(@Param("user") User user,
                                                                             @Param("search") String search,
                                                                             @Param("domain") Domain domain,
                                                                             boolean deployed,
-                                                                            Pageable pageable);
+                                                                            Pageable pageable,
+                                                                            @Param("remoteClusterId") Long remoteClusterId);
 
     @Query("""
             SELECT a

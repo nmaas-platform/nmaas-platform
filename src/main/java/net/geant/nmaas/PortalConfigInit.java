@@ -85,8 +85,9 @@ public class PortalConfigInit implements InitializingBean {
         } catch (OnlyOneConfigurationSupportedException e) {
             log.debug("Portal configuration already exists. Skipping initialization.");
         }
-        log.debug("[Init] Running application configuration templates update");
-        applicationService.checkAndUpdateAllConfigurationTemplates();
+        // assuming that this initialization is not required at this point (code to be removed in the future)
+        // log.debug("[Init] Running application configuration templates update");
+        // applicationService.checkAndUpdateAllConfigurationTemplates();
     }
 
 }
