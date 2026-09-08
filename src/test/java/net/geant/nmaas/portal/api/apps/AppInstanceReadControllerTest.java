@@ -180,7 +180,7 @@ class AppInstanceReadControllerTest {
         when(appDeploymentMonitor.state(done.getInternalId())).thenReturn(AppLifecycleState.APPLICATION_REMOVED);
         when(appDeploymentMonitor.state(removed.getInternalId())).thenReturn(AppLifecycleState.FAILED_APPLICATION_REMOVED);
 
-        List<AppInstanceBase> result = appInstanceReadController.getAllInstances((String) null);
+        List<AppInstanceBase> result = appInstanceReadController.getAllInstances((String) null, null);
 
         assertEquals(1, result.size());
         assertEquals("running", result.getFirst().getName());
@@ -197,9 +197,9 @@ class AppInstanceReadControllerTest {
         when(appDeploymentMonitor.state(done.getInternalId())).thenReturn(AppLifecycleState.APPLICATION_REMOVED);
         when(appDeploymentMonitor.state(removed.getInternalId())).thenReturn(AppLifecycleState.FAILED_APPLICATION_REMOVED);
 
-        List<AppInstanceBase> deployed = appInstanceReadController.getAllInstances("deployed");
-        List<AppInstanceBase> undeployed = appInstanceReadController.getAllInstances("undeployed");
-        List<AppInstanceBase> unknownStatus = appInstanceReadController.getAllInstances("unknown");
+        List<AppInstanceBase> deployed = appInstanceReadController.getAllInstances("deployed", null);
+        List<AppInstanceBase> undeployed = appInstanceReadController.getAllInstances("undeployed", null);
+        List<AppInstanceBase> unknownStatus = appInstanceReadController.getAllInstances("unknown", null);
 
         assertEquals(List.of("running"), deployed.stream().map(AppInstanceBase::getName).toList());
         assertEquals(List.of("done", "removed"), undeployed.stream().map(AppInstanceBase::getName).toList());
@@ -214,7 +214,7 @@ class AppInstanceReadControllerTest {
         Principal principal = mock(Principal.class);
         when(principal.getName()).thenReturn(admin.getUsername());
 
-        List<AppInstanceBase> result = appInstanceReadController.getAllInstances(global.getId(), principal, "deployed");
+        List<AppInstanceBase> result = appInstanceReadController.getAllInstances(global.getId(), principal, "deployed", null);
 
         assertEquals(1, result.size());
         AppInstanceBase appInstanceView = result.getFirst();
@@ -236,7 +236,7 @@ class AppInstanceReadControllerTest {
         Principal principal = mock(Principal.class);
         when(principal.getName()).thenReturn(admin.getUsername());
 
-        List<AppInstanceBase> result = appInstanceReadController.getAllInstances(global.getId(), principal, null);
+        List<AppInstanceBase> result = appInstanceReadController.getAllInstances(global.getId(), principal, null, null);
 
         assertEquals(1, result.size());
         assertEquals("running", result.getFirst().getName());
@@ -396,7 +396,7 @@ class AppInstanceReadControllerTest {
                 accessMethod(ServiceAccessMethodTypeDto.INTERNAL, "ssh", "ssh", "ssh://app.example.com")
         )))).when(appDeploymentMonitor).userAccessDetails(running.getInternalId());
 
-        List<AppInstanceBase> result = appInstanceReadController.getAllInstances((String) null);
+        List<AppInstanceBase> result = appInstanceReadController.getAllInstances((String) null, null);
 
         assertEquals(1, result.size());
         assertTrue(result.getFirst().getExternalAccessEnabled());
@@ -411,7 +411,7 @@ class AppInstanceReadControllerTest {
                 accessMethod(ServiceAccessMethodTypeDto.DEFAULT, "ui", "https", "https://app.example.com")
         )))).when(appDeploymentMonitor).userAccessDetails(running.getInternalId());
 
-        List<AppInstanceBase> result = appInstanceReadController.getAllInstances((String) null);
+        List<AppInstanceBase> result = appInstanceReadController.getAllInstances((String) null, null);
 
         assertEquals(1, result.size());
         assertTrue(result.getFirst().getExternalAccessEnabled());
@@ -427,7 +427,7 @@ class AppInstanceReadControllerTest {
                 accessMethod(ServiceAccessMethodTypeDto.LOCAL, "local", "http", "http://app.local")
         )))).when(appDeploymentMonitor).userAccessDetails(running.getInternalId());
 
-        List<AppInstanceBase> result = appInstanceReadController.getAllInstances((String) null);
+        List<AppInstanceBase> result = appInstanceReadController.getAllInstances((String) null, null);
 
         assertEquals(1, result.size());
         assertFalse(result.getFirst().getExternalAccessEnabled());
@@ -442,7 +442,7 @@ class AppInstanceReadControllerTest {
                 accessMethod(ServiceAccessMethodTypeDto.PUBLIC, "public", "https", "https://app.public.example.com")
         )))).when(appDeploymentMonitor).userAccessDetails(running.getInternalId());
 
-        List<AppInstanceBase> result = appInstanceReadController.getAllInstances((String) null);
+        List<AppInstanceBase> result = appInstanceReadController.getAllInstances((String) null, null);
 
         assertEquals(1, result.size());
         assertTrue(result.getFirst().getExternalAccessEnabled());
@@ -457,7 +457,7 @@ class AppInstanceReadControllerTest {
                 accessMethod(ServiceAccessMethodTypeDto.PUBLIC, "public", "https", null)
         )))).when(appDeploymentMonitor).userAccessDetails(running.getInternalId());
 
-        List<AppInstanceBase> result = appInstanceReadController.getAllInstances((String) null);
+        List<AppInstanceBase> result = appInstanceReadController.getAllInstances((String) null, null);
 
         assertEquals(1, result.size());
         assertFalse(result.getFirst().getExternalAccessEnabled());
@@ -470,10 +470,40 @@ class AppInstanceReadControllerTest {
         when(appDeploymentMonitor.state(running.getInternalId())).thenReturn(AppLifecycleState.APPLICATION_DEPLOYMENT_VERIFIED);
         // userAccessDetails(any()) already stubbed to throw in setup()
 
-        List<AppInstanceBase> result = appInstanceReadController.getAllInstances((String) null);
+        List<AppInstanceBase> result = appInstanceReadController.getAllInstances((String) null, null);
 
         assertEquals(1, result.size());
         assertFalse(result.getFirst().getExternalAccessEnabled());
+    }
+
+    @Test
+    void shouldFilterAllInstancesByRemoteClusterId() {
+        AppInstance local = appInstance("local", 1L, domain1, admin, "local-id");
+        AppInstance remote = appInstance("remote", 2L, domain1, admin, "remote-id");
+        remote.setRemoteClusterId(5L);
+        when(applicationInstanceService.findAll()).thenReturn(List.of(local, remote));
+        when(appDeploymentMonitor.state(any())).thenReturn(AppLifecycleState.APPLICATION_DEPLOYMENT_VERIFIED);
+
+        List<AppInstanceBase> result = appInstanceReadController.getAllInstances((String) null, 5L);
+
+        assertEquals(List.of("remote"), result.stream().map(AppInstanceBase::getName).toList());
+        assertEquals(5L, result.getFirst().getRemoteClusterId());
+    }
+
+    @Test
+    void shouldFilterDomainInstancesByRemoteClusterId() {
+        AppInstance local = appInstance("local", 1L, domain1, admin, "local-id");
+        AppInstance remote = appInstance("remote", 2L, domain1, admin, "remote-id");
+        remote.setRemoteClusterId(5L);
+        when(applicationInstanceService.findAll()).thenReturn(List.of(local, remote));
+        when(appDeploymentMonitor.state(any())).thenReturn(AppLifecycleState.APPLICATION_DEPLOYMENT_VERIFIED);
+
+        Principal principal = mock(Principal.class);
+        when(principal.getName()).thenReturn(admin.getUsername());
+
+        List<AppInstanceBase> result = appInstanceReadController.getAllInstances(global.getId(), principal, null, 5L);
+
+        assertEquals(List.of("remote"), result.stream().map(AppInstanceBase::getName).toList());
     }
 
     private ServiceAccessMethodDto accessMethod(ServiceAccessMethodTypeDto type, String name, String protocol, String url) {

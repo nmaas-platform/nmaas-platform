@@ -85,7 +85,7 @@ class ApplicationInstanceBaseServiceImplTest {
                         Sort.Order.desc("createdAt")
                 )
         );
-        when(appInstanceRepo.findAllNotDeletedByDeploy(any(), any(Pageable.class), eq(true)))
+        when(appInstanceRepo.findAllNotDeletedByDeploy(any(), any(Pageable.class), eq(true), any()))
                 .thenAnswer(inv -> {
                     Pageable mapped = inv.getArgument(1, Pageable.class);
                     List<String> properties = mapped.getSort().stream().map(Sort.Order::getProperty).toList();
@@ -95,7 +95,7 @@ class ApplicationInstanceBaseServiceImplTest {
 
         service.findAll(pageable, true, "grafana");
 
-        verify(appInstanceRepo).findAllNotDeletedByDeploy(eq("grafana"), any(Pageable.class), eq(true));
+        verify(appInstanceRepo).findAllNotDeletedByDeploy(eq("grafana"), any(Pageable.class), eq(true), eq(null));
     }
 
     @Test
@@ -155,7 +155,7 @@ class ApplicationInstanceBaseServiceImplTest {
         Pageable pageable = PageRequest.of(0, 5);
         AppInstance instance = appInstance(5L, 501L, false);
 
-        when(appInstanceRepo.findAllNotDeletedByOwnerAndByDeployAndSearch(owner, "graf", true, pageable))
+        when(appInstanceRepo.findAllNotDeletedByOwnerAndByDeployAndSearch(owner, "graf", true, pageable, null))
                 .thenReturn(new PageImpl<>(List.of(instance), pageable, 1));
         when(modelMapper.map(instance, AppInstanceBase.class)).thenReturn(mappedBaseWithDomainId(501L));
         when(appBaseService.findByVersionId(301L)).thenReturn(new ApplicationBase(901L, "base"));
@@ -165,7 +165,7 @@ class ApplicationInstanceBaseServiceImplTest {
         Page<AppInstanceBase> result = service.findAllByOwner(owner, pageable, true, "graf");
 
         assertEquals(1, result.getContent().size());
-        verify(appInstanceRepo).findAllNotDeletedByOwnerAndByDeployAndSearch(owner, "graf", true, pageable);
+        verify(appInstanceRepo).findAllNotDeletedByOwnerAndByDeployAndSearch(owner, "graf", true, pageable, null);
     }
 
     @Test
@@ -176,7 +176,7 @@ class ApplicationInstanceBaseServiceImplTest {
         Pageable pageable = PageRequest.of(0, 5);
         AppInstance instance = appInstance(6L, 20L, false);
 
-        when(appInstanceRepo.findAllNotDeletedByOwnerAndDomainAndByDeployAndSearch(owner, null, domain, false, pageable))
+        when(appInstanceRepo.findAllNotDeletedByOwnerAndDomainAndByDeployAndSearch(owner, null, domain, false, pageable, null))
                 .thenReturn(new PageImpl<>(List.of(instance), pageable, 1));
         when(modelMapper.map(instance, AppInstanceBase.class)).thenReturn(mappedBaseWithDomainId(20L));
         when(appBaseService.findByVersionId(301L)).thenReturn(new ApplicationBase(902L, "base"));
@@ -186,7 +186,7 @@ class ApplicationInstanceBaseServiceImplTest {
         Page<AppInstanceBase> result = service.findAllByOwner(owner, domain, pageable, false);
 
         assertEquals(AppInstanceState.UNDEPLOYING, result.getContent().getFirst().getState());
-        verify(appInstanceRepo).findAllNotDeletedByOwnerAndDomainAndByDeployAndSearch(owner, null, domain, false, pageable);
+        verify(appInstanceRepo).findAllNotDeletedByOwnerAndDomainAndByDeployAndSearch(owner, null, domain, false, pageable, null);
     }
 
     @Test
@@ -196,7 +196,7 @@ class ApplicationInstanceBaseServiceImplTest {
         Pageable pageable = PageRequest.of(0, 5);
         AppInstance instance = appInstance(8L, 801L, false);
 
-        when(appInstanceRepo.findAllNotDeletedByOwnerAndSearch(owner, "prom", pageable))
+        when(appInstanceRepo.findAllNotDeletedByOwnerAndSearch(owner, "prom", pageable, null))
                 .thenReturn(new PageImpl<>(List.of(instance), pageable, 1));
         when(modelMapper.map(instance, AppInstanceBase.class)).thenReturn(mappedBaseWithDomainId(801L));
         when(appBaseService.findByVersionId(301L)).thenReturn(new ApplicationBase(904L, "base"));
@@ -206,7 +206,7 @@ class ApplicationInstanceBaseServiceImplTest {
         Page<AppInstanceBase> result = service.findAllByOwner(owner, pageable, "prom");
 
         assertEquals(1, result.getContent().size());
-        verify(appInstanceRepo).findAllNotDeletedByOwnerAndSearch(owner, "prom", pageable);
+        verify(appInstanceRepo).findAllNotDeletedByOwnerAndSearch(owner, "prom", pageable, null);
     }
 
     @Test
@@ -217,7 +217,7 @@ class ApplicationInstanceBaseServiceImplTest {
         Pageable pageable = PageRequest.of(0, 5);
         AppInstance instance = appInstance(9L, 40L, false);
 
-        when(appInstanceRepo.findAllNotDeletedByOwnerAndDomainAndByDeployAndSearch(owner, "mon", domain, true, pageable))
+        when(appInstanceRepo.findAllNotDeletedByOwnerAndDomainAndByDeployAndSearch(owner, "mon", domain, true, pageable, null))
                 .thenReturn(new PageImpl<>(List.of(instance), pageable, 1));
         when(modelMapper.map(instance, AppInstanceBase.class)).thenReturn(mappedBaseWithDomainId(40L));
         when(appBaseService.findByVersionId(301L)).thenReturn(new ApplicationBase(905L, "base"));
@@ -227,7 +227,7 @@ class ApplicationInstanceBaseServiceImplTest {
         Page<AppInstanceBase> result = service.findAllByOwner(owner, domain, pageable, true, "mon");
 
         assertEquals(1, result.getContent().size());
-        verify(appInstanceRepo).findAllNotDeletedByOwnerAndDomainAndByDeployAndSearch(owner, "mon", domain, true, pageable);
+        verify(appInstanceRepo).findAllNotDeletedByOwnerAndDomainAndByDeployAndSearch(owner, "mon", domain, true, pageable, null);
     }
 
     @Test
@@ -238,7 +238,7 @@ class ApplicationInstanceBaseServiceImplTest {
         Pageable pageable = PageRequest.of(0, 5);
         AppInstance instance = appInstance(10L, 41L, false);
 
-        when(appInstanceRepo.findAllNotDeletedByOwnerAndSearch(owner, null, pageable))
+        when(appInstanceRepo.findAllNotDeletedByOwnerAndSearch(owner, null, pageable, null))
                 .thenReturn(new PageImpl<>(List.of(instance), pageable, 1));
         when(modelMapper.map(instance, AppInstanceBase.class)).thenReturn(mappedBaseWithDomainId(41L));
         when(appBaseService.findByVersionId(301L)).thenReturn(new ApplicationBase(906L, "base"));
@@ -248,7 +248,7 @@ class ApplicationInstanceBaseServiceImplTest {
         Page<AppInstanceBase> result = service.findAllByOwner(owner, domain, pageable);
 
         assertEquals(1, result.getContent().size());
-        verify(appInstanceRepo).findAllNotDeletedByOwnerAndSearch(owner, null, pageable);
+        verify(appInstanceRepo).findAllNotDeletedByOwnerAndSearch(owner, null, pageable, null);
     }
 
     @Test
@@ -257,7 +257,7 @@ class ApplicationInstanceBaseServiceImplTest {
         Pageable pageable = PageRequest.of(0, 5);
         AppInstance instance = appInstance(7L, 30L, false);
 
-        when(appInstanceRepo.findAllNotDeletedByDomainAndSearch(domain, null, pageable))
+        when(appInstanceRepo.findAllNotDeletedByDomainAndSearch(domain, null, pageable, null))
                 .thenReturn(new PageImpl<>(List.of(instance), pageable, 1));
         when(modelMapper.map(instance, AppInstanceBase.class)).thenReturn(mappedBaseWithDomainId(30L));
         when(appBaseService.findByVersionId(301L)).thenReturn(new ApplicationBase(903L, "base"));
@@ -267,7 +267,7 @@ class ApplicationInstanceBaseServiceImplTest {
         Page<AppInstanceBase> result = service.findAllByDomain(domain, pageable, "ignored");
 
         assertEquals(AppInstanceState.FAILURE, result.getContent().getFirst().getState());
-        verify(appInstanceRepo).findAllNotDeletedByDomainAndSearch(domain, null, pageable);
+        verify(appInstanceRepo).findAllNotDeletedByDomainAndSearch(domain, null, pageable, null);
     }
 
     @Test
@@ -276,7 +276,7 @@ class ApplicationInstanceBaseServiceImplTest {
         Pageable pageable = PageRequest.of(0, 5);
         AppInstance instance = appInstance(11L, 31L, false);
 
-        when(appInstanceRepo.findAllNotDeletedByDomainAndByDeployAndSearch(domain, null, true, pageable))
+        when(appInstanceRepo.findAllNotDeletedByDomainAndByDeployAndSearch(domain, null, true, pageable, null))
                 .thenReturn(new PageImpl<>(List.of(instance), pageable, 1));
         when(modelMapper.map(instance, AppInstanceBase.class)).thenReturn(mappedBaseWithDomainId(31L));
         when(appBaseService.findByVersionId(301L)).thenReturn(new ApplicationBase(907L, "base"));
@@ -286,7 +286,7 @@ class ApplicationInstanceBaseServiceImplTest {
         Page<AppInstanceBase> result = service.findAllByDomain(domain, pageable, true);
 
         assertEquals(1, result.getContent().size());
-        verify(appInstanceRepo).findAllNotDeletedByDomainAndByDeployAndSearch(domain, null, true, pageable);
+        verify(appInstanceRepo).findAllNotDeletedByDomainAndByDeployAndSearch(domain, null, true, pageable, null);
     }
 
     @Test
@@ -295,7 +295,7 @@ class ApplicationInstanceBaseServiceImplTest {
         Pageable pageable = PageRequest.of(2, 3, Sort.by(Sort.Order.asc("owner"), Sort.Order.desc("application")));
         AppInstance instance = appInstance(12L, 32L, false);
 
-        when(appInstanceRepo.findAllNotDeletedByDomainAndByDeployAndSearch(eq(domain), eq("api"), eq(false), any(Pageable.class)))
+        when(appInstanceRepo.findAllNotDeletedByDomainAndByDeployAndSearch(eq(domain), eq("api"), eq(false), any(Pageable.class), eq(null)))
                 .thenAnswer(inv -> {
                     Pageable mapped = inv.getArgument(3, Pageable.class);
                     List<String> properties = mapped.getSort().stream().map(Sort.Order::getProperty).toList();
@@ -310,7 +310,7 @@ class ApplicationInstanceBaseServiceImplTest {
         Page<AppInstanceBase> result = service.findAllByDomain(domain, pageable, false, "api");
 
         assertEquals(1, result.getContent().size());
-        verify(appInstanceRepo).findAllNotDeletedByDomainAndByDeployAndSearch(eq(domain), eq("api"), eq(false), any(Pageable.class));
+        verify(appInstanceRepo).findAllNotDeletedByDomainAndByDeployAndSearch(eq(domain), eq("api"), eq(false), any(Pageable.class), eq(null));
     }
 
     @Test
@@ -321,6 +321,81 @@ class ApplicationInstanceBaseServiceImplTest {
         Pageable pageable = PageRequest.of(0, 5);
 
         assertThrows(IllegalArgumentException.class, () -> service.findAllByOwner(owner, domain, pageable, true));
+    }
+
+    @Test
+    void findAllWithRemoteClusterIdShouldUseRepositoryWithFilter() {
+        Pageable pageable = PageRequest.of(0, 10);
+        AppInstance instance = appInstance(13L, 60L, false);
+
+        when(appInstanceRepo.findAllNotDeletedByRemoteClusterId(5L, pageable))
+                .thenReturn(new PageImpl<>(List.of(instance), pageable, 1));
+        when(modelMapper.map(instance, AppInstanceBase.class)).thenReturn(mappedBaseWithDomainId(60L));
+        when(appBaseService.findByVersionId(301L)).thenReturn(new ApplicationBase(909L, "base"));
+        when(appDeploymentMonitor.state(instance.getInternalId())).thenReturn(AppLifecycleState.APPLICATION_DEPLOYMENT_VERIFIED);
+        when(instanceService.checkUpgradePossible(13L)).thenReturn(true);
+
+        Page<AppInstanceBase> result = service.findAll(pageable, 5L);
+
+        assertEquals(1, result.getContent().size());
+        verify(appInstanceRepo).findAllNotDeletedByRemoteClusterId(5L, pageable);
+    }
+
+    @Test
+    void findAllWithDeploySearchAndRemoteClusterIdShouldPassFilterToRepository() {
+        Pageable pageable = PageRequest.of(0, 10);
+        AppInstance instance = appInstance(14L, 61L, false);
+
+        when(appInstanceRepo.findAllNotDeletedByDeploy("graf", pageable, true, 7L))
+                .thenReturn(new PageImpl<>(List.of(instance), pageable, 1));
+        when(modelMapper.map(instance, AppInstanceBase.class)).thenReturn(mappedBaseWithDomainId(61L));
+        when(appBaseService.findByVersionId(301L)).thenReturn(new ApplicationBase(910L, "base"));
+        when(appDeploymentMonitor.state(instance.getInternalId())).thenReturn(AppLifecycleState.APPLICATION_DEPLOYMENT_VERIFIED);
+        when(instanceService.checkUpgradePossible(14L)).thenReturn(true);
+
+        Page<AppInstanceBase> result = service.findAll(pageable, true, "graf", 7L);
+
+        assertEquals(1, result.getContent().size());
+        verify(appInstanceRepo).findAllNotDeletedByDeploy("graf", pageable, true, 7L);
+    }
+
+    @Test
+    void findAllByOwnerWithSearchAndRemoteClusterIdShouldPassFilterToRepository() {
+        User owner = new User("owner", true);
+        owner.setId(10L);
+        Pageable pageable = PageRequest.of(0, 5);
+        AppInstance instance = appInstance(15L, 62L, false);
+
+        when(appInstanceRepo.findAllNotDeletedByOwnerAndSearch(owner, null, pageable, 9L))
+                .thenReturn(new PageImpl<>(List.of(instance), pageable, 1));
+        when(modelMapper.map(instance, AppInstanceBase.class)).thenReturn(mappedBaseWithDomainId(62L));
+        when(appBaseService.findByVersionId(301L)).thenReturn(new ApplicationBase(911L, "base"));
+        when(appDeploymentMonitor.state(instance.getInternalId())).thenReturn(AppLifecycleState.APPLICATION_DEPLOYMENT_VERIFIED);
+        when(instanceService.checkUpgradePossible(15L)).thenReturn(true);
+
+        Page<AppInstanceBase> result = service.findAllByOwner(owner, pageable, (String) null, 9L);
+
+        assertEquals(1, result.getContent().size());
+        verify(appInstanceRepo).findAllNotDeletedByOwnerAndSearch(owner, null, pageable, 9L);
+    }
+
+    @Test
+    void findAllByDomainWithSearchAndRemoteClusterIdShouldPassFilterToRepository() {
+        Domain domain = new Domain(33L, "d33", "d33");
+        Pageable pageable = PageRequest.of(0, 5);
+        AppInstance instance = appInstance(16L, 33L, false);
+
+        when(appInstanceRepo.findAllNotDeletedByDomainAndSearch(domain, null, pageable, 4L))
+                .thenReturn(new PageImpl<>(List.of(instance), pageable, 1));
+        when(modelMapper.map(instance, AppInstanceBase.class)).thenReturn(mappedBaseWithDomainId(33L));
+        when(appBaseService.findByVersionId(301L)).thenReturn(new ApplicationBase(912L, "base"));
+        when(appDeploymentMonitor.state(instance.getInternalId())).thenReturn(AppLifecycleState.APPLICATION_DEPLOYMENT_VERIFIED);
+        when(instanceService.checkUpgradePossible(16L)).thenReturn(true);
+
+        Page<AppInstanceBase> result = service.findAllByDomain(domain, pageable, (String) null, 4L);
+
+        assertEquals(1, result.getContent().size());
+        verify(appInstanceRepo).findAllNotDeletedByDomainAndSearch(domain, null, pageable, 4L);
     }
 
     @Test

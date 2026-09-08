@@ -44,12 +44,23 @@ public class ApplicationInstanceBaseServiceImpl implements ApplicationInstanceBa
     }
 
     @Override
+    public Page<AppInstanceBase> findAll(Pageable pageable, Long remoteClusterId) {
+        return getAppInstanceBases(appInstanceRepo.findAllNotDeletedByRemoteClusterId(remoteClusterId, pageable), pageable);
+    }
+
+    @Override
     public Page<AppInstanceBase> findAll(Pageable pageable, boolean deployed, String search) {
+        return findAll(pageable, deployed, search, null);
+    }
+
+    @Override
+    public Page<AppInstanceBase> findAll(Pageable pageable, boolean deployed, String search, Long remoteClusterId) {
         Pageable newPageable = mapPageable(pageable);
         return getAppInstanceBases(appInstanceRepo.findAllNotDeletedByDeploy(
                         search,
                         newPageable,
-                        deployed),
+                        deployed,
+                        remoteClusterId),
                 newPageable);
     }
 
@@ -67,37 +78,47 @@ public class ApplicationInstanceBaseServiceImpl implements ApplicationInstanceBa
 
     @Override
     public Page<AppInstanceBase> findAllByOwner(User owner, Pageable pageable, boolean deployed, String search) {
+        return findAllByOwner(owner, pageable, deployed, search, null);
+    }
+
+    @Override
+    public Page<AppInstanceBase> findAllByOwner(User owner, Pageable pageable, boolean deployed, String search, Long remoteClusterId) {
         checkParam(owner);
         return getAppInstanceBases(appInstanceRepo.findAllNotDeletedByOwnerAndByDeployAndSearch(
                         owner,
                         search,
                         deployed,
-                        pageable
+                        pageable,
+                        remoteClusterId
                 ), pageable
         );
     }
 
     @Override
     public Page<AppInstanceBase> findAllByOwner(User owner, Pageable pageable, String search) {
+        return findAllByOwner(owner, pageable, search, null);
+    }
+
+    @Override
+    public Page<AppInstanceBase> findAllByOwner(User owner, Pageable pageable, Long remoteClusterId) {
+        return findAllByOwner(owner, pageable, null, remoteClusterId);
+    }
+
+    @Override
+    public Page<AppInstanceBase> findAllByOwner(User owner, Pageable pageable, String search, Long remoteClusterId) {
         checkParam(owner);
         return getAppInstanceBases(appInstanceRepo.findAllNotDeletedByOwnerAndSearch(
                         owner,
                         search,
-                        pageable
+                        pageable,
+                        remoteClusterId
                 ), pageable
         );
     }
 
     @Override
     public Page<AppInstanceBase> findAllByOwner(User owner, Domain domain, Pageable pageable) {
-        checkParam(owner);
-        checkParam(domain);
-        return getAppInstanceBases(appInstanceRepo.findAllNotDeletedByOwnerAndSearch(
-                        owner,
-                        null,
-                        pageable
-                ), pageable
-        );
+        return findAllByOwner(owner, pageable, null, null);
     }
 
     @Override
@@ -109,13 +130,32 @@ public class ApplicationInstanceBaseServiceImpl implements ApplicationInstanceBa
                         null,
                         domain,
                         deployed,
-                        pageable
+                        pageable,
+                        null
+                ), pageable
+        );
+    }
+
+    @Override
+    public Page<AppInstanceBase> findAllByOwner(User owner, Domain domain, Pageable pageable, Long remoteClusterId) {
+        checkParam(owner);
+        checkParam(domain);
+        return getAppInstanceBases(appInstanceRepo.findAllNotDeletedByOwnerAndSearch(
+                        owner,
+                        null,
+                        pageable,
+                        remoteClusterId
                 ), pageable
         );
     }
 
     @Override
     public Page<AppInstanceBase> findAllByOwner(User owner, Domain domain, Pageable pageable, boolean deployed, String search) {
+        return findAllByOwner(owner, domain, pageable, deployed, search, null);
+    }
+
+    @Override
+    public Page<AppInstanceBase> findAllByOwner(User owner, Domain domain, Pageable pageable, boolean deployed, String search, Long remoteClusterId) {
         checkParam(owner);
         checkParam(domain);
         return getAppInstanceBases(appInstanceRepo.findAllNotDeletedByOwnerAndDomainAndByDeployAndSearch(
@@ -123,18 +163,25 @@ public class ApplicationInstanceBaseServiceImpl implements ApplicationInstanceBa
                         search,
                         domain,
                         deployed,
-                        pageable
+                        pageable,
+                        remoteClusterId
                 ), pageable
         );
     }
 
     @Override
     public Page<AppInstanceBase> findAllByDomain(Domain domain, Pageable pageable, String search) {
+        return findAllByDomain(domain, pageable, search, null);
+    }
+
+    @Override
+    public Page<AppInstanceBase> findAllByDomain(Domain domain, Pageable pageable, String search, Long remoteClusterId) {
         checkParam(domain);
         return getAppInstanceBases(appInstanceRepo.findAllNotDeletedByDomainAndSearch(
                 domain,
                 null,
-                pageable), pageable
+                pageable,
+                remoteClusterId), pageable
         );
     }
 
@@ -145,19 +192,26 @@ public class ApplicationInstanceBaseServiceImpl implements ApplicationInstanceBa
                 domain,
                 null,
                 deployed,
-                pageable), pageable
+                pageable,
+                null), pageable
         );
     }
 
     @Override
     public Page<AppInstanceBase> findAllByDomain(Domain domain, Pageable pageable, boolean deployed, String search) {
+        return findAllByDomain(domain, pageable, deployed, search, null);
+    }
+
+    @Override
+    public Page<AppInstanceBase> findAllByDomain(Domain domain, Pageable pageable, boolean deployed, String search, Long remoteClusterId) {
         checkParam(domain);
         Pageable newPageable = mapPageable(pageable);
         return getAppInstanceBases(appInstanceRepo.findAllNotDeletedByDomainAndByDeployAndSearch(
                 domain,
                 search,
                 deployed,
-                newPageable), newPageable
+                newPageable,
+                remoteClusterId), newPageable
         );
     }
 
