@@ -64,7 +64,7 @@ public class NotificationsControllerIntTest extends BaseControllerTestSetup {
                             .contentType(MediaType.APPLICATION_JSON)
                             .content("{\"mailType\": \"BROADCAST\",\"otherAttributes\": {\"text\": \"test\",\"TITLE\":\"Message title\"}}")
                             .accept(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isForbidden());
+                    .andExpect(status().isUnauthorized());
         });
     }
 
