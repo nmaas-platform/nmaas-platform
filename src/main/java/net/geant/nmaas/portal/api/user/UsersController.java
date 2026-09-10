@@ -365,7 +365,11 @@ public class UsersController {
     public void sendResetPasswordNotification(@RequestBody String email) {
         User user = userService.findByEmail(email);
         checkSSOUser(user);
-        this.sendMail(modelMapper.map(user, UserDto.class), MailType.PASSWORD_RESET, Map.of("accessURL", generateResetPasswordUrl(this.jwtTokenService.getResetToken(email))));
+        Map<String, Object> otherAttributes = Map.of(
+                "accessURL", generateResetPasswordUrl(this.jwtTokenService.getResetToken(email)),
+                "username",user.getUsername()
+        );
+        this.sendMail(modelMapper.map(user, UserDto.class), MailType.PASSWORD_RESET, otherAttributes);
     }
 
     private String generateResetPasswordUrl(String token) {
