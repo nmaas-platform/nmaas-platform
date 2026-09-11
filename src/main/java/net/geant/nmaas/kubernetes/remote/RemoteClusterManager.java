@@ -335,6 +335,7 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
 
     private RemoteKClusterCompleteDto toCompleteDto(KCluster kCluster) {
         RemoteKClusterCompleteDto dto = modelMapper.map(kCluster, RemoteKClusterCompleteDto.class);
+        dto.setConfigFileContent(kCluster.getClusterConfigFile());
         if (Objects.nonNull(kCluster.getDomains())) {
             dto.setDomainNames(kCluster.getDomains().stream().map(Domain::getName).toList());
         }
