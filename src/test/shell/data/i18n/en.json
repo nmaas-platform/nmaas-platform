@@ -340,6 +340,7 @@
     "DOMAIN": "Domain",
     "OWNER": "Owner",
     "CLUSTER": "Cluster",
+    "REMOTE_CLUSTER": "Remote cluster",
     "DEPLOYED_AT": "Deployment time",
     "APPLICATION": "Application",
     "VERSION": "Version",
