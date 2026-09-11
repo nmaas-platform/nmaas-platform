@@ -1,6 +1,7 @@
 package net.geant.nmaas.kubernetes.remote;
 
 import net.geant.nmaas.api.dto.kubernetes.RemoteKClusterBaseDto;
+import net.geant.nmaas.api.dto.kubernetes.RemoteKClusterCompleteDto;
 import net.geant.nmaas.api.dto.kubernetes.RemoteKClusterDto;
 import net.geant.nmaas.kubernetes.remote.entities.KCluster;
 
@@ -11,6 +12,8 @@ public interface RemoteClusterInfoService {
 
     RemoteKClusterDto getCluster(Long id, Principal principal);
 
+    RemoteKClusterCompleteDto getClusterForEdit(Long id, Principal principal);
+
     KCluster getClusterEntity(Long id);
 
     List<RemoteKClusterDto> getAllClusters();
@@ -18,4 +21,5 @@ public interface RemoteClusterInfoService {
     List<RemoteKClusterDto> getClustersInDomain(Long domainId);
 
     List<RemoteKClusterBaseDto> getAllClustersBase();
+
 }

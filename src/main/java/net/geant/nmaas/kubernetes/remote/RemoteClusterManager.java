@@ -5,6 +5,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.api.dto.kubernetes.RemoteKClusterBaseDto;
+import net.geant.nmaas.api.dto.kubernetes.RemoteKClusterCompleteDto;
 import net.geant.nmaas.api.dto.kubernetes.RemoteKClusterDto;
 import net.geant.nmaas.kubernetes.ClusterConfigView;
 import net.geant.nmaas.kubernetes.KubernetesApiClientService;
@@ -62,11 +63,20 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
 
     @Override
     public RemoteKClusterDto getCluster(Long id, Principal principal) {
+        return toDto(getClusterEntity(id, principal));
+    }
+
+    @Override
+    public RemoteKClusterCompleteDto getClusterForEdit(Long id, Principal principal) {
+        return toCompleteDto(getClusterEntity(id, principal));
+    }
+
+    private KCluster getClusterEntity(Long id, Principal principal) {
         Optional<KCluster> cluster = kClusterRepository.findById(id);
         if (cluster.isPresent()) {
             if (userService.isAdmin(principal.getName())
                     || userService.isUserAdminInAnyDomain(cluster.get().getDomains(), principal.getName())) {
-                return toDto(cluster.get());
+                return cluster.get();
             } else {
                 throw new IllegalArgumentException("No access to cluster " + id);
             }
@@ -316,11 +326,19 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
     }
 
     private RemoteKClusterDto toDto(KCluster kCluster) {
-        RemoteKClusterDto view = modelMapper.map(kCluster, RemoteKClusterDto.class);
+        RemoteKClusterDto dto = modelMapper.map(kCluster, RemoteKClusterDto.class);
         if (Objects.nonNull(kCluster.getDomains())) {
-            view.setDomainNames(kCluster.getDomains().stream().map(Domain::getName).toList());
+            dto.setDomainNames(kCluster.getDomains().stream().map(Domain::getName).toList());
         }
-        return view;
+        return dto;
+    }
+
+    private RemoteKClusterCompleteDto toCompleteDto(KCluster kCluster) {
+        RemoteKClusterCompleteDto dto = modelMapper.map(kCluster, RemoteKClusterCompleteDto.class);
+        if (Objects.nonNull(kCluster.getDomains())) {
+            dto.setDomainNames(kCluster.getDomains().stream().map(Domain::getName).toList());
+        }
+        return dto;
     }
 
     private RemoteKClusterBaseDto toBaseDto(KCluster kCluster) {
