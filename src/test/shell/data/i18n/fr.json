@@ -341,6 +341,7 @@
     "DOMAIN": "Organisation",
     "OWNER": "Propriétaire",
     "CLUSTER": "Cluster",
+    "REMOTE_CLUSTER": "Remote cluster",
     "DEPLOYED_AT": "Temps de déploiement",
     "APPLICATION": "Application",
     "VERSION": "Version",

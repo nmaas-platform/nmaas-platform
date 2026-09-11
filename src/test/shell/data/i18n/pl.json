@@ -340,6 +340,7 @@
     "DOMAIN": "Domena",
     "OWNER": "Właściciel",
     "CLUSTER": "Klaster",
+    "REMOTE_CLUSTER": "Klaster zdalny",
     "DEPLOYED_AT": "Czas uruchomienia",
     "APPLICATION": "Aplikacja",
     "VERSION": "Wersja",
