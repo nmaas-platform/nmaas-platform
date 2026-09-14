@@ -82,7 +82,7 @@ public class PortalConfigInit implements InitializingBean {
         try {
             log.debug("[Init] Initializing portal configuration");
             configurationManager.setConfiguration(configurationView);
-        } catch (OnlyOneConfigurationSupportedException e) {
+        } catch (OnlyOneConfigurationSupportedException _) {
             log.debug("Portal configuration already exists. Skipping initialization.");
         }
         // assuming that this initialization is not required at this point (code to be removed in the future)

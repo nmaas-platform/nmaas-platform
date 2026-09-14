@@ -45,12 +45,12 @@ public class DomainActionJob extends WebhookJob {
             }
 
             callWebhook(webhook, new DomainActionDto(domain, action, WebhookEventTypeDto.DOMAIN_ACTION));
-        } catch (GeneralSecurityException e) {
+        } catch (GeneralSecurityException _) {
             log.error("Failed to decrypt webhook with id {}", webhookId);
             throw new JobExecutionException("Failed webhook decryption");
-        } catch (MissingElementException e) {
+        } catch (MissingElementException _) {
             log.warn("Webhook does not exist. DomainActionJob is abandoned");
-        } catch (WebServiceCommunicationException e) {
+        } catch (WebServiceCommunicationException _) {
             log.error("Failed to communicate with external system for the webhook of domain action with id {}", domain.getId());
             throw new JobExecutionException("Failed communication with external system");
         }

@@ -228,7 +228,7 @@ public class ApplicationInstanceBaseServiceImpl implements ApplicationInstanceBa
         try {
             ai.setState(mapAppInstanceState(this.appDeploymentMonitor.state(appInstance.getInternalId())));
             ai.setUserFriendlyState(ai.getState().getUserFriendlyState());
-        } catch (Exception e) {
+        } catch (Exception _) {
             ai.setState(AppInstanceState.UNKNOWN);
             ai.setUserFriendlyState(ai.getState().getUserFriendlyState());
         }
@@ -251,7 +251,7 @@ public class ApplicationInstanceBaseServiceImpl implements ApplicationInstanceBa
         try {
             return appDeploymentMonitor.userAccessDetails(internalId).getServiceAccessMethods().stream()
                     .anyMatch(this::isExternallyAccessible);
-        } catch (Exception e) {
+        } catch (Exception _) {
             return false;
         }
     }

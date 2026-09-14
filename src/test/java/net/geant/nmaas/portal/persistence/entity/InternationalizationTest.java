@@ -65,7 +65,7 @@ class InternationalizationTest {
         ObjectMapper om = new ObjectMapper();
         try {
             assertEquals(om.readTree(internationalization.getContent()), om.readTree(test.getContent()));
-        } catch (IOException ioe) {
+        } catch (IOException _) {
             fail();
         }
     }

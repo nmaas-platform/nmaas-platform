@@ -465,7 +465,7 @@ public class AppInstanceReadController extends AppBaseController {
                     appInstance.getId(),
                     appDeploymentMonitor.state(appInstance.getInternalId()),
                     appDeploymentMonitor.previousState(appInstance.getInternalId()));
-        } catch (InvalidDeploymentIdException e) {
+        } catch (InvalidDeploymentIdException _) {
             throw new ProcessingException(MISSING_APP_INSTANCE_MESSAGE);
         }
     }
@@ -514,7 +514,7 @@ public class AppInstanceReadController extends AppBaseController {
         try {
             ai.setState(AppInstanceController.mapAppInstanceState(this.appDeploymentMonitor.state(appInstance.getInternalId())));
             ai.setUserFriendlyState(ai.getState().getUserFriendlyState());
-        } catch (Exception e) {
+        } catch (Exception _) {
             ai.setState(AppInstanceState.UNKNOWN);
             ai.setUserFriendlyState(ai.getState().getUserFriendlyState());
         }
@@ -536,7 +536,7 @@ public class AppInstanceReadController extends AppBaseController {
         try {
             return appDeploymentMonitor.userAccessDetails(internalId).getServiceAccessMethods().stream()
                     .anyMatch(this::isExternallyAccessible);
-        } catch (Exception e) {
+        } catch (Exception _) {
             return false;
         }
     }
@@ -562,19 +562,19 @@ public class AppInstanceReadController extends AppBaseController {
         Identifier identifier = appInstance.getInternalId();
         try {
             ai.setServiceAccessMethods(appDeploymentMonitor.userAccessDetails(identifier).getServiceAccessMethods());
-        } catch (InvalidAppStateException | InvalidDeploymentIdException e) {
+        } catch (InvalidAppStateException | InvalidDeploymentIdException _) {
             ai.setServiceAccessMethods(null);
         }
 
         try {
             ai.setAppConfigRepositoryAccessDetails(appDeploymentMonitor.configRepositoryAccessDetails(identifier));
-        } catch (InvalidAppStateException | InvalidDeploymentIdException e) {
+        } catch (InvalidAppStateException | InvalidDeploymentIdException _) {
             ai.setAppConfigRepositoryAccessDetails(null);
         }
 
         try {
             ai.setDescriptiveDeploymentId(appDeploymentRepositoryManager.load(appInstance.getInternalId()).getDescriptiveDeploymentId().value());
-        } catch (InvalidDeploymentIdException e) {
+        } catch (InvalidDeploymentIdException _) {
             ai.setDescriptiveDeploymentId(null);
         }
 
@@ -582,7 +582,7 @@ public class AppInstanceReadController extends AppBaseController {
             ai.setConfigWizardTemplate(new ConfigWizardTemplateDto(
                     appInstance.getApplication().getConfigWizardTemplate().getId(),
                     appInstance.getApplication().getConfigWizardTemplate().getTemplate()));
-        } catch (Exception e) {
+        } catch (Exception _) {
             ai.setConfigWizardTemplate(null);
         }
 
@@ -590,7 +590,7 @@ public class AppInstanceReadController extends AppBaseController {
             ai.setConfigUpdateWizardTemplate(new ConfigWizardTemplateDto(
                     appInstance.getApplication().getConfigUpdateWizardTemplate().getId(),
                     appInstance.getApplication().getConfigUpdateWizardTemplate().getTemplate()));
-        } catch (Exception e) {
+        } catch (Exception _) {
             ai.setConfigUpdateWizardTemplate(null);
         }
 

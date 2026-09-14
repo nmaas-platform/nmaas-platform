@@ -77,7 +77,7 @@ public class InternationalizationServiceImpl implements InternationalizationServ
         try {
             new ObjectMapper().readTree(content);
             return true;
-        } catch (IOException e) {
+        } catch (IOException _) {
             return false;
         }
     }

@@ -51,7 +51,7 @@ public class AppRequestVerificationTask {
                     deploymentId,
                     appDeployment,
                     application.getAppDeploymentSpec());
-        } catch (ServiceRequestVerificationException e) {
+        } catch (ServiceRequestVerificationException _) {
             log.warn("New deployment was blocked.");
         } catch (Exception ex) {
             log.error("Error reported at {}", LocalDateTime.now(), ex);

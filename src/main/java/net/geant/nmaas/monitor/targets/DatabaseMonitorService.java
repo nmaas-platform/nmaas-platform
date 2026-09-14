@@ -30,7 +30,7 @@ public class DatabaseMonitorService extends MonitorService {
             } else {
                 this.updateMonitorEntry(MonitorStatus.FAILURE);
             }
-        } catch (SQLException e) {
+        } catch (SQLException _) {
             this.updateMonitorEntry(MonitorStatus.FAILURE);
         }
     }

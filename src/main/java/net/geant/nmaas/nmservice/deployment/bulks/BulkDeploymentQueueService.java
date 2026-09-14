@@ -104,7 +104,7 @@ public class BulkDeploymentQueueService {
                             .build(), null);
                     try {
                         Thread.sleep(2000);
-                    } catch (InterruptedException ex) {
+                    } catch (InterruptedException _) {
                         logSleepError();
                         Thread.currentThread().interrupt();
                     }
@@ -130,7 +130,7 @@ public class BulkDeploymentQueueService {
                         queueRepository.save(e);
                         try {
                             Thread.sleep(2000);
-                        } catch (InterruptedException ex) {
+                        } catch (InterruptedException _) {
                             logSleepError();
                             Thread.currentThread().interrupt();
                         }

@@ -90,7 +90,7 @@ class AppScreenshotsControllerTest {
         ResponseEntity<InputStreamResource> re = null;
         try {
             re = this.appScreenshotsController.getLogo(app.getId());
-        } catch (FileNotFoundException e) {
+        } catch (FileNotFoundException _) {
             fail();
         }
         assertNotNull(re);

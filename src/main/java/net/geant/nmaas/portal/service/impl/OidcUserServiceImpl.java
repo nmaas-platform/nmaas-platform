@@ -82,9 +82,9 @@ public class OidcUserServiceImpl implements OidcUserService {
                     oidcUser.isAupApprove(),
                     oidcUser.isPnApprove(),
                     domains.getGlobalDomain().orElseThrow(MissingElementException::new));
-        } catch (ObjectAlreadyExistsException e) {
+        } catch (ObjectAlreadyExistsException _) {
             throw new SignupException("User already exists");
-        } catch (MissingElementException e) {
+        } catch (MissingElementException _) {
             throw new SignupException("Domain not found");
         }
     }
@@ -93,9 +93,9 @@ public class OidcUserServiceImpl implements OidcUserService {
     public User registerNewUser(OidcUser oidcUser) {
         try {
             return register(oidcUser, domains.getGlobalDomain().orElseThrow(MissingElementException::new));
-        } catch (ObjectAlreadyExistsException e) {
+        } catch (ObjectAlreadyExistsException _) {
             throw new SignupException("User already exists");
-        } catch (MissingElementException e) {
+        } catch (MissingElementException _) {
             throw new SignupException("Domain not found");
         }
     }

@@ -147,7 +147,7 @@ public class AutoWebhookTemplateService {
 
         try {
             return mapper.writeValueAsString(payload);
-        } catch (JsonProcessingException e) {
+        } catch (JsonProcessingException _) {
             return "{}"; // fallback on JSON serialization error
         }
     }
@@ -270,7 +270,7 @@ public class AutoWebhookTemplateService {
                     }
                 }
                 return nested;
-            } catch (Exception e) {
+            } catch (Exception _) {
                 return null;
             }
         }

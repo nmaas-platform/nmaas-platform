@@ -286,7 +286,7 @@ public class DomainController extends BaseController {
     public void deleteDomain(@PathVariable Long domainId, @RequestParam(required = false, name = "softRemove") Boolean softRemove) throws InterruptedException {
         try {
             applicationInstanceService.deleteAllByDomain(domainId);
-        } catch (ObjectNotFoundException e) {
+        } catch (ObjectNotFoundException _) {
             throw new MissingElementException("Unable to remove domain");
         }
         Thread.sleep(3000);

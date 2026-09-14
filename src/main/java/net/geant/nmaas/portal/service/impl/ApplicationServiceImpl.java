@@ -166,7 +166,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     private void validateConfigFileTemplates(ConfigFileTemplate configFileTemplate) {
         try {
             new Template("test", configFileTemplate.getConfigFileTemplateContent(), new Configuration(Configuration.VERSION_2_3_28));
-        } catch (IOException e) {
+        } catch (IOException _) {
             throw new IllegalArgumentException("Template " + configFileTemplate.getConfigFileName() + " is invalid");
         }
     }

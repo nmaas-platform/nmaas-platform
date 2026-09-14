@@ -85,7 +85,7 @@ public class ResourcesLimitUsageService {
             // temporary fix
             // return kubernetesApiClientService.getPods(cluster, namespace).getItems().size();
             return 0;
-        } catch (Exception e) {
+        } catch (Exception _) {
             return 0;
         }
     }

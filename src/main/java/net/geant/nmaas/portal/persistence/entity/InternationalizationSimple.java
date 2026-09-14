@@ -63,7 +63,7 @@ public class InternationalizationSimple extends InternationalizationAbstract {
         try {
             result.setContent(new ObjectMapper().writeValueAsString(contentStructure));
             return result;
-        } catch (JsonProcessingException jpe) {
+        } catch (JsonProcessingException _) {
             throw new IllegalArgumentException("Should not occur");
         }
     }

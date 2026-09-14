@@ -32,7 +32,7 @@ public class DummyDcnDeploymentExecutor implements DcnDeploymentProvider {
     public DcnState checkState(String domain) {
         try {
             return DcnState.fromDcnDeploymentState(dcnRepositoryManager.loadCurrentState(domain));
-        } catch (InvalidDomainException e) {
+        } catch (InvalidDomainException _) {
             return DcnState.NONE;
         }
     }

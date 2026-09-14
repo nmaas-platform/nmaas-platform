@@ -51,7 +51,7 @@ public class DcnRepositoryManager {
         try {
             DcnInfo dcnInfo = loadDcnOrThrowException(domain);
             dcnInfoRepository.delete(dcnInfo);
-        } catch (InvalidDomainException e) {
+        } catch (InvalidDomainException _) {
             log.warn("DCN for domain {} doesn't exist hence can't be removed", domain);
         }
     }

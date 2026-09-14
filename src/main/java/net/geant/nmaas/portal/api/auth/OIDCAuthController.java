@@ -171,11 +171,11 @@ public class OIDCAuthController {
 
             registerSuccessfulLogin(request, user);
             return new RedirectView(redirectUrl);
-        } catch (ExternalUserMatchException exception) {
+        } catch (ExternalUserMatchException _) {
             //TODO handle this exception on the portal
             String logoutUrl = oidcAddress + OIDC_LOGOUT_PATH;
             return new RedirectView(logoutUrl + "?id_token_hint=" + oidcUser.getIdToken().getTokenValue());
-        } catch (ExternalUserCanNotBeLinked exception) {
+        } catch (ExternalUserCanNotBeLinked _) {
             //TODO handle this exception on the portal
             String logoutUrl = oidcAddress + OIDC_LOGOUT_PATH;
             return new RedirectView(logoutUrl + "?id_token_hint=" + oidcUser.getIdToken().getTokenValue());

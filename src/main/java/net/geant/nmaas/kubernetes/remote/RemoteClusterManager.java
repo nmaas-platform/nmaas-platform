@@ -245,7 +245,7 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
                 log.debug("Namespace creation flag is disabled");
             }
             return toDto(savedCluster);
-        } catch (DataIntegrityViolationException e) {
+        } catch (DataIntegrityViolationException _) {
             log.error("Cluster already exists");
             throw new RemoteClusterValidationException("Cluster already exists");
         }

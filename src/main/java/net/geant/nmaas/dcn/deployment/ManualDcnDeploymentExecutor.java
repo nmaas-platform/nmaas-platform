@@ -35,7 +35,7 @@ public class ManualDcnDeploymentExecutor implements DcnDeploymentProvider {
     public DcnState checkState(String domain) {
         try {
             return DcnState.fromDcnDeploymentState(dcnRepositoryManager.loadCurrentState(domain));
-        } catch (InvalidDomainException e) {
+        } catch (InvalidDomainException _) {
             return DcnState.NONE;
         }
     }
@@ -65,7 +65,7 @@ public class ManualDcnDeploymentExecutor implements DcnDeploymentProvider {
             }
         } catch (InvalidDomainException e){
             throw new CouldNotDeployDcnException("Exception during DCN deploy " + e.getMessage());
-        } catch (InterruptedException e){
+        } catch (InterruptedException _){
             Thread.currentThread().interrupt();
         }
     }

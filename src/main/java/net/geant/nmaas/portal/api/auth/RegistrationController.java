@@ -82,9 +82,9 @@ public class RegistrationController {
             if (registration.getDomainId() != null) {
                 domains.addMemberRole(registration.getDomainId(), newUser.getId(), Role.ROLE_GUEST);
             }
-        } catch (ObjectAlreadyExistsException e) {
+        } catch (ObjectAlreadyExistsException _) {
             throw new SignupException("User already exists");
-        } catch (MissingElementException e) {
+        } catch (MissingElementException _) {
             throw new SignupException("Domain not found");
         }
     }

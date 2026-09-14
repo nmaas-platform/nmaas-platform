@@ -155,7 +155,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
                  | ContainerOrchestratorInternalErrorException e) {
             notifyStateChangeListeners(deploymentId, VERIFICATION_FAILED, e.getMessage());
             throw new CouldNotVerifyServiceException("NM Service deployment verification failed -> " + e.getMessage());
-        } catch (InterruptedException e) {
+        } catch (InterruptedException _) {
             Thread.currentThread().interrupt();
         }
     }

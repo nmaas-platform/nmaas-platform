@@ -82,7 +82,7 @@ public class LocalFileStorageService implements FileStorageService {
             fileRepo.delete(fileInfo);
             try {
                 Files.deleteIfExists(getPath(fileInfo.getId()));
-            } catch (IOException e) {
+            } catch (IOException _) {
                 throw new StorageException("Unable to delete file id=" + fileInfo.getId());
             }
             return true;

@@ -673,7 +673,7 @@ public class UsersController {
         Role role;
         try {
             role = Role.valueOf(userRole);
-        } catch (IllegalArgumentException ex) {
+        } catch (IllegalArgumentException _) {
             throw new MissingElementException("Missing or invalid role");
         }
         return role;

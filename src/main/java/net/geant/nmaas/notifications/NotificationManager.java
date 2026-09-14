@@ -254,7 +254,7 @@ public class NotificationManager {
     private UserDto convertEmailToUserView(String email) {
         try {
             return modelMapper.map(this.userService.findByEmail(email), UserDto.class);
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException _) {
             UserDto uv = new UserDto(-1L, email, false);
             uv.setEmail(email);
             uv.setSelectedLanguage("en");

@@ -194,7 +194,7 @@ public class AppInstanceController extends AppBaseController {
         try {
             AppInstance appInstance = getAppInstance(appInstanceId);
             appLifecycleManager.removeApplication(appInstance.getInternalId(), principal.getName());
-        } catch (InvalidDeploymentIdException e) {
+        } catch (InvalidDeploymentIdException _) {
             throw new ProcessingException(MISSING_APP_INSTANCE_MESSAGE);
         }
     }
@@ -208,7 +208,7 @@ public class AppInstanceController extends AppBaseController {
         try {
             AppInstance appInstance = getAppInstance(appInstanceId);
             appLifecycleManager.removeFailedApplication(appInstance.getInternalId(), principal.getName());
-        } catch (InvalidDeploymentIdException e) {
+        } catch (InvalidDeploymentIdException _) {
             throw new ProcessingException(MISSING_APP_INSTANCE_MESSAGE);
         }
     }
@@ -222,7 +222,7 @@ public class AppInstanceController extends AppBaseController {
         try {
             AppInstance appInstance = getAppInstance(appInstanceId);
             this.appLifecycleManager.restartApplication(appInstance.getInternalId(), principal.getName());
-        } catch (InvalidDeploymentIdException e) {
+        } catch (InvalidDeploymentIdException _) {
             throw new ProcessingException(MISSING_APP_INSTANCE_MESSAGE);
         }
     }
@@ -236,7 +236,7 @@ public class AppInstanceController extends AppBaseController {
         try {
             AppInstance appInstance = getAppInstance(appInstanceId);
             this.appLifecycleManager.redeployApplication(appInstance.getInternalId(), principal.getName());
-        } catch (InvalidDeploymentIdException e) {
+        } catch (InvalidDeploymentIdException _) {
             throw new ProcessingException(MISSING_APP_INSTANCE_MESSAGE);
         }
     }
@@ -254,7 +254,7 @@ public class AppInstanceController extends AppBaseController {
                     Identifier.newInstance(targetApplicationId),
                     principal.getName()
             );
-        } catch (InvalidDeploymentIdException e) {
+        } catch (InvalidDeploymentIdException _) {
             throw new ProcessingException(MISSING_APP_INSTANCE_MESSAGE);
         }
     }
@@ -267,7 +267,7 @@ public class AppInstanceController extends AppBaseController {
             AppInstance appInstance = getAppInstance(appInstanceId);
             appInstance.setAutoUpgradesEnabled(true);
             this.instanceService.update(appInstance);
-        } catch (InvalidDeploymentIdException e) {
+        } catch (InvalidDeploymentIdException _) {
             throw new ProcessingException(MISSING_APP_INSTANCE_MESSAGE);
         }
     }
@@ -280,7 +280,7 @@ public class AppInstanceController extends AppBaseController {
             AppInstance appInstance = getAppInstance(appInstanceId);
             appInstance.setAutoUpgradesEnabled(false);
             this.instanceService.update(appInstance);
-        } catch (InvalidDeploymentIdException e) {
+        } catch (InvalidDeploymentIdException _) {
             throw new ProcessingException(MISSING_APP_INSTANCE_MESSAGE);
         }
     }
@@ -291,7 +291,7 @@ public class AppInstanceController extends AppBaseController {
         try {
             AppInstance appInstance = getAppInstance(appInstanceId);
             appLifecycleManager.updateApplicationStatus(appInstance.getInternalId());
-        } catch (InvalidDeploymentIdException e) {
+        } catch (InvalidDeploymentIdException _) {
             throw new ProcessingException(MISSING_APP_INSTANCE_MESSAGE);
         }
     }
@@ -305,7 +305,7 @@ public class AppInstanceController extends AppBaseController {
             Application application = getApp(appInstance.getApplication().getName(), version);
             appInstance.setApplication(application);
             this.instanceService.update(appInstance);
-        } catch (InvalidDeploymentIdException e) {
+        } catch (InvalidDeploymentIdException _) {
             throw new ProcessingException(MISSING_APP_INSTANCE_MESSAGE);
         }
     }
