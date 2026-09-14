@@ -88,13 +88,13 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
     @Override
     public List<RemoteKClusterDto> getAllClusters() {
         List<KCluster> clusters = kClusterRepository.findAll();
-        return clusters.stream().map(this::toDto).collect(Collectors.toList());
+        return clusters.stream().map(this::toDto).toList();
     }
 
     @Override
     public List<RemoteKClusterBaseDto> getAllClustersBase() {
         List<KCluster> clusters = kClusterRepository.findAll();
-        return clusters.stream().map(this::toBaseDto).collect(Collectors.toList());
+        return clusters.stream().map(this::toBaseDto).toList();
     }
 
     @Override
@@ -121,7 +121,7 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
         } else {
             clusters = kClusterRepository.findByDomains_Id(domainId);
         }
-        return clusters.stream().map(this::toDto).collect(Collectors.toList());
+        return clusters.stream().map(this::toDto).toList();
     }
 
     @Override
@@ -264,7 +264,7 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
     }
 
     @Override
-    public RemoteKClusterDto updateCluster(RemoteKClusterDto cluster, Long id) {
+    public RemoteKClusterDto updateCluster(RemoteKClusterCompleteDto cluster, Long id) {
         Optional<KCluster> entity = kClusterRepository.findById(id);
 
         if (entity.isPresent()) {
@@ -275,6 +275,7 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
                 updated.setDescription(cluster.getDescription());
                 updated.setCodename(cluster.getCodename());
                 updated.setModificationDate(OffsetDateTime.now());
+                updated.setClusterConfigFile(cluster.getConfigFileContent());
 
                 updated.setDomains(cluster.getDomainNames().stream()
                         .map(d -> {

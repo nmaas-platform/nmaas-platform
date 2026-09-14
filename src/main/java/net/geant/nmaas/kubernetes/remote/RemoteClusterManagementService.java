@@ -1,5 +1,6 @@
 package net.geant.nmaas.kubernetes.remote;
 
+import net.geant.nmaas.api.dto.kubernetes.RemoteKClusterCompleteDto;
 import net.geant.nmaas.api.dto.kubernetes.RemoteKClusterDto;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -11,7 +12,7 @@ public interface RemoteClusterManagementService extends RemoteClusterInfoService
 
     RemoteKClusterDto processNewCluster(RemoteKClusterDto remoteClusterSpec, boolean createNamespace, String namespace, String secretName);
 
-    RemoteKClusterDto updateCluster(RemoteKClusterDto cluster, Long id);
+    RemoteKClusterDto updateCluster(RemoteKClusterCompleteDto cluster, Long id);
 
     void removeCluster(Long id);
 

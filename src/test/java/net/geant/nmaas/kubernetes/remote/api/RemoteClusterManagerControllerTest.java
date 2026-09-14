@@ -253,7 +253,7 @@ class RemoteClusterManagerControllerTest {
 
     @Test
     void shouldUpdateCluster() throws Exception {
-        when(remoteClusterManager.updateCluster(isA(RemoteKClusterDto.class), eq(1L)))
+        when(remoteClusterManager.updateCluster(isA(RemoteKClusterCompleteDto.class), eq(1L)))
                 .thenReturn(clusterDto(1L, "Cluster", "cluster"));
 
         mvc.perform(put(CLUSTER_BASE_URL + "/1")
@@ -263,7 +263,7 @@ class RemoteClusterManagerControllerTest {
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.name").value("Cluster"));
 
-        verify(remoteClusterManager, times(1)).updateCluster(isA(RemoteKClusterDto.class), eq(1L));
+        verify(remoteClusterManager, times(1)).updateCluster(isA(RemoteKClusterCompleteDto.class), eq(1L));
     }
 
     @Test
