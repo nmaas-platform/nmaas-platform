@@ -7,6 +7,9 @@ public class HelmChartUtils {
 
     private static final String OCI_PREFIX = "oci://";
 
+    private HelmChartUtils() {
+    }
+
     public static boolean isOciChart(KubernetesTemplate template) {
         if (template == null || template.getChart() == null) {
             return false;

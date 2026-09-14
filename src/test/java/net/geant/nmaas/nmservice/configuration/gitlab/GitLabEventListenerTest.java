@@ -14,16 +14,22 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyList;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class GitLabEventListenerTest {
 
-    private KubernetesRepositoryManager repositoryManager = mock(KubernetesRepositoryManager.class);
+    private final KubernetesRepositoryManager repositoryManager = mock(KubernetesRepositoryManager.class);
 
-    private GitConfigHandler gitConfigHandler = mock(GitConfigHandler.class);
+    private final GitConfigHandler gitConfigHandler = mock(GitConfigHandler.class);
 
-    private GitLabEventsListener eventsListener = new GitLabEventsListener(repositoryManager, gitConfigHandler);
+    private final GitLabEventsListener eventsListener = new GitLabEventsListener(repositoryManager, gitConfigHandler);
 
     @BeforeEach
     void setup() {
