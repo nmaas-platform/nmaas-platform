@@ -20,7 +20,9 @@ import org.springframework.stereotype.Service;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.json.JsonMapper;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,6 +35,7 @@ public class WebhookHistoryServiceImpl implements WebhookHistoryService {
     private final DomainRepository domainRepository;
     private final ModelMapper modelMapper;
     private final JsonMapper jsonMapper;
+    private final Clock clock;
 
 
     @Override
@@ -55,7 +58,7 @@ public class WebhookHistoryServiceImpl implements WebhookHistoryService {
         }
         webhookHistory.setResponseStatus(responseStatus);
         webhookHistory.setResponseBody(responseBody);
-        webhookHistory.setExecutionTimestamp(LocalDateTime.now());
+        webhookHistory.setExecutionTimestamp(LocalDateTime.now(clock));
         webhookHistoryRepository.save(webhookHistory);
     }
 

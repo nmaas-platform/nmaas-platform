@@ -22,6 +22,9 @@ import org.springframework.web.client.RestClient;
 import tools.jackson.databind.json.JsonMapper;
 
 import java.security.GeneralSecurityException;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -42,7 +45,12 @@ class DomainGroupActionJobTest {
     private final ModelMapper mapper = new ModelMapper();
     private final JsonMapper jsonMapper = new JsonMapper();
 
-    private final WebhookHistoryService webhookHistoryService = new WebhookHistoryServiceImpl(webhookHistoryRepository, domainRepository, mapper, jsonMapper);
+    private final Clock fixedClock = Clock.fixed(
+            Instant.parse("2026-07-15T10:00:00Z"),
+            ZoneId.of("Europe/Warsaw")
+    );
+
+    private final WebhookHistoryService webhookHistoryService = new WebhookHistoryServiceImpl(webhookHistoryRepository, domainRepository, mapper, jsonMapper,fixedClock);
 
     @Test
     void shouldExecuteSampleJob() throws GeneralSecurityException {
