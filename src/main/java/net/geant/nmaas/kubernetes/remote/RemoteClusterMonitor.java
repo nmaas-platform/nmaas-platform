@@ -38,7 +38,7 @@ public class RemoteClusterMonitor implements RemoteClusterMonitoringService {
         try {
             kubernetesApiClientService.getKubernetesVersion(cluster);
             return true;
-        } catch (Exception e) {
+        } catch (Exception _) {
             return false;
         }
     }

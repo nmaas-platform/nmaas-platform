@@ -146,7 +146,7 @@ public class JWTTokenService {
             Claims claims = getClaims(token);
             Object scope = claims.get(SCOPES);
             return scope instanceof List<?> && ((List<String>) scope).contains(JWTSettings.Scopes.REFRESH_TOKEN.name());
-        } catch (JwtException e) {
+        } catch (JwtException _) {
             return false;
         }
     }

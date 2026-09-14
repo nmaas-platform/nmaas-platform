@@ -304,11 +304,11 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                     bulkDeploymentEntryRepository.save(bulkDeploymentEntry);
                     return new AppAutoDeploymentReviewEvent(this);
             }
-        } catch (InterruptedException e) {
+        } catch (InterruptedException _) {
             log.warn("Thread interrupted while sleeping ... Resending the event");
             Thread.currentThread().interrupt();
             return event;
-        } catch (NoSuchElementException e) {
+        } catch (NoSuchElementException _) {
             log.warn("Received bulk status update request but entry was not found ({})", event.getBulkDeploymentId().toString());
             return null;
         }
@@ -492,7 +492,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                     appLifecycleManager.removeApplication(queueEntry.getDeploymentId());
                 }
             }
-        } catch (Exception e) {
+        } catch (Exception _) {
             log.error("Problem with setting bulk state to canceled.");
         }
     }

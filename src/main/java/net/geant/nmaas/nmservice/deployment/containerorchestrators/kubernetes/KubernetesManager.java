@@ -381,7 +381,7 @@ public class KubernetesManager implements ContainerOrchestrator {
                 accessMethods.add(copy);
             });
             repositoryManager.updateKServiceAccessMethods(accessMethods);
-        } catch (JanitorException je) {
+        } catch (JanitorException _) {
             log.error("Could not retrieve IP for {}", service.getDescriptiveDeploymentId());
         }
     }
@@ -495,7 +495,7 @@ public class KubernetesManager implements ContainerOrchestrator {
         try {
             // TODO filter only relevant parameters
             return repositoryManager.loadService(deploymentId).getAdditionalParameters();
-        } catch (Exception e) {
+        } catch (Exception _) {
             throw new ProcessingException("Can't find additional parameters for " + deploymentId.value());
         }
     }

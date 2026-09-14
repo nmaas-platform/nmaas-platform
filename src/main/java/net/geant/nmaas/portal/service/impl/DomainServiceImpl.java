@@ -244,7 +244,7 @@ public class DomainServiceImpl implements DomainService {
                 eventPublisher.publishEvent(new DomainCreatedEvent(this, new DomainCreatedEvent.DomainSpec(saved.getId(), saved.getName(), saved.getCodename(), request.getAnnotations()), saved));
             }
             return saved;
-        } catch (Exception ex) {
+        } catch (Exception _) {
             throw new ProcessingException(String.format("Unable to create new domain with given name or codename %s/%s", request.getName(), request.getCodename()));
         }
     }

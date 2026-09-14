@@ -49,7 +49,7 @@ public class I18nDto extends I18nBaseDto {
             decompose(parts, node, "");
             result.setLanguageNodes(parts);
             return result;
-        } catch (IOException ioe) {
+        } catch (IOException _) {
             throw new IllegalArgumentException("Language content cannot be parsed");
         }
     }

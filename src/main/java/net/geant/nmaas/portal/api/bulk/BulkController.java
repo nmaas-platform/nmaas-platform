@@ -217,7 +217,7 @@ public class BulkController {
         T bulkView = modelMapper.map(bulk, viewType);
         try {
             bulkView.setCreator(getUserInfo(bulk.getCreator().getId()));
-        } catch (Exception ex) {
+        } catch (Exception _) {
             log.error("Can't find user who requested bulk {} (provided id: {})", bulk.getId(), bulk.getCreator().getId());
             return null;
         }
@@ -229,7 +229,7 @@ public class BulkController {
         BulkDeploymentView bulkView = modelMapper.map(deployment, BulkDeploymentView.class);
         try {
             bulkView.setCreator(getUserInfo(deployment.getCreator().getId()));
-        } catch (Exception ex) {
+        } catch (Exception _) {
             log.error("Can't find user who requested bulk {} (provided id: {})", deployment.getId(), deployment.getCreator().getId());
         }
         mapDetails(deployment, bulkView);

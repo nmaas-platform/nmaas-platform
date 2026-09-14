@@ -111,7 +111,6 @@ public class RemoteClusterManagerController {
                                                    @RequestPart(value = "secretNamespace", required = false) String secretNamespace,
                                                    @RequestPart(value = "secretName", required = false) String secretName,
                                                    @RequestPart("data") String viewString) {
-        ObjectMapper objectMapper = new ObjectMapper();
         try {
             RemoteKClusterDto cluster = objectMapper.readValue(viewString, RemoteKClusterDto.class);
             if (file != null && !file.isEmpty()) {

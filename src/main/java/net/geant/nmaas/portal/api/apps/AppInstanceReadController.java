@@ -67,6 +67,8 @@ public class AppInstanceReadController extends AppBaseController {
     private static final String MISSING_APP_INSTANCE_MESSAGE = "Missing app instance";
     private static final String MISSING_USER_MESSAGE = "User not found";
     private static final String DOMAIN_NOT_FOUND_MESSAGE = "Domain %s not found";
+    private static final String DEPLOYED_STATUS = "deployed";
+    private static final String UNDEPLOYED_STATUS = "undeployed";
 
     private final AppDeploymentMonitor appDeploymentMonitor;
     private final ApplicationInstanceService applicationInstanceService;
@@ -102,11 +104,11 @@ public class AppInstanceReadController extends AppBaseController {
                 .filter(instance -> matchesRemoteCluster(instance, remoteClusterId))
                 .toList();
         List<AppInstanceState> undeployedStates = List.of(AppInstanceState.REMOVED, AppInstanceState.DONE);
-        if (status == null || status.equals("deployed")) {
+        if (status == null || status.equals(DEPLOYED_STATUS)) {
             return result.stream()
                     .filter(instance -> !undeployedStates.contains(instance.getState()))
                     .toList();
-        } else if (status.equals("undeployed")) {
+        } else if (status.equals(UNDEPLOYED_STATUS)) {
             return result.stream()
                     .filter(instance -> undeployedStates.contains(instance.getState()))
                     .toList();
@@ -147,7 +149,7 @@ public class AppInstanceReadController extends AppBaseController {
         User user = userService.findByUsername(principal.getName()).orElseThrow(() ->
                 new MissingElementException(MISSING_USER_MESSAGE));
         if (status != null) {
-            return instanceBaseService.findAllByOwner(user, pageable, status.equals("deployed"), search, remoteClusterId);
+            return instanceBaseService.findAllByOwner(user, pageable, status.equals(DEPLOYED_STATUS), search, remoteClusterId);
         }
         return instanceBaseService.findAllByOwner(user, pageable, search, remoteClusterId);
     }
@@ -178,11 +180,11 @@ public class AppInstanceReadController extends AppBaseController {
         }
 
         List<AppInstanceState> undeployedStates = List.of(AppInstanceState.REMOVED, AppInstanceState.DONE);
-        if (status == null || status.equals("deployed")) {
+        if (status == null || status.equals(DEPLOYED_STATUS)) {
             return result.stream()
                     .filter(instance -> !undeployedStates.contains(instance.getState()))
                     .toList();
-        } else if (status.equals("undeployed")) {
+        } else if (status.equals(UNDEPLOYED_STATUS)) {
             return result.stream()
                     .filter(instance -> undeployedStates.contains(instance.getState()))
                     .toList();
@@ -207,12 +209,12 @@ public class AppInstanceReadController extends AppBaseController {
 
         if (this.isSystemAdminAndIsDomainGlobal(user, domainId)) {
             if (status != null) {
-                return instanceBaseService.findAll(pageable, status.equals("deployed"), search, remoteClusterId);
+                return instanceBaseService.findAll(pageable, status.equals(DEPLOYED_STATUS), search, remoteClusterId);
             }
             return instanceBaseService.findAll(pageable, remoteClusterId);
         } else {
             if (status != null) {
-                return instanceBaseService.findAllByDomain(domain, pageable, status.equals("deployed"), search, remoteClusterId);
+                return instanceBaseService.findAllByDomain(domain, pageable, status.equals(DEPLOYED_STATUS), search, remoteClusterId);
             }
             return instanceBaseService.findAllByDomain(domain, pageable, search, remoteClusterId);
         }
@@ -261,7 +263,7 @@ public class AppInstanceReadController extends AppBaseController {
         User user = userService.findByUsername(principal.getName()).orElseThrow(() -> new UsernameNotFoundException(MISSING_USER_MESSAGE));
 
         if (this.isSystemAdminAndIsDomainGlobal(user, domainId)) {
-            if (status != null && status.equals("deployed")) {
+            if (status != null && status.equals(DEPLOYED_STATUS)) {
                 return applicationInstanceService.findAllByOwner(user).stream()
                         .map(this::mapAppInstanceBase)
                         .filter(instance -> matchesRemoteCluster(instance, remoteClusterId))
@@ -269,7 +271,7 @@ public class AppInstanceReadController extends AppBaseController {
                                 appInstanceBase.getState() != AppInstanceState.REMOVED &&
                                         appInstanceBase.getState() != AppInstanceState.DONE)
                         .toList();
-            } else if (status != null && status.equals("undeployed")) {
+            } else if (status != null && status.equals(UNDEPLOYED_STATUS)) {
                 return applicationInstanceService.findAllByOwner(user).stream()
                         .map(this::mapAppInstanceBase)
                         .filter(instance -> matchesRemoteCluster(instance, remoteClusterId))
@@ -283,14 +285,14 @@ public class AppInstanceReadController extends AppBaseController {
                     .filter(instance -> matchesRemoteCluster(instance, remoteClusterId))
                     .toList();
         } else {
-            if (status != null && status.equals("deployed")) {
+            if (status != null && status.equals(DEPLOYED_STATUS)) {
                 return getUserDomainAppInstances(domainId, principal.getName()).stream()
                         .filter(instance -> matchesRemoteCluster(instance, remoteClusterId))
                         .filter(appInstanceBase ->
                                 appInstanceBase.getState() != AppInstanceState.REMOVED &&
                                         appInstanceBase.getState() != AppInstanceState.DONE)
                         .toList();
-            } else if (status != null && status.equals("undeployed")) {
+            } else if (status != null && status.equals(UNDEPLOYED_STATUS)) {
                 return getUserDomainAppInstances(domainId, principal.getName()).stream()
                         .filter(instance -> matchesRemoteCluster(instance, remoteClusterId))
                         .filter(appInstanceBase ->
@@ -319,12 +321,12 @@ public class AppInstanceReadController extends AppBaseController {
 
         if (this.isSystemAdminAndIsDomainGlobal(user, domainId)) {
             if (status != null) {
-                return instanceBaseService.findAllByOwner(user, pageable, status.equals("deployed"), search, remoteClusterId);
+                return instanceBaseService.findAllByOwner(user, pageable, status.equals(DEPLOYED_STATUS), search, remoteClusterId);
             }
             return instanceBaseService.findAllByOwner(user, pageable, remoteClusterId);
         } else {
             if (status != null) {
-                return getPageUserDomainAppInstances(domainId, principal.getName(), pageable, status.equals("deployed"), search, remoteClusterId);
+                return getPageUserDomainAppInstances(domainId, principal.getName(), pageable, status.equals(DEPLOYED_STATUS), search, remoteClusterId);
             }
             return getPageUserDomainAppInstances(domainId, principal.getName(), pageable, remoteClusterId);
         }
@@ -465,7 +467,7 @@ public class AppInstanceReadController extends AppBaseController {
                     appInstance.getId(),
                     appDeploymentMonitor.state(appInstance.getInternalId()),
                     appDeploymentMonitor.previousState(appInstance.getInternalId()));
-        } catch (InvalidDeploymentIdException e) {
+        } catch (InvalidDeploymentIdException _) {
             throw new ProcessingException(MISSING_APP_INSTANCE_MESSAGE);
         }
     }
@@ -514,7 +516,7 @@ public class AppInstanceReadController extends AppBaseController {
         try {
             ai.setState(AppInstanceController.mapAppInstanceState(this.appDeploymentMonitor.state(appInstance.getInternalId())));
             ai.setUserFriendlyState(ai.getState().getUserFriendlyState());
-        } catch (Exception e) {
+        } catch (Exception _) {
             ai.setState(AppInstanceState.UNKNOWN);
             ai.setUserFriendlyState(ai.getState().getUserFriendlyState());
         }
@@ -536,7 +538,7 @@ public class AppInstanceReadController extends AppBaseController {
         try {
             return appDeploymentMonitor.userAccessDetails(internalId).getServiceAccessMethods().stream()
                     .anyMatch(this::isExternallyAccessible);
-        } catch (Exception e) {
+        } catch (Exception _) {
             return false;
         }
     }
@@ -562,19 +564,19 @@ public class AppInstanceReadController extends AppBaseController {
         Identifier identifier = appInstance.getInternalId();
         try {
             ai.setServiceAccessMethods(appDeploymentMonitor.userAccessDetails(identifier).getServiceAccessMethods());
-        } catch (InvalidAppStateException | InvalidDeploymentIdException e) {
+        } catch (InvalidAppStateException | InvalidDeploymentIdException _) {
             ai.setServiceAccessMethods(null);
         }
 
         try {
             ai.setAppConfigRepositoryAccessDetails(appDeploymentMonitor.configRepositoryAccessDetails(identifier));
-        } catch (InvalidAppStateException | InvalidDeploymentIdException e) {
+        } catch (InvalidAppStateException | InvalidDeploymentIdException _) {
             ai.setAppConfigRepositoryAccessDetails(null);
         }
 
         try {
             ai.setDescriptiveDeploymentId(appDeploymentRepositoryManager.load(appInstance.getInternalId()).getDescriptiveDeploymentId().value());
-        } catch (InvalidDeploymentIdException e) {
+        } catch (InvalidDeploymentIdException _) {
             ai.setDescriptiveDeploymentId(null);
         }
 
@@ -582,7 +584,7 @@ public class AppInstanceReadController extends AppBaseController {
             ai.setConfigWizardTemplate(new ConfigWizardTemplateDto(
                     appInstance.getApplication().getConfigWizardTemplate().getId(),
                     appInstance.getApplication().getConfigWizardTemplate().getTemplate()));
-        } catch (Exception e) {
+        } catch (Exception _) {
             ai.setConfigWizardTemplate(null);
         }
 
@@ -590,7 +592,7 @@ public class AppInstanceReadController extends AppBaseController {
             ai.setConfigUpdateWizardTemplate(new ConfigWizardTemplateDto(
                     appInstance.getApplication().getConfigUpdateWizardTemplate().getId(),
                     appInstance.getApplication().getConfigUpdateWizardTemplate().getTemplate()));
-        } catch (Exception e) {
+        } catch (Exception _) {
             ai.setConfigUpdateWizardTemplate(null);
         }
 

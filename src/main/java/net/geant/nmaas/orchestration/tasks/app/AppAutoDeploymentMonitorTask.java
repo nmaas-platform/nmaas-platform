@@ -36,7 +36,7 @@ public class AppAutoDeploymentMonitorTask {
                 Thread.sleep(15000);
                 return event;
             }
-        } catch (InvalidDeploymentIdException e) {
+        } catch (InvalidDeploymentIdException _) {
             log.warn("App deployment with provided identifier doesn't exist ({})", event.getDeploymentId());
         }
         return new AppAutoDeploymentStatusUpdateEvent(this, event.getBulkDeploymentId(), event.getDeploymentId());

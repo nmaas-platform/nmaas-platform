@@ -81,7 +81,7 @@ public class AppConfigurationController {
         try {
             jsonMapper.readTree(json);
             return true;
-        } catch (JacksonException e) {
+        } catch (JacksonException _) {
             return false;
         }
     }

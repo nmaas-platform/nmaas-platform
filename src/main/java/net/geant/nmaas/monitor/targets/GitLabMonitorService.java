@@ -25,7 +25,7 @@ public class GitLabMonitorService extends MonitorService {
         try {
             this.gitLabManager.validateGitLabInstance();
             this.updateMonitorEntry(MonitorStatus.SUCCESS);
-        } catch (GitLabInvalidConfigurationException | IllegalStateException e) {
+        } catch (GitLabInvalidConfigurationException | IllegalStateException _) {
             this.updateMonitorEntry(MonitorStatus.FAILURE);
         }
     }

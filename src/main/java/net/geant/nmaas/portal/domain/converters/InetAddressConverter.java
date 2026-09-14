@@ -11,7 +11,7 @@ public class InetAddressConverter extends AbstractConverter<String, InetAddress>
     protected InetAddress convert(String source) {
         try {
             return InetAddress.getByName(source);
-        } catch (UnknownHostException e) {
+        } catch (UnknownHostException _) {
             return null;
         }
     }

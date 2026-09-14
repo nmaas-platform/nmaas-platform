@@ -129,7 +129,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     private boolean deploymentIdAlreadyInUse(Identifier generatedId) {
         try {
             deploymentRepositoryManager.load(generatedId);
-        } catch (InvalidDeploymentIdException e) {
+        } catch (InvalidDeploymentIdException _) {
             return false;
         }
         return true;

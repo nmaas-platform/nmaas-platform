@@ -44,12 +44,12 @@ public class DomainGroupActionJob extends WebhookJob {
             }
             DomainGroupWebhookDto view = new DomainGroupWebhookDto(domainGroup, action, WebhookEventTypeDto.DOMAIN_GROUP_ACTION);
             callWebhook(webhook, view);
-        } catch (GeneralSecurityException e) {
+        } catch (GeneralSecurityException _) {
             log.error("Failed to decrypt webhook with id {}", webhookId);
             throw new JobExecutionException("Failed webhook decryption");
-        } catch (MissingElementException e) {
+        } catch (MissingElementException _) {
             log.warn("Webhook does not exist. DomainGroupJob is abandoned");
-        } catch (WebServiceCommunicationException e) {
+        } catch (WebServiceCommunicationException _) {
             log.error("Failed to communicate with external system for the webhoook of domain group with id {}", domainGroup.getId());
             throw new JobExecutionException("Failed communication with external system");
         }

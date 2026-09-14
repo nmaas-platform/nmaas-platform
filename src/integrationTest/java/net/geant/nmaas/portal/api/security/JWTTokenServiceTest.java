@@ -64,7 +64,7 @@ public class JWTTokenServiceTest {
         try {
             Jwts.parser().setSigningKey(invalidKey).build().parseSignedClaims(token);
             fail("Signed token has been validated with invalid key");
-        } catch (SignatureException e) {
+        } catch (SignatureException _) {
 
         }
     }

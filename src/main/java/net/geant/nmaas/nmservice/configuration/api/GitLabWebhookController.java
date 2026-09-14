@@ -40,7 +40,7 @@ public class GitLabWebhookController {
             } else {
                 log.info("Skipped configuration reload");
             }
-        } catch (InvalidDeploymentIdException e) {
+        } catch (InvalidDeploymentIdException _) {
             throw new InvalidWebhookException(String.format("No service found for given webhook identifier (%s)", id));
         }
     }

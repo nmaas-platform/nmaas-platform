@@ -3,10 +3,10 @@ package net.geant.nmaas.portal.api.auth;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.api.dto.domains.DomainBaseDto;
 import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
 import net.geant.nmaas.notifications.templates.MailType;
-import net.geant.nmaas.api.dto.domains.DomainBaseDto;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.exceptions.SignupException;
 import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
@@ -31,7 +31,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -82,9 +81,9 @@ public class RegistrationController {
             if (registration.getDomainId() != null) {
                 domains.addMemberRole(registration.getDomainId(), newUser.getId(), Role.ROLE_GUEST);
             }
-        } catch (ObjectAlreadyExistsException e) {
+        } catch (ObjectAlreadyExistsException _) {
             throw new SignupException("User already exists");
-        } catch (MissingElementException e) {
+        } catch (MissingElementException _) {
             throw new SignupException("Domain not found");
         }
     }
@@ -97,7 +96,7 @@ public class RegistrationController {
         return domains.getDomains().stream()
                 .map(domain -> modelMapper.map(domain, DomainBaseDto.class))
                 .filter(domain -> !domain.getId().equals(globalDomainId))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private void sendMail(User user) {

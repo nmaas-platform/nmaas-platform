@@ -63,12 +63,12 @@ public class UserDomainAssignmentJob extends WebhookJob {
 
             UserDomainAssignmentWebhookDto dto = new UserDomainAssignmentWebhookDto(userView, modelMapper.map(domain, DomainBaseDto.class), RoleDto.valueOf(role.name()), action, WebhookEventTypeDto.USER_ASSIGNMENT);
             callWebhook(webhook, dto);
-        } catch (GeneralSecurityException e) {
+        } catch (GeneralSecurityException _) {
             log.error("Failed to decrypt webhook with id {}", webhookId);
             throw new JobExecutionException("Failed webhook decryption");
         } catch (MissingElementException e) {
             log.warn("{} UserDomainAssignmentJob is abandoned", e.getMessage());
-        } catch (WebServiceCommunicationException e) {
+        } catch (WebServiceCommunicationException _) {
             log.error("Failed to communicate with external system for the webhook of assignment of the user with id {} in the domain with id {}", userId, domainId);
             throw new JobExecutionException("Failed communication with external system");
         }

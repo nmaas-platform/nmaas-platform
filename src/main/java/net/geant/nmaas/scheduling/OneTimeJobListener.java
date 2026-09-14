@@ -54,7 +54,7 @@ public class OneTimeJobListener implements JobListener {
                     .build();
 
             scheduler.scheduleJob(retryTrigger);
-        } catch (SchedulerException e) {
+        } catch (SchedulerException _) {
             reScheduleJob(context);
         }
     }
