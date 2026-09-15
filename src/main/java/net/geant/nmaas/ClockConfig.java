@@ -10,7 +10,6 @@ import java.time.ZoneId;
 public class ClockConfig {
     @Bean
     public Clock clock() {
-//        return Clock.systemUTC();
         return Clock.system(ZoneId.of("Europe/Warsaw"));
     }
 }

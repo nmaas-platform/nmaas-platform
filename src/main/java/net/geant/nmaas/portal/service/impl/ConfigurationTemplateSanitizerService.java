@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import net.geant.nmaas.portal.exceptions.ConfigurationTemplateParsingException;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
@@ -21,7 +22,7 @@ public class ConfigurationTemplateSanitizerService {
             sanitizeKeysRecursively(root);
             return objectMapper.writeValueAsString(root);
         } catch (Exception e) {
-            throw new RuntimeException("Error parsing configuration template", e);
+            throw new ConfigurationTemplateParsingException("Error parsing configuration template", e);
         }
     }
 

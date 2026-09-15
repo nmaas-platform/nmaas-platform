@@ -3,6 +3,7 @@ package net.geant.nmaas.portal.api.security;
 import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 import lombok.Getter;
+import net.geant.nmaas.portal.api.security.exceptions.JwtInitializationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -22,7 +23,7 @@ public class JWTSettings {
         try {
             keyGenerator = KeyGenerator.getInstance("HmacSha256");
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
+            throw new JwtInitializationException(e);
         }
     }
 

@@ -30,7 +30,6 @@ public class PortalConfigInit implements InitializingBean {
     private final Integer appInstanceNameLengthLimit;
 
     private final ConfigurationManager configurationManager;
-    private final ApplicationService applicationService;
 
     @Autowired
     public PortalConfigInit(@Value("${portal.config.maintenance:false}") boolean maintenance,
@@ -58,7 +57,6 @@ public class PortalConfigInit implements InitializingBean {
         this.healthCheckJobCron = healthCheckJobCron;
         this.appInstanceNameLengthLimit = appInstanceNameLengthLimit;
         this.configurationManager = configurationManager;
-        this.applicationService = applicationService;
     }
 
     @Override
@@ -85,9 +83,6 @@ public class PortalConfigInit implements InitializingBean {
         } catch (OnlyOneConfigurationSupportedException _) {
             log.debug("Portal configuration already exists. Skipping initialization.");
         }
-        // assuming that this initialization is not required at this point (code to be removed in the future)
-        // log.debug("[Init] Running application configuration templates update");
-        // applicationService.checkAndUpdateAllConfigurationTemplates();
     }
 
 }

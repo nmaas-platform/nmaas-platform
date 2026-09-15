@@ -13,6 +13,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.api.dto.webhooks.DomainActionDto;
+import net.geant.nmaas.portal.api.webhooks.WebhookTemplateProcessingException;
 import net.geant.nmaas.portal.persistence.entity.WebhookEventType;
 import net.geant.nmaas.api.dto.webhooks.AppDeploymentWebhookDto;
 import net.geant.nmaas.api.dto.webhooks.DomainGroupWebhookDto;
@@ -225,7 +226,7 @@ public class AutoWebhookTemplateService {
             return instance;
         } catch (Exception e) {
             log.error("Problem creating dummy instance",e);
-            throw new RuntimeException(e);
+            throw new WebhookTemplateProcessingException(e);
         }
     }
 
@@ -324,7 +325,7 @@ public class AutoWebhookTemplateService {
             return context;
         } catch (Exception e) {
             log.error("Cannot build webhook context",e);
-            throw new RuntimeException("Cannot build webhook context", e);
+            throw new WebhookTemplateProcessingException("Cannot build webhook context", e);
         }
     }
 

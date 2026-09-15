@@ -81,7 +81,7 @@ class WebhookEventServiceTest {
     }
 
     @Test
-    void failedDueToFalseTemplate() throws GeneralSecurityException {
+    void failedDueToFalseTemplate() {
         webhookEventDto = new WebhookEventDto(2L, "webhook2", "https://example.com/webhook2", WebhookEventTypeDto.DOMAIN_ACTION, null, null, null, "{\"domain\": \"id\": $DOMAINVIEW_ID, \"name22\": $DOMAINVIEW_NAME, \"codename\": $DOMAINVIEW_CODENAME, \"active\": $DOMAINVIEW_ACTIVE}, \"action\": $ACTION, \"type\": $WEBHOOKEVENTTYPE, \"action22\": \"test\"}");
         // webhookEvent = new WebhookEvent(2L, "webhook2", "https://example.com/webhook2", WebhookEventType.DOMAIN_ACTION, null, null, null, null);
         when(webhookEventRepository.save(isA(WebhookEvent.class))).thenReturn(webhookEvent);
@@ -91,7 +91,7 @@ class WebhookEventServiceTest {
     }
 
     @Test
-    void failedDueToFalseVariable() throws GeneralSecurityException {
+    void failedDueToFalseVariable() {
         webhookEventDto = new WebhookEventDto(2L, "webhook2", "https://example.com/webhook2", WebhookEventTypeDto.DOMAIN_ACTION, null, null, null, "{\"domain\": {\"id\": $DOMAINVIEW_ID, \"name22\": $DOMAINVIEW_DESCR, \"codename\": $DOMAINVIEW_CODENAME, \"active\": $DOMAINVIEW_ACTIVE}, \"action\": $ACTION, \"type\": $WEBHOOKEVENTTYPE, \"action22\": \"test\"}");
         // webhookEvent = new WebhookEvent(2L, "webhook2", "https://example.com/webhook2", WebhookEventType.DOMAIN_ACTION, null, null, null, null);
         when(webhookEventRepository.save(isA(WebhookEvent.class))).thenReturn(webhookEvent);
@@ -101,7 +101,7 @@ class WebhookEventServiceTest {
     }
 
     @Test
-    void shouldGetAllWebhookEvents() throws GeneralSecurityException {
+    void shouldGetAllWebhookEvents() {
         // when(encryptionService.decrypt(anyString())).thenAnswer(i -> "xxxxyyyy");
         when(webhookEventRepository.findAll()).thenReturn(Collections.singletonList(webhookEvent));
 
@@ -117,7 +117,7 @@ class WebhookEventServiceTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenWebhookNotFound() throws GeneralSecurityException {
+    void shouldThrowExceptionWhenWebhookNotFound() {
         // when(encryptionService.decrypt(anyString())).thenAnswer(i -> "xxxxyyyy");
         when(webhookEventRepository.findById(999L)).thenReturn(Optional.empty());
 

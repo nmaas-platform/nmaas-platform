@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import net.geant.nmaas.api.dto.webhooks.WebhookEventDto;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.security.EncryptionService;
+import net.geant.nmaas.portal.api.webhooks.WebhookEncryptionException;
 import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.entity.WebhookEvent;
 import net.geant.nmaas.portal.persistence.entity.WebhookEventType;
@@ -96,7 +97,7 @@ public class WebhookEventService {
                     try {
                         return getWebhookEventDto(x);
                     } catch (GeneralSecurityException e) {
-                        throw new RuntimeException(e);
+                        throw new WebhookEncryptionException(e);
                     }
                 }).toList();
     }
@@ -107,7 +108,7 @@ public class WebhookEventService {
                 try {
                     return getWebhookEventDto(x);
                 } catch (GeneralSecurityException e) {
-                    throw new RuntimeException(e);
+                    throw new WebhookEncryptionException(e);
                 }
             });
         }else {
@@ -115,7 +116,7 @@ public class WebhookEventService {
                 try {
                     return getWebhookEventDto(x);
                 } catch (GeneralSecurityException e) {
-                    throw new RuntimeException(e);
+                    throw new WebhookEncryptionException(e);
                 }
             });
         }
@@ -127,7 +128,7 @@ public class WebhookEventService {
                 try {
                     return getWebhookEventDto(x);
                 } catch (GeneralSecurityException e) {
-                    throw new RuntimeException(e);
+                    throw new WebhookEncryptionException(e);
                 }
             });
         }else {
@@ -135,7 +136,7 @@ public class WebhookEventService {
                 try {
                     return getWebhookEventDto(x);
                 } catch (GeneralSecurityException e) {
-                    throw new RuntimeException(e);
+                    throw new WebhookEncryptionException(e);
                 }
             });
         }
@@ -148,7 +149,7 @@ public class WebhookEventService {
                     try {
                         return getWebhookEventDto(x);
                     } catch (GeneralSecurityException e) {
-                        throw new RuntimeException(e);
+                        throw new WebhookEncryptionException(e);
                     }
                 }).toList();
     }

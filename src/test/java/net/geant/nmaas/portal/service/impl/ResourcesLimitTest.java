@@ -1,9 +1,9 @@
 package net.geant.nmaas.portal.service.impl;
 
+import net.geant.nmaas.api.dto.domains.DomainBaseDto;
 import net.geant.nmaas.api.dto.domains.ResourcesLimitDto;
 import net.geant.nmaas.api.dto.domains.ResourcesLimitTypeDto;
 import net.geant.nmaas.api.dto.domains.ResourcesLimitUpdateDto;
-import net.geant.nmaas.api.dto.domains.DomainBaseDto;
 import net.geant.nmaas.portal.domain.converters.ResourceLimitConverter;
 import net.geant.nmaas.portal.domain.converters.ResourceLimitInverseConverter;
 import net.geant.nmaas.portal.persistence.entity.Domain;
@@ -15,8 +15,8 @@ import net.geant.nmaas.portal.persistence.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistence.repositories.ResourcesLimitRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.modelmapper.ModelMapper;
 import org.mockito.ArgumentCaptor;
+import org.modelmapper.ModelMapper;
 
 import java.util.Collections;
 import java.util.List;
@@ -29,8 +29,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class ResourcesLimitTest {
 
@@ -96,7 +96,7 @@ public class ResourcesLimitTest {
     @Test
     void shouldClearDomainGroupRelationBeforeDeletingResourcesLimit() {
         DomainGroup domainGroup = new DomainGroup(10L);
-        ResourcesLimit resourcesLimit = ResourcesLimit.builder()
+        ResourcesLimit groupLimit = ResourcesLimit.builder()
                 .id(20L)
                 .memory(500)
                 .cpu(100)
@@ -105,14 +105,14 @@ public class ResourcesLimitTest {
                 .limitType(ResourcesLimitType.DOMAIN_GROUP)
                 .domainGroup(domainGroup)
                 .build();
-        domainGroup.setResourcesLimit(resourcesLimit);
-        when(resourcesLimitRepository.findById(20L)).thenReturn(Optional.of(resourcesLimit));
+        domainGroup.setResourcesLimit(groupLimit);
+        when(resourcesLimitRepository.findById(20L)).thenReturn(Optional.of(groupLimit));
 
         resourcesLimitService.delete(20L);
 
         assertNull(domainGroup.getResourcesLimit());
-        assertNull(resourcesLimit.getDomainGroup());
-        verify(resourcesLimitRepository).delete(resourcesLimit);
+        assertNull(groupLimit.getDomainGroup());
+        verify(resourcesLimitRepository).delete(groupLimit);
     }
 
     @Test

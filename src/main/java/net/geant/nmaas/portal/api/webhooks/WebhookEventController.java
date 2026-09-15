@@ -46,7 +46,7 @@ public class WebhookEventController {
             final WebhookEvent webhookEvent = webhookEventService.create(webhook);
             return ResponseEntity.ok(new Id(webhookEvent.getId()));
         } catch (GeneralSecurityException e) {
-            throw new RuntimeException(e);
+            throw new WebhookEncryptionException(e);
         }
     }
 
@@ -60,7 +60,7 @@ public class WebhookEventController {
         try {
             return ResponseEntity.ok(webhookEventService.update(webhook));
         } catch (GeneralSecurityException e) {
-            throw new RuntimeException(e);
+            throw new WebhookEncryptionException(e);
         }
     }
 
@@ -97,7 +97,7 @@ public class WebhookEventController {
             final WebhookEvent webhookEvent = webhookEventService.create(webhook);
             return ResponseEntity.ok(new Id(webhookEvent.getId()));
         } catch (GeneralSecurityException e) {
-            throw new RuntimeException(e);
+            throw new WebhookEncryptionException(e);
         }
     }
 
@@ -111,7 +111,7 @@ public class WebhookEventController {
         try {
             return ResponseEntity.ok(webhookEventService.update(domainId, webhook));
         } catch (GeneralSecurityException e) {
-            throw new RuntimeException(e);
+            throw new WebhookEncryptionException(e);
         }
     }
 

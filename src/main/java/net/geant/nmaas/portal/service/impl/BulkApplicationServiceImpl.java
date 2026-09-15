@@ -27,6 +27,7 @@ import net.geant.nmaas.portal.api.bulk.model.BulkDeploymentView;
 import net.geant.nmaas.portal.api.bulk.model.BulkDeploymentViewS;
 import net.geant.nmaas.portal.api.bulk.model.BulkQueueDetails;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
+import net.geant.nmaas.portal.exceptions.CsvExportException;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistence.entity.AppInstance;
 import net.geant.nmaas.portal.persistence.entity.Application;
@@ -636,7 +637,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
 
         } catch (Exception e) {
             log.error("Exception while preparing bulk deployment details CSV content", e);
-            throw new RuntimeException(e.getMessage());
+            throw new CsvExportException("Exception while preparing bulk deployment details CSV content", e);
         }
     }
 

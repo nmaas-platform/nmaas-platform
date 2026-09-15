@@ -19,7 +19,6 @@ import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.ApplicationEventPublisher;
 
-import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.Principal;
@@ -78,9 +77,9 @@ class RemoteClusterManagerTest {
         cluster2 = KCluster.builder().id(101L).name("ClusterB").build();
         cluster3 = KCluster.builder().id(102L).name("ClusterC").build();
 
-        cluster1.setDomains(Arrays.asList(specificDomain));
+        cluster1.setDomains(Collections.singletonList(specificDomain));
         cluster2.setDomains(Arrays.asList(specificDomain, globalDomain));
-        cluster3.setDomains(Arrays.asList(globalDomain));
+        cluster3.setDomains(Collections.singletonList(globalDomain));
 
         mockPrincipal = mock(Principal.class);
         when(mockPrincipal.getName()).thenReturn("testUser");
@@ -104,7 +103,7 @@ class RemoteClusterManagerTest {
     }
 
     @Test
-    void getClusterView_validId_domainAdminUser_returnsRemoteClusterView() throws AccessDeniedException {
+    void getClusterView_validId_domainAdminUser_returnsRemoteClusterView() {
         Long id = 1L;
         KCluster remoteCluster = KCluster.builder().id(id).name("Cluster").description("Description").build();
         remoteCluster.setDomains(List.of(specificDomain));
