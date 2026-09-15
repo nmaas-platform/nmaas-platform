@@ -323,22 +323,6 @@ class ApplicationServiceImplTest {
     }
 
     @Test
-    void checkAndUpdateAllConfigurationTemplatesShouldSanitizeAndSave() {
-        Application app = getDefaultApplication();
-        app.setId(77L);
-        app.setConfigUpdateWizardTemplate(new ConfigWizardTemplate("old-update"));
-        when(applicationRepository.findAll()).thenReturn(List.of(app));
-        when(configurationTemplateSanitizerService.sanitizeConfigurationJson("template")).thenReturn("sanitized-create");
-        when(configurationTemplateSanitizerService.sanitizeConfigurationJson("old-update")).thenReturn("sanitized-update");
-
-        applicationService.checkAndUpdateAllConfigurationTemplates();
-
-        assertEquals("sanitized-create", app.getConfigWizardTemplate().getTemplate());
-        assertEquals("sanitized-update", app.getConfigUpdateWizardTemplate().getTemplate());
-        verify(applicationRepository).save(app);
-    }
-
-    @Test
     void setMissingPropertiesShouldSetApplicationIdForTemplates() {
         Application app = getDefaultApplication();
         app.getAppConfigurationSpec().setTemplates(new ArrayList<>(List.of(

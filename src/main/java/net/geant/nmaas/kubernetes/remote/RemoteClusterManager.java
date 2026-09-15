@@ -11,6 +11,7 @@ import net.geant.nmaas.kubernetes.ClusterConfigView;
 import net.geant.nmaas.kubernetes.KubernetesApiClientService;
 import net.geant.nmaas.kubernetes.KubernetesClusterDeploymentManager;
 import net.geant.nmaas.kubernetes.KubernetesClusterIngressManager;
+import net.geant.nmaas.kubernetes.remote.api.exceptions.RemoteClusterConfigFileHandlingException;
 import net.geant.nmaas.kubernetes.remote.api.exceptions.RemoteClusterValidationException;
 import net.geant.nmaas.kubernetes.remote.entities.KCluster;
 import net.geant.nmaas.kubernetes.remote.entities.KClusterDeployment;
@@ -130,7 +131,7 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
         try {
             return getRemoteClusterView(view, file.getBytes());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RemoteClusterConfigFileHandlingException(e);
         }
     }
 
@@ -171,7 +172,7 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
                 log.warn("More than 1 cluster provided, not implemented yet");
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RemoteClusterConfigFileHandlingException(e);
         }
         return null;
     }
@@ -181,7 +182,7 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
         try {
             return saveNewCluster(remoteClusterSpec, createNamespace, kubeConfigFile.getBytes());
         } catch (IOException | NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
+            throw new RemoteClusterConfigFileHandlingException(e);
         }
     }
 
@@ -191,7 +192,7 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
             byte[] configBytesFromSecret = kubernetesApiClientService.readClusterConfigBytesFromSecret(secretNamespace, secretName);
             return saveNewCluster(remoteClusterSpec, createNamespace, configBytesFromSecret);
         } catch (IOException | NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
+            throw new RemoteClusterConfigFileHandlingException(e);
         }
     }
 
@@ -262,7 +263,7 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
             updated.setPathConfigFile(savedPath);
             log.debug("Updated configuration kubeConfigFile saved in {}", savedPath);
         } catch (IOException | NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
+            throw new RemoteClusterConfigFileHandlingException(e);
         }
     }
 

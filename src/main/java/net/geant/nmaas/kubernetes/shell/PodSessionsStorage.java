@@ -59,10 +59,10 @@ public class PodSessionsStorage {
      */
     public synchronized String createSession(Long appInstanceId, String podName) {
         AppInstance instance = applicationInstanceService.find(appInstanceId)
-                .orElseThrow(() -> new RuntimeException("This application instance does not exists"));
+                .orElseThrow(() -> new ShellSessionException("This application instance does not exists"));
         // check if you can connect to this app instance
         if (!instance.getApplication().getAppDeploymentSpec().isAllowSshAccess()) {
-            throw new RuntimeException("SSH connection is not allowed");
+            throw new ShellSessionException("SSH connection is not allowed");
         }
         // pod name must be provided
         if (StringUtils.isEmpty(podName)) {
@@ -127,7 +127,7 @@ public class PodSessionsStorage {
      */
     private void isSessionAvailable(String sessionId) {
         if (!storage.containsKey(sessionId)) {
-            throw new RuntimeException("Session with id: " + sessionId + " does not exist");
+            throw new ShellSessionException("Session with id: " + sessionId + " does not exist");
         }
     }
 }

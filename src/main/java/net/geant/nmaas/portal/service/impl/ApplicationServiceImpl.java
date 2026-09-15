@@ -230,18 +230,4 @@ public class ApplicationServiceImpl implements ApplicationService {
         );
     }
 
-    // TODO remove this if no longer required
-    @Override
-    public void checkAndUpdateAllConfigurationTemplates() {
-        findAll().forEach(app -> {
-            log.debug("Sanitize configuration template keys for app: {}", app.getId());
-            if (app.getConfigWizardTemplate() != null) {
-                app.getConfigWizardTemplate().setTemplate(configurationTemplateSanitizerService.sanitizeConfigurationJson(app.getConfigWizardTemplate().getTemplate()));
-            }
-            if (app.getConfigUpdateWizardTemplate() != null) {
-                app.getConfigUpdateWizardTemplate().setTemplate(configurationTemplateSanitizerService.sanitizeConfigurationJson(app.getConfigUpdateWizardTemplate().getTemplate()));
-            }
-            applicationRepository.save(app);
-        });
-    }
 }

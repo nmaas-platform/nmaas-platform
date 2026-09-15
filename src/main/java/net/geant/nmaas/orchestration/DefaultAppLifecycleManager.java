@@ -60,7 +60,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
 
     private final AppDeploymentRepositoryManager deploymentRepositoryManager;
     private final ApplicationEventPublisher eventPublisher;
-    private final NmServiceRepositoryManager serviceRepositoryManager;
+    private final NmServiceRepositoryManager<?> serviceRepositoryManager;
 
     private final UserRepository userRepository;
 

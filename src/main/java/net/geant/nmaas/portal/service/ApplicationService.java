@@ -11,43 +11,42 @@ import java.util.Optional;
 
 public interface ApplicationService {
 
-	Application create(Application application);
-	Application update(Application application);
-	void delete(Long id);
+    Application create(Application application);
 
-	void changeApplicationState(Application app, ApplicationState state);
-	
-	Optional<Application> findApplication(Long id);
-	Optional<Application> findApplication(String name, String version);
-	Application findApplicationLatestVersion(String name);
+    Application update(Application application);
 
-	/**
-	 * Retrieves all Helm chart versions of given application with corresponding active application version
-	 *
-	 * @param name Application name
-	 * @return map of application Helm chart version and corresponding application version identifier
-	 */
-	Map<String, Long> findAllActiveVersionNumbers(String name);
+    void delete(Long id);
 
-	Page<Application> findAll(Pageable pageable);
-	List<Application> findAll();
+    void changeApplicationState(Application app, ApplicationState state);
 
-	void setMissingProperties(Application app, Long appId);
+    Optional<Application> findApplication(Long id);
 
-	boolean exists(String name, String version);
+    Optional<Application> findApplication(String name, String version);
 
-	/**
-	 * Checks for an old tag used to represent a dot in configuration key string and replaces it with the new one if
-	 * required.
-	 *
-	 * @param application Target application
-	 */
-	void checkAndUpdateConfigurationTemplate(Application application);
+    Application findApplicationLatestVersion(String name);
 
-	/**
-	 * Checks for an old tag used to represent a dot in configuration key string and replaces it with the new one if
-	 * required. Applies to all applications stored in the database.
-	 */
-	void checkAndUpdateAllConfigurationTemplates();
+    /**
+     * Retrieves all Helm chart versions of given application with corresponding active application version
+     *
+     * @param name Application name
+     * @return map of application Helm chart version and corresponding application version identifier
+     */
+    Map<String, Long> findAllActiveVersionNumbers(String name);
+
+    Page<Application> findAll(Pageable pageable);
+
+    List<Application> findAll();
+
+    void setMissingProperties(Application app, Long appId);
+
+    boolean exists(String name, String version);
+
+    /**
+     * Checks for an old tag used to represent a dot in configuration key string and replaces it with the new one if
+     * required.
+     *
+     * @param application Target application
+     */
+    void checkAndUpdateConfigurationTemplate(Application application);
 
 }
