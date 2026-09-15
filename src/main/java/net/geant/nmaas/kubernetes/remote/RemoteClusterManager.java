@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.time.OffsetDateTime;
@@ -251,6 +252,20 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
         }
     }
 
+    private void updateConfigFile(KCluster updated) {
+        if (updated.getClusterConfigFile() == null) {
+            return;
+        }
+        try {
+            byte[] data = updated.getClusterConfigFile().getBytes(StandardCharsets.UTF_8);
+            String savedPath = saveFileToTmp(data);
+            updated.setPathConfigFile(savedPath);
+            log.debug("Updated configuration kubeConfigFile saved in {}", savedPath);
+        } catch (IOException | NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private List<Domain> toListOfDomains(RemoteKClusterDto view) {
         if (view == null || view.getDomainNames() == null) {
             return Collections.emptyList();
@@ -276,6 +291,7 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
                 updated.setCodename(cluster.getCodename());
                 updated.setModificationDate(OffsetDateTime.now());
                 updated.setClusterConfigFile(cluster.getConfigFileContent());
+                updateConfigFile(updated);
 
                 updated.setDomains(cluster.getDomainNames().stream()
                         .map(d -> {
@@ -290,7 +306,6 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
                 updated.setDeployment(modelMapper.map(cluster.getDeployment(), KClusterDeployment.class));
 
                 updated = kClusterRepository.save(updated);
-                //TODO : implement file update logic
                 return toDto(updated);
             }
         }

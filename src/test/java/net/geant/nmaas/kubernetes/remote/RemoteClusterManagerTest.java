@@ -1,7 +1,9 @@
 package net.geant.nmaas.kubernetes.remote;
 
+import net.geant.nmaas.api.dto.kubernetes.KClusterDto;
 import net.geant.nmaas.api.dto.kubernetes.KClusterStateDto;
 import net.geant.nmaas.api.dto.kubernetes.RemoteKClusterBaseDto;
+import net.geant.nmaas.api.dto.kubernetes.RemoteKClusterCompleteDto;
 import net.geant.nmaas.api.dto.kubernetes.RemoteKClusterDto;
 import net.geant.nmaas.kubernetes.KubernetesApiClientService;
 import net.geant.nmaas.kubernetes.KubernetesClusterDeploymentManager;
@@ -18,6 +20,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.context.ApplicationEventPublisher;
 
 import java.nio.file.AccessDeniedException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,11 +30,14 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -237,6 +244,62 @@ class RemoteClusterManagerTest {
         verify(kClusterRepository, never()).findAll();
         assertEquals(1, result.size());
         assertTrue(result.stream().anyMatch(v -> v.getId().equals(cluster1.getId())));
+    }
+
+    @Test
+    void updateCluster_writesConfigFileToTmpAndUpdatePath() {
+        Long id = 1L;
+        KCluster existing = KCluster.builder().id(id).name("Cluster").build();
+        existing.setPathConfigFile("/tmp/old-config.yaml");
+
+        when(kClusterRepository.findById(id)).thenReturn(Optional.of(existing));
+        when(kClusterRepository.save(isA(KCluster.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        RemoteKClusterCompleteDto view = RemoteKClusterCompleteDto.builder()
+                .id(id)
+                .name("Cluster")
+                .codename("cluster")
+                .description("Description")
+                .configFileContent("updated-kube-config-content")
+                .domainNames(List.of("domain"))
+                .ingress(new KClusterDto.KClusterIngressView())
+                .deployment(new KClusterDto.KClusterDeploymentView())
+                .build();
+        when(domainService.findDomain("domain")).thenReturn(Optional.of(specificDomain));
+
+        remoteClusterManager.updateCluster(view, id);
+
+        assertEquals("updated-kube-config-content", existing.getClusterConfigFile());
+        assertNotNull(existing.getPathConfigFile());
+        assertNotEquals("/tmp/old-config.yaml", existing.getPathConfigFile());
+        assertTrue(Files.exists(Path.of(existing.getPathConfigFile())));
+        verify(kClusterRepository, times(1)).save(isA(KCluster.class));
+    }
+
+    @Test
+    void updateCluster_nullConfigFileContent_keepsExistingPath() {
+        Long id = 1L;
+        KCluster existing = KCluster.builder().id(id).name("Cluster").build();
+        existing.setPathConfigFile("/tmp/old-config.yaml");
+
+        when(kClusterRepository.findById(id)).thenReturn(Optional.of(existing));
+        when(kClusterRepository.save(isA(KCluster.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        RemoteKClusterCompleteDto view = RemoteKClusterCompleteDto.builder()
+                .id(id)
+                .name("Cluster")
+                .codename("cluster")
+                .description("Description")
+                .domainNames(List.of("domain"))
+                .ingress(new KClusterDto.KClusterIngressView())
+                .deployment(new KClusterDto.KClusterDeploymentView())
+                .build();
+        when(domainService.findDomain("domain")).thenReturn(Optional.of(specificDomain));
+
+        remoteClusterManager.updateCluster(view, id);
+
+        assertEquals("/tmp/old-config.yaml", existing.getPathConfigFile());
+        verify(kClusterRepository, times(1)).save(isA(KCluster.class));
     }
 
     @Test
