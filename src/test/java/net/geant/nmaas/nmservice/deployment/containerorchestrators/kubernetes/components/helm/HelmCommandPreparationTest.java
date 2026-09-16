@@ -43,6 +43,8 @@ class HelmCommandPreparationTest {
     private static final String CORRECT_HELM_STATUS_COMMAND = "helm status " + RELEASE_NAME;
     private static final String CORRECT_HELM_STATUS_COMMAND_FOR_V3 = "helm status " + RELEASE_NAME + " --namespace " + NAMESPACE;
     private static final String CORRECT_HELM_UPGRADE_WITH_REPO_COMMAND = "helm upgrade" + " --namespace " + NAMESPACE + " " + RELEASE_NAME + " " + CHART_NAME_WITH_REPO + " --version " + CHART_VERSION;
+    private static final String CORRECT_HELM_UPGRADE_WITH_REPO_COMMAND_WITH_VALUES = "helm upgrade" + " --namespace " + NAMESPACE + " --reuse-values --set key1=value1,key2=value2" + " " + RELEASE_NAME + " " + CHART_NAME_WITH_REPO + " --version " + CHART_VERSION;
+    private static final String CORRECT_HELM_UPGRADE_WITH_REPO_COMMAND_WITH_EMPTY_VALUES = "helm upgrade" + " --namespace " + NAMESPACE + " " + RELEASE_NAME + " " + CHART_NAME_WITH_REPO + " --version " + CHART_VERSION;
     private static final String CORRECT_HELM_VERSION_COMMAND = "helm version";
     private static final String TLS = " --tls";
     private static final String CORRECT_HELM_REPO_UPDATE_COMMAND = "helm repo update";
@@ -195,14 +197,30 @@ class HelmCommandPreparationTest {
 
     @Test
     void shouldConstructUpgradeCommandWithRepo() {
-        assertThat(HelmUpgradeCommand.commandWithRepo(HelmCommand.HELM_VERSION_3, NAMESPACE, RELEASE_NAME, CHART_NAME_WITH_REPO, CHART_VERSION, true, null).asString(),
+        assertThat(HelmUpgradeCommand.commandWithRepo(HelmCommand.HELM_VERSION_3, NAMESPACE, RELEASE_NAME, null, CHART_NAME_WITH_REPO, CHART_VERSION, true, null).asString(),
                 equalTo(CORRECT_HELM_UPGRADE_WITH_REPO_COMMAND));
+    }
+
+    @Test
+    void shouldConstructUpgradeCommandWithRepoWithValues() {
+        Map<String, String> values = new HashMap<>();
+        values.put("key1", "value1");
+        values.put("key2", "value2");
+        assertThat(HelmUpgradeCommand.commandWithRepo(HelmCommand.HELM_VERSION_3, NAMESPACE, RELEASE_NAME, values, CHART_NAME_WITH_REPO, CHART_VERSION, true, null).asString(),
+                equalTo(CORRECT_HELM_UPGRADE_WITH_REPO_COMMAND_WITH_VALUES));
+    }
+
+    @Test
+    void shouldConstructUpgradeCommandWithRepoWithEmptyValues() {
+        Map<String, String> values = new HashMap<>();
+        assertThat(HelmUpgradeCommand.commandWithRepo(HelmCommand.HELM_VERSION_3, NAMESPACE, RELEASE_NAME, values, CHART_NAME_WITH_REPO, CHART_VERSION, true, null).asString(),
+                equalTo(CORRECT_HELM_UPGRADE_WITH_REPO_COMMAND_WITH_EMPTY_VALUES));
     }
 
     @Test
     void shouldFailConstructUpgradeCommandWithRepoDueToHelmVersion() {
         assertThrows(IllegalArgumentException.class, () -> {
-            HelmUpgradeCommand.commandWithRepo(HELM_VERSION_2, NAMESPACE, RELEASE_NAME, CHART_REPO_NAME, CHART_VERSION, true, null);
+            HelmUpgradeCommand.commandWithRepo(HELM_VERSION_2, NAMESPACE, RELEASE_NAME, null, CHART_REPO_NAME, CHART_VERSION, true, null);
         });
     }
 
