@@ -38,7 +38,7 @@ public class ResourcesLimitTest {
     private final DomainRepository domainRepository = mock(DomainRepository.class);
     private final DomainGroupRepository domainGroupRepository = mock(DomainGroupRepository.class);
 
-    private final DomainBaseDto domainView = new DomainBaseDto();
+    private final DomainBaseDto domainBaseDto = new DomainBaseDto();
     private final ModelMapper mapper = new ModelMapper();
 
     private ResourcesLimitDto resourcesLimitDto;
@@ -51,11 +51,11 @@ public class ResourcesLimitTest {
         mapper.addConverter(new ResourceLimitConverter());
         mapper.addConverter(new ResourceLimitInverseConverter());
         resourcesLimitService = new ResourcesLimitServiceImpl(resourcesLimitRepository, domainRepository, domainGroupRepository, mapper);
-        domainView.setId(1L);
+        domainBaseDto.setId(1L);
         when(domainRepository.getReferenceById(org.mockito.ArgumentMatchers.anyLong()))
                 .thenAnswer(invocation -> new Domain(invocation.getArgument(0)));
         resourcesLimitDto = new ResourcesLimitDto(1L, 500, 100, 10, 50,
-                ResourcesLimitTypeDto.DOMAIN, null, domainView);
+                ResourcesLimitTypeDto.DOMAIN, null, domainBaseDto);
         resourcesLimit = new ResourcesLimit(1L, 500, 100, 10, 50, new Domain(1L));
         when(resourcesLimitRepository.save(isA(ResourcesLimit.class))).thenReturn(resourcesLimit);
         resourcesLimitService.create(resourcesLimitDto);
@@ -63,10 +63,10 @@ public class ResourcesLimitTest {
 
     @Test
     void crudResourcesLimit() {
-        DomainBaseDto domainView2 = new DomainBaseDto();
-        domainView2.setId(2L);
+        DomainBaseDto domainBaseDto2 = new DomainBaseDto();
+        domainBaseDto2.setId(2L);
         ResourcesLimitDto resourcesLimitDto2 = new ResourcesLimitDto(2L, 500, 100, 10, 50,
-                ResourcesLimitTypeDto.DOMAIN, null, domainView2);
+                ResourcesLimitTypeDto.DOMAIN, null, domainBaseDto2);
         ResourcesLimit resourcesLimit2 = new ResourcesLimit(2L, 500, 100, 10, 50, new Domain(2L));
         resourcesLimit2.setLimitType(ResourcesLimitType.DOMAIN);
         when(resourcesLimitRepository.save(isA(ResourcesLimit.class))).thenReturn(resourcesLimit2);
@@ -117,10 +117,10 @@ public class ResourcesLimitTest {
 
     @Test
     void shouldUseDefaultValuesWhenCreatingResourcesLimitWithNullOrZeroValues() {
-        DomainBaseDto domainView2 = new DomainBaseDto();
-        domainView2.setId(2L);
+        DomainBaseDto domainBaseDto2 = new DomainBaseDto();
+        domainBaseDto2.setId(2L);
         ResourcesLimitDto dto = new ResourcesLimitDto(2L, null, 0, null, 0,
-                ResourcesLimitTypeDto.DOMAIN, null, domainView2);
+                ResourcesLimitTypeDto.DOMAIN, null, domainBaseDto2);
         when(resourcesLimitRepository.save(isA(ResourcesLimit.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         resourcesLimitService.create(dto);

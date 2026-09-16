@@ -1,15 +1,15 @@
 package net.geant.nmaas.portal.service.impl;
 
 import jakarta.transaction.Transactional;
+import net.geant.nmaas.api.dto.bulks.BulkDeploymentBaseDto;
+import net.geant.nmaas.api.dto.bulks.BulkDeploymentStateDto;
 import net.geant.nmaas.api.dto.users.UserInfoDto;
 import net.geant.nmaas.kubernetes.DummyKubernetesApiClientServiceConfig;
 import net.geant.nmaas.nmservice.deployment.limits.ResourcesLimitUsageService;
-import net.geant.nmaas.portal.api.bulk.BulkType;
 import net.geant.nmaas.portal.api.bulk.CsvDomain;
-import net.geant.nmaas.portal.api.bulk.model.BulkDeploymentViewS;
-import net.geant.nmaas.portal.api.configuration.model.ConfigurationView;
+import net.geant.nmaas.portal.api.configuration.model.ConfigurationDto;
 import net.geant.nmaas.portal.persistence.entity.BulkDeployment;
-import net.geant.nmaas.portal.persistence.entity.BulkDeploymentState;
+import net.geant.nmaas.portal.persistence.entity.BulkType;
 import net.geant.nmaas.portal.persistence.entity.Configuration;
 import net.geant.nmaas.portal.persistence.repositories.BulkDeploymentRepository;
 import net.geant.nmaas.portal.persistence.repositories.ConfigurationRepository;
@@ -17,7 +17,6 @@ import net.geant.nmaas.portal.persistence.repositories.UserRepository;
 import net.geant.nmaas.portal.persistence.repositories.UserRoleRepository;
 import net.geant.nmaas.portal.persistence.repositories.WebhookEventRepository;
 import net.geant.nmaas.portal.service.BulkDomainService;
-import net.geant.nmaas.portal.service.UserService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -51,9 +50,6 @@ public class BulkDomainServiceIntTest {
     private BulkDomainService bulkDomainService;
 
     @Autowired
-    private UserService userService;
-
-    @Autowired
     private UserRepository userRepository;
 
     @Autowired
@@ -85,9 +81,9 @@ public class BulkDomainServiceIntTest {
         creator.setId(1L);
         creator.setUsername("admin");
 
-        BulkDeploymentViewS result = bulkDomainService.handleBulkCreation(input, creator);
+        BulkDeploymentBaseDto result = bulkDomainService.handleBulkCreation(input, creator);
 
-        assertEquals(BulkDeploymentState.COMPLETED, result.getState());
+        assertEquals(BulkDeploymentStateDto.COMPLETED, result.getState());
         List<BulkDeployment> bulkDeployments = bulkDeploymentRepository.findAll();
         assertEquals(1, bulkDeployments.size());
         BulkDeployment bulkDeployment = bulkDeployments.getFirst();
@@ -105,7 +101,7 @@ public class BulkDomainServiceIntTest {
         CsvDomain csvDomain2 = new CsvDomain("test5", "user2", "user2@test.com", null, "group1", false);
         List<CsvDomain> input = List.of(csvDomain1, csvDomain2);
         configurationRepository.save(modelMapper.map(
-                ConfigurationView.builder()
+                ConfigurationDto.builder()
                         .id(1L)
                         .defaultLanguage("en")
                         .bulkDomainsAllowForSsoAccounts(false)
@@ -120,9 +116,9 @@ public class BulkDomainServiceIntTest {
         creator.setId(1L);
         creator.setUsername("admin");
 
-        BulkDeploymentViewS result = bulkDomainService.handleBulkCreation(input, creator);
+        BulkDeploymentBaseDto result = bulkDomainService.handleBulkCreation(input, creator);
 
-        assertEquals(BulkDeploymentState.COMPLETED, result.getState());
+        assertEquals(BulkDeploymentStateDto.COMPLETED, result.getState());
         List<BulkDeployment> bulkDeployments = bulkDeploymentRepository.findAll();
         assertEquals(1, bulkDeployments.size());
         BulkDeployment bulkDeployment = bulkDeployments.getFirst();
@@ -143,9 +139,9 @@ public class BulkDomainServiceIntTest {
         UserInfoDto creator = new UserInfoDto();
         creator.setId(1L);
         creator.setUsername("admin");
-        BulkDeploymentViewS result = bulkDomainService.handleBulkCreation(input, creator);
+        BulkDeploymentBaseDto result = bulkDomainService.handleBulkCreation(input, creator);
 
-        assertEquals(BulkDeploymentState.COMPLETED, result.getState());
+        assertEquals(BulkDeploymentStateDto.COMPLETED, result.getState());
         List<BulkDeployment> bulkDeployments = bulkDeploymentRepository.findAll();
         assertEquals(1, bulkDeployments.size());
         BulkDeployment bulkDeployment = bulkDeployments.getFirst();

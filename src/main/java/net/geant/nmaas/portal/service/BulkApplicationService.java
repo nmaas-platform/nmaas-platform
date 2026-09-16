@@ -1,14 +1,14 @@
 package net.geant.nmaas.portal.service;
 
+import net.geant.nmaas.api.dto.bulks.BulkAppDetailsDto;
+import net.geant.nmaas.api.dto.bulks.BulkDeploymentBaseDto;
+import net.geant.nmaas.api.dto.bulks.BulkDeploymentDto;
+import net.geant.nmaas.api.dto.bulks.BulkQueueDto;
 import net.geant.nmaas.api.dto.users.UserInfoDto;
 import net.geant.nmaas.nmservice.deployment.bulks.BulkDeploymentQueueEntry;
 import net.geant.nmaas.orchestration.events.app.AppAutoDeploymentReviewEvent;
 import net.geant.nmaas.orchestration.events.app.AppAutoDeploymentStatusUpdateEvent;
 import net.geant.nmaas.portal.api.bulk.CsvApplication;
-import net.geant.nmaas.portal.api.bulk.model.BulkAppDetails;
-import net.geant.nmaas.portal.api.bulk.model.BulkDeploymentView;
-import net.geant.nmaas.portal.api.bulk.model.BulkDeploymentViewS;
-import net.geant.nmaas.portal.api.bulk.model.BulkQueueDetails;
 import net.geant.nmaas.portal.persistence.entity.BulkDeployment;
 import net.geant.nmaas.portal.persistence.entity.BulkDeploymentEntry;
 import org.springframework.context.ApplicationEvent;
@@ -20,15 +20,15 @@ import java.util.Set;
 
 public interface BulkApplicationService {
 
-    BulkDeploymentViewS handleBulkDeployment(String applicationName, List<CsvApplication> appInstanceSpecs, UserInfoDto creator, Integer limit);
+    BulkDeploymentBaseDto handleBulkDeployment(String applicationName, List<CsvApplication> appInstanceSpecs, UserInfoDto creator, Integer limit);
 
     ApplicationEvent handleDeploymentStatusUpdate(AppAutoDeploymentStatusUpdateEvent event);
 
     void handleDeploymentReview(AppAutoDeploymentReviewEvent event);
 
-    List<BulkAppDetails> getAppsBulkDetails(BulkDeploymentView view);
+    List<BulkAppDetailsDto> getAppsBulkDetails(BulkDeploymentDto view);
 
-    InputStreamResource getInputStreamAppBulkDetails(List<BulkAppDetails> list);
+    InputStreamResource getInputStreamAppBulkDetails(List<BulkAppDetailsDto> list);
 
     void deleteAppInstancesFromBulk(BulkDeployment bulk);
 
@@ -42,7 +42,7 @@ public interface BulkApplicationService {
 
     void setBulkEntryToProcessing(Long bulkEntryId);
 
-    BulkQueueDetails getQueueDetails(Long bulkId);
+    BulkQueueDto getQueueDetails(Long bulkId);
 
     Optional<BulkDeploymentEntry> getBulkEntry(Long bulkEntryId);
 

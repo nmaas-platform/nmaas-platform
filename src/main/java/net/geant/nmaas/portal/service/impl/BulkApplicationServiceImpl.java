@@ -7,6 +7,12 @@ import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.api.dto.applications.AppConfigurationDto;
+import net.geant.nmaas.api.dto.bulks.BulkAppDetailsDto;
+import net.geant.nmaas.api.dto.bulks.BulkDeploymentBaseDto;
+import net.geant.nmaas.api.dto.bulks.BulkDeploymentDto;
+import net.geant.nmaas.api.dto.bulks.BulkDeploymentEntryDto;
+import net.geant.nmaas.api.dto.bulks.BulkDeploymentStateDto;
+import net.geant.nmaas.api.dto.bulks.BulkQueueDto;
 import net.geant.nmaas.api.dto.users.UserInfoDto;
 import net.geant.nmaas.nmservice.deployment.bulks.BulkDeploymentQueueEntry;
 import net.geant.nmaas.nmservice.deployment.bulks.BulkDeploymentQueueRepository;
@@ -19,13 +25,7 @@ import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
 import net.geant.nmaas.orchestration.events.app.AppAutoDeploymentReviewEvent;
 import net.geant.nmaas.orchestration.events.app.AppAutoDeploymentStatusUpdateEvent;
-import net.geant.nmaas.portal.api.bulk.BulkType;
 import net.geant.nmaas.portal.api.bulk.CsvApplication;
-import net.geant.nmaas.portal.api.bulk.model.BulkAppDetails;
-import net.geant.nmaas.portal.api.bulk.model.BulkDeploymentEntryView;
-import net.geant.nmaas.portal.api.bulk.model.BulkDeploymentView;
-import net.geant.nmaas.portal.api.bulk.model.BulkDeploymentViewS;
-import net.geant.nmaas.portal.api.bulk.model.BulkQueueDetails;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.exceptions.CsvExportException;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
@@ -34,6 +34,7 @@ import net.geant.nmaas.portal.persistence.entity.Application;
 import net.geant.nmaas.portal.persistence.entity.BulkDeployment;
 import net.geant.nmaas.portal.persistence.entity.BulkDeploymentEntry;
 import net.geant.nmaas.portal.persistence.entity.BulkDeploymentState;
+import net.geant.nmaas.portal.persistence.entity.BulkType;
 import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.repositories.BulkDeploymentEntryRepository;
 import net.geant.nmaas.portal.persistence.repositories.BulkDeploymentRepository;
@@ -67,13 +68,13 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-import static net.geant.nmaas.portal.api.bulk.model.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_APP_ID;
-import static net.geant.nmaas.portal.api.bulk.model.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_ID;
-import static net.geant.nmaas.portal.api.bulk.model.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_NAME;
-import static net.geant.nmaas.portal.api.bulk.model.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_APP_NAME;
-import static net.geant.nmaas.portal.api.bulk.model.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_DOMAIN_CODENAME;
-import static net.geant.nmaas.portal.api.bulk.model.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_DOMAIN_NAME;
-import static net.geant.nmaas.portal.api.bulk.model.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_ERROR_MESSAGE;
+import static net.geant.nmaas.api.dto.bulks.BulkDeploymentEntryDto.BULK_ENTRY_DETAIL_KEY_APP_ID;
+import static net.geant.nmaas.api.dto.bulks.BulkDeploymentEntryDto.BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_ID;
+import static net.geant.nmaas.api.dto.bulks.BulkDeploymentEntryDto.BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_NAME;
+import static net.geant.nmaas.api.dto.bulks.BulkDeploymentEntryDto.BULK_ENTRY_DETAIL_KEY_APP_NAME;
+import static net.geant.nmaas.api.dto.bulks.BulkDeploymentEntryDto.BULK_ENTRY_DETAIL_KEY_DOMAIN_CODENAME;
+import static net.geant.nmaas.api.dto.bulks.BulkDeploymentEntryDto.BULK_ENTRY_DETAIL_KEY_DOMAIN_NAME;
+import static net.geant.nmaas.api.dto.bulks.BulkDeploymentEntryDto.BULK_ENTRY_DETAIL_KEY_ERROR_MESSAGE;
 
 @Service
 @RequiredArgsConstructor
@@ -109,7 +110,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
     private boolean useDeploymentPrefix;
 
     @Override
-    public BulkDeploymentViewS handleBulkDeployment(String applicationName, List<CsvApplication> appInstanceSpecs, UserInfoDto creator, Integer limit) {
+    public BulkDeploymentBaseDto handleBulkDeployment(String applicationName, List<CsvApplication> appInstanceSpecs, UserInfoDto creator, Integer limit) {
         log.info("Handling bulk application deployment for {} with {} entries", applicationName, appInstanceSpecs.size());
 
         if (!applicationBaseService.exists(applicationName)) {
@@ -217,7 +218,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
 
         BulkDeployment bulk = bulkDeploymentRepository.save(bulkDeployment);
         updateStateBulk(bulk);
-        return modelMapper.map(bulk, BulkDeploymentViewS.class);
+        return modelMapper.map(bulk, BulkDeploymentBaseDto.class);
     }
 
     private Identifier createDescriptiveDeploymentId(String domain, String appName, Long appInstanceNumber) {
@@ -369,7 +370,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
         }
     }
 
-    private String findAppDetail(BulkDeploymentEntryView app, String key) {
+    private String findAppDetail(BulkDeploymentEntryDto app, String key) {
         return Optional.ofNullable(app.getDetails().get(key))
                 .orElseThrow(() -> new ObjectNotFoundException(key + " not found"));
     }
@@ -550,12 +551,13 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
         log.debug("State of bulk {} set to {}", bulkId, state);
     }
 
-    public List<BulkAppDetails> getAppsBulkDetails(BulkDeploymentView bulkDeployment) {
+    public List<BulkAppDetailsDto> getAppsBulkDetails(BulkDeploymentDto dto) {
 
-        List<BulkAppDetails> result = new ArrayList<>();
+        List<BulkAppDetailsDto> result = new ArrayList<>();
 
-        bulkDeployment.getEntries().forEach(deployment -> {
-            if (!(deployment.getState() == BulkDeploymentState.REMOVED || deployment.getState() == BulkDeploymentState.FAILED)) {
+        dto.getEntries().forEach(deployment -> {
+            if (!(deployment.getState() == BulkDeploymentStateDto.REMOVED
+                    || deployment.getState() == BulkDeploymentStateDto.FAILED)) {
                 try {
                     Long instanceId = Long.valueOf(deployment.getDetails().get(BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_ID));
                     AppInstance instance = instanceService.find(instanceId).orElseThrow();
@@ -579,7 +581,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                                 );
                     }
 
-                    BulkAppDetails details = BulkAppDetails.builder().userName(instance.getOwner().getUsername())
+                    BulkAppDetailsDto details = BulkAppDetailsDto.builder().userName(instance.getOwner().getUsername())
                             .appInstanceName(instance.getName())
                             .appName(instance.getApplication().getName())
                             .domainCodeName(instance.getDomain().getCodename())
@@ -602,7 +604,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
         return result;
     }
 
-    public InputStreamResource getInputStreamAppBulkDetails(List<BulkAppDetails> bulkDeploymentDetails) {
+    public InputStreamResource getInputStreamAppBulkDetails(List<BulkAppDetailsDto> bulkDeploymentDetails) {
         try {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             OutputStreamWriter writer = new OutputStreamWriter(byteArrayOutputStream);
@@ -642,7 +644,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
     }
 
     @NotNull
-    private static List<String> createHeaderRow(List<BulkAppDetails> details) {
+    private static List<String> createHeaderRow(List<BulkAppDetailsDto> details) {
         // default column names
         List<String> header = new ArrayList<>(List.of("domainCodeName", "appName", "appInstanceName", "userName", "appVersion"));
 
@@ -665,13 +667,13 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
     }
 
     @Override
-    public BulkQueueDetails getQueueDetails(Long bulkId) {
+    public BulkQueueDto getQueueDetails(Long bulkId) {
         List<BulkDeploymentQueueEntry> queue = bulkDeploymentQueueRepository.findAll();
         return getBulkQueueDetails(queue, bulkId);
 
     }
 
-    private BulkQueueDetails getBulkQueueDetails(List<BulkDeploymentQueueEntry> queue, Long bulkId) {
+    private BulkQueueDto getBulkQueueDetails(List<BulkDeploymentQueueEntry> queue, Long bulkId) {
         long ongoingDeployments = queue.stream().filter(e -> e.getState().equals(BulkDeploymentQueueEntry.QueryEntryState.IN_PROGRESS)).count();
         Optional<BulkDeploymentQueueEntry> entry = queue.stream().filter(e -> e.getState().equals(BulkDeploymentQueueEntry.QueryEntryState.IN_PROGRESS)).findFirst();
         long ongoingDeploymentsId = entry.isPresent() ? bulkDeploymentRepository.findBulkIdByBulkEntryId(entry.get().getBulkEntryId()) : 0L; // bulk id of current deployment
@@ -687,7 +689,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
             jobDone = allJobsInBulk - jobsInQueueBulk - ongoingDeployments;
         }
 
-        return BulkQueueDetails.builder()
+        return BulkQueueDto.builder()
                 .jobInProcess(ongoingDeployments)
                 .jobInProcessId(ongoingDeploymentsId)
                 .jobDone(jobDone)

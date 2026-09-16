@@ -3,7 +3,7 @@ package net.geant.nmaas.portal.api.configuration;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import net.geant.nmaas.portal.api.configuration.model.ConfigurationView;
+import net.geant.nmaas.portal.api.configuration.model.ConfigurationDto;
 import net.geant.nmaas.portal.exceptions.ConfigurationNotFoundException;
 import net.geant.nmaas.portal.exceptions.OnlyOneConfigurationSupportedException;
 import net.geant.nmaas.portal.service.ConfigurationManager;
@@ -28,21 +28,21 @@ public class ConfigurationController {
     private final ConfigurationManager configurationManager;
 
     @GetMapping
-    public ConfigurationView getConfiguration() {
+    public ConfigurationDto getConfiguration() {
         return this.configurationManager.getConfiguration();
     }
 
     @PostMapping
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @ResponseStatus(code = HttpStatus.CREATED)
-    public Long setConfiguration(@RequestBody @Valid ConfigurationView configuration) {
+    public Long setConfiguration(@RequestBody @Valid ConfigurationDto configuration) {
         return this.configurationManager.setConfiguration(configuration);
     }
 
     @PutMapping(value = "/{id}")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    public void updateConfiguration(@PathVariable("id") Long id, @RequestBody @Valid ConfigurationView configuration) {
+    public void updateConfiguration(@PathVariable("id") Long id, @RequestBody @Valid ConfigurationDto configuration) {
         this.configurationManager.updateConfiguration(id, configuration);
     }
 

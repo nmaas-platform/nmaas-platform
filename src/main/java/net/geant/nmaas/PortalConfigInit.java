@@ -1,7 +1,7 @@
 package net.geant.nmaas;
 
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.portal.api.configuration.model.ConfigurationView;
+import net.geant.nmaas.portal.api.configuration.model.ConfigurationDto;
 import net.geant.nmaas.portal.exceptions.OnlyOneConfigurationSupportedException;
 import net.geant.nmaas.portal.service.ApplicationService;
 import net.geant.nmaas.portal.service.ConfigurationManager;
@@ -61,7 +61,7 @@ public class PortalConfigInit implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() {
-        ConfigurationView configurationView = ConfigurationView.builder()
+        ConfigurationDto configurationDto = ConfigurationDto.builder()
                 .maintenance(this.maintenance)
                 .ssoLoginAllowed(this.ssoLoginAllowed)
                 .defaultLanguage(this.defaultLanguage)
@@ -79,7 +79,7 @@ public class PortalConfigInit implements InitializingBean {
                 .build();
         try {
             log.debug("[Init] Initializing portal configuration");
-            configurationManager.setConfiguration(configurationView);
+            configurationManager.setConfiguration(configurationDto);
         } catch (OnlyOneConfigurationSupportedException _) {
             log.debug("Portal configuration already exists. Skipping initialization.");
         }

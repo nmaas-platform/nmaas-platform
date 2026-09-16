@@ -160,6 +160,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void applyConfiguration(Identifier deploymentId, AppConfigurationDto configuration, String initiator) {
         final AppDeployment appDeployment = deploymentRepositoryManager.load(deploymentId);
+
         verifyTermsAcceptanceIfRequired(configuration, initiator, appDeployment);
         Map<String, String> additionalParameters = preprocessParameters(configuration.getAdditionalParameters());
         Map<String, String> mandatoryParameters = preprocessParameters(configuration.getMandatoryParameters());

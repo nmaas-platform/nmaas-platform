@@ -8,7 +8,7 @@ import net.geant.nmaas.api.dto.users.UserDto;
 import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
 import net.geant.nmaas.notifications.templates.MailType;
-import net.geant.nmaas.portal.api.configuration.model.ConfigurationView;
+import net.geant.nmaas.portal.api.configuration.model.ConfigurationDto;
 import net.geant.nmaas.portal.api.exceptions.AuthenticationException;
 import net.geant.nmaas.portal.api.exceptions.ExternalUserCanNotBeLinked;
 import net.geant.nmaas.portal.api.exceptions.ExternalUserMatchException;
@@ -188,7 +188,7 @@ public class OIDCAuthController {
      * @param user user that logged in
      */
     private void assignRoleInDefaultDomainIfRequired(User user) {
-        ConfigurationView configuration = configurationManager.getConfiguration();
+        ConfigurationDto configuration = configurationManager.getConfiguration();
         if (configuration != null && configuration.getDefaultDomainForSsoUsers() != null
                 && (user.getRoles() == null || user.getRoles().size() < 2)) {
             Long defaultDomanId = configuration.getDefaultDomainForSsoUsers();

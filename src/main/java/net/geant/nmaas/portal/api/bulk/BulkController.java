@@ -4,16 +4,17 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.api.dto.bulks.BulkAppDetailsDto;
+import net.geant.nmaas.api.dto.bulks.BulkDeploymentBaseDto;
+import net.geant.nmaas.api.dto.bulks.BulkDeploymentDto;
+import net.geant.nmaas.api.dto.bulks.BulkDeploymentEntryDto;
+import net.geant.nmaas.api.dto.bulks.BulkQueueDto;
 import net.geant.nmaas.api.dto.users.UserInfoDto;
-import net.geant.nmaas.portal.api.bulk.model.BulkAppDetails;
-import net.geant.nmaas.portal.api.bulk.model.BulkDeploymentEntryView;
-import net.geant.nmaas.portal.api.bulk.model.BulkDeploymentView;
-import net.geant.nmaas.portal.api.bulk.model.BulkDeploymentViewS;
-import net.geant.nmaas.portal.api.bulk.model.BulkQueueDetails;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.persistence.entity.BulkDeployment;
 import net.geant.nmaas.portal.persistence.entity.BulkDeploymentEntry;
 import net.geant.nmaas.portal.persistence.entity.BulkDeploymentState;
+import net.geant.nmaas.portal.persistence.entity.BulkType;
 import net.geant.nmaas.portal.persistence.entity.Role;
 import net.geant.nmaas.portal.persistence.entity.User;
 import net.geant.nmaas.portal.persistence.entity.UserRole;
@@ -62,7 +63,7 @@ public class BulkController {
 
     @PostMapping("/domains")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
-    public ResponseEntity<BulkDeploymentViewS> uploadDomains(@NotNull Principal principal, @RequestParam("file") MultipartFile file) {
+    public ResponseEntity<BulkDeploymentBaseDto> uploadDomains(@NotNull Principal principal, @RequestParam("file") MultipartFile file) {
         log.info("Processing new bulk domain deployment request");
         if (bulkCsvProcessor.isCSVFormat(file)) {
             try {
@@ -81,7 +82,7 @@ public class BulkController {
 
     @PostMapping("/apps")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
-    public ResponseEntity<BulkDeploymentViewS> uploadApplications(
+    public ResponseEntity<BulkDeploymentBaseDto> uploadApplications(
             @NotNull Principal principal,
             @RequestParam("appName") String applicationName,
             @RequestParam("limit") Integer limit,
@@ -108,15 +109,15 @@ public class BulkController {
 
     @GetMapping
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
-    public ResponseEntity<List<BulkDeploymentViewS>> getAllDeploymentRecords() {
+    public ResponseEntity<List<BulkDeploymentBaseDto>> getAllDeploymentRecords() {
         return ResponseEntity.ok(mapToViewList(bulkDeploymentRepository.findAll()));
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
-    public ResponseEntity<BulkDeploymentView> getDeploymentRecord(@PathVariable Long id) {
+    public ResponseEntity<BulkDeploymentDto> getDeploymentRecord(@PathVariable Long id) {
         BulkDeployment bulk = bulkDeploymentRepository.findById(id).orElseThrow();
-        return ResponseEntity.ok(mapToView(bulk, BulkDeploymentView.class));
+        return ResponseEntity.ok(mapToView(bulk, BulkDeploymentDto.class));
     }
 
     @GetMapping(value = "/app/csv/{id}", produces = "text/csv")
@@ -124,10 +125,10 @@ public class BulkController {
     public ResponseEntity<InputStreamResource> getDeploymentDetailsInCSV(@PathVariable Long id) {
         log.info("Processing bulk application deployment details request");
         BulkDeployment bulk = bulkDeploymentRepository.findById(id).orElseThrow();
-        BulkDeploymentView bulkView = modelMapper.map(bulk, BulkDeploymentView.class);
-        bulkView.setCreator(getUserInfo(bulk.getCreator().getId()));
-        mapDetails(bulk, bulkView);
-        List<BulkAppDetails> details = bulkApplicationService.getAppsBulkDetails(bulkView);
+        BulkDeploymentDto bulkDto = modelMapper.map(bulk, BulkDeploymentDto.class);
+        bulkDto.setCreator(getUserInfo(bulk.getCreator().getId()));
+        mapDetails(bulk, bulkDto);
+        List<BulkAppDetailsDto> details = bulkApplicationService.getAppsBulkDetails(bulkDto);
         InputStreamResource inputStreamResource = bulkApplicationService.getInputStreamAppBulkDetails(details);
 
         HttpHeaders headers = new HttpHeaders();
@@ -138,13 +139,13 @@ public class BulkController {
 
     @GetMapping("/domains")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
-    public ResponseEntity<List<BulkDeploymentViewS>> getDomainDeploymentRecords(@RequestParam(value = "deleted", defaultValue = "false") Boolean deleted) {
+    public ResponseEntity<List<BulkDeploymentBaseDto>> getDomainDeploymentRecords(@RequestParam(value = "deleted", defaultValue = "false") Boolean deleted) {
         return ResponseEntity.ok(mapToViewList(filter(deleted, bulkDeploymentRepository.findByType(BulkType.DOMAIN))));
     }
 
     @GetMapping("/domains/group")
     @PreAuthorize("hasRole('ROLE_GROUP_MANAGER')")
-    public ResponseEntity<List<BulkDeploymentViewS>> getDomainDeploymentRecordsRestrictedToOwner(Principal principal) {
+    public ResponseEntity<List<BulkDeploymentBaseDto>> getDomainDeploymentRecordsRestrictedToOwner(Principal principal) {
         User user = this.userService.findByUsername(principal.getName())
                 .orElseThrow(() -> new MissingElementException("Missing user " + principal.getName()));
 
@@ -155,13 +156,13 @@ public class BulkController {
 
     @GetMapping("/apps")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
-    public ResponseEntity<List<BulkDeploymentViewS>> getAppDeploymentRecords(@RequestParam(value = "deleted", defaultValue = "false") Boolean deleted) {
+    public ResponseEntity<List<BulkDeploymentBaseDto>> getAppDeploymentRecords(@RequestParam(value = "deleted", defaultValue = "false") Boolean deleted) {
         return ResponseEntity.ok(mapToViewList(filter(deleted, bulkDeploymentRepository.findByType(BulkType.APPLICATION))));
     }
 
     @GetMapping("/apps/group")
     @PreAuthorize("hasRole('ROLE_GROUP_MANAGER')")
-    public ResponseEntity<List<BulkDeploymentViewS>> getAppDeploymentRecordsRestrictedToOwner(Principal principal) {
+    public ResponseEntity<List<BulkDeploymentBaseDto>> getAppDeploymentRecordsRestrictedToOwner(Principal principal) {
         User user = this.userService.findByUsername(principal.getName())
                 .orElseThrow(() -> new MissingElementException("Missing user " + principal.getName()));
 
@@ -195,25 +196,25 @@ public class BulkController {
         return ResponseEntity.ok().build();
     }
 
-    private List<BulkDeploymentViewS> mapToViewList(List<BulkDeployment> deployments) {
+    private List<BulkDeploymentBaseDto> mapToViewList(List<BulkDeployment> deployments) {
         return deployments.stream()
-                .map(bulk -> mapToView(bulk, BulkDeploymentViewS.class))
+                .map(bulk -> mapToView(bulk, BulkDeploymentBaseDto.class))
                 .toList();
     }
 
     @GetMapping("/refresh/{id}")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
-    public ResponseEntity<BulkDeploymentViewS> getRefreshedState(@PathVariable Long id) {
+    public ResponseEntity<BulkDeploymentBaseDto> getRefreshedState(@PathVariable Long id) {
         return ResponseEntity.ok(mapToView(bulkApplicationService.updateState(id)));
     }
 
     @GetMapping("/queue/{id}")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
-    public ResponseEntity<BulkQueueDetails> getQueueDetails(@PathVariable Long id) {
+    public ResponseEntity<BulkQueueDto> getQueueDetails(@PathVariable Long id) {
         return ResponseEntity.ok(bulkApplicationService.getQueueDetails(id));
     }
 
-    private <T extends BulkDeploymentViewS> T mapToView(BulkDeployment bulk, Class<T> viewType) {
+    private <T extends BulkDeploymentBaseDto> T mapToView(BulkDeployment bulk, Class<T> viewType) {
         T bulkView = modelMapper.map(bulk, viewType);
         try {
             bulkView.setCreator(getUserInfo(bulk.getCreator().getId()));
@@ -225,29 +226,28 @@ public class BulkController {
         return bulkView;
     }
 
-    private BulkDeploymentView mapToView(BulkDeployment deployment) {
-        BulkDeploymentView bulkView = modelMapper.map(deployment, BulkDeploymentView.class);
+    private BulkDeploymentDto mapToView(BulkDeployment deployment) {
+        BulkDeploymentDto dto = modelMapper.map(deployment, BulkDeploymentDto.class);
         try {
-            bulkView.setCreator(getUserInfo(deployment.getCreator().getId()));
+            dto.setCreator(getUserInfo(deployment.getCreator().getId()));
         } catch (Exception _) {
             log.error("Can't find user who requested bulk {} (provided id: {})", deployment.getId(), deployment.getCreator().getId());
         }
-        mapDetails(deployment, bulkView);
-
-        return bulkView;
+        mapDetails(deployment, dto);
+        return dto;
     }
 
-    private void mapDetails(BulkDeployment deployment, BulkDeploymentViewS view) {
+    private void mapDetails(BulkDeployment deployment, BulkDeploymentBaseDto view) {
         if (deployment.getType().equals(BulkType.APPLICATION)) {
             Map<String, String> details = new HashMap<>();
             if (!deployment.getEntries().isEmpty()) {
-                details.put(BulkDeploymentViewS.BULK_DETAIL_KEY_APP_INSTANCE_NO, String.valueOf(deployment.getEntries().size()));
+                details.put(BulkDeploymentBaseDto.BULK_DETAIL_KEY_APP_INSTANCE_NO, String.valueOf(deployment.getEntries().size()));
                 BulkDeploymentEntry entry = deployment.getEntries().getFirst();
-                if (entry.getDetails().containsKey(BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_APP_ID)) {
-                    details.put(BulkDeploymentViewS.BULK_DETAIL_KEY_APP_ID, entry.getDetails().get(BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_APP_ID));
+                if (entry.getDetails().containsKey(BulkDeploymentEntryDto.BULK_ENTRY_DETAIL_KEY_APP_ID)) {
+                    details.put(BulkDeploymentBaseDto.BULK_DETAIL_KEY_APP_ID, entry.getDetails().get(BulkDeploymentEntryDto.BULK_ENTRY_DETAIL_KEY_APP_ID));
                 }
-                if (entry.getDetails().containsKey(BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_APP_NAME)) {
-                    details.put(BulkDeploymentViewS.BULK_DETAIL_KEY_APP_NAME, entry.getDetails().get(BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_APP_NAME));
+                if (entry.getDetails().containsKey(BulkDeploymentEntryDto.BULK_ENTRY_DETAIL_KEY_APP_NAME)) {
+                    details.put(BulkDeploymentBaseDto.BULK_DETAIL_KEY_APP_NAME, entry.getDetails().get(BulkDeploymentEntryDto.BULK_ENTRY_DETAIL_KEY_APP_NAME));
                 }
                 view.setDetails(details);
             }

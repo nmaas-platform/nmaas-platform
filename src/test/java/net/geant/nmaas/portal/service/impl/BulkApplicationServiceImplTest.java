@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.api.dto.bulks.BulkQueueDto;
 import net.geant.nmaas.api.dto.users.UserInfoDto;
 import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
 import net.geant.nmaas.nmservice.deployment.bulks.BulkDeploymentQueueEntry;
@@ -14,7 +15,6 @@ import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.events.app.AppAutoDeploymentReviewEvent;
 import net.geant.nmaas.orchestration.events.app.AppAutoDeploymentStatusUpdateEvent;
 import net.geant.nmaas.portal.api.bulk.CsvApplication;
-import net.geant.nmaas.portal.api.bulk.model.BulkQueueDetails;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.persistence.entity.AppInstance;
 import net.geant.nmaas.portal.persistence.entity.Application;
@@ -49,10 +49,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import static net.geant.nmaas.portal.api.bulk.BulkType.APPLICATION;
 import static net.geant.nmaas.portal.persistence.entity.BulkDeploymentState.COMPLETED;
 import static net.geant.nmaas.portal.persistence.entity.BulkDeploymentState.PENDING;
 import static net.geant.nmaas.portal.persistence.entity.BulkDeploymentState.PROCESSING;
+import static net.geant.nmaas.portal.persistence.entity.BulkType.APPLICATION;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -235,7 +235,7 @@ class BulkApplicationServiceImplTest {
 
 
         bulkDeploymentQueueService.handleQueue();
-        BulkQueueDetails details = bulkApplicationService.getQueueDetails(1L);
+        BulkQueueDto details = bulkApplicationService.getQueueDetails(1L);
 
         assertEquals(1, details.getJobInQueue());
         assertEquals(1, details.getJobInProcess());
@@ -263,7 +263,7 @@ class BulkApplicationServiceImplTest {
         when(bulkDeploymentRepository.findById(1L)).thenReturn(Optional.of(bulkDeployment));
 
         bulkDeploymentQueueService.handleQueue();
-        BulkQueueDetails details = bulkApplicationService.getQueueDetails(1L);
+        BulkQueueDto details = bulkApplicationService.getQueueDetails(1L);
 
         assertEquals(1, details.getJobInQueue());
         assertEquals(1, details.getJobInProcess());

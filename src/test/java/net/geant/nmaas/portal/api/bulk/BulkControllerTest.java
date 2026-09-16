@@ -1,8 +1,9 @@
 package net.geant.nmaas.portal.api.bulk;
 
-import net.geant.nmaas.portal.api.bulk.model.BulkDeploymentViewS;
+import net.geant.nmaas.api.dto.bulks.BulkDeploymentBaseDto;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.persistence.entity.BulkDeployment;
+import net.geant.nmaas.portal.persistence.entity.BulkType;
 import net.geant.nmaas.portal.persistence.entity.User;
 import net.geant.nmaas.portal.persistence.repositories.BulkDeploymentRepository;
 import net.geant.nmaas.portal.service.BulkApplicationService;
@@ -54,7 +55,7 @@ class BulkControllerTest {
         MultipartFile file = new MockMultipartFile("test.txt", "test.txt", "text/plain", "invalid content".getBytes());
         when(bulkCsvProcessor.isCSVFormat(any())).thenReturn(false);
 
-        ResponseEntity<BulkDeploymentViewS> response = bulkController.uploadDomains(principalMock, file);
+        ResponseEntity<BulkDeploymentBaseDto> response = bulkController.uploadDomains(principalMock, file);
 
         verifyNoInteractions(bulkDomainService);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -67,7 +68,7 @@ class BulkControllerTest {
         when(userService.findByUsername("user")).thenReturn(Optional.of(new User("user")));
         when(principalMock.getName()).thenReturn("user");
 
-        ResponseEntity<BulkDeploymentViewS> response = bulkController.uploadDomains(principalMock, file);
+        ResponseEntity<BulkDeploymentBaseDto> response = bulkController.uploadDomains(principalMock, file);
 
         verify(bulkCsvProcessor).processDomainSpecs(any());
         verify(bulkDomainService).handleBulkCreation(any(), any());
@@ -80,7 +81,7 @@ class BulkControllerTest {
         when(bulkCsvProcessor.isCSVFormat(any())).thenReturn(false);
         when(principalMock.getName()).thenReturn("user");
 
-        ResponseEntity<BulkDeploymentViewS> response = bulkController.uploadApplications(principalMock, "applicationName", 2, file);
+        ResponseEntity<BulkDeploymentBaseDto> response = bulkController.uploadApplications(principalMock, "applicationName", 2, file);
 
         verifyNoInteractions(bulkApplicationService);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -101,11 +102,11 @@ class BulkControllerTest {
     @Test
     void shouldGetDomainBulksAsGroupManager() {
         when(principalMock.getName()).thenReturn("user");
-        BulkDeployment viewS = new BulkDeployment();
-        viewS.setType(BulkType.DOMAIN);
-        viewS.setCreator(setUpMockUser("user", 10L));
-        viewS.setDeleted(false);
-        when(bulkDeploymentRepository.findByType(BulkType.DOMAIN)).thenReturn(List.of(viewS));
+        BulkDeployment entity = new BulkDeployment();
+        entity.setType(BulkType.DOMAIN);
+        entity.setCreator(setUpMockUser("user", 10L));
+        entity.setDeleted(false);
+        when(bulkDeploymentRepository.findByType(BulkType.DOMAIN)).thenReturn(List.of(entity));
 
         assertEquals(1, Objects.requireNonNull(bulkController.getDomainDeploymentRecordsRestrictedToOwner(principalMock).getBody()).size());
     }
@@ -195,7 +196,7 @@ class BulkControllerTest {
         when(bulkDeploymentRepository.findById(5L)).thenReturn(Optional.of(bulk));
 
         assertThrows(PermissionDeniedDataAccessException.class, () ->
-            bulkController.removeBulkDeployment(5L, true, principalMock)
+                bulkController.removeBulkDeployment(5L, true, principalMock)
         );
 
         verifyNoInteractions(bulkApplicationService);
@@ -211,7 +212,7 @@ class BulkControllerTest {
         bulk.setDeleted(false);
         when(bulkApplicationService.updateState(5L)).thenReturn(bulk);
 
-        ResponseEntity<BulkDeploymentViewS> response = bulkController.getRefreshedState(5L);
+        ResponseEntity<BulkDeploymentBaseDto> response = bulkController.getRefreshedState(5L);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 

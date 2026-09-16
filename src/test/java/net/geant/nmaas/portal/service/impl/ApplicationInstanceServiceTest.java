@@ -7,7 +7,7 @@ import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
-import net.geant.nmaas.portal.api.configuration.model.ConfigurationView;
+import net.geant.nmaas.portal.api.configuration.model.ConfigurationDto;
 import net.geant.nmaas.portal.exceptions.ApplicationSubscriptionNotActiveException;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistence.entity.AppInstance;
@@ -80,7 +80,7 @@ class ApplicationInstanceServiceTest {
 
     @BeforeEach
     void setUp() {
-        when(configurationManager.getConfiguration()).thenReturn(ConfigurationView.builder().appInstanceNameLengthLimit(10).build());
+        when(configurationManager.getConfiguration()).thenReturn(ConfigurationDto.builder().appInstanceNameLengthLimit(10).build());
     }
 
     @Test

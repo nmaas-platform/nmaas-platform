@@ -31,7 +31,7 @@ public interface NmServiceConfigurationProvider {
     void configureBasicAuth(NmServiceDeployment nmServiceDeployment, String basicAuthUsername, String basicAuthPassword);
 
     /**
-     * Updates NM service configuration
+     * Updates NM service configuration (doesn't deal with service configuration files stored in git repositories)
      *
      * @param nmServiceDeployment contains all necessary information about the application instance being configured
      * @throws NmServiceConfigurationFailedException if NM service couldn't be configured for some reason

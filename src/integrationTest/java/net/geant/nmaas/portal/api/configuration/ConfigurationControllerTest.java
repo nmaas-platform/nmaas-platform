@@ -2,7 +2,7 @@ package net.geant.nmaas.portal.api.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
-import net.geant.nmaas.portal.api.configuration.model.ConfigurationView;
+import net.geant.nmaas.portal.api.configuration.model.ConfigurationDto;
 import net.geant.nmaas.portal.api.i18n.api.I18nDto;
 import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.entity.User;
@@ -61,7 +61,7 @@ public class ConfigurationControllerTest extends BaseControllerTestSetup {
 
     @AfterEach
     void tearDown() {
-        ConfigurationView config = this.configManager.getConfiguration();
+        ConfigurationDto config = this.configManager.getConfiguration();
         config.setSsoLoginAllowed(false);
         config.setMaintenance(false);
         config.setDefaultLanguage("en");
@@ -71,7 +71,7 @@ public class ConfigurationControllerTest extends BaseControllerTestSetup {
     @Test
     void shouldAddNewConfiguration() throws Exception {
         repository.deleteAll();
-        ConfigurationView configuration = new ConfigurationView(null, true, false, "en", false, false, new ArrayList<>(), true, true, true, "0 */1 * * * ?", 2, 60, 10, "", "0 */1 * * * ?", null, 10);
+        ConfigurationDto configuration = new ConfigurationDto(null, true, false, "en", false, false, new ArrayList<>(), true, true, true, "0 */1 * * * ?", 2, 60, 10, "", "0 */1 * * * ?", null, 10);
         mvc.perform(post(URL_PREFIX)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + getValidTokenForUser(user))
@@ -87,7 +87,7 @@ public class ConfigurationControllerTest extends BaseControllerTestSetup {
     @Test
     void shouldUpdateConfiguration() throws Exception {
         Long id = repository.findAll().getFirst().getId();
-        ConfigurationView configuration = new ConfigurationView(null, true, false, "en", false, false, new ArrayList<>(), true, true, true, "0 */1 * * * ?", 2, 60, 10, "", "0 */1 * * * ?", null, 10);
+        ConfigurationDto configuration = new ConfigurationDto(null, true, false, "en", false, false, new ArrayList<>(), true, true, true, "0 */1 * * * ?", 2, 60, 10, "", "0 */1 * * * ?", null, 10);
         configuration.setId(id);
         mvc.perform(put(URL_PREFIX + "/{id}", id)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -106,7 +106,7 @@ public class ConfigurationControllerTest extends BaseControllerTestSetup {
     void shouldUpdateConfigurationWithDefaultSsoUserDomain() throws Exception {
         Domain domain = domainRepository.save(new Domain("name", "codename"));
         Long id = repository.findAll().getFirst().getId();
-        ConfigurationView configuration = new ConfigurationView(null, true, false, "en", false, false, new ArrayList<>(), true, true, true, "0 */1 * * * ?", 2, 60, 10, "", "0 */1 * * * ?", null, 10);
+        ConfigurationDto configuration = new ConfigurationDto(null, true, false, "en", false, false, new ArrayList<>(), true, true, true, "0 */1 * * * ?", 2, 60, 10, "", "0 */1 * * * ?", null, 10);
         configuration.setId(id);
         configuration.setDefaultDomainForSsoUsers(domain.getId());
         mvc.perform(put(URL_PREFIX + "/{id}", id)

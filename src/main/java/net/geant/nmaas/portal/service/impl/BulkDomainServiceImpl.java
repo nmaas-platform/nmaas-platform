@@ -2,6 +2,7 @@ package net.geant.nmaas.portal.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.api.dto.KeyValueDto;
+import net.geant.nmaas.api.dto.bulks.BulkDeploymentBaseDto;
 import net.geant.nmaas.api.dto.domains.DcnDeploymentTypeDto;
 import net.geant.nmaas.api.dto.domains.DomainDcnDetailsDto;
 import net.geant.nmaas.api.dto.domains.DomainGroupDto;
@@ -12,7 +13,6 @@ import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
 import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
 import net.geant.nmaas.kubernetes.KubernetesClusterIngressManager;
 import net.geant.nmaas.portal.api.bulk.CsvDomain;
-import net.geant.nmaas.portal.api.bulk.model.BulkDeploymentViewS;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.persistence.entity.BulkDeployment;
 import net.geant.nmaas.portal.persistence.entity.BulkDeploymentEntry;
@@ -41,17 +41,17 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static net.geant.nmaas.portal.api.bulk.BulkType.DOMAIN;
-import static net.geant.nmaas.portal.api.bulk.BulkType.USER;
-import static net.geant.nmaas.portal.api.bulk.model.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_DOMAIN_CODENAME;
-import static net.geant.nmaas.portal.api.bulk.model.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_DOMAIN_ID;
-import static net.geant.nmaas.portal.api.bulk.model.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_DOMAIN_NAME;
-import static net.geant.nmaas.portal.api.bulk.model.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_USER_EMAIL;
-import static net.geant.nmaas.portal.api.bulk.model.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_USER_ID;
-import static net.geant.nmaas.portal.api.bulk.model.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_USER_NAME;
+import static net.geant.nmaas.api.dto.bulks.BulkDeploymentEntryDto.BULK_ENTRY_DETAIL_KEY_DOMAIN_CODENAME;
+import static net.geant.nmaas.api.dto.bulks.BulkDeploymentEntryDto.BULK_ENTRY_DETAIL_KEY_DOMAIN_ID;
+import static net.geant.nmaas.api.dto.bulks.BulkDeploymentEntryDto.BULK_ENTRY_DETAIL_KEY_DOMAIN_NAME;
+import static net.geant.nmaas.api.dto.bulks.BulkDeploymentEntryDto.BULK_ENTRY_DETAIL_KEY_USER_EMAIL;
+import static net.geant.nmaas.api.dto.bulks.BulkDeploymentEntryDto.BULK_ENTRY_DETAIL_KEY_USER_ID;
+import static net.geant.nmaas.api.dto.bulks.BulkDeploymentEntryDto.BULK_ENTRY_DETAIL_KEY_USER_NAME;
 import static net.geant.nmaas.portal.persistence.entity.BulkDeploymentState.COMPLETED;
 import static net.geant.nmaas.portal.persistence.entity.BulkDeploymentState.FAILED;
 import static net.geant.nmaas.portal.persistence.entity.BulkDeploymentState.PENDING;
+import static net.geant.nmaas.portal.persistence.entity.BulkType.DOMAIN;
+import static net.geant.nmaas.portal.persistence.entity.BulkType.USER;
 import static net.geant.nmaas.portal.persistence.entity.Role.ROLE_DOMAIN_ADMIN;
 import static net.geant.nmaas.portal.persistence.entity.Role.ROLE_GROUP_DOMAIN_ADMIN;
 
@@ -93,7 +93,7 @@ public class BulkDomainServiceImpl implements BulkDomainService {
         this.configurationManager = configurationManager;
     }
 
-    public BulkDeploymentViewS handleBulkCreation(List<CsvDomain> domainSpecs, UserInfoDto creator) {
+    public BulkDeploymentBaseDto handleBulkCreation(List<CsvDomain> domainSpecs, UserInfoDto creator) {
         log.info("Handling bulk domain creation with {} entries", domainSpecs.size());
         BulkDeployment bulkDeployment = createBulkDeployment(creator);
 
@@ -115,7 +115,7 @@ public class BulkDomainServiceImpl implements BulkDomainService {
         } else if (bulkDeploymentEntries.stream().anyMatch(entry -> entry.getState().equals(FAILED))) {
             bulkDeployment.setState(FAILED);
         }
-        return modelMapper.map(bulkDeploymentRepository.save(bulkDeployment), BulkDeploymentViewS.class);
+        return modelMapper.map(bulkDeploymentRepository.save(bulkDeployment), BulkDeploymentBaseDto.class);
     }
 
     private Domain createDomainIfNotExists(List<BulkDeploymentEntry> result, CsvDomain csvDomain) {

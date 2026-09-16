@@ -86,9 +86,9 @@ public class ApplicationBaseController extends AppBaseController {
     @PatchMapping
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
     @Transactional
-    public void updateApplicationBase(@RequestBody ApplicationBaseDto baseView, Principal principal) {
-        this.applicationBaseOwnerCheck(baseView.getName(), principal);
-        applicationBaseService.update(modelMapper.map(baseView, ApplicationBase.class));
+    public void updateApplicationBase(@RequestBody ApplicationBaseDto dto, Principal principal) {
+        this.applicationBaseOwnerCheck(dto.getName(), principal);
+        applicationBaseService.update(modelMapper.map(dto, ApplicationBase.class));
     }
 
     @PatchMapping("/{id}/owner/{owner}")
@@ -139,10 +139,10 @@ public class ApplicationBaseController extends AppBaseController {
         );
     }
 
-    private ApplicationBaseDto setAppRating(ApplicationBaseDto baseView) {
-        Integer[] rating = ratingRepository.getApplicationRating(baseView.getId());
-        baseView.setRate(createAppRate(rating));
-        return baseView;
+    private ApplicationBaseDto setAppRating(ApplicationBaseDto dto) {
+        Integer[] rating = ratingRepository.getApplicationRating(dto.getId());
+        dto.setRate(createAppRate(rating));
+        return dto;
     }
 
     private static AppRateDto createAppRate(Integer[] rating) {

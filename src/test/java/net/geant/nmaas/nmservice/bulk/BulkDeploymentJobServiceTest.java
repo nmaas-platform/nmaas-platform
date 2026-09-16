@@ -9,7 +9,7 @@ import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.orchestration.AppLifecycleState;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
-import net.geant.nmaas.portal.api.configuration.model.ConfigurationView;
+import net.geant.nmaas.portal.api.configuration.model.ConfigurationDto;
 import net.geant.nmaas.portal.persistence.repositories.BulkDeploymentRepository;
 import net.geant.nmaas.portal.service.BulkApplicationService;
 import net.geant.nmaas.portal.service.ConfigurationManager;
@@ -49,7 +49,7 @@ class BulkDeploymentJobServiceTest {
                 bulkApplicationService, appLifecycleManager,
                 bulkDeploymentRepository, configurationManager,
                 new JsonMapper());
-        when(configurationManager.getConfiguration()).thenReturn(ConfigurationView.builder().parallelDeploymentsLimit(2).build());
+        when(configurationManager.getConfiguration()).thenReturn(ConfigurationDto.builder().parallelDeploymentsLimit(2).build());
     }
 
     @Test
@@ -61,7 +61,7 @@ class BulkDeploymentJobServiceTest {
         when(appDeploymentMonitor.state(any())).thenReturn(AppLifecycleState.REQUESTED);
         when(appDeploymentRepositoryManager.loadState(any())).thenReturn(AppDeploymentState.REQUEST_VALIDATED);
         when(bulkDeploymentRepository.findBulkIdByBulkEntryId(any())).thenReturn(1L);
-        when(configurationManager.getConfiguration()).thenReturn(ConfigurationView.builder().parallelDeploymentsLimit(2).build());
+        when(configurationManager.getConfiguration()).thenReturn(ConfigurationDto.builder().parallelDeploymentsLimit(2).build());
         when(bulkDeploymentRepository.findParallelDeploymentsLimitByBulkId(any())).thenReturn(2);
         underTest.handleQueue();
 
