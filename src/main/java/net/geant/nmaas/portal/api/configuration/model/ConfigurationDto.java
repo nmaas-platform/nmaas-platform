@@ -16,7 +16,7 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
-public class ConfigurationView {
+public class ConfigurationDto {
 
     private Long id;
 

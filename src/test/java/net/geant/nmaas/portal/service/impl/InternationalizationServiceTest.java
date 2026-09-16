@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.service.impl;
 
-import net.geant.nmaas.portal.api.configuration.model.ConfigurationView;
+import net.geant.nmaas.portal.api.configuration.model.ConfigurationDto;
 import net.geant.nmaas.portal.api.i18n.api.I18nBaseDto;
 import net.geant.nmaas.portal.api.i18n.api.I18nDto;
 import net.geant.nmaas.portal.persistence.repositories.InternationalizationSimpleRepository;
@@ -91,7 +91,7 @@ class InternationalizationServiceTest {
 
     @Test
     void shouldChangeLanguageState() {
-        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(1L, false, false, "fr", false, false, new ArrayList<>(), false, false, true, "0 */1 * * * ?", 2, 60, 10, "", "0 */1 * * * ?", null, 10));
+        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationDto(1L, false, false, "fr", false, false, new ArrayList<>(), false, false, true, "0 */1 * * * ?", 2, 60, 10, "", "0 */1 * * * ?", null, 10));
         I18nDto internationalization = new I18nDto("pl", false, "{\"test\":\"content\"}");
         when(repository.findByLanguageOrderByIdDesc(language.getLanguage())).thenReturn(Optional.of(internationalization.getAsInternationalizationSimple()));
 
@@ -112,7 +112,7 @@ class InternationalizationServiceTest {
     void shouldThrowAnExceptionWhenDisablingDefaultLanguage() {
         I18nDto internationalization = new I18nDto("pl", false, "{\"test\":\"content\"}");
         when(repository.findByLanguageOrderByIdDesc(language.getLanguage())).thenReturn(Optional.of(internationalization.getAsInternationalizationSimple()));
-        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(1L, false, false, "pl", false, false, new ArrayList<>(), false, false, true, "0 */1 * * * ?", 2, 60, 10, "", "0 */1 * * * ?", null, 10));
+        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationDto(1L, false, false, "pl", false, false, new ArrayList<>(), false, false, true, "0 */1 * * * ?", 2, 60, 10, "", "0 */1 * * * ?", null, 10));
         assertThrows(IllegalStateException.class, () ->
             internationalizationService.changeLanguageState(language)
         );

@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.persistence.entity;
 
-import net.geant.nmaas.portal.api.configuration.model.ConfigurationView;
+import net.geant.nmaas.portal.api.configuration.model.ConfigurationDto;
 import net.geant.nmaas.portal.domain.converters.ConfigurationConverter;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
@@ -48,11 +48,11 @@ class ConfigurationTest {
                 .defaultDomainForSsoUsers(new Domain(10L))
                 .build();
 
-        ConfigurationView configurationView = mm.map(configuration, ConfigurationView.class);
-        assertEquals(2, configurationView.getAppInstanceFailureEmailList().size());
-        assertEquals(10L, configurationView.getDefaultDomainForSsoUsers());
+        ConfigurationDto configurationDto = mm.map(configuration, ConfigurationDto.class);
+        assertEquals(2, configurationDto.getAppInstanceFailureEmailList().size());
+        assertEquals(10L, configurationDto.getDefaultDomainForSsoUsers());
 
-        Configuration conf2 = mm.map(configurationView, Configuration.class);
+        Configuration conf2 = mm.map(configurationDto, Configuration.class);
         assertEquals(2, conf2.getAppInstanceFailureEmailList().size());
         assertNull(conf2.getDefaultDomainForSsoUsers());
     }

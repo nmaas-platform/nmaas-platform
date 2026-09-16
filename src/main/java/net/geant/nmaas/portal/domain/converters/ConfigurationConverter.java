@@ -1,15 +1,15 @@
 package net.geant.nmaas.portal.domain.converters;
 
-import net.geant.nmaas.portal.api.configuration.model.ConfigurationView;
+import net.geant.nmaas.portal.api.configuration.model.ConfigurationDto;
 import net.geant.nmaas.portal.persistence.entity.Configuration;
 import net.geant.nmaas.portal.persistence.entity.Domain;
 import org.modelmapper.AbstractConverter;
 
-public class ConfigurationConverter extends AbstractConverter<Configuration, ConfigurationView> {
+public class ConfigurationConverter extends AbstractConverter<Configuration, ConfigurationDto> {
 
     @Override
-    protected ConfigurationView convert(Configuration source) {
-        return ConfigurationView.builder()
+    protected ConfigurationDto convert(Configuration source) {
+        return ConfigurationDto.builder()
                 .id(source.getId())
                 .maintenance(source.isMaintenance())
                 .ssoLoginAllowed(source.isSsoLoginAllowed())

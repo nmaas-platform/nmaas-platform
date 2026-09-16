@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.service.impl;
 
 import net.geant.nmaas.nmservice.deployment.bulks.BulkDeploymentJob;
-import net.geant.nmaas.portal.api.configuration.model.ConfigurationView;
+import net.geant.nmaas.portal.api.configuration.model.ConfigurationDto;
 import net.geant.nmaas.portal.api.i18n.api.I18nDto;
 import net.geant.nmaas.portal.domain.converters.ConfigurationConverter;
 import net.geant.nmaas.portal.exceptions.ConfigurationNotFoundException;
@@ -40,7 +40,7 @@ class ConfigurationManagerTest {
     private ConfigurationManager configurationManager;
 
     private Configuration config;
-    private ConfigurationView configView;
+    private ConfigurationDto configView;
     private I18nDto internationalization;
 
     @BeforeEach
@@ -60,7 +60,7 @@ class ConfigurationManagerTest {
                 .bulkDomainsSendEmailForNewAccounts(false)
                 .build();
         this.internationalization = new I18nDto("pl", true, "{\"test\":\"test\"}");
-        this.configView = new ConfigurationView(1L, false, false, "pl",
+        this.configView = new ConfigurationDto(1L, false, false, "pl",
                 false, false, new ArrayList<>(), true, true, false, "0 */1 * * * ?", 2, 60, 10, "", "0 */1 * * * ?", null, 10);
         this.modelMapper.addConverter(new ConfigurationConverter());
     }
@@ -70,7 +70,7 @@ class ConfigurationManagerTest {
         when(repository.count()).thenReturn(1L);
         when(repository.findAll()).thenReturn(Collections.singletonList(config));
 
-        ConfigurationView view = this.configurationManager.getConfiguration();
+        ConfigurationDto view = this.configurationManager.getConfiguration();
 
         assertEquals(config.isMaintenance(), view.isMaintenance());
         assertEquals(config.isSsoLoginAllowed(), view.isSsoLoginAllowed());
@@ -81,7 +81,7 @@ class ConfigurationManagerTest {
     @Test
     void shouldSetConfiguration() {
         when(repository.count()).thenReturn(0L);
-        Long id = configurationManager.setConfiguration(modelMapper.map(config, ConfigurationView.class));
+        Long id = configurationManager.setConfiguration(modelMapper.map(config, ConfigurationDto.class));
         assertEquals(config.getId(), id);
         verify(repository, times(1)).save(any());
     }
@@ -90,7 +90,7 @@ class ConfigurationManagerTest {
     void shouldNotSetConfigIfAlreadyExists() {
         when(repository.count()).thenReturn(1L);
         assertThrows(OnlyOneConfigurationSupportedException.class, () -> {
-            configurationManager.setConfiguration(modelMapper.map(config, ConfigurationView.class));
+            configurationManager.setConfiguration(modelMapper.map(config, ConfigurationDto.class));
         });
     }
 

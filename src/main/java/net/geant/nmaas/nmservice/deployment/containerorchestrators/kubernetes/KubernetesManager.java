@@ -471,15 +471,15 @@ public class KubernetesManager implements ContainerOrchestrator {
     public AppUiAccessDetails serviceAccessDetails(Identifier deploymentId) {
         try {
             retrieveOrUpdateInternalServiceIpAddress(repositoryManager.loadService(deploymentId));
-            Set<ServiceAccessMethodDto> serviceAccessMethodViewSet = new HashSet<>();
+            Set<ServiceAccessMethodDto> serviceAccessMethodDtoSet = new HashSet<>();
             repositoryManager.loadService(deploymentId).getAccessMethods().stream()
                     .filter(ServiceAccessMethod::isEnabled)
                     .map(ServiceAccessMethod::copy)
                     .forEach(m -> {
                         m.setUrl(m.getUrl() + getExternalUrlSuffixString(m));
-                        serviceAccessMethodViewSet.add(m.toDto());
+                        serviceAccessMethodDtoSet.add(m.toDto());
                     });
-            return new AppUiAccessDetails(serviceAccessMethodViewSet);
+            return new AppUiAccessDetails(serviceAccessMethodDtoSet);
         } catch (InvalidDeploymentIdException idie) {
             throw new ContainerOrchestratorInternalErrorException(serviceNotFoundMessage(idie.getMessage()));
         }

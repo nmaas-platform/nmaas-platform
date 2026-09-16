@@ -116,10 +116,10 @@ public class ApplicationSubscriptionController extends AppBaseController {
                 .map(appSub -> modelMapper.map(appSub, ApplicationSubscriptionBase.class)).collect(Collectors.toList());
     }
 
-    private ApplicationBaseDto setAppRating(ApplicationBaseDto baseView) {
-        Integer[] rating = this.ratingRepository.getApplicationRating(baseView.getId());
-        baseView.setRate(createAppRateView(rating));
-        return baseView;
+    private ApplicationBaseDto setAppRating(ApplicationBaseDto dto) {
+        Integer[] rating = this.ratingRepository.getApplicationRating(dto.getId());
+        dto.setRate(createAppRateView(rating));
+        return dto;
     }
 
     private static AppRateDto createAppRateView(Integer[] rating) {

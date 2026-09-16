@@ -142,9 +142,9 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
-        ApplicationBaseInfoDto[] resultView = objectMapper.readValue(result.getResponse().getContentAsByteArray(), ApplicationBaseInfoDto[].class);
-        assertEquals(1, resultView.length);
-        assertEquals(APP_1_NAME, resultView[0].getName());
+        ApplicationBaseInfoDto[] resultDto = objectMapper.readValue(result.getResponse().getContentAsByteArray(), ApplicationBaseInfoDto[].class);
+        assertEquals(1, resultDto.length);
+        assertEquals(APP_1_NAME, resultDto[0].getName());
     }
 
     @Test
@@ -154,10 +154,10 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
-        ApplicationBaseDto[] resultView = objectMapper.readValue(result.getResponse().getContentAsByteArray(), ApplicationBaseDto[].class);
-        assertEquals(2, resultView.length);
-        assertTrue(Arrays.stream(resultView).anyMatch(app -> app.getName().equals(APP_1_NAME)));
-        assertTrue(Arrays.stream(resultView).anyMatch(app -> app.getName().equals(APP_2_NAME)));
+        ApplicationBaseDto[] resultDto = objectMapper.readValue(result.getResponse().getContentAsByteArray(), ApplicationBaseDto[].class);
+        assertEquals(2, resultDto.length);
+        assertTrue(Arrays.stream(resultDto).anyMatch(app -> app.getName().equals(APP_1_NAME)));
+        assertTrue(Arrays.stream(resultDto).anyMatch(app -> app.getName().equals(APP_2_NAME)));
     }
 
     @Test
@@ -186,8 +186,8 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
 
     @Test
     void shouldUpdateApplicationVersion() throws Exception {
-        ApplicationDto applicationView = modelMapper.map(this.testApp1, ApplicationDto.class);
-        applicationView.setConfigWizardTemplate(new ConfigWizardTemplateDto(null, "{}"));
+        ApplicationDto applicationDto = modelMapper.map(this.testApp1, ApplicationDto.class);
+        applicationDto.setConfigWizardTemplate(new ConfigWizardTemplateDto(null, "{}"));
 
         mvc.perform(patch("/api/v1/apps/version")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
@@ -199,34 +199,34 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
                 .andExpect(status().isOk());
 
         // simulate bug from NMAAS-844
-        applicationView.getAppDeploymentSpec().getAccessMethods().getFirst().getDeployParameters().putIfAbsent("NEW.PARAM", "value");
-        applicationView.getAppDeploymentSpec().getStorageVolumes().getFirst().getDeployParameters().putIfAbsent("NEW.PARAM", "value");
+        applicationDto.getAppDeploymentSpec().getAccessMethods().getFirst().getDeployParameters().putIfAbsent("NEW.PARAM", "value");
+        applicationDto.getAppDeploymentSpec().getStorageVolumes().getFirst().getDeployParameters().putIfAbsent("NEW.PARAM", "value");
 
-        applicationView.getAppDeploymentSpec().getAccessMethods()
+        applicationDto.getAppDeploymentSpec().getAccessMethods()
                 .add(new AppAccessMethodDto(null, ServiceAccessMethodTypeDto.DEFAULT, "name4", "tag4", null, null, null));
-        applicationView.getAppDeploymentSpec().getAccessMethods()
+        applicationDto.getAppDeploymentSpec().getAccessMethods()
                 .add(new AppAccessMethodDto(null, ServiceAccessMethodTypeDto.DEFAULT, "name5", "tag5", null, null, null));
-        applicationView.getAppDeploymentSpec().getStorageVolumes()
+        applicationDto.getAppDeploymentSpec().getStorageVolumes()
                 .add(new AppStorageVolumeDto(null, ServiceStorageVolumeTypeDto.SHARED, 5, new HashMap<>()));
-        applicationView.getAppDeploymentSpec().getStorageVolumes()
+        applicationDto.getAppDeploymentSpec().getStorageVolumes()
                 .add(new AppStorageVolumeDto(null, ServiceStorageVolumeTypeDto.SHARED, 5, new HashMap<>()));
 
         mvc.perform(patch("/api/v1/apps/version")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(applicationView))
+                        .content(objectMapper.writeValueAsString(applicationDto))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
-        MvcResult result = mvc.perform(get("/api/v1/apps/version/" + applicationView.getId())
+        MvcResult result = mvc.perform(get("/api/v1/apps/version/" + applicationDto.getId())
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
         ApplicationDto test = objectMapper.readValue(result.getResponse().getContentAsByteArray(), ApplicationDto.class);
 
-        assertEquals(applicationView.getAppDeploymentSpec().getStorageVolumes().size(), test.getAppDeploymentSpec().getStorageVolumes().size());
-        assertEquals(applicationView.getAppDeploymentSpec().getAccessMethods().size(), test.getAppDeploymentSpec().getAccessMethods().size());
+        assertEquals(applicationDto.getAppDeploymentSpec().getStorageVolumes().size(), test.getAppDeploymentSpec().getStorageVolumes().size());
+        assertEquals(applicationDto.getAppDeploymentSpec().getAccessMethods().size(), test.getAppDeploymentSpec().getAccessMethods().size());
     }
 
     @Test
@@ -328,8 +328,8 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
-        ApplicationDto applicationView = objectMapper.readValue(result.getResponse().getContentAsByteArray(), ApplicationDto.class);
-        assertEquals(ApplicationStateDto.DISABLED, applicationView.getState());
+        ApplicationDto applicationDto = objectMapper.readValue(result.getResponse().getContentAsByteArray(), ApplicationDto.class);
+        assertEquals(ApplicationStateDto.DISABLED, applicationDto.getState());
 
         //reverse state to active again
         mvc.perform(patch("/api/v1/apps/state/" + id)
@@ -364,7 +364,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
         AppConfigurationSpecDto appConfigurationSpec = new AppConfigurationSpecDto(null, new ArrayList<>(), true, false, false);
         appConfigurationSpec.templates().add(new ConfigFileTemplateDto(null, null, "name", "dir", "content"));
 
-        ApplicationDto view = ApplicationDto.builder()
+        ApplicationDto dto = ApplicationDto.builder()
                 .name(APP_1_NAME)
                 .version("3.0.0")
                 .appConfigurationSpec(appConfigurationSpec)
@@ -377,7 +377,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
             mvc.perform(post("/api/v1/apps/version")
                             .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(view))
+                            .content(objectMapper.writeValueAsString(dto))
                             .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isCreated());
         });

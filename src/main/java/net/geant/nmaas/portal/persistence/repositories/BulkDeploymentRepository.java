@@ -1,8 +1,8 @@
 package net.geant.nmaas.portal.persistence.repositories;
 
-import net.geant.nmaas.portal.api.bulk.BulkType;
 import net.geant.nmaas.portal.persistence.entity.BulkDeployment;
 import net.geant.nmaas.portal.persistence.entity.BulkDeploymentState;
+import net.geant.nmaas.portal.persistence.entity.BulkType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

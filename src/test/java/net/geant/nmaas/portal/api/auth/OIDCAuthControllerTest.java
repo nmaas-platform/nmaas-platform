@@ -2,7 +2,7 @@ package net.geant.nmaas.portal.api.auth;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.core.HttpHeaders;
-import net.geant.nmaas.portal.api.configuration.model.ConfigurationView;
+import net.geant.nmaas.portal.api.configuration.model.ConfigurationDto;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
 import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.entity.Role;
@@ -83,7 +83,7 @@ class OIDCAuthControllerTest {
         when(userService.findByEmail(any())).thenReturn(user);
         when(passwordEncoder.matches(any(), any())).thenReturn(true);
 
-        ConfigurationView config = mock(ConfigurationView.class);
+        ConfigurationDto config = mock(ConfigurationDto.class);
         when(config.isMaintenance()).thenReturn(false);
         when(configurationManager.getConfiguration()).thenReturn(config);
 

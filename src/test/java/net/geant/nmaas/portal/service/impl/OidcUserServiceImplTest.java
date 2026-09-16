@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.service.impl;
 
 import net.geant.nmaas.portal.api.auth.OidcApprovals;
-import net.geant.nmaas.portal.api.configuration.model.ConfigurationView;
+import net.geant.nmaas.portal.api.configuration.model.ConfigurationDto;
 import net.geant.nmaas.portal.api.exceptions.ExternalUserMatchException;
 import net.geant.nmaas.portal.api.exceptions.SignupException;
 import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
@@ -103,7 +103,7 @@ class OidcUserServiceImplTest {
     @Test
     void registerNewUserFromOidcApprovalsShouldSaveUserWithApprovalsAndDefaults() {
         Domain global = new Domain(100L, "GLOBAL", "GLOBAL", true);
-        ConfigurationView configuration = ConfigurationView.builder().defaultLanguage("pl").build();
+        ConfigurationDto configuration = ConfigurationDto.builder().defaultLanguage("pl").build();
         OidcApprovals approvals = new OidcApprovals(
                 "token",
                 "new@example.com",
@@ -137,7 +137,7 @@ class OidcUserServiceImplTest {
     @Test
     void registerNewUserFromOidcApprovalsShouldMapObjectAlreadyExistsToSignupException() {
         Domain global = new Domain(101L, "GLOBAL", "GLOBAL", true);
-        ConfigurationView configuration = ConfigurationView.builder().defaultLanguage("en").build();
+        ConfigurationDto configuration = ConfigurationDto.builder().defaultLanguage("en").build();
         OidcApprovals approvals = new OidcApprovals("token", "x@example.com", "ignored", "uuid", "A", "B", "ab", false, false);
 
         when(domainService.getGlobalDomain()).thenReturn(Optional.of(global));
@@ -151,7 +151,7 @@ class OidcUserServiceImplTest {
     @Test
     void registerNewUserFromOidcUserShouldUseUsernameFallbackWhenPreferredUsernameMissing() {
         Domain global = new Domain(102L, "GLOBAL", "GLOBAL", true);
-        ConfigurationView configuration = ConfigurationView.builder().defaultLanguage("en").build();
+        ConfigurationDto configuration = ConfigurationDto.builder().defaultLanguage("en").build();
 
         when(oidcUser.getAttribute("preferred_username")).thenReturn(null);
         when(oidcUser.getAttribute("username")).thenReturn("fallback-username");

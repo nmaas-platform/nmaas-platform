@@ -9,5 +9,10 @@ public enum BulkDeploymentState {
 
     REMOVED,
     CANCELED,
-    PARTIALLY_CANCELED
+    PARTIALLY_CANCELED;
+
+    public static BulkDeploymentState from(net.geant.nmaas.api.dto.bulks.BulkDeploymentStateDto dto) {
+        return BulkDeploymentState.valueOf(dto.name());
+    }
+
 }

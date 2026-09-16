@@ -2,7 +2,7 @@ package net.geant.nmaas.portal.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import net.geant.nmaas.nmservice.deployment.bulks.BulkDeploymentJob;
-import net.geant.nmaas.portal.api.configuration.model.ConfigurationView;
+import net.geant.nmaas.portal.api.configuration.model.ConfigurationDto;
 import net.geant.nmaas.portal.exceptions.ConfigurationNotFoundException;
 import net.geant.nmaas.portal.exceptions.OnlyOneConfigurationSupportedException;
 import net.geant.nmaas.portal.persistence.entity.Configuration;
@@ -32,25 +32,25 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
     private final ModelMapper modelMapper;
 
     @Override
-    public ConfigurationView getConfiguration() {
-        return modelMapper.map(this.loadSingleConfiguration(), ConfigurationView.class);
+    public ConfigurationDto getConfiguration() {
+        return modelMapper.map(this.loadSingleConfiguration(), ConfigurationDto.class);
     }
 
     @Override
-    public Long setConfiguration(ConfigurationView configurationView) {
+    public Long setConfiguration(ConfigurationDto configurationDto) {
         if (repository.count() > 0) {
             throw new OnlyOneConfigurationSupportedException("Configuration already exists. It can be either removed or updated");
         }
-        Configuration configuration = modelMapper.map(configurationView, Configuration.class);
-        if (configurationView.getDefaultDomainForSsoUsers() != null) {
-            configuration.setDefaultDomainForSsoUsers(domainRepository.getReferenceById(configurationView.getDefaultDomainForSsoUsers()));
+        Configuration configuration = modelMapper.map(configurationDto, Configuration.class);
+        if (configurationDto.getDefaultDomainForSsoUsers() != null) {
+            configuration.setDefaultDomainForSsoUsers(domainRepository.getReferenceById(configurationDto.getDefaultDomainForSsoUsers()));
         }
         repository.save(configuration);
         return configuration.getId();
     }
 
     @Override
-    public void updateConfiguration(Long id, ConfigurationView updatedConfiguration) {
+    public void updateConfiguration(Long id, ConfigurationDto updatedConfiguration) {
         Optional<Configuration> configuration = repository.findById(id);
         if (configuration.isEmpty()) {
             throw new ConfigurationNotFoundException("Configuration with id " + id + " not found in repository");

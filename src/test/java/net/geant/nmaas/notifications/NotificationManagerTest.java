@@ -7,7 +7,7 @@ import net.geant.nmaas.notifications.templates.api.LanguageMailContentDto;
 import net.geant.nmaas.notifications.templates.api.MailTemplateDto;
 import net.geant.nmaas.notifications.types.persistence.entity.FormType;
 import net.geant.nmaas.notifications.types.service.FormTypeService;
-import net.geant.nmaas.portal.api.configuration.model.ConfigurationView;
+import net.geant.nmaas.portal.api.configuration.model.ConfigurationDto;
 import net.geant.nmaas.api.dto.users.UserDto;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistence.entity.Domain;
@@ -304,7 +304,7 @@ class NotificationManagerTest {
 
         when(userService.findByEmail(adminUsers.getFirst().getEmail())).thenReturn(adminUsers.getFirst());
         when(userService.findByEmail(external)).thenThrow(new IllegalArgumentException("test message"));
-        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(1L, true, true, "en", true, true, emails, true, true, true, "0 */1 * * * ?", 2, 60, 10, "", "0 */1 * * * ?", null, 10));
+        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationDto(1L, true, true, "en", true, true, emails, true, true, true, "0 */1 * * * ?", 2, 60, 10, "", "0 */1 * * * ?", null, 10));
 
         notificationManager.prepareAndSendMail(ma);
 

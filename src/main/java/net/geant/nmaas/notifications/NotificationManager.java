@@ -16,7 +16,7 @@ import net.geant.nmaas.notifications.templates.api.LanguageMailContentDto;
 import net.geant.nmaas.notifications.templates.api.MailTemplateDto;
 import net.geant.nmaas.notifications.types.persistence.entity.FormType;
 import net.geant.nmaas.notifications.types.service.FormTypeService;
-import net.geant.nmaas.portal.api.configuration.model.ConfigurationView;
+import net.geant.nmaas.portal.api.configuration.model.ConfigurationDto;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistence.entity.Role;
@@ -114,7 +114,7 @@ public class NotificationManager {
      */
     private void getAllAddressees(MailAttributes mailAttributes) {
         if (mailAttributes.getMailType().equals(MailType.APP_DEPLOYMENT_FAILED)) {
-            ConfigurationView configuration = this.configurationManager.getConfiguration();
+            ConfigurationDto configuration = this.configurationManager.getConfiguration();
             if (configuration.isSendAppInstanceFailureEmails()) {
                 List<UserDto> users = configuration.getAppInstanceFailureEmailList().stream()
                         .map(this::convertEmailToUserView)

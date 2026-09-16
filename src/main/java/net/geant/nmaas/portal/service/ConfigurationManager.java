@@ -1,13 +1,13 @@
 package net.geant.nmaas.portal.service;
 
-import net.geant.nmaas.portal.api.configuration.model.ConfigurationView;
+import net.geant.nmaas.portal.api.configuration.model.ConfigurationDto;
 
 public interface ConfigurationManager {
 
-    Long setConfiguration(ConfigurationView configuration);
+    Long setConfiguration(ConfigurationDto configuration);
 
-    ConfigurationView getConfiguration();
+    ConfigurationDto getConfiguration();
 
-    void updateConfiguration(Long id, ConfigurationView updatedConfiguration);
+    void updateConfiguration(Long id, ConfigurationDto updatedConfiguration);
 
 }
