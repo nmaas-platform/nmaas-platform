@@ -44,18 +44,18 @@ class KubernetesClusterDeploymentManagerTest {
     void shouldReturnProperStorageClassName() {
         manager.setDefaultStorageClass("testClusterStorageClass");
         when(domainTechDetailsRepository.findByDomainCodename(DOMAIN)).thenReturn(Optional.empty());
-        assertThat(manager.getStorageClass(DOMAIN).get(), is(manager.getKClusterDeploymentView().getDefaultStorageClass()));
+        assertThat(manager.getStorageClass(DOMAIN).get(), is(manager.getKClusterDeploymentDto().getDefaultStorageClass()));
 
         DomainTechDetails domainTechDetails = new DomainTechDetails(1L, DOMAIN, null, "domainNamespace", null, null);
         Domain domain = new Domain("Domain Name", DOMAIN, false);
         domain.setDomainTechDetails(domainTechDetails);
         when(domainTechDetailsRepository.findByDomainCodename(DOMAIN)).thenReturn(Optional.of(domain.getDomainTechDetails()));
-        assertThat(manager.getStorageClass(DOMAIN).get(), is(manager.getKClusterDeploymentView().getDefaultStorageClass()));
+        assertThat(manager.getStorageClass(DOMAIN).get(), is(manager.getKClusterDeploymentDto().getDefaultStorageClass()));
 
         domainTechDetails = new DomainTechDetails(1L, DOMAIN, null, "domainNamespace", "", null);
         domain.setDomainTechDetails(domainTechDetails);
         when(domainTechDetailsRepository.findByDomainCodename(DOMAIN)).thenReturn(Optional.of(domain.getDomainTechDetails()));
-        assertThat(manager.getStorageClass(DOMAIN).get(), is(manager.getKClusterDeploymentView().getDefaultStorageClass()));
+        assertThat(manager.getStorageClass(DOMAIN).get(), is(manager.getKClusterDeploymentDto().getDefaultStorageClass()));
 
         domainTechDetails = new DomainTechDetails(1L, DOMAIN, null, "domainNamespace", "domainStorageClass", null);
         domain.setDomainTechDetails(domainTechDetails);
@@ -68,7 +68,7 @@ class KubernetesClusterDeploymentManagerTest {
         assertThrows(IllegalArgumentException.class, () -> {
             manager.setNamespaceConfigOption(NamespaceConfigOption.USE_DEFAULT_NAMESPACE);
             manager.setDefaultNamespace(null);
-            manager.getNamespaceConfigOption().validate(manager.getKClusterDeploymentView());
+            manager.getNamespaceConfigOption().validate(manager.getKClusterDeploymentDto());
         });
     }
 

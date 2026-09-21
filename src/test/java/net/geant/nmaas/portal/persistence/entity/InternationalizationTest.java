@@ -58,7 +58,7 @@ class InternationalizationTest {
     @Test
     void InternationalizationSimpleShouldSerializeToInternationalization() {
         this.internationalizationSimple = this.internationalization.getAsInternationalizationSimple();
-        I18nDto test = this.internationalizationSimple.getAsInternationalizationView();
+        I18nDto test = this.internationalizationSimple.getAsI18nDto();
 //        assertEquals(internationalization.getId(), test.getId());
         assertEquals(internationalization.getLanguage(), test.getLanguage());
         assertEquals(internationalization.isEnabled(), test.isEnabled());

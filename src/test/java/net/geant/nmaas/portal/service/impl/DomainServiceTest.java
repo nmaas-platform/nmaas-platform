@@ -526,12 +526,12 @@ class DomainServiceTest {
         when(userService.findById(1L)).thenReturn(Optional.of(new User("test")));
         when(userService.findById(2L)).thenReturn(Optional.of(new User("test2")));
 
-        UserInfoDto userView = new UserInfoDto();
-        userView.setId(1L);
+        UserInfoDto userInfoDto = new UserInfoDto();
+        userInfoDto.setId(1L);
 
-        UserInfoDto userView2 = new UserInfoDto();
-        userView2.setId(2L);
-        DomainGroupDto domainGroupView = new DomainGroupDto(1L, "test", "test1", List.of(domain1), null, List.of(userView));
+        UserInfoDto userInfoDto2 = new UserInfoDto();
+        userInfoDto2.setId(2L);
+        DomainGroupDto domainGroupDto = new DomainGroupDto(1L, "test", "test1", List.of(domain1), null, List.of(userInfoDto));
 
         User user = new User("user");
         DomainGroup domainGroup = new DomainGroup(1L, "test", "test1");
@@ -539,7 +539,7 @@ class DomainServiceTest {
 
         when(domainGroupRepository.findById(1L)).thenReturn(Optional.of(domainGroup));
 
-        DomainGroupDto result = domainService.updateMembers(List.of(userView2), domainGroupView);
+        DomainGroupDto result = domainService.updateMembers(List.of(userInfoDto2), domainGroupDto);
 
         assertEquals(1, result.getManagers().size());
         assertEquals(2L, result.getManagers().getFirst().getId());
@@ -586,16 +586,16 @@ class DomainServiceTest {
         when(userService.findById(1L)).thenReturn(Optional.of(new User("test")));
         when(userService.findById(2L)).thenReturn(Optional.of(new User("test2")));
 
-        UserInfoDto userView = new UserInfoDto();
-        userView.setId(1L);
+        UserInfoDto userInfoDto = new UserInfoDto();
+        userInfoDto.setId(1L);
 
-        DomainGroupDto domainGroupView = new DomainGroupDto(1L, "test", "test1", List.of(domain1), null, List.of(userView));
+        DomainGroupDto domainGroupDto = new DomainGroupDto(1L, "test", "test1", List.of(domain1), null, List.of(userInfoDto));
         User user = new User("user");
         DomainGroup domainGroup = new DomainGroup(1L, "test", "test1");
         domainGroup.setManagers(List.of(user));
         when(domainGroupRepository.findById(1L)).thenReturn(Optional.of(domainGroup));
 
-        DomainGroupDto result = domainService.updateMembers(List.of(), domainGroupView);
+        DomainGroupDto result = domainService.updateMembers(List.of(), domainGroupDto);
 
         assertEquals(0, result.getManagers().size());
     }

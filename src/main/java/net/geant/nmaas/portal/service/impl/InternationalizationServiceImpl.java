@@ -37,7 +37,7 @@ public class InternationalizationServiceImpl implements InternationalizationServ
         } else {
             //add empty or override
             InternationalizationSimple is = repository.findByLanguageOrderByIdDesc(newLanguage.getLanguage()).orElseThrow(() -> new NotFoundException("Language not found"));
-            I18nDto iv = is.getAsInternationalizationView();
+            I18nDto iv = is.getAsI18nDto();
 
             if (!force) {
                 // only add new once, not override existed
@@ -87,7 +87,7 @@ public class InternationalizationServiceImpl implements InternationalizationServ
     public void updateLanguage(String language, String content) {
         checkRequest(language, content);
         InternationalizationSimple is = repository.findByLanguageOrderByIdDesc(language).orElseThrow(() -> new IllegalArgumentException("Language not found"));
-        I18nDto iv = is.getAsInternationalizationView();
+        I18nDto iv = is.getAsI18nDto();
         iv.setContent(content);
         is.setLanguageNodes(iv.getAsInternationalizationSimple().getLanguageNodes());
         repository.save(is);
@@ -106,7 +106,7 @@ public class InternationalizationServiceImpl implements InternationalizationServ
     @Transactional
     public List<I18nBaseDto> getAllSupportedLanguages() {
         return repository.findAll().stream()
-                .map(InternationalizationSimple::getAsInternationalizationView)
+                .map(InternationalizationSimple::getAsI18nDto)
                 .map(lang -> modelMapper.map(lang, I18nBaseDto.class))
                 .toList();
     }
@@ -115,7 +115,7 @@ public class InternationalizationServiceImpl implements InternationalizationServ
     @Transactional
     public I18nDto getLanguage(String language) {
         return repository.findByLanguageOrderByIdDesc(language)
-                .map(InternationalizationSimple::getAsInternationalizationView)
+                .map(InternationalizationSimple::getAsI18nDto)
                 .map(lang -> modelMapper.map(lang, I18nDto.class))
                 .orElseThrow(() -> new IllegalArgumentException("Language is not available"));
     }
@@ -125,7 +125,7 @@ public class InternationalizationServiceImpl implements InternationalizationServ
     public String getLanguageContent(String language) {
         return repository
                 .findByLanguageOrderByIdDesc(language)
-                .map(InternationalizationSimple::getAsInternationalizationView)
+                .map(InternationalizationSimple::getAsI18nDto)
                 .map(I18nDto::getContent)
                 .orElseThrow(() -> new IllegalStateException("language content not available"));
     }
