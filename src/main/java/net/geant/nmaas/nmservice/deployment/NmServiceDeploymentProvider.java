@@ -132,17 +132,25 @@ public interface NmServiceDeploymentProvider {
     AppComponentLogs serviceComponentLogs(Identifier deploymentId, String serviceComponentName, String serviceSubComponentName, int limit);
 
     /**
-     * @param deploymentId unique identifier of service deployment
-     * @param userInitiator     username of the user who requested the service pause
+     * @param deploymentId  unique identifier of service deployment
+     * @param userInitiator username of the user who requested the service pause
      * @throws CouldNotPauseServiceException if service couldn't be paused for some reason
      */
     void pauseService(Identifier deploymentId, String userInitiator);
 
     /**
-     * @param deploymentId unique identifier of service deployment
-     * @param userInitiator     username of the user who requested the service resume
+     * @param deploymentId  unique identifier of service deployment
+     * @param userInitiator username of the user who requested the service resume
      * @throws CouldNotResumeServiceException if service couldn't be resumed for some reason
      */
     void resumeService(Identifier deploymentId, String userInitiator);
+
+    /**
+     * Coordinates service configuration update (doesn't deal with configuration files stored in git repositories)
+     *
+     * @param deploymentId  unique identifier of service deployment
+     * @param userInitiator username of the user who requested the service update
+     */
+    void updateKubernetesService(Identifier deploymentId, String userInitiator);
 
 }

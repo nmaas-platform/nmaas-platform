@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import net.geant.nmaas.kubernetes.KubernetesClientSetupException;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
+import net.geant.nmaas.nmservice.configuration.exceptions.NmServiceConfigurationFailedException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerCheckFailedException;
@@ -40,6 +41,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.CONFIGURATION_UPDATED;
+import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.CONFIGURATION_UPDATE_FAILED;
+import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.CONFIGURATION_UPDATE_INITIATED;
 import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.DEPLOYED;
 import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.DEPLOYMENT_FAILED;
 import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.DEPLOYMENT_INITIATED;
@@ -318,6 +322,19 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
                  | ContainerOrchestratorInternalErrorException e) {
             notifyStateChangeListeners(deploymentId, UPGRADE_FAILED, e.getMessage());
             throw new CouldNotUpgradeKubernetesServiceException("NM Service upgrade failed -> " + e.getMessage());
+        }
+    }
+
+    @Override
+    @Loggable(LogLevel.INFO)
+    public void updateKubernetesService(Identifier deploymentId, String userInitiator) {
+        try {
+            notifyStateChangeListeners(deploymentId, CONFIGURATION_UPDATE_INITIATED);
+            //orchestrator.upgradeKubernetesService(deploymentId, kubernetesTemplate);
+            notifyStateChangeListeners(deploymentId, CONFIGURATION_UPDATED);
+        } catch (Exception e) {
+            notifyStateChangeListeners(deploymentId, CONFIGURATION_UPDATE_FAILED, e.getMessage());
+            throw new NmServiceConfigurationFailedException(e.getMessage());
         }
     }
 

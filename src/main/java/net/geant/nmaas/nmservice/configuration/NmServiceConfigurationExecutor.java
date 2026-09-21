@@ -97,29 +97,6 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
         }
     }
 
-    @Override
-    @Loggable(LogLevel.INFO)
-    public void updateNmService(NmServiceDeployment nsd) {
-        Identifier deploymentId = nsd.getDeploymentId();
-//        ...
-        try {
-            notifyStateChangeListeners(deploymentId, CONFIGURATION_UPDATE_INITIATED);
-//            List<String> configFileIdentifiers = filePreparer.generateAndStoreConfigFiles(deploymentId, nsd.getApplicationId(), nsd.getAppConfiguration());
-//            if (nsd.isConfigFileRepositoryRequired()) {
-//                configHandler.commitConfigFiles(deploymentId, configFileIdentifiers);
-//                kubernetesApiJanitorService.createOrReplaceConfigMaps(
-//                        nsd.getRemoteCluster(),
-//                        nsd.getDescriptiveDeploymentId(),
-//                        nsd.getDomainName(),
-//                        configHandler.getConfigFiles(deploymentId));
-//            }
-            notifyStateChangeListeners(deploymentId, CONFIGURATION_UPDATED);
-        } catch (Exception e) {
-            notifyStateChangeListeners(deploymentId, CONFIGURATION_UPDATE_FAILED, e.getMessage());
-            throw new NmServiceConfigurationFailedException(e.getMessage());
-        }
-    }
-
     /**
      * Performs config maps update based on updated content of configuration files
      *
