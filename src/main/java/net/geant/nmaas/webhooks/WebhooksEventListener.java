@@ -62,7 +62,7 @@ public class WebhooksEventListener {
     @Loggable(LogLevel.INFO)
     @Transactional
     public void trigger(DomainRemovalEvent event) {
-        final DomainBaseDto domain = DomainBaseDto.fromView(event.getDomainView());
+        final DomainBaseDto domain = DomainBaseDto.fromDto(event.getDomain());
         String action = event.isHardRemoval() ? "delete" : "softDelete";
         webhookEventRepository.findIdByEventType(WebhookEventType.DOMAIN_ACTION)
                 .forEach(id ->

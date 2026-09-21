@@ -28,7 +28,7 @@ public class KubernetesClusterController {
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
     @GetMapping
     public KClusterDto getKubernetesCluster() {
-        return new KClusterDto(kClusterIngressManager.getKClusterIngressView(), kClusterDeploymentManager.getKClusterDeploymentView());
+        return new KClusterDto(kClusterIngressManager.getKClusterIngressDto(), kClusterDeploymentManager.getKClusterDeploymentView());
     }
 
 }

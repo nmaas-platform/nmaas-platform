@@ -569,11 +569,11 @@ public class DomainServiceImpl implements DomainService {
     }
 
     @Override
-    public void checkDomainGroupUsers(DomainGroupDto view) {
+    public void checkDomainGroupUsers(DomainGroupDto dto) {
         List<Long> userToDelete = new ArrayList<>();
-        DomainGroupDto domainGroup = this.domainGroupService.getDomainGroup(view.getId());
+        DomainGroupDto domainGroup = this.domainGroupService.getDomainGroup(dto.getId());
         domainGroup.getManagers().forEach(user -> {
-            if (view.getManagers().stream().noneMatch(viewUser -> viewUser.getId().equals(user.getId()))) {
+            if (dto.getManagers().stream().noneMatch(viewUser -> viewUser.getId().equals(user.getId()))) {
                 userToDelete.add(user.getId());
             }
         });
@@ -585,9 +585,9 @@ public class DomainServiceImpl implements DomainService {
     }
 
     @Override
-    public void updateRolesInDomainGroupByUsers(DomainGroupDto view) {
-        view.getDomains().forEach(domain -> {
-            view.getManagers().forEach(user -> {
+    public void updateRolesInDomainGroupByUsers(DomainGroupDto dto) {
+        dto.getDomains().forEach(domain -> {
+            dto.getManagers().forEach(user -> {
                 boolean isNotSystemAdmin = user.getRoles().stream().noneMatch(
                         role -> role.getRole() == RoleDto.ROLE_SYSTEM_ADMIN);
                 if (isNotSystemAdmin) {
@@ -598,20 +598,20 @@ public class DomainServiceImpl implements DomainService {
     }
 
     @Override
-    public DomainGroupDto updateMembers(List<UserInfoDto> newMembers, DomainGroupDto view) {
+    public DomainGroupDto updateMembers(List<UserInfoDto> newMembers, DomainGroupDto dto) {
         //delete roles
-        List<UserInfoDto> toDeleteRole = new ArrayList<>(view.getManagers());
+        List<UserInfoDto> toDeleteRole = new ArrayList<>(dto.getManagers());
         toDeleteRole.removeAll(newMembers);
 
         toDeleteRole.forEach(user -> {
-            view.getDomains().forEach(domain -> {
+            dto.getDomains().forEach(domain -> {
                 this.removeMemberRole(domain.getId(), user.getId(), Role.ROLE_GROUP_DOMAIN_ADMIN);
             });
         });
 
-        view.setManagers(newMembers);
-        updateRolesInDomainGroupByUsers(view);
-        return domainGroupService.updateDomainGroup(view.getId(), view);
+        dto.setManagers(newMembers);
+        updateRolesInDomainGroupByUsers(dto);
+        return domainGroupService.updateDomainGroup(dto.getId(), dto);
     }
 
     // Domain annotations

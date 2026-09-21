@@ -95,8 +95,8 @@ public class RemoteClusterManagerController {
 
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR') || hasRole('ROLE_DOMAIN_ADMIN')")
     @PutMapping("/{id}")
-    public RemoteKClusterDto updateKubernetesCluster(@PathVariable Long id, @RequestBody RemoteKClusterCompleteDto view) {
-        return remoteClusterManager.updateCluster(view, id);
+    public RemoteKClusterDto updateKubernetesCluster(@PathVariable Long id, @RequestBody RemoteKClusterCompleteDto dto) {
+        return remoteClusterManager.updateCluster(dto, id);
     }
 
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR') || hasRole('ROLE_DOMAIN_ADMIN')")

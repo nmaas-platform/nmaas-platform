@@ -140,8 +140,8 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
         return getRemoteClusterView(dto, kubernetesApiClientService.readClusterConfigBytesFromSecret(secretNamespace, secretName));
     }
 
-    private RemoteKClusterDto getRemoteClusterView(RemoteKClusterDto view, byte[] fileBytes) {
-        checkRequestRead(view);
+    private RemoteKClusterDto getRemoteClusterView(RemoteKClusterDto dto, byte[] fileBytes) {
+        checkRequestRead(dto);
 
         ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
         try {
@@ -151,12 +151,12 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
             if (clusterConfig.getClusters().isEmpty()) {
                 log.info("No clusters info provided in configuration file");
             } else if (clusterConfig.getClusters().size() == 1) {
-                log.info("One cluster provided, create view and return ");
+                log.info("One cluster provided, create dto and return ");
                 KClusterDeployment deployment = modelMapper.map(kClusterDeploymentManager.getKClusterDeploymentView(), KClusterDeployment.class);
-                KClusterIngress ingress = modelMapper.map(kClusterIngressManager.getKClusterIngressView(), KClusterIngress.class);
+                KClusterIngress ingress = modelMapper.map(kClusterIngressManager.getKClusterIngressDto(), KClusterIngress.class);
                 return toDto(KCluster.builder()
-                        .name(view.getName())
-                        .description(view.getDescription())
+                        .name(dto.getName())
+                        .description(dto.getDescription())
                         .creationDate(OffsetDateTime.now())
                         .modificationDate(OffsetDateTime.now())
                         .codename(clusterConfig.getClusters().stream().findFirst().get().getName())
@@ -164,9 +164,9 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
                         .deployment(deployment)
                         .ingress(ingress)
                         .state(KClusterState.UNKNOWN)
-                        .contactEmail(view.getContactEmail())
+                        .contactEmail(dto.getContactEmail())
                         .currentStateSince(OffsetDateTime.now())
-                        .domains(toListOfDomains(view))
+                        .domains(toListOfDomains(dto))
                         .build());
             } else {
                 log.warn("More than 1 cluster provided, not implemented yet");

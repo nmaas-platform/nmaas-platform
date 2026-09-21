@@ -7,7 +7,7 @@ import lombok.Setter;
 import net.geant.nmaas.api.dto.kubernetes.IngressCertificateConfigOptionDto;
 import net.geant.nmaas.api.dto.kubernetes.IngressControllerConfigOptionDto;
 import net.geant.nmaas.api.dto.kubernetes.IngressResourceConfigOptionDto;
-import net.geant.nmaas.api.dto.kubernetes.KClusterDto.KClusterIngressView;
+import net.geant.nmaas.api.dto.kubernetes.KClusterDto.KClusterIngressDto;
 import net.geant.nmaas.kubernetes.remote.entities.IngressCertificateConfigOption;
 import net.geant.nmaas.kubernetes.remote.entities.IngressControllerConfigOption;
 import net.geant.nmaas.kubernetes.remote.entities.IngressResourceConfigOption;
@@ -76,27 +76,27 @@ public class KubernetesClusterIngressManager {
         return this.getExternalServiceDomain();
     }
 
-    public KClusterIngressView getKClusterIngressView() {
-        KClusterIngressView view = new KClusterIngressView();
+    public KClusterIngressDto getKClusterIngressDto() {
+        KClusterIngressDto dto = new KClusterIngressDto();
         if (Objects.nonNull(controllerConfigOption)) {
-            view.setControllerConfigOption(IngressControllerConfigOptionDto.valueOf(this.controllerConfigOption.name()));
+            dto.setControllerConfigOption(IngressControllerConfigOptionDto.valueOf(this.controllerConfigOption.name()));
         }
-        view.setSupportedIngressClass(this.supportedIngressClass);
-        view.setPublicIngressClass(this.publicIngressClass);
-        view.setControllerChartName(this.controllerChartName);
-        view.setControllerChartArchive(this.controllerChartArchive);
+        dto.setSupportedIngressClass(this.supportedIngressClass);
+        dto.setPublicIngressClass(this.publicIngressClass);
+        dto.setControllerChartName(this.controllerChartName);
+        dto.setControllerChartArchive(this.controllerChartArchive);
         if (Objects.nonNull(resourceConfigOption)) {
-            view.setResourceConfigOption(IngressResourceConfigOptionDto.valueOf(this.resourceConfigOption.name()));
+            dto.setResourceConfigOption(IngressResourceConfigOptionDto.valueOf(this.resourceConfigOption.name()));
         }
-        view.setExternalServiceDomain(this.externalServiceDomain);
-        view.setPublicServiceDomain(this.publicServiceDomain);
-        view.setTlsSupported(this.tlsSupported);
+        dto.setExternalServiceDomain(this.externalServiceDomain);
+        dto.setPublicServiceDomain(this.publicServiceDomain);
+        dto.setTlsSupported(this.tlsSupported);
         if (Objects.nonNull(certificateConfigOption)) {
-            view.setCertificateConfigOption(IngressCertificateConfigOptionDto.valueOf(this.certificateConfigOption.name()));
+            dto.setCertificateConfigOption(IngressCertificateConfigOptionDto.valueOf(this.certificateConfigOption.name()));
         }
-        view.setIssuerOrWildcardName(this.issuerOrWildcardName);
-        view.setIngressPerDomain(this.ingressPerDomain);
-        return view;
+        dto.setIssuerOrWildcardName(this.issuerOrWildcardName);
+        dto.setIngressPerDomain(this.ingressPerDomain);
+        return dto;
     }
 
     @PostConstruct
@@ -106,11 +106,11 @@ public class KubernetesClusterIngressManager {
         if (this.getTlsSupported()) {
             Validate.isTrue(this.getCertificateConfigOption() != null, "CertificateConfigOption property can't be null if TLS is supported");
         }
-        KClusterIngressView view = this.getKClusterIngressView();
-        this.getControllerConfigOption().validate(view);
-        this.getResourceConfigOption().validate(view);
+        KClusterIngressDto dto = this.getKClusterIngressDto();
+        this.getControllerConfigOption().validate(dto);
+        this.getResourceConfigOption().validate(dto);
         if (this.getCertificateConfigOption() != null) {
-            this.getCertificateConfigOption().validate(view);
+            this.getCertificateConfigOption().validate(dto);
         }
     }
 

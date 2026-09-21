@@ -144,24 +144,24 @@ public class ApplicationController extends AppBaseController {
     /**
      * Use this method to add new ApplicationVersion and Application for existing ApplicationBaseEntity
      *
-     * @param view      - application entity view
+     * @param dto       - application entity dto
      * @param principal - security object (used to retrieve creator)
      */
     @PostMapping(value = "/version")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
     @ResponseStatus(HttpStatus.CREATED)
     @Transactional
-    public void addApplicationVersion(@RequestBody @Valid ApplicationDto view, Principal principal) {
+    public void addApplicationVersion(@RequestBody @Valid ApplicationDto dto, Principal principal) {
 
-        this.applicationBaseOwnerCheck(view.getName(), principal);
+        this.applicationBaseOwnerCheck(dto.getName(), principal);
 
         // validate
         // application base with given name must exist
-        ApplicationBase base = applicationBaseService.findByName(view.getName());
+        ApplicationBase base = applicationBaseService.findByName(dto.getName());
         // specified version for this application base must not exist
         boolean hasVersion = base.getVersions()
                 .stream()
-                .anyMatch(v -> v.getVersion().equals(view.getVersion())
+                .anyMatch(v -> v.getVersion().equals(dto.getVersion())
                         && !v.isDeleted());
         // application specified name and version must not exist
         if (hasVersion) {
@@ -171,11 +171,11 @@ public class ApplicationController extends AppBaseController {
 
         // create application stub to avoid problems with circular dependencies
         // see application -> app config spec -> config file template -> application (id) :)
-        Application temp = applicationService.create(new Application(view.getName(), view.getVersion()));
+        Application temp = applicationService.create(new Application(dto.getName(), dto.getVersion()));
         Long appId = temp.getId();
 
         // create application entity & set properties
-        Application application = modelMapper.map(view, Application.class);
+        Application application = modelMapper.map(dto, Application.class);
         application.setId(appId);
         application.setState(ApplicationState.NEW);
         application.setCreationDate(LocalDateTime.now());
@@ -195,19 +195,19 @@ public class ApplicationController extends AppBaseController {
     @PatchMapping(value = "/version")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
     @Transactional
-    public void updateApplicationVersion(@RequestBody @Valid ApplicationDto view, Principal principal) {
+    public void updateApplicationVersion(@RequestBody @Valid ApplicationDto dto, Principal principal) {
 
-        this.applicationBaseOwnerCheck(view.getName(), principal);
+        this.applicationBaseOwnerCheck(dto.getName(), principal);
 
         // check if id exists
-        if (view.getId() == null) {
+        if (dto.getId() == null) {
             log.error("ID is not present in Application update");
             throw new ProcessingException("Cannot update application without id");
         }
 
         // application with specified name and version must exist
-        Optional<Application> optId = applicationService.findApplication(view.getId());
-        Optional<Application> optNameVersion = applicationService.findApplication(view.getName(), view.getVersion());
+        Optional<Application> optId = applicationService.findApplication(dto.getId());
+        Optional<Application> optNameVersion = applicationService.findApplication(dto.getName(), dto.getVersion());
 
         if (optId.isEmpty() || optNameVersion.isEmpty()) {
             log.error("Requested application does not exist");
@@ -220,11 +220,11 @@ public class ApplicationController extends AppBaseController {
         }
 
         // application base with given name must exist
-        ApplicationBase base = applicationBaseService.findByName(view.getName());
+        ApplicationBase base = applicationBaseService.findByName(dto.getName());
 
         // you cannot really change version label
         Optional<ApplicationVersion> version = base.getVersions().stream()
-                .filter(v -> v.getVersion().equals(view.getVersion()) && v.getAppVersionId().equals(view.getId()))
+                .filter(v -> v.getVersion().equals(dto.getVersion()) && v.getAppVersionId().equals(dto.getId()))
                 .findFirst();
 
         if (version.isEmpty()) {
@@ -232,7 +232,7 @@ public class ApplicationController extends AppBaseController {
             throw new ProcessingException("Cannot update application version");
         }
 
-        Application application = modelMapper.map(view, Application.class);
+        Application application = modelMapper.map(dto, Application.class);
         // rewrite creation date
         application.setCreationDate(optId.get().getCreationDate());
         applicationService.update(application);

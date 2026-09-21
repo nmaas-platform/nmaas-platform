@@ -76,9 +76,9 @@ public class DomainGroupServiceImpl implements DomainGroupService {
         domainGroupEntity.setApplicationStatePerDomain(applicationStatePerDomainList);
         domainGroupEntity = domainGroupRepository.save(domainGroupEntity);
 
-        DomainGroupDto domainGroupView = modelMapper.map(domainGroupEntity, DomainGroupDto.class);
-        eventPublisher.publishEvent(new DomainGroupChangedEvent(this, "create", domainGroupView));
-        return domainGroupView;
+        DomainGroupDto response = modelMapper.map(domainGroupEntity, DomainGroupDto.class);
+        eventPublisher.publishEvent(new DomainGroupChangedEvent(this, "create", response));
+        return response;
     }
 
     @Override

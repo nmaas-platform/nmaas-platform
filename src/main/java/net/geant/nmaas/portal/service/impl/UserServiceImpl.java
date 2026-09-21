@@ -350,11 +350,11 @@ public class UserServiceImpl implements UserService {
         if (searchValue != null && !searchValue.isEmpty()) {
             Specification<User> searchSpec = UserSpecification.findBySearchValue(searchValue);
             return userRepository.findAll(searchSpec, pageable)
-                    .map(this::toListView)
+                    .map(this::toListDto)
                     .map(u -> mapUser(u, userLoginDateMap));
         } else {
             return userRepository.findAll(pageable)
-                    .map(this::toListView)
+                    .map(this::toListDto)
                     .map(u -> mapUser(u, userLoginDateMap));
         }
     }
@@ -369,11 +369,11 @@ public class UserServiceImpl implements UserService {
             Specification<User> searchSpec = UserSpecification.findBySearchValue(searchValue)
                     .and(UserSpecification.findByDomain(domainId));
             return userRepository.findAll(searchSpec, pageable)
-                    .map(u -> toListView(u, domainId))
+                    .map(u -> toListDto(u, domainId))
                     .map(u -> mapUser(u, userLoginDateMap));
         } else {
             return userRepository.findAllInDomain(domainId, pageable)
-                    .map(u -> toListView(u, domainId))
+                    .map(u -> toListDto(u, domainId))
                     .map(u -> mapUser(u, userLoginDateMap));
         }
     }
@@ -423,11 +423,11 @@ public class UserServiceImpl implements UserService {
         return entry;
     }
 
-    private UserListEntry toListView(User user) {
+    private UserListEntry toListDto(User user) {
         return new UserListEntry(user);
     }
 
-    private UserListEntry toListView(User user, Long domainId) {
+    private UserListEntry toListDto(User user, Long domainId) {
         return new UserListEntry(user, domainId);
     }
 }

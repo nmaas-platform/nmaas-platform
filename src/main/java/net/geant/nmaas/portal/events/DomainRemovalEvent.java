@@ -8,12 +8,12 @@ import org.springframework.context.ApplicationEvent;
 @Getter
 @ToString
 public class DomainRemovalEvent extends ApplicationEvent {
-    private final DomainDto domainView;
+    private final DomainDto domain;
     private final boolean hardRemoval;
 
-    public DomainRemovalEvent(Object source, DomainDto domainView, boolean hardRemoval) {
+    public DomainRemovalEvent(Object source, DomainDto domain, boolean hardRemoval) {
         super(source);
-        this.domainView = domainView;
+        this.domain = domain;
         this.hardRemoval = hardRemoval;
     }
 

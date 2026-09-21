@@ -79,7 +79,8 @@ public class ApplicationSubscriptionController extends AppBaseController {
     @Transactional(readOnly = true)
     public List<ApplicationSubscriptionBase> getAllSubscriptions() {
         return appSubscriptions.getSubscriptions().stream().filter(appSub -> !appSub.isDeleted())
-                .map(appSub -> modelMapper.map(appSub, ApplicationSubscriptionBase.class)).collect(Collectors.toList());
+                .map(appSub -> modelMapper.map(appSub, ApplicationSubscriptionBase.class))
+                .toList();
     }
 
     @GetMapping("/domains/{domainId}")
@@ -87,7 +88,8 @@ public class ApplicationSubscriptionController extends AppBaseController {
     @PreAuthorize("hasPermission(#domainId, 'domain', 'READ')")
     public List<ApplicationSubscriptionBase> getDomainSubscriptions(@PathVariable Long domainId) {
         return appSubscriptions.getSubscriptionsBy(domainId, null).stream()
-                .map(appSub -> modelMapper.map(appSub, ApplicationSubscriptionBase.class)).collect(Collectors.toList());
+                .map(appSub -> modelMapper.map(appSub, ApplicationSubscriptionBase.class))
+                .toList();
     }
 
     @GetMapping("/domains/{domainId}/apps")
@@ -113,16 +115,17 @@ public class ApplicationSubscriptionController extends AppBaseController {
     @Transactional(readOnly = true)
     public List<ApplicationSubscriptionBase> getApplicationSubscriptions(@PathVariable Long appId) {
         return appSubscriptions.getSubscriptionsBy(null, appId).stream()
-                .map(appSub -> modelMapper.map(appSub, ApplicationSubscriptionBase.class)).collect(Collectors.toList());
+                .map(appSub -> modelMapper.map(appSub, ApplicationSubscriptionBase.class))
+                .toList();
     }
 
     private ApplicationBaseDto setAppRating(ApplicationBaseDto dto) {
         Integer[] rating = this.ratingRepository.getApplicationRating(dto.getId());
-        dto.setRate(createAppRateView(rating));
+        dto.setRate(createAppRateDto(rating));
         return dto;
     }
 
-    private static AppRateDto createAppRateView(Integer[] rating) {
+    private static AppRateDto createAppRateDto(Integer[] rating) {
         return new AppRateDto(
                 Arrays.stream(rating).mapToInt(Integer::intValue).average().orElse(0.0),
                 Arrays.stream(rating).collect(Collectors.groupingBy(s -> s, Collectors.counting()))

@@ -164,10 +164,10 @@ class AppInstanceReadControllerTest {
         Page<AppInstanceBase> result = appInstanceReadController.getAllInstances(pageable);
 
         assertEquals(1, result.getTotalElements());
-        AppInstanceBase appInstanceView = result.getContent().getFirst();
-        assertEquals(NAME, appInstanceView.getApplicationName());
-        assertEquals(owner.getUsername(), appInstanceView.getOwner().getUsername());
-        assertTrue(appInstanceView.getAutoUpgradesEnabled());
+        AppInstanceBase appInstanceBase = result.getContent().getFirst();
+        assertEquals(NAME, appInstanceBase.getApplicationName());
+        assertEquals(owner.getUsername(), appInstanceBase.getOwner().getUsername());
+        assertTrue(appInstanceBase.getAutoUpgradesEnabled());
     }
 
     @Test

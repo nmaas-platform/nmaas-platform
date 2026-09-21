@@ -261,8 +261,8 @@ class RemoteClusterManagerTest {
                 .description("Description")
                 .configFileContent("updated-kube-config-content")
                 .domainNames(List.of("domain"))
-                .ingress(new KClusterDto.KClusterIngressView())
-                .deployment(new KClusterDto.KClusterDeploymentView())
+                .ingress(new KClusterDto.KClusterIngressDto())
+                .deployment(new KClusterDto.KClusterDeploymentDto())
                 .build();
         when(domainService.findDomain("domain")).thenReturn(Optional.of(specificDomain));
 
@@ -290,8 +290,8 @@ class RemoteClusterManagerTest {
                 .codename("cluster")
                 .description("Description")
                 .domainNames(List.of("domain"))
-                .ingress(new KClusterDto.KClusterIngressView())
-                .deployment(new KClusterDto.KClusterDeploymentView())
+                .ingress(new KClusterDto.KClusterIngressDto())
+                .deployment(new KClusterDto.KClusterDeploymentDto())
                 .build();
         when(domainService.findDomain("domain")).thenReturn(Optional.of(specificDomain));
 

@@ -51,18 +51,18 @@ public class CustomAccessTokenServiceImpl implements CustomAccessTokenService {
 
         UserApiToken token = createNewToken(user, name);
         String hashedValued = secretPasswordService.hashSecret(token.getTokenValue());
-        UserApiTokenDto view = mapToView(token);
+        UserApiTokenDto dto = mapToDto(token);
         token.setTokenValue(hashedValued);
-        log.warn("Token value is: {}, hashed: {}", view.tokenValue(), hashedValued);
+        log.warn("Token value is: {}, hashed: {}", dto.tokenValue(), hashedValued);
         userApiTokenRepository.save(token);
-        return view;
+        return dto;
     }
 
     @Override
     public List<UserApiTokenDto> getAll(Long userId) {
         return userApiTokenRepository.findAllByUserId(userId).stream()
                 .filter(userApiToken -> !userApiToken.isDeleted())
-                .map(this::mapToView)
+                .map(this::mapToDto)
                 .toList();
     }
 
@@ -86,7 +86,7 @@ public class CustomAccessTokenServiceImpl implements CustomAccessTokenService {
                 .orElseThrow(() -> new ObjectNotFoundException("Could not find access token with id: " + id));
     }
 
-    private UserApiTokenDto mapToView(UserApiToken token) {
+    private UserApiTokenDto mapToDto(UserApiToken token) {
         return new UserApiTokenDto(token.getId(), token.getName(), token.getTokenValue(),
                 token.isValid(), token.isDeleted());
     }

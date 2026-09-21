@@ -87,11 +87,11 @@ public interface DomainService {
 
     void removeAllUsersFromDomain(Domain domain);
 
-    void checkDomainGroupUsers(DomainGroupDto view);
+    void checkDomainGroupUsers(DomainGroupDto dto);
 
-    void updateRolesInDomainGroupByUsers(DomainGroupDto view);
+    void updateRolesInDomainGroupByUsers(DomainGroupDto dto);
 
-    DomainGroupDto updateMembers(List<UserInfoDto> newMembers, DomainGroupDto view);
+    DomainGroupDto updateMembers(List<UserInfoDto> newMembers, DomainGroupDto dto);
 
     void addAnnotation(KeyValueDto annotation);
 

@@ -63,8 +63,8 @@ class AutoWebhookTemplateServiceTest {
         String template = """
                 {
                   "domain": {
-                    "id": $DOMAINVIEW_ID,
-                    "description": $DOMAINVIEW_DESCR
+                    "id": $DOMAINBASEDTO_ID,
+                    "description": $DOMAINBASEDTO_DESCR
                   },
                   "type": $WEBHOOKEVENTTYPE
                 }
@@ -75,7 +75,7 @@ class AutoWebhookTemplateServiceTest {
                 () -> templateService.validateTemplate(template, WebhookEventType.DOMAIN_ACTION)
         );
 
-        assertEquals("$DOMAINVIEW_DESCR is not a valid variable for this webhook", exception.getMessage());
+        assertEquals("$DOMAINBASEDTO_DESCR is not a valid variable for this webhook", exception.getMessage());
     }
 
     @Test

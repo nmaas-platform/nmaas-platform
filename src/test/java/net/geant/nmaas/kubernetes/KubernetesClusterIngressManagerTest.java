@@ -35,7 +35,7 @@ class KubernetesClusterIngressManagerTest {
         manager.setIngressPerDomain(false);
         manager.setExternalServiceDomain("testClusterServiceDomain");
         when(domainTechDetailsRepository.findByDomainCodename(DOMAIN)).thenReturn(Optional.empty());
-        assertThat(manager.getExternalServiceDomain(DOMAIN), is(manager.getKClusterIngressView().getExternalServiceDomain()));
+        assertThat(manager.getExternalServiceDomain(DOMAIN), is(manager.getKClusterIngressDto().getExternalServiceDomain()));
 
         DomainTechDetails domainTechDetails = new DomainTechDetails(1L, DOMAIN, "domainServiceDomain", "domainNamespace", "domainStorageClass", null);
         Domain domain = new Domain("Domain Name", DOMAIN, false);
@@ -62,7 +62,7 @@ class KubernetesClusterIngressManagerTest {
         manager.setControllerChartName(null);
         manager.setControllerChartArchive(null);
         assertDoesNotThrow(() -> {
-            manager.getControllerConfigOption().validate(manager.getKClusterIngressView());
+            manager.getControllerConfigOption().validate(manager.getKClusterIngressDto());
         });
     }
 
@@ -73,7 +73,7 @@ class KubernetesClusterIngressManagerTest {
         manager.setControllerChartName(null);
         manager.setControllerChartArchive(null);
         assertThrows(IllegalArgumentException.class, () -> {
-            manager.getControllerConfigOption().validate(manager.getKClusterIngressView());
+            manager.getControllerConfigOption().validate(manager.getKClusterIngressDto());
         });
     }
 
@@ -83,7 +83,7 @@ class KubernetesClusterIngressManagerTest {
         manager.setControllerChartName(null);
         manager.setControllerChartArchive("chart");
         assertThrows(IllegalArgumentException.class, () -> {
-            manager.getControllerConfigOption().validate(manager.getKClusterIngressView());
+            manager.getControllerConfigOption().validate(manager.getKClusterIngressDto());
         });
     }
 
@@ -93,7 +93,7 @@ class KubernetesClusterIngressManagerTest {
         manager.setControllerChartArchive(null);
         manager.setControllerChartName("chart");
         assertThrows(IllegalArgumentException.class, () -> {
-            manager.getControllerConfigOption().validate(manager.getKClusterIngressView());
+            manager.getControllerConfigOption().validate(manager.getKClusterIngressDto());
         });
     }
 
@@ -102,7 +102,7 @@ class KubernetesClusterIngressManagerTest {
         manager.setResourceConfigOption(IngressResourceConfigOption.DEPLOY_FROM_CHART);
         manager.setExternalServiceDomain(null);
         assertThrows(IllegalArgumentException.class, () -> {
-            manager.getResourceConfigOption().validate(manager.getKClusterIngressView());
+            manager.getResourceConfigOption().validate(manager.getKClusterIngressDto());
         });
     }
 

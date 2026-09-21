@@ -4,7 +4,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import net.geant.nmaas.api.dto.kubernetes.KClusterDto.KClusterDeploymentView;
+import net.geant.nmaas.api.dto.kubernetes.KClusterDto.KClusterDeploymentDto;
 import net.geant.nmaas.api.dto.kubernetes.NamespaceConfigOptionDto;
 import net.geant.nmaas.kubernetes.remote.entities.KCluster;
 import net.geant.nmaas.kubernetes.remote.entities.NamespaceConfigOption;
@@ -18,10 +18,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 import java.util.Optional;
-
-import static net.geant.nmaas.kubernetes.remote.entities.NamespaceConfigOption.CREATE_NAMESPACE;
-import static net.geant.nmaas.kubernetes.remote.entities.NamespaceConfigOption.USE_DEFAULT_NAMESPACE;
-import static net.geant.nmaas.kubernetes.remote.entities.NamespaceConfigOption.USE_DOMAIN_NAMESPACE;
 
 @Component
 @NoArgsConstructor
@@ -130,20 +126,20 @@ public class KubernetesClusterDeploymentManager implements KubernetesClusterName
         return smtpFromDefaultDomain;
     }
 
-    public KClusterDeploymentView getKClusterDeploymentView() {
-        KClusterDeploymentView view = new KClusterDeploymentView();
+    public KClusterDeploymentDto getKClusterDeploymentView() {
+        KClusterDeploymentDto dto = new KClusterDeploymentDto();
         if (Objects.nonNull(this.getNamespaceConfigOption())) {
-            view.setNamespaceConfigOption(NamespaceConfigOptionDto.valueOf(this.namespaceConfigOption.name()));
+            dto.setNamespaceConfigOption(NamespaceConfigOptionDto.valueOf(this.namespaceConfigOption.name()));
         }
-        view.setDefaultNamespace(this.defaultNamespace);
-        view.setDefaultStorageClass(this.defaultStorageClass);
-        view.setSmtpServerHostname(this.smtpServerHostname);
-        view.setSmtpServerPort(this.smtpServerPort);
-        view.setSmtpServerUsername(this.smtpServerUsername);
-        view.setSmtpServerPassword(this.smtpServerPassword);
-        view.setSmtpFromDefaultDomain(this.smtpFromDefaultDomain);
-        view.setForceDedicatedWorkers(this.forceDedicatedWorkers);
-        return view;
+        dto.setDefaultNamespace(this.defaultNamespace);
+        dto.setDefaultStorageClass(this.defaultStorageClass);
+        dto.setSmtpServerHostname(this.smtpServerHostname);
+        dto.setSmtpServerPort(this.smtpServerPort);
+        dto.setSmtpServerUsername(this.smtpServerUsername);
+        dto.setSmtpServerPassword(this.smtpServerPassword);
+        dto.setSmtpFromDefaultDomain(this.smtpFromDefaultDomain);
+        dto.setForceDedicatedWorkers(this.forceDedicatedWorkers);
+        return dto;
     }
 
     @PostConstruct
