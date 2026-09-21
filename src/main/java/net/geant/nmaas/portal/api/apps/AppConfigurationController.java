@@ -10,7 +10,6 @@ import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistence.entity.AppInstance;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -98,7 +97,7 @@ public class AppConfigurationController {
         logConfigurationParameters(configuration);
         AppInstance appInstance = instances.find(appInstanceId)
                 .orElseThrow(() -> new MissingElementException(INSTANCE_NOT_FOUND_MESSAGE));
-        if (!StringUtils.isEmpty(jsonMapper.writeValueAsString(configuration.getJsonInput()))) {
+        if (containsConfigurationFileContent(configuration.getJsonInput())) {
             throw new ProcessingException("Configuration file content updates from the wizard are not supported");
         }
         if (!instances.validateAgainstAppConfiguration(appInstance, configuration)) {
@@ -109,6 +108,10 @@ public class AppConfigurationController {
         } catch (Exception e) {
             throw new ProcessingException(e.getMessage());
         }
+    }
+
+    private boolean containsConfigurationFileContent(JsonNode jsonInput) {
+        return jsonInput != null && !jsonInput.isNull() && !jsonInput.isEmpty();
     }
 
     private void logConfigurationParameters(AppConfigurationDto configuration) {
