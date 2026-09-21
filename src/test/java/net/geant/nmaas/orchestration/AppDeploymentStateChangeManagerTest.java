@@ -112,6 +112,19 @@ class AppDeploymentStateChangeManagerTest {
     }
 
     @Test
+    void shouldIgnoreVerificationFailedEventWhenApplicationAlreadyRemoved() {
+        when(deployments.loadState(deploymentId)).thenReturn(APPLICATION_REMOVED);
+        when(event.getState()).thenReturn(ServiceDeploymentState.VERIFICATION_FAILED);
+
+        ApplicationEvent newEvent = manager.notifyStateChange(event);
+
+        assertThat(newEvent, is(nullValue()));
+        verify(deployments, never()).updateState(any(Identifier.class), any(AppDeploymentState.class));
+        verify(deployments, never()).updateErrorMessage(any(Identifier.class), anyString());
+        verify(publisher, never()).publishEvent(any());
+    }
+
+    @Test
     void shouldTriggerNewEventInFailedState() {
         when(deployments.loadState(deploymentId)).thenReturn(APPLICATION_CONFIGURATION_IN_PROGRESS);
         when(deployments.load(deploymentId)).thenReturn(stubAppDeployment());

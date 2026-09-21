@@ -481,6 +481,8 @@ public enum AppDeploymentState {
             return switch (state) {
                 case DEPLOYMENT_FAILED -> APPLICATION_DEPLOYMENT_FAILED;
                 case CONFIGURATION_REMOVAL_INITIATED -> APPLICATION_CONFIGURATION_REMOVAL_IN_PROGRESS;
+                // late verification failure notification received after removal should be ignored
+                case VERIFICATION_FAILED -> this;
                 default -> nextStateForNotMatchingNmServiceDeploymentState(this, state);
             };
 

@@ -7,6 +7,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.stream.Stream;
@@ -172,6 +173,11 @@ class AppDeploymentStateTest {
     @MethodSource("stateTransitionsAndExpectedOutput")
     void shouldTransitThroughStates(AppDeploymentState fromState, ServiceDeploymentState onState, AppDeploymentState toState) {
         assertThat(fromState.nextState(onState), is(toState));
+    }
+
+    @Test
+    void shouldIgnoreVerificationFailureInRemovedState() {
+        assertThat(APPLICATION_REMOVED.nextState(ServiceDeploymentState.VERIFICATION_FAILED), is(APPLICATION_REMOVED));
     }
 
     private static Stream<Arguments> deploymentAndExpectedLifecycleStates() {
