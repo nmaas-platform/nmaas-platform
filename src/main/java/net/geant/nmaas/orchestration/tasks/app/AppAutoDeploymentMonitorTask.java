@@ -31,7 +31,7 @@ public class AppAutoDeploymentMonitorTask {
         try {
             AppLifecycleState appLifecycleState = appDeploymentMonitor.state(event.getDeploymentId());
             if (AppLifecycleState.MANAGEMENT_VPN_CONFIGURED.equals(appLifecycleState)) {
-                appLifecycleManager.applyConfiguration(event.getDeploymentId(), event.getAppConfigurationView(), null);
+                appLifecycleManager.applyConfiguration(event.getDeploymentId(), event.getAppConfigurationDto(), null);
             } else {
                 Thread.sleep(15000);
                 return event;

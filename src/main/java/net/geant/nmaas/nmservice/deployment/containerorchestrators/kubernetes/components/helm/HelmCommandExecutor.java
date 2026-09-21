@@ -135,11 +135,20 @@ public class HelmCommandExecutor {
     }
 
     void executeHelmUpgradeCommand(String namespace, String releaseName, KubernetesTemplate template, String kubeConfigPath) {
+        executeUpgrade(namespace, releaseName, template, null, kubeConfigPath);
+    }
+
+    void executeHelmUpgradeWithConfigCommand(String namespace, String releaseName, KubernetesTemplate template, Map<String, String> arguments, String kubeConfigPath) {
+        executeUpgrade(namespace, releaseName, template, arguments, kubeConfigPath);
+    }
+
+    private void executeUpgrade(String namespace, String releaseName, KubernetesTemplate template, Map<String, String> arguments, String kubeConfigPath) {
         try {
             HelmUpgradeCommand command = HelmUpgradeCommand.commandWithRepo(
                     helmVersion,
                     namespace,
                     releaseName,
+                    arguments,
                     constructChartNameWithRepo(template.getChart().getName()),
                     template.getChart().getVersion(),
                     enableTls,

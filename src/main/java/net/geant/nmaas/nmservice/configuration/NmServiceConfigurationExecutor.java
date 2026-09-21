@@ -50,12 +50,13 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
             throw new NmServiceConfigurationFailedException(e.getMessage(), e);
         }
     }
+
     @Override
     @Loggable(LogLevel.INFO)
     public void configureNmService(NmServiceDeployment nsd, String userInitiator) {
         Identifier deploymentId = nsd.getDeploymentId();
         try {
-            notifyStateChangeListeners(deploymentId, CONFIGURATION_INITIATED,"", userInitiator);
+            notifyStateChangeListeners(deploymentId, CONFIGURATION_INITIATED, "", userInitiator);
             configureNmService(nsd, deploymentId);
         } catch (Exception e) {
             notifyStateChangeListeners(deploymentId, CONFIGURATION_FAILED, e.getMessage(), userInitiator);
@@ -96,31 +97,14 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
         }
     }
 
+    /**
+     * Performs config maps update based on updated content of configuration files
+     *
+     * @param nsd contains all necessary information about the application instance being configured
+     */
     @Override
     @Loggable(LogLevel.INFO)
-    public void updateNmService(NmServiceDeployment nsd) {
-        Identifier deploymentId = nsd.getDeploymentId();
-        try {
-            notifyStateChangeListeners(deploymentId, CONFIGURATION_UPDATE_INITIATED);
-            List<String> configFileIdentifiers = filePreparer.generateAndStoreConfigFiles(deploymentId, nsd.getApplicationId(), nsd.getAppConfiguration());
-            if (nsd.isConfigFileRepositoryRequired()) {
-                configHandler.commitConfigFiles(deploymentId, configFileIdentifiers);
-                kubernetesApiJanitorService.createOrReplaceConfigMaps(
-                        nsd.getRemoteCluster(),
-                        nsd.getDescriptiveDeploymentId(),
-                        nsd.getDomainName(),
-                        configHandler.getConfigFiles(deploymentId));
-            }
-            notifyStateChangeListeners(deploymentId, CONFIGURATION_UPDATED);
-        } catch (Exception e) {
-            notifyStateChangeListeners(deploymentId, CONFIGURATION_UPDATE_FAILED, e.getMessage());
-            throw new NmServiceConfigurationFailedException(e.getMessage());
-        }
-    }
-
-    @Override
-    @Loggable(LogLevel.INFO)
-    public void reloadNmService(NmServiceDeployment nsd) {
+    public void reloadNmServiceConfiguration(NmServiceDeployment nsd) {
         Identifier deploymentId = nsd.getDeploymentId();
         try {
             notifyStateChangeListeners(deploymentId, CONFIGURATION_UPDATE_INITIATED);
@@ -167,6 +151,7 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
     private void notifyStateChangeListeners(Identifier deploymentId, ServiceDeploymentState state, String errorMessage) {
         eventPublisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, state, errorMessage));
     }
+
     private void notifyStateChangeListeners(Identifier deploymentId, ServiceDeploymentState state, String errorMessage, String userInitiator) {
         eventPublisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, state, errorMessage, userInitiator));
     }

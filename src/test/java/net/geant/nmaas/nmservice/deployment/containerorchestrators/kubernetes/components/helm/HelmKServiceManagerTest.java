@@ -18,8 +18,10 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.en
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceStorageVolume;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceStorageVolumeType;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.exceptions.KServiceManipulationException;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
+import net.geant.nmaas.utils.bash.CommandExecutionException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -34,11 +36,13 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -345,6 +349,69 @@ class HelmKServiceManagerTest {
                 any(KubernetesTemplate.class),
                 isNull()
         );
+    }
+
+    @Test
+    void shouldUpdateServiceWithConfig() {
+        when(namespaceService.namespace("domain")).thenReturn("namespace");
+        KubernetesNmServiceInfo service = repositoryManager.loadService(deploymentId);
+        Map<String, String> additionalParameters = new HashMap<>();
+        additionalParameters.put("key1", "value1");
+        additionalParameters.put("key2", "value2");
+        service.setAdditionalParameters(additionalParameters);
+        when(repositoryManager.loadService(deploymentId)).thenReturn(service);
+
+        manager.updateService(deploymentId);
+
+        verify(helmCommandExecutor, never()).executeHelmRepoUpdateCommand();
+        verify(helmCommandExecutor, times(1)).executeHelmUpgradeWithConfigCommand(
+                eq("namespace"),
+                eq("descriptiveDeploymentId"),
+                eq(service.getKubernetesTemplate()),
+                eq(additionalParameters),
+                isNull()
+        );
+    }
+
+    @Test
+    void shouldUpdateRemoteServiceWithConfigUsingRemoteNamespaceAndKubeconfigPath() {
+        KCluster remoteCluster = remoteCluster();
+        KubernetesNmServiceInfo service = repositoryManager.loadService(deploymentId);
+        service.setRemoteCluster(remoteCluster);
+        Map<String, String> additionalParameters = new HashMap<>();
+        additionalParameters.put("key1", "value1");
+        service.setAdditionalParameters(additionalParameters);
+        when(repositoryManager.loadService(deploymentId)).thenReturn(service);
+        when(namespaceService.namespace(remoteCluster, "domain")).thenReturn("remote-namespace");
+
+        manager.updateService(deploymentId);
+
+        verify(namespaceService, times(1)).namespace(remoteCluster, "domain");
+        verify(namespaceService, never()).namespace("domain");
+        verify(helmCommandExecutor, times(1)).executeHelmUpgradeWithConfigCommand(
+                eq("remote-namespace"),
+                eq("descriptiveDeploymentId"),
+                eq(service.getKubernetesTemplate()),
+                eq(additionalParameters),
+                eq("mock/path/to/kubeconfig")
+        );
+    }
+
+    @Test
+    void shouldThrowExceptionWhenHelmUpgradeWithConfigCommandFails() {
+        when(namespaceService.namespace("domain")).thenReturn("namespace");
+        doThrow(new CommandExecutionException("helm upgrade failed")).when(helmCommandExecutor)
+                .executeHelmUpgradeWithConfigCommand(
+                        eq("namespace"),
+                        eq("descriptiveDeploymentId"),
+                        any(KubernetesTemplate.class),
+                        ArgumentMatchers.<Map<String, String>>any(),
+                        isNull()
+                );
+
+        assertThatThrownBy(() -> manager.updateService(deploymentId))
+                .isInstanceOf(KServiceManipulationException.class)
+                .hasMessageContaining("helm upgrade failed");
     }
 
     @Test

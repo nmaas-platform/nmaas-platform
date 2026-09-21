@@ -106,12 +106,14 @@ class AppLifecycleManagerRestControllerTest {
     }
 
     @Test
-    void shouldUpdateConfigurationForDeployment() {
+    void shouldUpdateConfigurationForDeploymentAndPrincipal() {
         AppConfigurationDto configuration = AppConfigurationDto.builder().build();
+        Principal principal = () -> "test-user";
 
-        controller.updateConfiguration("dep-1", configuration);
+        controller.updateConfiguration("dep-1", configuration, principal);
 
-        verify(lifecycleManager).updateConfiguration(Identifier.newInstance("dep-1"), configuration);
+        verify(lifecycleManager).updateConfiguration(
+                Identifier.newInstance("dep-1"), configuration, "test-user");
     }
 
     @Test

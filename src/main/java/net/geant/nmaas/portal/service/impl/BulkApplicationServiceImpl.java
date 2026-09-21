@@ -159,17 +159,17 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                         .build();
 
                 // updating application instance information with custom configuration
-                AppConfigurationDto appConfigurationView = new AppConfigurationDto();
+                AppConfigurationDto appConfigurationDto = new AppConfigurationDto();
                 if (Objects.nonNull(applicationSpec.getParameters())) {
                     String configJson = new ObjectMapper().writeValueAsString(
                             mapToDeploymentParameters(applicationSpec.getParameters())
                     );
                     instance.setConfiguration(configJson);
-                    appConfigurationView.setJsonInput(jsonMapper.readTree(configJson));
-                    appConfigurationView.setMandatoryParameters(jsonMapper.readTree(configJson));
+                    appConfigurationDto.setJsonInput(jsonMapper.readTree(configJson));
+                    appConfigurationDto.setMandatoryParameters(jsonMapper.readTree(configJson));
                     instanceService.update(instance);
                 } else {
-                    appConfigurationView.setJsonInput(jsonMapper.readTree("{}"));
+                    appConfigurationDto.setJsonInput(jsonMapper.readTree("{}"));
                 }
 
                 // add job entry to the table
@@ -194,7 +194,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                                 .deploymentId(internalId)
                                 .bulkEntryId(bulkDeploymentEntry.getId())
                                 .state(BulkDeploymentQueueEntry.QueryEntryState.WAITING)
-                                .appConfigurationJson(jsonMapper.writeValueAsString(appConfigurationView.getJsonInput()))
+                                .appConfigurationJson(jsonMapper.writeValueAsString(appConfigurationDto.getJsonInput()))
                                 .build()
                 );
                 bulkDeployment.getEntries().add(bulkDeploymentEntry);

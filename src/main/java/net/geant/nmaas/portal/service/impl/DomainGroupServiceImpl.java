@@ -184,20 +184,20 @@ public class DomainGroupServiceImpl implements DomainGroupService {
     }
 
     @Override
-    public DomainGroupDto updateDomainGroup(Long domainGroupId, DomainGroupDto view) {
-        if (!domainGroupId.equals(view.getId())) {
+    public DomainGroupDto updateDomainGroup(Long domainGroupId, DomainGroupDto dto) {
+        if (!domainGroupId.equals(dto.getId())) {
             throw new ProcessingException(String.format("Wrong domain group identifier (%s)", domainGroupId));
         }
         DomainGroup domainGroup = this.domainGroupRepository.findById(domainGroupId).orElseThrow();
-        // updateRolesInDomainsByUsers(view);
-        domainGroup.setCodename(view.getCodename());
-        domainGroup.setName(view.getName());
-        domainGroup.setManagers(view.getManagers().stream()
+        // updateRolesInDomainsByUsers(dto);
+        domainGroup.setCodename(dto.getCodename());
+        domainGroup.setName(dto.getName());
+        domainGroup.setManagers(dto.getManagers().stream()
                 .map(user -> modelMapper.map(user, User.class))
                 .collect(Collectors.toCollection(ArrayList::new))
         );
         for (ApplicationStatePerDomain appState : domainGroup.getApplicationStatePerDomain()) {
-            for (ApplicationStatePerDomainDto appStateView : view.getApplicationStatePerDomain()) {
+            for (ApplicationStatePerDomainDto appStateView : dto.getApplicationStatePerDomain()) {
                 if (appState.getApplicationBase().getId().equals(appStateView.getApplicationBaseId())) {
                     appState.applyChangedState(appStateView);
                 }

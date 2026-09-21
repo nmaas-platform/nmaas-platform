@@ -11,6 +11,7 @@ public class AppApplyConfigurationActionEvent extends AppBaseEvent {
     public AppApplyConfigurationActionEvent(Object source, Identifier deploymentId) {
         super(source, deploymentId);
     }
+
     public AppApplyConfigurationActionEvent(Object source, Identifier deploymentId, String userInitiator) {
         super(source, deploymentId);
         this.userInitiator = userInitiator;

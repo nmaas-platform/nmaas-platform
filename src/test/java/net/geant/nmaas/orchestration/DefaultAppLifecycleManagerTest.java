@@ -12,15 +12,16 @@ import net.geant.nmaas.orchestration.events.app.AppApplyConfigurationActionEvent
 import net.geant.nmaas.orchestration.events.app.AppRemoveActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppRestartActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppUpdateBasicAuthActionEvent;
+import net.geant.nmaas.orchestration.events.app.AppUpdateConfigurationActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppUpgradeActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppVerifyRequestActionEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.portal.persistence.repositories.UserRepository;
 import net.geant.nmaas.portal.service.ConfigurationManager;
-import net.geant.nmaas.portal.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -59,7 +60,7 @@ class DefaultAppLifecycleManagerTest {
 
     @BeforeEach
     void setup() {
-        appLifecycleManager = new DefaultAppLifecycleManager(repositoryManager, eventPublisher, serviceRepositoryManager,userRepository, appTermsAcceptanceService, configurationManager, new JsonMapper());
+        appLifecycleManager = new DefaultAppLifecycleManager(repositoryManager, eventPublisher, serviceRepositoryManager, userRepository, appTermsAcceptanceService, configurationManager, new JsonMapper());
     }
 
     @Test
@@ -85,10 +86,10 @@ class DefaultAppLifecycleManagerTest {
     void shouldNotTriggerAppInstanceConfiguration() {
         when(repositoryManager.load(any())).thenReturn(new AppDeployment());
         when(serviceRepositoryManager.loadService(any())).thenReturn(new KubernetesNmServiceInfo());
-        AppConfigurationDto configurationView = mock(AppConfigurationDto.class);
-        when(configurationView.getStorageSpace()).thenReturn(null);
-        when(configurationView.getJsonInput()).thenReturn(jsonMapper.readTree(""));
-        appLifecycleManager.applyConfiguration(new Identifier(), configurationView, "TEST");
+        AppConfigurationDto configurationDto = mock(AppConfigurationDto.class);
+        when(configurationDto.getStorageSpace()).thenReturn(null);
+        when(configurationDto.getJsonInput()).thenReturn(jsonMapper.readTree(""));
+        appLifecycleManager.applyConfiguration(new Identifier(), configurationDto, "TEST");
         verify(repositoryManager, times(1)).update(any());
         verify(serviceRepositoryManager, times(0)).updateStorageSpace(any(), anyInt());
         verify(serviceRepositoryManager, times(0)).addAdditionalParameters(any(), anyMap());
@@ -99,12 +100,12 @@ class DefaultAppLifecycleManagerTest {
     void shouldNotTriggerAppInstanceConfigurationButPopulateAdditionalParameters() {
         when(repositoryManager.load(any())).thenReturn(new AppDeployment());
         when(serviceRepositoryManager.loadService(any())).thenReturn(new KubernetesNmServiceInfo());
-        AppConfigurationDto configurationView = mock(AppConfigurationDto.class);
-        when(configurationView.getStorageSpace()).thenReturn(10);
-        when(configurationView.getAdditionalParameters()).thenReturn(jsonMapper.readTree("{\"keyadd1\": \"valadd1\"}"));
-        when(configurationView.getMandatoryParameters()).thenReturn(jsonMapper.readTree("{\"keyman1\": \"valman1\", \"keyman2\": \"valman2\"}"));
-        when(configurationView.getJsonInput()).thenReturn(jsonMapper.readTree(""));
-        appLifecycleManager.applyConfiguration(Identifier.newInstance(1L), configurationView, "TEST");
+        AppConfigurationDto configurationDto = mock(AppConfigurationDto.class);
+        when(configurationDto.getStorageSpace()).thenReturn(10);
+        when(configurationDto.getAdditionalParameters()).thenReturn(jsonMapper.readTree("{\"keyadd1\": \"valadd1\"}"));
+        when(configurationDto.getMandatoryParameters()).thenReturn(jsonMapper.readTree("{\"keyman1\": \"valman1\", \"keyman2\": \"valman2\"}"));
+        when(configurationDto.getJsonInput()).thenReturn(jsonMapper.readTree(""));
+        appLifecycleManager.applyConfiguration(Identifier.newInstance(1L), configurationDto, "TEST");
         ArgumentCaptor<Identifier> idArg = ArgumentCaptor.forClass(Identifier.class);
         ArgumentCaptor<Map<String, String>> mapArg = ArgumentCaptor.forClass(Map.class);
         verify(serviceRepositoryManager, times(1)).updateStorageSpace(Identifier.newInstance(1L), 10);
@@ -117,18 +118,23 @@ class DefaultAppLifecycleManagerTest {
     void shouldTriggerAppInstanceConfigurationInCorrectState() {
         when(repositoryManager.load(any())).thenReturn(AppDeployment.builder().state(AppDeploymentState.MANAGEMENT_VPN_CONFIGURED).build());
         when(serviceRepositoryManager.loadService(any())).thenReturn(new KubernetesNmServiceInfo());
-        AppConfigurationDto configurationView = mock(AppConfigurationDto.class);
-        when(configurationView.getJsonInput()).thenReturn(jsonMapper.readTree(""));
-        appLifecycleManager.applyConfiguration(new Identifier(), configurationView, "TEST");
+        AppConfigurationDto configurationDto = mock(AppConfigurationDto.class);
+        when(configurationDto.getJsonInput()).thenReturn(jsonMapper.readTree(""));
+        appLifecycleManager.applyConfiguration(new Identifier(), configurationDto, "TEST");
         verify(eventPublisher, times(1)).publishEvent(any(AppApplyConfigurationActionEvent.class));
     }
 
     @Test
-    void shouldNotTriggerAppInstanceConfigurationUpdate() {
+    void shouldTriggerAppInstanceConfigurationUpdateWithoutAccessCredentialsUpdate() {
+        Identifier deploymentId = new Identifier();
         when(repositoryManager.load(any())).thenReturn(AppDeployment.builder().configuration(new AppConfiguration()).build());
-        AppConfigurationDto configurationView = mock(AppConfigurationDto.class);
-        when(configurationView.getJsonInput()).thenReturn(null);
-        appLifecycleManager.updateConfiguration(new Identifier(), configurationView);
+        AppConfigurationDto configurationDto = mock(AppConfigurationDto.class);
+        when(configurationDto.getJsonInput()).thenReturn(null);
+        appLifecycleManager.updateConfiguration(deploymentId, configurationDto, "TEST");
+        verify(eventPublisher, times(1))
+                .publishEvent(argThat((AppUpdateConfigurationActionEvent arg) ->
+                        arg.getRelatedTo().equals(deploymentId) && arg.getUserInitiator().equals("TEST")));
+        verify(eventPublisher, times(0)).publishEvent(any(AppUpdateBasicAuthActionEvent.class));
         verifyNoMoreInteractions(eventPublisher);
     }
 
@@ -143,13 +149,26 @@ class DefaultAppLifecycleManagerTest {
                         .configuration(new AppConfiguration())
                         .build()
         );
-        AppConfigurationDto configurationView = mock(AppConfigurationDto.class);
-        when(configurationView.getAccessCredentials()).thenReturn(jsonMapper.readTree("{\"accessUsername\":\"username\", \"accessPassword\":\"password\"}"));
-        appLifecycleManager.updateConfiguration(deploymentId, configurationView);
-        verify(eventPublisher, times(1))
-                .publishEvent(
-                        argThat((AppUpdateBasicAuthActionEvent arg) ->
-                                arg.getRelatedTo().equals(deploymentId) && arg.getBasicAuthUsername().equals("username") && arg.getBasicAuthPassword().equals("password")));
+        AppConfigurationDto configurationDto = mock(AppConfigurationDto.class);
+        when(configurationDto.getAccessCredentials()).thenReturn(jsonMapper.readTree("{\"accessUsername\":\"username\", \"accessPassword\":\"password\"}"));
+        appLifecycleManager.updateConfiguration(deploymentId, configurationDto, "TEST");
+        ArgumentCaptor<ApplicationEvent> eventCaptor = ArgumentCaptor.forClass(ApplicationEvent.class);
+        verify(eventPublisher, times(2)).publishEvent(eventCaptor.capture());
+        AppUpdateBasicAuthActionEvent authEvent = eventCaptor.getAllValues().stream()
+                .filter(AppUpdateBasicAuthActionEvent.class::isInstance)
+                .map(AppUpdateBasicAuthActionEvent.class::cast)
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("AppUpdateBasicAuthActionEvent not published"));
+        assertThat(authEvent.getRelatedTo(), is(deploymentId));
+        assertThat(authEvent.getBasicAuthUsername(), is("username"));
+        assertThat(authEvent.getBasicAuthPassword(), is("password"));
+        AppUpdateConfigurationActionEvent configurationEvent = eventCaptor.getAllValues().stream()
+                .filter(AppUpdateConfigurationActionEvent.class::isInstance)
+                .map(AppUpdateConfigurationActionEvent.class::cast)
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("AppUpdateConfigurationActionEvent not published"));
+        assertThat(configurationEvent.getRelatedTo(), is(deploymentId));
+        assertThat(configurationEvent.getUserInitiator(), is("TEST"));
     }
 
     @Test

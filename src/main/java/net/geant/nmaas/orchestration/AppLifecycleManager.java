@@ -76,8 +76,9 @@ public interface AppLifecycleManager {
      *
      * @param deploymentId  unique identifier of the deployed user application
      * @param configuration updated application configuration provided by the user
+     * @param initiator     username of a user who triggered this action
      */
-    void updateConfiguration(Identifier deploymentId, AppConfigurationDto configuration);
+    void updateConfiguration(Identifier deploymentId, AppConfigurationDto configuration, String initiator);
 
     /**
      * Restarts the already running application.

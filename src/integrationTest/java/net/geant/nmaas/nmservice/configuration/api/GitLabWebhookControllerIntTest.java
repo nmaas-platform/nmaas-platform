@@ -60,7 +60,7 @@ public class GitLabWebhookControllerIntTest {
         mvc.perform(post("/api/v1/gitlab/webhooks/webhookId")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-        verify(configurationProvider, times(1)).reloadNmService(any());
+        verify(configurationProvider, times(1)).reloadNmServiceConfiguration(any());
     }
 
     @Test
@@ -72,7 +72,7 @@ public class GitLabWebhookControllerIntTest {
         mvc.perform(post("/api/v1/gitlab/webhooks/webhookId")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-        verify(configurationProvider, times(1)).reloadNmService(any());
+        verify(configurationProvider, times(1)).reloadNmServiceConfiguration(any());
     }
 
 }

@@ -92,8 +92,8 @@ class DomainGroupServiceTest {
         domainGroupView.setName("testgroup");
         domainGroupView.setCodename("testgrp");
         domainGroupView.setManagers(List.of(
-                userView(1L, "system-admin", RoleDto.ROLE_SYSTEM_ADMIN),
-                userView(2L, "group-manager", RoleDto.ROLE_GROUP_MANAGER)
+                userDto(1L, "system-admin", RoleDto.ROLE_SYSTEM_ADMIN),
+                userDto(2L, "group-manager", RoleDto.ROLE_GROUP_MANAGER)
         ));
 
         domainGroupService.createDomainGroup(domainGroupView);
@@ -139,7 +139,7 @@ class DomainGroupServiceTest {
         assertFalse(domainGroup.getDomains().contains(domain));
     }
 
-    private static UserInfoDto userView(Long id, String username, RoleDto role) {
+    private static UserInfoDto userDto(Long id, String username, RoleDto role) {
         UserInfoDto user = new UserInfoDto();
         user.setId(id);
         user.setUsername(username);

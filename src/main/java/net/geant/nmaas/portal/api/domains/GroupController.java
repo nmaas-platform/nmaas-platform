@@ -67,9 +67,9 @@ public class GroupController extends BaseController {
             throw new ProcessingException("Domain group already exists.");
         }
         try {
-            DomainGroupDto domainGroupView = domainGroupService.createDomainGroup(dto);
-            domainService.updateRolesInDomainGroupByUsers(domainGroupView);
-            return new Id(domainGroupView.getId());
+            DomainGroupDto domainGroupDto = domainGroupService.createDomainGroup(dto);
+            domainService.updateRolesInDomainGroupByUsers(domainGroupDto);
+            return new Id(domainGroupDto.getId());
         } catch (InvalidDomainException e) {
             throw new ProcessingException(e.getMessage());
         }
@@ -160,13 +160,13 @@ public class GroupController extends BaseController {
     @Transactional
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
     public Id updateDomainGroup(@PathVariable Long domainGroupId,
-                                @RequestBody DomainGroupDto domainGroupView,
+                                @RequestBody DomainGroupDto dto,
                                 Principal principal) throws AccessDeniedException {
         DomainGroupDto domainGroup = domainGroupService.getDomainGroup(domainGroupId);
         if (checkManagerPrivileges(principal, domainGroup)) {
-            domainService.checkDomainGroupUsers(domainGroupView);
-            domainService.updateRolesInDomainGroupByUsers(domainGroupView);
-            return new Id(domainGroupService.updateDomainGroup(domainGroupId, domainGroupView).getId());
+            domainService.checkDomainGroupUsers(dto);
+            domainService.updateRolesInDomainGroupByUsers(dto);
+            return new Id(domainGroupService.updateDomainGroup(domainGroupId, dto).getId());
         } else {
             throw new AccessDeniedException(ACCESS_DENIED_MESSAGE);
         }

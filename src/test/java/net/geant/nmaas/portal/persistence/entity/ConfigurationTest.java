@@ -31,7 +31,7 @@ class ConfigurationTest {
     }
 
     @Test
-    void bareModelMapperShouldMapBetweenConfigurationAndConfigurationView() {
+    void bareModelMapperShouldMapBetweenConfigurationAndConfigurationDto() {
         ModelMapper mm = new ModelMapper();
         mm.addConverter(new ConfigurationConverter());
         List<String> emails = Lists.newArrayList("admin@email.com", "user@email.com");

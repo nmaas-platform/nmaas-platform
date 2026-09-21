@@ -3,7 +3,10 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.c
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmCommand;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Map;
 import java.util.function.Predicate;
+
+import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.commands.HelmInstallCommand.commaSeparatedValuesString;
 
 public class HelmUpgradeCommand extends HelmCommand {
 
@@ -21,7 +24,8 @@ public class HelmUpgradeCommand extends HelmCommand {
      * @param kubeConfigPath path to custom kubeConfig file (optional)
      * @return complete command object
      */
-    public static HelmUpgradeCommand commandWithRepo(String helmVersion, String namespace, String releaseName, String chartName, String chartVersion, boolean enableTls, String kubeConfigPath) {
+    public static HelmUpgradeCommand commandWithRepo(String helmVersion, String namespace, String releaseName, Map<String, String> values,
+                                                     String chartName, String chartVersion, boolean enableTls, String kubeConfigPath) {
         if (!helmVersion.startsWith(HELM_VERSION_3)) {
             throw new IllegalArgumentException("Upgrades are not supported for Helm v2");
         }
@@ -34,8 +38,12 @@ public class HelmUpgradeCommand extends HelmCommand {
         StringBuilder sb = new StringBuilder();
         sb.append(HELM)
                 .append(SPACE).append(UPGRADE)
-                .append(SPACE).append(OPTION_NAMESPACE).append(SPACE).append(namespace)
-                .append(SPACE).append(releaseName)
+                .append(SPACE).append(OPTION_NAMESPACE).append(SPACE).append(namespace);
+        if (values != null && !values.isEmpty()) {
+            sb.append(SPACE).append(OPTION_REUSE_VALUES);
+            sb.append(SPACE).append(OPTION_SET).append(SPACE).append(commaSeparatedValuesString(values));
+        }
+        sb.append(SPACE).append(releaseName)
                 .append(SPACE).append(chartName)
                 .append(SPACE).append(OPTION_VERSION).append(SPACE).append(chartVersion);
         if (kubeConfigPath != null && !kubeConfigPath.isEmpty()) {

@@ -103,8 +103,9 @@ public class AppLifecycleManagerRestController {
     @PostMapping(value = "/{deploymentId}/update")
     @ResponseStatus(code = HttpStatus.OK)
     public void updateConfiguration(@PathVariable("deploymentId") String deploymentId,
-                                    @RequestBody AppConfigurationDto configuration) {
-        lifecycleManager.updateConfiguration(Identifier.newInstance(deploymentId), configuration);
+                                    @RequestBody AppConfigurationDto configuration,
+                                    @NotNull Principal principal) {
+        lifecycleManager.updateConfiguration(Identifier.newInstance(deploymentId), configuration, principal.getName());
     }
 
     /**
