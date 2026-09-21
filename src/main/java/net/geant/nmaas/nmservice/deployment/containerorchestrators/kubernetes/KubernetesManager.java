@@ -30,6 +30,7 @@ import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotPrepareEnvironmen
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRemoveServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRestartServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotResumeServiceException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotUpdateKubernetesServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotUpgradeKubernetesServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.ServiceRequestVerificationException;
 import net.geant.nmaas.orchestration.AppComponentDetails;
@@ -560,6 +561,18 @@ public class KubernetesManager implements ContainerOrchestrator {
             throw new ContainerOrchestratorInternalErrorException(serviceNotFoundMessage(idie.getMessage()));
         } catch (Exception e) {
             throw new CouldNotResumeServiceException(e.getMessage());
+        }
+    }
+
+    @Override
+    @Loggable(LogLevel.INFO)
+    public void updateKubernetesService(Identifier deploymentId) {
+        try {
+            serviceLifecycleManager.updateService(deploymentId);
+        } catch (InvalidDeploymentIdException idie) {
+            throw new ContainerOrchestratorInternalErrorException(serviceNotFoundMessage(idie.getMessage()));
+        } catch (Exception e) {
+            throw new CouldNotUpdateKubernetesServiceException(e.getMessage());
         }
     }
 

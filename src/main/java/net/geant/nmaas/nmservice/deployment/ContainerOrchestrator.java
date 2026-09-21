@@ -47,7 +47,7 @@ public interface ContainerOrchestrator {
      * running services and other constraints.
      *
      * @param deploymentId unique identifier of service deployment
-     * @throws ServiceRequestVerificationException       if service deployment is currently not possible
+     * @throws ServiceRequestVerificationException         if service deployment is currently not possible
      * @throws ContainerOrchestratorInternalErrorException if some internal problem occurred during execution
      */
     void verifyRequestAndObtainInitialDeploymentDetails(Identifier deploymentId);
@@ -66,7 +66,7 @@ public interface ContainerOrchestrator {
      * Performs the actual NM service containers deployment.
      *
      * @param deploymentId unique identifier of service deployment
-     * @throws CouldNotDeployServiceException            if any of the service deployment steps failed
+     * @throws CouldNotDeployServiceException              if any of the service deployment steps failed
      * @throws ContainerOrchestratorInternalErrorException if some internal problem occurred during execution
      */
     void deployNmService(Identifier deploymentId);
@@ -123,7 +123,7 @@ public interface ContainerOrchestrator {
      * Triggers all the required actions to remove given NM service from the system.
      *
      * @param deploymentId unique identifier of service deployment
-     * @throws CouldNotRemoveServiceException            if any of the service removal steps failed
+     * @throws CouldNotRemoveServiceException              if any of the service removal steps failed
      * @throws ContainerOrchestratorInternalErrorException if some internal problem occurred during execution
      */
     void removeNmService(Identifier deploymentId);
@@ -132,7 +132,7 @@ public interface ContainerOrchestrator {
      * Triggers all the required actions to restart given NM service.
      *
      * @param deploymentId unique identifier of service deployment
-     * @throws CouldNotRestartServiceException           if any of the service restart steps failed
+     * @throws CouldNotRestartServiceException             if any of the service restart steps failed
      * @throws ContainerOrchestratorInternalErrorException if some internal problem occurred during execution
      */
     void restartNmService(Identifier deploymentId);
@@ -160,5 +160,12 @@ public interface ContainerOrchestrator {
      * @param deploymentId unique identifier of service deployment
      */
     void resumeNmService(Identifier deploymentId);
+
+    /**
+     * Upgrades given service with updated configuration
+     *
+     * @param deploymentId unique identifier of service deployment
+     */
+    void updateKubernetesService(Identifier deploymentId);
 
 }

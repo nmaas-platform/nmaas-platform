@@ -329,11 +329,11 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
     @Loggable(LogLevel.INFO)
     public void updateKubernetesService(Identifier deploymentId, String userInitiator) {
         try {
-            notifyStateChangeListeners(deploymentId, CONFIGURATION_UPDATE_INITIATED);
-            //orchestrator.upgradeKubernetesService(deploymentId, kubernetesTemplate);
-            notifyStateChangeListeners(deploymentId, CONFIGURATION_UPDATED);
+            notifyStateChangeListeners(deploymentId, CONFIGURATION_UPDATE_INITIATED, "", userInitiator);
+            orchestrator.updateKubernetesService(deploymentId);
+            notifyStateChangeListeners(deploymentId, CONFIGURATION_UPDATED, "", userInitiator);
         } catch (Exception e) {
-            notifyStateChangeListeners(deploymentId, CONFIGURATION_UPDATE_FAILED, e.getMessage());
+            notifyStateChangeListeners(deploymentId, CONFIGURATION_UPDATE_FAILED, e.getMessage(), userInitiator);
             throw new NmServiceConfigurationFailedException(e.getMessage());
         }
     }
