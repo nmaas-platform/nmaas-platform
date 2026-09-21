@@ -1,8 +1,8 @@
 package net.geant.nmaas.portal.service;
 
 import net.geant.nmaas.api.dto.applications.AppConfigurationDto;
-import net.geant.nmaas.api.dto.applications.AppInstanceState;
 import net.geant.nmaas.api.dto.applications.AppInstanceDto;
+import net.geant.nmaas.api.dto.applications.AppInstanceState;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.portal.persistence.entity.AppInstance;
 import net.geant.nmaas.portal.persistence.entity.Application;
@@ -62,7 +62,7 @@ public interface ApplicationInstanceService {
 
     List<AppInstance> findAllByApplication(Application application);
 
-    boolean validateAgainstAppConfiguration(AppInstance appInstance, AppConfigurationDto appConfigurationView);
+    boolean validateAgainstAppConfiguration(AppInstance appInstance, AppConfigurationDto appConfigurationDto);
 
     boolean checkUpgradePossible(Long appInstanceId);
 

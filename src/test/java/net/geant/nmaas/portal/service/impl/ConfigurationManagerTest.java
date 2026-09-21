@@ -40,7 +40,7 @@ class ConfigurationManagerTest {
     private ConfigurationManager configurationManager;
 
     private Configuration config;
-    private ConfigurationDto configView;
+    private ConfigurationDto configurationDto;
     private I18nDto internationalization;
 
     @BeforeEach
@@ -60,7 +60,7 @@ class ConfigurationManagerTest {
                 .bulkDomainsSendEmailForNewAccounts(false)
                 .build();
         this.internationalization = new I18nDto("pl", true, "{\"test\":\"test\"}");
-        this.configView = new ConfigurationDto(1L, false, false, "pl",
+        this.configurationDto = new ConfigurationDto(1L, false, false, "pl",
                 false, false, new ArrayList<>(), true, true, false, "0 */1 * * * ?", 2, 60, 10, "", "0 */1 * * * ?", null, 10);
         this.modelMapper.addConverter(new ConfigurationConverter());
     }
@@ -97,9 +97,9 @@ class ConfigurationManagerTest {
     @Test
     void shouldUpdateConfiguration() {
         when(repository.findById(config.getId())).thenReturn(Optional.of(config));
-        when(internationalizationRepository.findByLanguageOrderByIdDesc(configView.getDefaultLanguage()))
+        when(internationalizationRepository.findByLanguageOrderByIdDesc(configurationDto.getDefaultLanguage()))
                 .thenReturn(Optional.of(internationalization.getAsInternationalizationSimple()));
-        configurationManager.updateConfiguration(1L, configView);
+        configurationManager.updateConfiguration(1L, configurationDto);
         verify(repository, times(1)).save(any());
     }
 
@@ -107,17 +107,17 @@ class ConfigurationManagerTest {
     void shouldNotUpdateNotExistingConfig() {
         when(repository.findById(config.getId())).thenReturn(Optional.empty());
         assertThrows(ConfigurationNotFoundException.class, () -> {
-            configurationManager.updateConfiguration(1L, configView);
+            configurationManager.updateConfiguration(1L, configurationDto);
         });
     }
 
     @Test
     void shouldNotSetNotExistingLanguageAsDefault() {
         when(repository.findById(config.getId())).thenReturn(Optional.of(config));
-        when(internationalizationRepository.findByLanguageOrderByIdDesc(configView.getDefaultLanguage()))
+        when(internationalizationRepository.findByLanguageOrderByIdDesc(configurationDto.getDefaultLanguage()))
                 .thenReturn(Optional.empty());
         assertThrows(IllegalArgumentException.class, () -> {
-            configurationManager.updateConfiguration(1L, configView);
+            configurationManager.updateConfiguration(1L, configurationDto);
         });
     }
 
@@ -125,10 +125,10 @@ class ConfigurationManagerTest {
     void shouldNotSetDisabledLanguageAsDefault() {
         internationalization.setEnabled(false);
         when(repository.findById(config.getId())).thenReturn(Optional.of(config));
-        when(internationalizationRepository.findByLanguageOrderByIdDesc(configView.getDefaultLanguage()))
+        when(internationalizationRepository.findByLanguageOrderByIdDesc(configurationDto.getDefaultLanguage()))
                 .thenReturn(Optional.of(internationalization.getAsInternationalizationSimple()));
         assertThrows(IllegalStateException.class, () -> {
-            configurationManager.updateConfiguration(1L, configView);
+            configurationManager.updateConfiguration(1L, configurationDto);
         });
     }
 

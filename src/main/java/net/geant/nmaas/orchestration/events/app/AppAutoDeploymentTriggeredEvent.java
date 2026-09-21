@@ -11,13 +11,13 @@ public class AppAutoDeploymentTriggeredEvent extends ApplicationEvent {
 
     private final Identifier bulkDeploymentId;
     private final Identifier deploymentId;
-    private final AppConfigurationDto appConfigurationView;
+    private final AppConfigurationDto appConfigurationDto;
 
     public AppAutoDeploymentTriggeredEvent(Object source, Identifier bulkDeploymentId, Identifier deploymentId, AppConfigurationDto appConfigurationDto) {
         super(source);
         this.bulkDeploymentId = bulkDeploymentId;
         this.deploymentId = deploymentId;
-        this.appConfigurationView = appConfigurationDto;
+        this.appConfigurationDto = appConfigurationDto;
     }
 
 }

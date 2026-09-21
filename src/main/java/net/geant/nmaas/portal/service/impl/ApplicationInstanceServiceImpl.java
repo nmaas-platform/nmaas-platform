@@ -116,7 +116,7 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
     }
 
     @Override
-    public boolean validateAgainstAppConfiguration(AppInstance appInstance, AppConfigurationDto appConfigurationView) {
+    public boolean validateAgainstAppConfiguration(AppInstance appInstance, AppConfigurationDto appConfigurationDto) {
         Domain domain = appInstance.getDomain();
         Application app = appInstance.getApplication();
 
@@ -125,7 +125,7 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("Application state not found"));
 
-        return this.applicationStatePerDomainService.validateAppConfigurationAgainstState(appConfigurationView, appStatePerDomain);
+        return this.applicationStatePerDomainService.validateAppConfigurationAgainstState(appConfigurationDto, appStatePerDomain);
     }
 
     @Override
