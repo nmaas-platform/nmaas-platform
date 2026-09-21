@@ -152,7 +152,7 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
                 log.info("No clusters info provided in configuration file");
             } else if (clusterConfig.getClusters().size() == 1) {
                 log.info("One cluster provided, create dto and return ");
-                KClusterDeployment deployment = modelMapper.map(kClusterDeploymentManager.getKClusterDeploymentView(), KClusterDeployment.class);
+                KClusterDeployment deployment = modelMapper.map(kClusterDeploymentManager.getKClusterDeploymentDto(), KClusterDeployment.class);
                 KClusterIngress ingress = modelMapper.map(kClusterIngressManager.getKClusterIngressDto(), KClusterIngress.class);
                 return toDto(KCluster.builder()
                         .name(dto.getName())
@@ -204,13 +204,13 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
         if (remoteClusterSpec.getDeployment() != null) {
             deployment = modelMapper.map(remoteClusterSpec.getDeployment(), KClusterDeployment.class);
         } else {
-            deployment = modelMapper.map(kClusterDeploymentManager.getKClusterDeploymentView(), KClusterDeployment.class);
+            deployment = modelMapper.map(kClusterDeploymentManager.getKClusterDeploymentDto(), KClusterDeployment.class);
         }
 
         if (remoteClusterSpec.getIngress() != null) {
             ingress = modelMapper.map(remoteClusterSpec.getIngress(), KClusterIngress.class);
         } else {
-            ingress = modelMapper.map(kClusterDeploymentManager.getKClusterDeploymentView(), KClusterIngress.class);
+            ingress = modelMapper.map(kClusterDeploymentManager.getKClusterDeploymentDto(), KClusterIngress.class);
         }
 
         KCluster cluster = KCluster.builder()
@@ -333,11 +333,11 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
         }
     }
 
-    private void checkRequest(KCluster entity, RemoteKClusterDto view, Long id) {
-        if (view.getName() == null) {
+    private void checkRequest(KCluster entity, RemoteKClusterDto dto, Long id) {
+        if (dto.getName() == null) {
             throw new IllegalArgumentException(CLUSTER_NAME_NULL_MESSAGE);
         }
-        if (view.getCodename() == null) {
+        if (dto.getCodename() == null) {
             throw new IllegalArgumentException("Codename of the cluster is null");
         }
     }

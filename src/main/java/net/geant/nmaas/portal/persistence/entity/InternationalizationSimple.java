@@ -26,12 +26,7 @@ public class InternationalizationSimple extends InternationalizationAbstract {
     @ElementCollection
     private List<InternationalizationNode> languageNodes;
 
-    /**
-     * converts InternationalizationSimple object to InternationalizationView
-     *
-     * @return
-     */
-    public I18nDto getAsInternationalizationView() {
+    public I18nDto getAsI18nDto() {
         I18nDto result = new I18nDto(); //create simple object
         // rewrite trivial properties
         result.setLanguage(this.getLanguage());

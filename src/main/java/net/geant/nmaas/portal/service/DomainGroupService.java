@@ -38,7 +38,7 @@ public interface DomainGroupService {
 
     Page<DomainGroupBaseDto> getPageableAllDomainGroupsWhereManagerIsMemberAndSearch(Pageable pageable, User manager, String search);
 
-    DomainGroupDto updateDomainGroup(Long domainGroupId, DomainGroupDto view);
+    DomainGroupDto updateDomainGroup(Long domainGroupId, DomainGroupDto dto);
 
     void deleteAppBaseFromAllAppState(ApplicationBase base);
 

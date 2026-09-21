@@ -126,7 +126,7 @@ public class KubernetesClusterDeploymentManager implements KubernetesClusterName
         return smtpFromDefaultDomain;
     }
 
-    public KClusterDeploymentDto getKClusterDeploymentView() {
+    public KClusterDeploymentDto getKClusterDeploymentDto() {
         KClusterDeploymentDto dto = new KClusterDeploymentDto();
         if (Objects.nonNull(this.getNamespaceConfigOption())) {
             dto.setNamespaceConfigOption(NamespaceConfigOptionDto.valueOf(this.namespaceConfigOption.name()));
@@ -145,7 +145,7 @@ public class KubernetesClusterDeploymentManager implements KubernetesClusterName
     @PostConstruct
     public void validateConfig() {
         Validate.isTrue(this.getNamespaceConfigOption() != null, "NamespaceConfigOption property can't be null");
-        this.getNamespaceConfigOption().validate(this.getKClusterDeploymentView());
+        this.getNamespaceConfigOption().validate(this.getKClusterDeploymentDto());
     }
 
 }

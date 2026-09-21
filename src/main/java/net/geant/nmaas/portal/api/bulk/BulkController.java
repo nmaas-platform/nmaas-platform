@@ -117,7 +117,7 @@ public class BulkController {
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
     public ResponseEntity<BulkDeploymentDto> getDeploymentRecord(@PathVariable Long id) {
         BulkDeployment bulk = bulkDeploymentRepository.findById(id).orElseThrow();
-        return ResponseEntity.ok(mapToView(bulk, BulkDeploymentDto.class));
+        return ResponseEntity.ok(mapToDto(bulk, BulkDeploymentDto.class));
     }
 
     @GetMapping(value = "/app/csv/{id}", produces = "text/csv")
@@ -198,14 +198,14 @@ public class BulkController {
 
     private List<BulkDeploymentBaseDto> mapToViewList(List<BulkDeployment> deployments) {
         return deployments.stream()
-                .map(bulk -> mapToView(bulk, BulkDeploymentBaseDto.class))
+                .map(bulk -> mapToDto(bulk, BulkDeploymentBaseDto.class))
                 .toList();
     }
 
     @GetMapping("/refresh/{id}")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
     public ResponseEntity<BulkDeploymentBaseDto> getRefreshedState(@PathVariable Long id) {
-        return ResponseEntity.ok(mapToView(bulkApplicationService.updateState(id)));
+        return ResponseEntity.ok(mapToDto(bulkApplicationService.updateState(id)));
     }
 
     @GetMapping("/queue/{id}")
@@ -214,7 +214,7 @@ public class BulkController {
         return ResponseEntity.ok(bulkApplicationService.getQueueDetails(id));
     }
 
-    private <T extends BulkDeploymentBaseDto> T mapToView(BulkDeployment bulk, Class<T> viewType) {
+    private <T extends BulkDeploymentBaseDto> T mapToDto(BulkDeployment bulk, Class<T> viewType) {
         T bulkView = modelMapper.map(bulk, viewType);
         try {
             bulkView.setCreator(getUserInfo(bulk.getCreator().getId()));
@@ -226,7 +226,7 @@ public class BulkController {
         return bulkView;
     }
 
-    private BulkDeploymentDto mapToView(BulkDeployment deployment) {
+    private BulkDeploymentDto mapToDto(BulkDeployment deployment) {
         BulkDeploymentDto dto = modelMapper.map(deployment, BulkDeploymentDto.class);
         try {
             dto.setCreator(getUserInfo(deployment.getCreator().getId()));
