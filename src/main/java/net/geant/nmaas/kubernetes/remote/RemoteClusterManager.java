@@ -127,17 +127,17 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
     }
 
     @Override
-    public RemoteKClusterDto mapFile(RemoteKClusterDto view, MultipartFile file) {
+    public RemoteKClusterDto mapFile(RemoteKClusterDto dto, MultipartFile file) {
         try {
-            return getRemoteClusterView(view, file.getBytes());
+            return getRemoteClusterView(dto, file.getBytes());
         } catch (IOException e) {
             throw new RemoteClusterConfigFileHandlingException(e);
         }
     }
 
     @Override
-    public RemoteKClusterDto mapFile(RemoteKClusterDto view, String secretNamespace, String secretName) {
-        return getRemoteClusterView(view, kubernetesApiClientService.readClusterConfigBytesFromSecret(secretNamespace, secretName));
+    public RemoteKClusterDto mapFile(RemoteKClusterDto dto, String secretNamespace, String secretName) {
+        return getRemoteClusterView(dto, kubernetesApiClientService.readClusterConfigBytesFromSecret(secretNamespace, secretName));
     }
 
     private RemoteKClusterDto getRemoteClusterView(RemoteKClusterDto view, byte[] fileBytes) {
@@ -315,14 +315,14 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
     }
 
     @Override
-    public void checkRequest(RemoteKClusterDto view) {
-        if (view.getName() == null) {
+    public void checkRequest(RemoteKClusterDto dto) {
+        if (dto.getName() == null) {
             throw new IllegalArgumentException(CLUSTER_NAME_NULL_MESSAGE);
         }
-        if (view.getDescription() == null) {
+        if (dto.getDescription() == null) {
             throw new IllegalArgumentException("Description of the cluster is null");
         }
-        if (view.getCodename() == null) {
+        if (dto.getCodename() == null) {
             throw new IllegalArgumentException("Codename of the cluster is null");
         }
     }

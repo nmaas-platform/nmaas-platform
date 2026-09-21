@@ -6,7 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface RemoteClusterManagementService extends RemoteClusterInfoService {
 
-    void checkRequest(RemoteKClusterDto view);
+    void checkRequest(RemoteKClusterDto dto);
 
     RemoteKClusterDto processNewCluster(RemoteKClusterDto remoteClusterSpec, MultipartFile kubeConfigFile, boolean createNamespace);
 
@@ -18,9 +18,9 @@ public interface RemoteClusterManagementService extends RemoteClusterInfoService
 
     boolean clusterExists(Long id);
 
-    RemoteKClusterDto mapFile(RemoteKClusterDto view, MultipartFile file);
+    RemoteKClusterDto mapFile(RemoteKClusterDto dto, MultipartFile file);
 
-    RemoteKClusterDto mapFile(RemoteKClusterDto view, String secretNamespace, String secretName);
+    RemoteKClusterDto mapFile(RemoteKClusterDto dto, String secretNamespace, String secretName);
 
     void updateClusterStatus(Long id);
 }
