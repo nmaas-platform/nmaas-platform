@@ -15,6 +15,7 @@ import net.geant.nmaas.orchestration.events.app.AppRemoveActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppRemoveFailedActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppRestartActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppUpdateBasicAuthActionEvent;
+import net.geant.nmaas.orchestration.events.app.AppUpdateConfigurationActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppUpgradeActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppVerifyRequestActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppVerifyServiceActionEvent;
@@ -269,10 +270,8 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
                 flattenJsonNode(key, node.get(i), result);
             }
         } else {
-            // leaf value: nulls are skipped to mirror the empty-value filtering
-            // applied later by preprocessParameters(Map)
             if (!node.isNull()) {
-                result.put(prefix, node.asText());
+                result.put(prefix, node.asString());
             }
         }
     }
@@ -390,15 +389,32 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
         }
     }
 
+    /**
+     * Updates configuration of an already running application. It doesn't take into consideration changes made to
+     * parameters used to populate application configuration files (those changes are ignored).
+     *
+     * @param deploymentId  unique identifier of the deployed user application
+     * @param configuration updated application configuration provided by the user
+     * @param initiator     username of a user who triggered this action
+     */
     @Override
     @Loggable(LogLevel.INFO)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void updateConfiguration(Identifier deploymentId, AppConfigurationDto configuration) {
-        // only access credentials update is currently supported
+    public void updateConfiguration(Identifier deploymentId, AppConfigurationDto configuration, String initiator) {
+        Map<String, String> additionalParameters = preprocessParameters(configuration.getAdditionalParameters());
+        Map<String, String> mandatoryParameters = preprocessParameters(configuration.getMandatoryParameters());
         Map<String, String> accessCredentials = preprocessParameters(configuration.getAccessCredentials());
+
+        if (!additionalParameters.isEmpty()) {
+            serviceRepositoryManager.addAdditionalParameters(deploymentId, additionalParameters);
+        }
+        if (!mandatoryParameters.isEmpty()) {
+            serviceRepositoryManager.addAdditionalParameters(deploymentId, mandatoryParameters);
+        }
         if (!accessCredentials.isEmpty()) {
             triggerBasicAuthUpdate(deploymentId, accessCredentials);
         }
+        eventPublisher.publishEvent(new AppUpdateConfigurationActionEvent(this, deploymentId, initiator));
     }
 
     @Override

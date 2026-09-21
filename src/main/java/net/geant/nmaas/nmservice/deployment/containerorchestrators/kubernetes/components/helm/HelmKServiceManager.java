@@ -70,12 +70,6 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
         }
     }
 
-    @Override
-    @Loggable(LogLevel.DEBUG)
-    public void updateHelmRepo() {
-        helmCommandExecutor.executeHelmRepoUpdateCommand();
-    }
-
     private void installHelmChart(KubernetesNmServiceInfo serviceInfo) {
         helmCommandExecutor.executeHelmInstallCommand(
                 getTargetNamespace(serviceInfo),
@@ -171,6 +165,12 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
     }
 
     @Override
+    @Loggable(LogLevel.DEBUG)
+    public void updateHelmRepo() {
+        helmCommandExecutor.executeHelmRepoUpdateCommand();
+    }
+
+    @Override
     @Loggable(LogLevel.TRACE)
     public boolean checkServiceDeployed(Identifier deploymentId) {
         final KubernetesNmServiceInfo serviceInfo = repositoryManager.loadService(deploymentId);
@@ -225,6 +225,23 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
                     getTargetNamespace(serviceInfo),
                     serviceInfo.getDescriptiveDeploymentId().getValue(),
                     targetVersion,
+                    serviceInfo.getRemoteCluster() != null ? serviceInfo.getRemoteCluster().getPathConfigFile() : null
+            );
+        } catch (CommandExecutionException cee) {
+            throw new KServiceManipulationException(HELM_COMMAND_EXECUTION_FAILED_ERROR_MESSAGE + cee.getMessage());
+        }
+    }
+
+    @Override
+    @Loggable(LogLevel.TRACE)
+    public void updateService(Identifier deploymentId) {
+        try {
+            final KubernetesNmServiceInfo serviceInfo = repositoryManager.loadService(deploymentId);
+            helmCommandExecutor.executeHelmUpgradeWithConfigCommand(
+                    getTargetNamespace(serviceInfo),
+                    serviceInfo.getDescriptiveDeploymentId().getValue(),
+                    serviceInfo.getKubernetesTemplate(),
+                    serviceInfo.getAdditionalParameters(),
                     serviceInfo.getRemoteCluster() != null ? serviceInfo.getRemoteCluster().getPathConfigFile() : null
             );
         } catch (CommandExecutionException cee) {

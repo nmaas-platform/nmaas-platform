@@ -1,13 +1,5 @@
 package net.geant.nmaas.nmservice.deployment.entities;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import net.geant.nmaas.nmservice.configuration.entities.GitLabProject;
-import net.geant.nmaas.orchestration.Identifier;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -19,6 +11,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.OneToOne;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import net.geant.nmaas.nmservice.configuration.entities.GitLabProject;
+import net.geant.nmaas.orchestration.Identifier;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,23 +39,33 @@ public abstract class NmServiceInfo {
     @Column(name = "id")
     private Long id;
 
-    /** Unique (within a domain) name of the service provided by the caller */
+    /**
+     * Unique (within a domain) name of the service provided by the caller
+     */
     @Column(nullable = false)
     private String name;
 
-    /** State in which service should be at this point */
+    /**
+     * State in which service should be at this point
+     */
     @Column(nullable = false)
     private ServiceDeploymentState state = ServiceDeploymentState.INIT;
 
-    /** Identifier of the application deployment assigned by application lifecycle manager */
+    /**
+     * Identifier of the application deployment assigned by application lifecycle manager
+     */
     @Column(nullable = false, unique = true)
     private Identifier deploymentId;
 
-    /** Name of the deployment provided by the user. */
+    /**
+     * Name of the deployment provided by the user.
+     */
     @Column(nullable = false)
     private String deploymentName;
 
-    /** Name of the client domain for this deployment */
+    /**
+     * Name of the client domain for this deployment
+     */
     @Column(nullable = false)
     private String domain;
 
@@ -63,22 +73,28 @@ public abstract class NmServiceInfo {
      * The list of IP addresses of devices to be managed/monitored by the deployed service.
      * These addresses are provided by the user during wizard completion.
      * For these addresses specific routing entries needs to be by applied on the container once run.
-     *
+     * <p>
      * Comment: This feature is not used
      */
     @ElementCollection(fetch = FetchType.EAGER)
     @Fetch(FetchMode.SELECT)
     private List<String> managedDevicesIpAddresses;
 
-    /** Globally unique descriptive application deployment identifier */
+    /**
+     * Globally unique descriptive application deployment identifier
+     */
     @Column(nullable = false)
     private Identifier descriptiveDeploymentId;
 
-    /** GitLab project information created to store configuration files for this service (deployment) */
+    /**
+     * GitLab project information created to store configuration files for this service (deployment)
+     */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private GitLabProject gitLabProject;
 
-    /** Map of additional parameters provided by user during wizard completion */
+    /**
+     * Map of additional parameters provided by user during wizard completion
+     */
     @ElementCollection(fetch = FetchType.EAGER)
     @Fetch(FetchMode.SELECT)
     private Map<String, String> additionalParameters;
@@ -91,7 +107,7 @@ public abstract class NmServiceInfo {
         this.descriptiveDeploymentId = descriptiveDeploymentId;
     }
 
-    public NmServiceInfo(Identifier deploymentId, String deploymentName, String domain, Identifier descriptiveDeploymentId, Map <String, String> additionalParameters) {
+    public NmServiceInfo(Identifier deploymentId, String deploymentName, String domain, Identifier descriptiveDeploymentId, Map<String, String> additionalParameters) {
         this.name = deploymentId.value();
         this.deploymentId = deploymentId;
         this.deploymentName = deploymentName;
@@ -101,7 +117,7 @@ public abstract class NmServiceInfo {
     }
 
     public void addAdditionalParameters(Map<String, String> newAdditionalParameters) {
-        if(additionalParameters == null) {
+        if (additionalParameters == null) {
             additionalParameters = new HashMap<>();
         }
         this.additionalParameters.putAll(newAdditionalParameters);

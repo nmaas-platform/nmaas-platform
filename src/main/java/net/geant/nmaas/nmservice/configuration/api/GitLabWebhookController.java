@@ -30,7 +30,7 @@ public class GitLabWebhookController {
             KubernetesNmServiceInfo service = repositoryManager.loadServiceByGitLabProjectWebhookId(id);
             if (service.getState().isOnline() || ServiceDeploymentState.VERIFICATION_FAILED.equals(service.getState())) {
                 log.info("Triggering configuration reload for service: {}", service.getDescriptiveDeploymentId());
-                configurationProvider.reloadNmService(NmServiceDeployment.builder()
+                configurationProvider.reloadNmServiceConfiguration(NmServiceDeployment.builder()
                         .deploymentId(service.getDeploymentId())
                         .remoteCluster(service.getRemoteCluster())
                         .descriptiveDeploymentId(service.getDescriptiveDeploymentId())

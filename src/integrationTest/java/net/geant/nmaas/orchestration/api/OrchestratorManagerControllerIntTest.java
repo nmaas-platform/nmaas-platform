@@ -131,13 +131,14 @@ public class OrchestratorManagerControllerIntTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
         mvc.perform(post("/api/v1/orchestration/deployments/{deploymentId}/update", DEPLOYMENT_ID.toString())
+                        .principal(this.principal)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"jsonInput\":{\"id\":\"newtestvalue\"}," + "\"storageSpace\":null" + "}")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
         ArgumentCaptor<Identifier> deploymentIdCaptor = ArgumentCaptor.forClass(Identifier.class);
         ArgumentCaptor<AppConfigurationDto> appDeploymentCaptor = ArgumentCaptor.forClass(AppConfigurationDto.class);
-        verify(lifecycleManager, times(1)).updateConfiguration(deploymentIdCaptor.capture(), appDeploymentCaptor.capture());
+        verify(lifecycleManager, times(1)).updateConfiguration(deploymentIdCaptor.capture(), appDeploymentCaptor.capture(), eq("user"));
         assertEquals(DEPLOYMENT_ID, deploymentIdCaptor.getValue());
         assertTrue(jsonMapper.writeValueAsString(appDeploymentCaptor.getValue().getJsonInput()).contains("newtestvalue"));
     }

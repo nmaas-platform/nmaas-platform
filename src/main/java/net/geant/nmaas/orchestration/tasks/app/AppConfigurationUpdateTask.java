@@ -10,7 +10,7 @@ import net.geant.nmaas.orchestration.DefaultAppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentOwner;
-import net.geant.nmaas.orchestration.events.app.AppUpdateConfigurationEvent;
+import net.geant.nmaas.orchestration.events.app.AppUpdateConfigurationActionEvent;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.context.event.EventListener;
@@ -31,7 +31,8 @@ public class AppConfigurationUpdateTask {
     @EventListener
     @Transactional
     @Loggable(LogLevel.INFO)
-    public void trigger(AppUpdateConfigurationEvent event) {
+    public void trigger(AppUpdateConfigurationActionEvent event) throws InterruptedException {
+        Thread.sleep(1000);
         try {
             final Identifier deploymentId = event.getRelatedTo();
             final AppDeployment appDeployment = repositoryManager.load(deploymentId);

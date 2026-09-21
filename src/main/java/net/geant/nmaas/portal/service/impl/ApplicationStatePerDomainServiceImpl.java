@@ -74,10 +74,10 @@ public class ApplicationStatePerDomainServiceImpl implements ApplicationStatePer
         Domain updatedDomain = domainRepository.getReferenceById(changes.getId());
         List<ApplicationStatePerDomain> list = updatedDomain.getApplicationStatePerDomain();
         for (ApplicationStatePerDomain appState : list) {
-            for (ApplicationStatePerDomainDto appStateView : changes.getApplicationStatePerDomain()) {
-                if (appState.getApplicationBase().getId().equals(appStateView.getApplicationBaseId())) {
+            for (ApplicationStatePerDomainDto appStateDto : changes.getApplicationStatePerDomain()) {
+                if (appState.getApplicationBase().getId().equals(appStateDto.getApplicationBaseId())) {
                     // rewrite state
-                    appState.applyChangedState(appStateView);
+                    appState.applyChangedState(appStateDto);
                 }
             }
         }

@@ -44,25 +44,18 @@ public class AppConfigurationController {
     public void applyConfiguration(@PathVariable(value = "appInstanceId") Long appInstanceId,
                                    @RequestBody AppConfigurationDto configuration,
                                    @NotNull Principal principal) {
-        log.info("Received application configuration parameters: jsonInput={}, storageSpace={}, additionalParameters={}, mandatoryParameters={}, accessCredentials={}, termsAcceptance={}",
-                countParameters(configuration.getJsonInput()),
-                configuration.getStorageSpace() == null ? 0 : 1,
-                countParameters(configuration.getAdditionalParameters()),
-                countParameters(configuration.getMandatoryParameters()),
-                countParameters(configuration.getAccessCredentials()),
-                countParameters(configuration.getTermsAcceptance()));
-        AppInstance appInstance = instances.find(appInstanceId).orElseThrow(() -> new MissingElementException(INSTANCE_NOT_FOUND_MESSAGE));
+        logConfigurationParameters(configuration);
+        AppInstance appInstance = instances.find(appInstanceId)
+                .orElseThrow(() -> new MissingElementException(INSTANCE_NOT_FOUND_MESSAGE));
 
         boolean valid = validJSON(jsonMapper.writeValueAsString(configuration.getJsonInput()));
         log.debug("Provided configuration = {}", configuration.getJsonInput());
         if (!valid) {
             throw new ProcessingException("Configuration is not in a valid JSON format");
         }
-
         if (configuration.getStorageSpace() != null && configuration.getStorageSpace() <= 0) {
             throw new ProcessingException("Storage space cannot be less or equal to 0");
         }
-
         if (!instances.validateAgainstAppConfiguration(appInstance, configuration)) {
             throw new ProcessingException("Application configuration violates application state per domain rules");
         }
@@ -102,21 +95,30 @@ public class AppConfigurationController {
     public void updateConfiguration(@PathVariable(value = "appInstanceId") Long appInstanceId,
                                     @RequestBody AppConfigurationDto configuration,
                                     @NotNull Principal principal) {
-        AppInstance appInstance = instances.find(appInstanceId).orElseThrow(() -> new MissingElementException(INSTANCE_NOT_FOUND_MESSAGE));
-
+        logConfigurationParameters(configuration);
+        AppInstance appInstance = instances.find(appInstanceId)
+                .orElseThrow(() -> new MissingElementException(INSTANCE_NOT_FOUND_MESSAGE));
         if (!StringUtils.isEmpty(jsonMapper.writeValueAsString(configuration.getJsonInput()))) {
             throw new ProcessingException("Configuration file content updates from the wizard are not supported");
         }
-
         if (!instances.validateAgainstAppConfiguration(appInstance, configuration)) {
             throw new ProcessingException("Application configuration violates application state per domain rules");
         }
-
         try {
-            appLifecycleManager.updateConfiguration(appInstance.getInternalId(), configuration);
+            appLifecycleManager.updateConfiguration(appInstance.getInternalId(), configuration, principal.getName());
         } catch (Exception e) {
             throw new ProcessingException(e.getMessage());
         }
+    }
+
+    private void logConfigurationParameters(AppConfigurationDto configuration) {
+        log.info("Received application configuration parameters: jsonInput={}, storageSpace={}, additionalParameters={}, mandatoryParameters={}, accessCredentials={}, termsAcceptance={}",
+                countParameters(configuration.getJsonInput()),
+                configuration.getStorageSpace() == null ? 0 : 1,
+                countParameters(configuration.getAdditionalParameters()),
+                countParameters(configuration.getMandatoryParameters()),
+                countParameters(configuration.getAccessCredentials()),
+                countParameters(configuration.getTermsAcceptance()));
     }
 
     @GetMapping("/{appInstanceId}/configuration")

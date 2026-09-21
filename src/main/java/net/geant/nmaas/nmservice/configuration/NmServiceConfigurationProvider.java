@@ -44,7 +44,7 @@ public interface NmServiceConfigurationProvider {
      * @param nmServiceDeployment contains all necessary information about the application instance being configured
      * @throws NmServiceConfigurationFailedException if NM service couldn't be configured for some reason
      */
-    void reloadNmService(NmServiceDeployment nmServiceDeployment);
+    void reloadNmServiceConfiguration(NmServiceDeployment nmServiceDeployment);
 
     /**
      * Removes NM service configuration

@@ -12,6 +12,7 @@ import net.geant.nmaas.orchestration.events.app.AppApplyConfigurationActionEvent
 import net.geant.nmaas.orchestration.events.app.AppRemoveActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppRestartActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppUpdateBasicAuthActionEvent;
+import net.geant.nmaas.orchestration.events.app.AppUpdateConfigurationActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppUpgradeActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppVerifyRequestActionEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
@@ -21,6 +22,7 @@ import net.geant.nmaas.portal.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -124,11 +126,16 @@ class DefaultAppLifecycleManagerTest {
     }
 
     @Test
-    void shouldNotTriggerAppInstanceConfigurationUpdate() {
+    void shouldTriggerAppInstanceConfigurationUpdateWithoutAccessCredentialsUpdate() {
+        Identifier deploymentId = new Identifier();
         when(repositoryManager.load(any())).thenReturn(AppDeployment.builder().configuration(new AppConfiguration()).build());
         AppConfigurationDto configurationView = mock(AppConfigurationDto.class);
         when(configurationView.getJsonInput()).thenReturn(null);
-        appLifecycleManager.updateConfiguration(new Identifier(), configurationView);
+        appLifecycleManager.updateConfiguration(deploymentId, configurationView, "TEST");
+        verify(eventPublisher, times(1))
+                .publishEvent(argThat((AppUpdateConfigurationActionEvent arg) ->
+                        arg.getRelatedTo().equals(deploymentId) && arg.getUserInitiator().equals("TEST")));
+        verify(eventPublisher, times(0)).publishEvent(any(AppUpdateBasicAuthActionEvent.class));
         verifyNoMoreInteractions(eventPublisher);
     }
 
@@ -145,11 +152,24 @@ class DefaultAppLifecycleManagerTest {
         );
         AppConfigurationDto configurationView = mock(AppConfigurationDto.class);
         when(configurationView.getAccessCredentials()).thenReturn(jsonMapper.readTree("{\"accessUsername\":\"username\", \"accessPassword\":\"password\"}"));
-        appLifecycleManager.updateConfiguration(deploymentId, configurationView);
-        verify(eventPublisher, times(1))
-                .publishEvent(
-                        argThat((AppUpdateBasicAuthActionEvent arg) ->
-                                arg.getRelatedTo().equals(deploymentId) && arg.getBasicAuthUsername().equals("username") && arg.getBasicAuthPassword().equals("password")));
+        appLifecycleManager.updateConfiguration(deploymentId, configurationView, "TEST");
+        ArgumentCaptor<ApplicationEvent> eventCaptor = ArgumentCaptor.forClass(ApplicationEvent.class);
+        verify(eventPublisher, times(2)).publishEvent(eventCaptor.capture());
+        AppUpdateBasicAuthActionEvent authEvent = eventCaptor.getAllValues().stream()
+                .filter(AppUpdateBasicAuthActionEvent.class::isInstance)
+                .map(AppUpdateBasicAuthActionEvent.class::cast)
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("AppUpdateBasicAuthActionEvent not published"));
+        assertThat(authEvent.getRelatedTo(), is(deploymentId));
+        assertThat(authEvent.getBasicAuthUsername(), is("username"));
+        assertThat(authEvent.getBasicAuthPassword(), is("password"));
+        AppUpdateConfigurationActionEvent configurationEvent = eventCaptor.getAllValues().stream()
+                .filter(AppUpdateConfigurationActionEvent.class::isInstance)
+                .map(AppUpdateConfigurationActionEvent.class::cast)
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("AppUpdateConfigurationActionEvent not published"));
+        assertThat(configurationEvent.getRelatedTo(), is(deploymentId));
+        assertThat(configurationEvent.getUserInitiator(), is("TEST"));
     }
 
     @Test
