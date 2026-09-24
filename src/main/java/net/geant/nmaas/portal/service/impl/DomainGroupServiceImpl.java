@@ -123,7 +123,7 @@ public class DomainGroupServiceImpl implements DomainGroupService {
     @Override
     public void deleteDomainGroup(Long domainGroupId) {
         DomainGroup domainGroup = domainGroupRepository.findById(domainGroupId).orElseThrow();
-        DomainGroupDto domainGroupView = modelMapper.map(domainGroup, DomainGroupDto.class);
+        DomainGroupDto domainGroupDto = modelMapper.map(domainGroup, DomainGroupDto.class);
         List<Domain> toRemove = new ArrayList<>(domainGroup.getDomains());
         Iterator<Domain> iterator = toRemove.iterator();
         while (iterator.hasNext()) {
@@ -133,7 +133,7 @@ public class DomainGroupServiceImpl implements DomainGroupService {
             iterator.remove();
         }
         domainGroupRepository.deleteById(domainGroupId);
-        eventPublisher.publishEvent(new DomainGroupChangedEvent(this, "delete", domainGroupView));
+        eventPublisher.publishEvent(new DomainGroupChangedEvent(this, "delete", domainGroupDto));
     }
 
     @Override
@@ -206,9 +206,9 @@ public class DomainGroupServiceImpl implements DomainGroupService {
 
         domainGroupRepository.save(domainGroup);
 
-        DomainGroupDto domainGroupView = modelMapper.map(domainGroup, DomainGroupDto.class);
-        eventPublisher.publishEvent(new DomainGroupChangedEvent(this, "update", domainGroupView));
-        return domainGroupView;
+        DomainGroupDto domainGroupDto = modelMapper.map(domainGroup, DomainGroupDto.class);
+        eventPublisher.publishEvent(new DomainGroupChangedEvent(this, "update", domainGroupDto));
+        return domainGroupDto;
     }
 
     protected void checkParam(DomainGroupDto domainGroup) {

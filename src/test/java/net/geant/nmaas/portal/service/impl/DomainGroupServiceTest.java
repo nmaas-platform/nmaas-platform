@@ -88,15 +88,15 @@ class DomainGroupServiceTest {
         ArgumentCaptor<DomainGroup> domainGroupCaptor = ArgumentCaptor.forClass(DomainGroup.class);
         when(domainGroupRepository.save(domainGroupCaptor.capture())).thenReturn(savedDomainGroup);
 
-        DomainGroupDto domainGroupView = new DomainGroupDto();
-        domainGroupView.setName("testgroup");
-        domainGroupView.setCodename("testgrp");
-        domainGroupView.setManagers(List.of(
+        DomainGroupDto domainGroupDto = new DomainGroupDto();
+        domainGroupDto.setName("testgroup");
+        domainGroupDto.setCodename("testgrp");
+        domainGroupDto.setManagers(List.of(
                 userDto(1L, "system-admin", RoleDto.ROLE_SYSTEM_ADMIN),
                 userDto(2L, "group-manager", RoleDto.ROLE_GROUP_MANAGER)
         ));
 
-        domainGroupService.createDomainGroup(domainGroupView);
+        domainGroupService.createDomainGroup(domainGroupDto);
 
         DomainGroup persistedDomainGroup = domainGroupCaptor.getValue();
         assertEquals(1, persistedDomainGroup.getManagers().size());

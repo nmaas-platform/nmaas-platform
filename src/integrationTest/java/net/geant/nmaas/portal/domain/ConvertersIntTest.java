@@ -59,46 +59,46 @@ public class ConvertersIntTest {
     }
 
     @Test
-    void testConvertAppToAppView() {
+    void testConvertAppToAppDto() {
         ApplicationBase defaultAppBase = getDefaultAppBase();
         applicationBaseRepository.save(defaultAppBase);
-        ApplicationDto appView = modelMapper.map(getDefaultApp(), ApplicationDto.class);
-        assertNotNull(appView.getConfigWizardTemplate());
-        assertNull(appView.getConfigUpdateWizardTemplate());
-        assertEquals(getDefaultApp().getAppDeploymentSpec().isExposesWebUI(), appView.getAppDeploymentSpec().isExposesWebUI());
+        ApplicationDto applicationDto = modelMapper.map(getDefaultApp(), ApplicationDto.class);
+        assertNotNull(applicationDto.getConfigWizardTemplate());
+        assertNull(applicationDto.getConfigUpdateWizardTemplate());
+        assertEquals(getDefaultApp().getAppDeploymentSpec().isExposesWebUI(), applicationDto.getAppDeploymentSpec().isExposesWebUI());
     }
 
     @Test
     void testConvertAppViewToAppBase() {
-        ApplicationBaseDto appView = getDefaultAppBaseView();
-        ApplicationBase appBase = modelMapper.map(appView, ApplicationBase.class);
-        assertEquals(appView.getId(), appBase.getId());
-        assertEquals(appView.getName(), appBase.getName());
+        ApplicationBaseDto applicationBaseDto = getDefaultAppBaseView();
+        ApplicationBase appBase = modelMapper.map(applicationBaseDto, ApplicationBase.class);
+        assertEquals(applicationBaseDto.getId(), appBase.getId());
+        assertEquals(applicationBaseDto.getName(), appBase.getName());
         assertNotNull(appBase.getTags());
     }
 
     @Test
     void testConvertAppBaseToAppBaseView() {
         ApplicationBase appBase = getDefaultAppBase();
-        ApplicationBaseDto applicationBaseView = modelMapper.map(appBase, ApplicationBaseDto.class);
-        assertEquals(appBase.getName(), applicationBaseView.getName());
-        assertNotNull(applicationBaseView.getTags());
-        assertEquals(1, applicationBaseView.getVersions().size());
-        assertTrue(applicationBaseView.getVersions().stream()
+        ApplicationBaseDto applicationBaseDto = modelMapper.map(appBase, ApplicationBaseDto.class);
+        assertEquals(appBase.getName(), applicationBaseDto.getName());
+        assertNotNull(applicationBaseDto.getTags());
+        assertEquals(1, applicationBaseDto.getVersions().size());
+        assertTrue(applicationBaseDto.getVersions().stream()
                 .anyMatch(version -> version.getVersion().equals("0.0.1")));
-        assertTrue(applicationBaseView.getVersions().stream()
+        assertTrue(applicationBaseDto.getVersions().stream()
                 .anyMatch(version -> version.getState().equals(ApplicationStateDto.ACTIVE)));
     }
 
     @Test
     void testConvertAppViewToApp() {
-        ApplicationDto appView = getDefaultAppView();
-        Application app = modelMapper.map(appView, Application.class);
-        assertEquals(appView.getState(), ApplicationStateDto.valueOf(app.getState().name()));
+        ApplicationDto applicationDto = getDefaultAppView();
+        Application app = modelMapper.map(applicationDto, Application.class);
+        assertEquals(applicationDto.getState(), ApplicationStateDto.valueOf(app.getState().name()));
         assertNotNull(app.getConfigWizardTemplate());
         assertNull(app.getConfigUpdateWizardTemplate());
         assertNotNull(app.getAppDeploymentSpec());
-        assertEquals(appView.getAppDeploymentSpec().isExposesWebUI(), app.getAppDeploymentSpec().isExposesWebUI());
+        assertEquals(applicationDto.getAppDeploymentSpec().isExposesWebUI(), app.getAppDeploymentSpec().isExposesWebUI());
     }
 
     @Test
@@ -166,15 +166,15 @@ public class ConvertersIntTest {
     }
 
     private ApplicationBaseDto getDefaultAppBaseView() {
-        ApplicationBaseDto appView = new ApplicationBaseDto();
-        appView.setName("testApp");
-        appView.setLicense("MIT");
-        appView.setLicenseUrl("MIT.org");
-        appView.setWwwUrl("default-website.com");
-        appView.setSourceUrl("default-website.com");
-        appView.setIssuesUrl("default-website.com");
-        appView.setId(1L);
-        return appView;
+        ApplicationBaseDto applicationBaseDto = new ApplicationBaseDto();
+        applicationBaseDto.setName("testApp");
+        applicationBaseDto.setLicense("MIT");
+        applicationBaseDto.setLicenseUrl("MIT.org");
+        applicationBaseDto.setWwwUrl("default-website.com");
+        applicationBaseDto.setSourceUrl("default-website.com");
+        applicationBaseDto.setIssuesUrl("default-website.com");
+        applicationBaseDto.setId(1L);
+        return applicationBaseDto;
     }
 
     private ApplicationDto getDefaultAppView() {

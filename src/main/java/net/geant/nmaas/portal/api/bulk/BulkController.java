@@ -110,7 +110,7 @@ public class BulkController {
     @GetMapping
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     public ResponseEntity<List<BulkDeploymentBaseDto>> getAllDeploymentRecords() {
-        return ResponseEntity.ok(mapToViewList(bulkDeploymentRepository.findAll()));
+        return ResponseEntity.ok(mapToDtoList(bulkDeploymentRepository.findAll()));
     }
 
     @GetMapping("/{id}")
@@ -140,7 +140,7 @@ public class BulkController {
     @GetMapping("/domains")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     public ResponseEntity<List<BulkDeploymentBaseDto>> getDomainDeploymentRecords(@RequestParam(value = "deleted", defaultValue = "false") Boolean deleted) {
-        return ResponseEntity.ok(mapToViewList(filter(deleted, bulkDeploymentRepository.findByType(BulkType.DOMAIN))));
+        return ResponseEntity.ok(mapToDtoList(filter(deleted, bulkDeploymentRepository.findByType(BulkType.DOMAIN))));
     }
 
     @GetMapping("/domains/group")
@@ -149,7 +149,7 @@ public class BulkController {
         User user = this.userService.findByUsername(principal.getName())
                 .orElseThrow(() -> new MissingElementException("Missing user " + principal.getName()));
 
-        return ResponseEntity.ok(mapToViewList(filter(false, bulkDeploymentRepository.findByType(BulkType.DOMAIN))).stream()
+        return ResponseEntity.ok(mapToDtoList(filter(false, bulkDeploymentRepository.findByType(BulkType.DOMAIN))).stream()
                 .filter(bulk -> bulk.getCreator().getId().equals(user.getId()))
                 .toList());
     }
@@ -157,7 +157,7 @@ public class BulkController {
     @GetMapping("/apps")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     public ResponseEntity<List<BulkDeploymentBaseDto>> getAppDeploymentRecords(@RequestParam(value = "deleted", defaultValue = "false") Boolean deleted) {
-        return ResponseEntity.ok(mapToViewList(filter(deleted, bulkDeploymentRepository.findByType(BulkType.APPLICATION))));
+        return ResponseEntity.ok(mapToDtoList(filter(deleted, bulkDeploymentRepository.findByType(BulkType.APPLICATION))));
     }
 
     @GetMapping("/apps/group")
@@ -166,7 +166,7 @@ public class BulkController {
         User user = this.userService.findByUsername(principal.getName())
                 .orElseThrow(() -> new MissingElementException("Missing user " + principal.getName()));
 
-        return ResponseEntity.ok(mapToViewList(filter(false, bulkDeploymentRepository.findByType(BulkType.APPLICATION))).stream()
+        return ResponseEntity.ok(mapToDtoList(filter(false, bulkDeploymentRepository.findByType(BulkType.APPLICATION))).stream()
                 .filter(bulk -> bulk.getCreator().getId().equals(user.getId()))
                 .toList());
     }
@@ -196,7 +196,7 @@ public class BulkController {
         return ResponseEntity.ok().build();
     }
 
-    private List<BulkDeploymentBaseDto> mapToViewList(List<BulkDeployment> deployments) {
+    private List<BulkDeploymentBaseDto> mapToDtoList(List<BulkDeployment> deployments) {
         return deployments.stream()
                 .map(bulk -> mapToDto(bulk, BulkDeploymentBaseDto.class))
                 .toList();
@@ -237,7 +237,7 @@ public class BulkController {
         return dto;
     }
 
-    private void mapDetails(BulkDeployment deployment, BulkDeploymentBaseDto view) {
+    private void mapDetails(BulkDeployment deployment, BulkDeploymentBaseDto dto) {
         if (deployment.getType().equals(BulkType.APPLICATION)) {
             Map<String, String> details = new HashMap<>();
             if (!deployment.getEntries().isEmpty()) {
@@ -249,7 +249,7 @@ public class BulkController {
                 if (entry.getDetails().containsKey(BulkDeploymentEntryDto.BULK_ENTRY_DETAIL_KEY_APP_NAME)) {
                     details.put(BulkDeploymentBaseDto.BULK_DETAIL_KEY_APP_NAME, entry.getDetails().get(BulkDeploymentEntryDto.BULK_ENTRY_DETAIL_KEY_APP_NAME));
                 }
-                view.setDetails(details);
+                dto.setDetails(details);
             }
         }
     }

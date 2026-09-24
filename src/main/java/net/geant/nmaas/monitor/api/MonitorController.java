@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import net.geant.nmaas.monitor.MonitorManager;
 import net.geant.nmaas.monitor.MonitorService;
 import net.geant.nmaas.monitor.exceptions.MonitorServiceNotFound;
-import net.geant.nmaas.monitor.model.MonitorEntryView;
+import net.geant.nmaas.monitor.model.MonitorEntryDto;
 import net.geant.nmaas.scheduling.ScheduleManager;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -37,10 +37,10 @@ public class MonitorController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
-    public void createMonitorEntryAndJob(@RequestBody MonitorEntryView monitorEntryView) {
-        MonitorService service = getMonitorService(monitorEntryView.getServiceName().getName());
-        scheduleManager.createJob(service, monitorEntryView);
-        monitorManager.createMonitorEntry(monitorEntryView);
+    public void createMonitorEntryAndJob(@RequestBody MonitorEntryDto monitorEntryDto) {
+        MonitorService service = getMonitorService(monitorEntryDto.getServiceName().getName());
+        scheduleManager.createJob(service, monitorEntryDto);
+        monitorManager.createMonitorEntry(monitorEntryDto);
     }
 
     @PostMapping("/{serviceName}/execute")
@@ -61,9 +61,9 @@ public class MonitorController {
     @PutMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
-    public void updateMonitorEntryAndJob(@RequestBody MonitorEntryView monitorEntryView) {
-        scheduleManager.updateJob(monitorEntryView);
-        monitorManager.updateMonitorEntry(monitorEntryView);
+    public void updateMonitorEntryAndJob(@RequestBody MonitorEntryDto monitorEntryDto) {
+        scheduleManager.updateJob(monitorEntryDto);
+        monitorManager.updateMonitorEntry(monitorEntryDto);
     }
 
     @DeleteMapping("/{serviceName}")
@@ -76,14 +76,14 @@ public class MonitorController {
 
     @GetMapping("/all")
     @ResponseStatus(HttpStatus.OK)
-    public List<MonitorEntryView> getAllMonitorEntries() {
+    public List<MonitorEntryDto> getAllMonitorEntries() {
         return this.monitorManager.getAllMonitorEntries();
     }
 
     @GetMapping("/{serviceName}")
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
-    public MonitorEntryView getMonitorEntry(@PathVariable String serviceName) {
+    public MonitorEntryDto getMonitorEntry(@PathVariable String serviceName) {
         return monitorManager.getMonitorEntries(serviceName);
     }
 

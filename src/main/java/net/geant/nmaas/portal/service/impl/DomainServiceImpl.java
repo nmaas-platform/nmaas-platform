@@ -331,9 +331,9 @@ public class DomainServiceImpl implements DomainService {
         return findDomain(id).map(toRemove -> {
             dcnRepositoryManager.removeDcnInfo(toRemove.getCodename());
             checkGlobal(toRemove);
-            DomainDto domainView = modelMapper.map(toRemove, DomainDto.class);
+            DomainDto domainDto = modelMapper.map(toRemove, DomainDto.class);
             domainRepository.delete(toRemove);
-            eventPublisher.publishEvent(new DomainRemovalEvent(this, domainView, true));
+            eventPublisher.publishEvent(new DomainRemovalEvent(this, domainDto, true));
             return true;
         }).orElse(false);
     }
@@ -344,7 +344,7 @@ public class DomainServiceImpl implements DomainService {
         String removedSuffix = "_DELETED_" + OffsetDateTime.now();
         return findDomain(domainId).map(domain -> {
             checkGlobal(domain);
-            final DomainDto domainViewForEvent = modelMapper.map(domain, DomainDto.class);
+            final DomainDto domainDtoForEvent = modelMapper.map(domain, DomainDto.class);
 
             dcnRepositoryManager.removeDcnInfo(domain.getCodename());
             domain.setDeleted(true);
@@ -367,7 +367,7 @@ public class DomainServiceImpl implements DomainService {
             removeDomainFromAllGroups(domain);
             domainRepository.save(domain);
 
-            eventPublisher.publishEvent(new DomainRemovalEvent(this, domainViewForEvent, true));
+            eventPublisher.publishEvent(new DomainRemovalEvent(this, domainDtoForEvent, true));
             return true;
         }).orElse(false);
     }

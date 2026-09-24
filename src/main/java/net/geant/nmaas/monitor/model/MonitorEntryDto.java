@@ -1,6 +1,5 @@
 package net.geant.nmaas.monitor.model;
 
-import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,11 +8,14 @@ import net.geant.nmaas.monitor.MonitorStatus;
 import net.geant.nmaas.monitor.ServiceType;
 import net.geant.nmaas.monitor.TimeFormat;
 
+import java.util.Date;
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class MonitorEntryView {
+public class MonitorEntryDto {
+
     private Long id;
     private ServiceType serviceName;
     private MonitorStatus status;
@@ -23,7 +25,7 @@ public class MonitorEntryView {
     private TimeFormat timeFormat;
     private boolean active;
 
-    public MonitorEntryView(ServiceType serviceName, Long checkInterval, TimeFormat timeFormat){
+    public MonitorEntryDto(ServiceType serviceName, Long checkInterval, TimeFormat timeFormat) {
         this.serviceName = serviceName;
         this.checkInterval = checkInterval;
         this.timeFormat = timeFormat;

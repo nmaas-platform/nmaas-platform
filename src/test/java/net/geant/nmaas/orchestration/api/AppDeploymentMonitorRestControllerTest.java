@@ -10,11 +10,11 @@ import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.modelmapper.ModelMapper;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
 
 import java.util.List;
 import java.util.Set;
@@ -40,13 +40,13 @@ class AppDeploymentMonitorRestControllerTest {
     void shouldListAllDeploymentsMappedToView() {
         AppDeployment deployment1 = AppDeployment.builder().deploymentId(Identifier.newInstance("dep-1")).build();
         AppDeployment deployment2 = AppDeployment.builder().deploymentId(Identifier.newInstance("dep-2")).build();
-        AppDeploymentDto view1 = new AppDeploymentDto("dep-1",
+        AppDeploymentDto dto1 = new AppDeploymentDto("dep-1",
                 "name-1",
                 "domain-1",
                 "REQUESTED",
                 "owner-1",
                 "app-1");
-        AppDeploymentDto view2 = new AppDeploymentDto("dep-2",
+        AppDeploymentDto dto2 = new AppDeploymentDto("dep-2",
                 "name-2",
                 "domain-2",
                 "REQUESTED",
@@ -54,14 +54,14 @@ class AppDeploymentMonitorRestControllerTest {
                 "app-2");
 
         when(deploymentMonitor.allDeployments()).thenReturn(List.of(deployment1, deployment2));
-        when(modelMapper.map(deployment1, AppDeploymentDto.class)).thenReturn(view1);
-        when(modelMapper.map(deployment2, AppDeploymentDto.class)).thenReturn(view2);
+        when(modelMapper.map(deployment1, AppDeploymentDto.class)).thenReturn(dto1);
+        when(modelMapper.map(deployment2, AppDeploymentDto.class)).thenReturn(dto2);
 
         List<AppDeploymentDto> result = controller.listAllDeployments();
 
         assertEquals(2, result.size());
-        assertSame(view1, result.get(0));
-        assertSame(view2, result.get(1));
+        assertSame(dto1, result.get(0));
+        assertSame(dto2, result.get(1));
     }
 
     @Test

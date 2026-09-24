@@ -546,7 +546,7 @@ class DomainServiceTest {
     }
 
     @Test
-    void shouldAddMembersFromGroupView() {
+    void shouldAddMembersFromGroupDto() {
         DomainBaseDto domain1 = new DomainBaseDto();
         domain1.setId(1L);
         domain1.setName("dom1");
@@ -557,19 +557,19 @@ class DomainServiceTest {
         when(userService.findById(1L)).thenReturn(Optional.of(new User("test")));
         when(userService.findById(2L)).thenReturn(Optional.of(new User("test2")));
 
-        UserInfoDto userView = new UserInfoDto();
-        userView.setId(1L);
+        UserInfoDto userInfoDto = new UserInfoDto();
+        userInfoDto.setId(1L);
 
-        UserInfoDto userView2 = new UserInfoDto();
-        userView2.setId(2L);
+        UserInfoDto userInfoDto2 = new UserInfoDto();
+        userInfoDto2.setId(2L);
 
-        DomainGroupDto domainGroupView = new DomainGroupDto(1L, "test", "test1", List.of(domain1), null, List.of(userView));
+        DomainGroupDto domainGroupView = new DomainGroupDto(1L, "test", "test1", List.of(domain1), null, List.of(userInfoDto));
         User user = new User("user");
         DomainGroup domainGroup = new DomainGroup(1L, "test", "test1");
         domainGroup.setManagers(List.of(user));
         when(domainGroupRepository.findById(1L)).thenReturn(Optional.of(domainGroup));
 
-        DomainGroupDto result = domainService.updateMembers(List.of(userView2, userView), domainGroupView);
+        DomainGroupDto result = domainService.updateMembers(List.of(userInfoDto2, userInfoDto), domainGroupView);
 
         assertEquals(2, result.getManagers().size());
     }

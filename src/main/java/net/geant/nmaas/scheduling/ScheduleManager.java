@@ -3,7 +3,7 @@ package net.geant.nmaas.scheduling;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.monitor.MonitorService;
-import net.geant.nmaas.monitor.model.MonitorEntryView;
+import net.geant.nmaas.monitor.model.MonitorEntryDto;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -38,8 +38,8 @@ public class ScheduleManager {
 
     private final Scheduler scheduler;
 
-    public void createJob(MonitorService service, MonitorEntryView monitorEntryView) {
-        JobDescriptor jobDescriptor = new JobDescriptor(monitorEntryView.getServiceName(), monitorEntryView.getCheckInterval(), monitorEntryView.getTimeFormat());
+    public void createJob(MonitorService service, MonitorEntryDto monitorEntryDto) {
+        JobDescriptor jobDescriptor = new JobDescriptor(monitorEntryDto.getServiceName(), monitorEntryDto.getCheckInterval(), monitorEntryDto.getTimeFormat());
         validateJobDescriptor(jobDescriptor);
         try {
             if (scheduler.checkExists(jobKey(jobDescriptor.serviceName().getName()))) {
@@ -73,15 +73,15 @@ public class ScheduleManager {
         }
     }
 
-    public void updateJob(MonitorEntryView monitorEntryView) {
-        JobDescriptor jobDescriptor = new JobDescriptor(monitorEntryView.getServiceName(), monitorEntryView.getCheckInterval(), monitorEntryView.getTimeFormat());
+    public void updateJob(MonitorEntryDto monitorEntryDto) {
+        JobDescriptor jobDescriptor = new JobDescriptor(monitorEntryDto.getServiceName(), monitorEntryDto.getCheckInterval(), monitorEntryDto.getTimeFormat());
         validateJobDescriptor(jobDescriptor);
         try {
             Trigger trigger = scheduler.getTrigger(TriggerKey.triggerKey(jobDescriptor.serviceName().getName()));
             if (trigger != null) {
                 trigger = jobDescriptor.buildTrigger();
                 scheduler.rescheduleJob(TriggerKey.triggerKey(jobDescriptor.serviceName().getName()), trigger);
-                if (!monitorEntryView.isActive()) {
+                if (!monitorEntryDto.isActive()) {
                     this.pauseJob(trigger.getJobKey().getName());
                 }
             }

@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.monitor.MonitorManager;
 import net.geant.nmaas.monitor.MonitorService;
 import net.geant.nmaas.monitor.ServiceType;
-import net.geant.nmaas.monitor.model.MonitorEntryView;
+import net.geant.nmaas.monitor.model.MonitorEntryDto;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,7 +29,7 @@ public class MonitorScheduleInit implements InitializingBean {
         Arrays.stream(ServiceType.values())
                 .filter(serviceType -> !scheduleManager.jobExists(serviceType.toString())) // if job does not exist
                 .forEach(serviceType -> {
-                    MonitorEntryView monitorEntry;
+                    MonitorEntryDto monitorEntry;
                     if (monitorManager.existsByServiceName(serviceType)) { // if entry exists
                         monitorEntry = monitorManager.getMonitorEntries(serviceType.toString()); // read it from database
                     } else {

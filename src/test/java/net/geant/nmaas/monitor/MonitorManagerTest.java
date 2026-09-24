@@ -2,7 +2,7 @@ package net.geant.nmaas.monitor;
 
 import net.geant.nmaas.monitor.entities.MonitorEntry;
 import net.geant.nmaas.monitor.exceptions.MonitorEntryNotFound;
-import net.geant.nmaas.monitor.model.MonitorEntryView;
+import net.geant.nmaas.monitor.model.MonitorEntryDto;
 import net.geant.nmaas.monitor.repositories.MonitorRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,7 +28,7 @@ class MonitorManagerTest {
     private final MonitorRepository repository = mock(MonitorRepository.class);
     private final ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);
 
-    private final MonitorEntryView monitorEntryView = new MonitorEntryView(1L, ServiceType.GITLAB, MonitorStatus.SUCCESS, new Date(), new Date(), 10L, TimeFormat.MIN, true);
+    private final MonitorEntryDto monitorEntryDto = new MonitorEntryDto(1L, ServiceType.GITLAB, MonitorStatus.SUCCESS, new Date(), new Date(), 10L, TimeFormat.MIN, true);
     private final MonitorEntry monitorEntry = new MonitorEntry(1L, ServiceType.GITLAB, MonitorStatus.SUCCESS, new Date(), new Date(), 10L, TimeFormat.MIN,true);
 
     private MonitorManager monitorManager;
@@ -42,14 +42,14 @@ class MonitorManagerTest {
 
     @Test
     void shouldCreateMonitorEntry() {
-        this.monitorManager.createMonitorEntry(monitorEntryView);
+        this.monitorManager.createMonitorEntry(monitorEntryDto);
         verify(repository, times(1)).save(any());
     }
 
     @Test
     void shouldNotCreateMonitorEntryWithNullCheckInterval() {
         assertThrows(IllegalStateException.class, () -> {
-            MonitorEntryView wrongMonitorEntry = new MonitorEntryView(1L, ServiceType.GITLAB, MonitorStatus.SUCCESS, new Date(), new Date(), null, TimeFormat.MIN, true);
+            MonitorEntryDto wrongMonitorEntry = new MonitorEntryDto(1L, ServiceType.GITLAB, MonitorStatus.SUCCESS, new Date(), new Date(), null, TimeFormat.MIN, true);
             this.monitorManager.createMonitorEntry(wrongMonitorEntry);
         });
     }
@@ -57,7 +57,7 @@ class MonitorManagerTest {
     @Test
     void shouldNotCreateMonitorEntryWithCheckIntervalLessThanZero() {
         assertThrows(IllegalStateException.class, () -> {
-            MonitorEntryView wrongMonitorEntry = new MonitorEntryView(1L, ServiceType.GITLAB, MonitorStatus.SUCCESS, new Date(), new Date(), -5L, TimeFormat.MIN, true);
+            MonitorEntryDto wrongMonitorEntry = new MonitorEntryDto(1L, ServiceType.GITLAB, MonitorStatus.SUCCESS, new Date(), new Date(), -5L, TimeFormat.MIN, true);
             this.monitorManager.createMonitorEntry(wrongMonitorEntry);
         });
     }
@@ -65,7 +65,7 @@ class MonitorManagerTest {
     @Test
     void shouldNotCreateMonitorEntryWithNullServiceName() {
         assertThrows(IllegalStateException.class, () -> {
-            MonitorEntryView wrongMonitorEntry = new MonitorEntryView(1L, null, MonitorStatus.SUCCESS, new Date(), new Date(), 5L, TimeFormat.MIN, true);
+            MonitorEntryDto wrongMonitorEntry = new MonitorEntryDto(1L, null, MonitorStatus.SUCCESS, new Date(), new Date(), 5L, TimeFormat.MIN, true);
             this.monitorManager.createMonitorEntry(wrongMonitorEntry);
         });
     }
@@ -74,20 +74,20 @@ class MonitorManagerTest {
     void shouldNotCreateMonitorEntryWhenMonitorEntryAlreadyExists() {
         assertThrows(IllegalStateException.class, () -> {
             when(repository.existsByServiceName(ServiceType.GITLAB)).thenReturn(true);
-            this.monitorManager.createMonitorEntry(monitorEntryView);
+            this.monitorManager.createMonitorEntry(monitorEntryDto);
         });
     }
 
     @Test
     void shouldUpdateMonitorEntryWithMonitorEntryViewObject() {
-        this.monitorManager.updateMonitorEntry(monitorEntryView);
+        this.monitorManager.updateMonitorEntry(monitorEntryDto);
         verify(repository, times(1)).save(any());
     }
 
     @Test
     void shouldNotUpdateMonitorEntryWithMonitorEntryViewObjectTimeFormatIsNull() {
         assertThrows(IllegalStateException.class, () -> {
-            MonitorEntryView wrongMonitorEntry = new MonitorEntryView(1L, ServiceType.GITLAB, null, new Date(), new Date(), 5L, null, true);
+            MonitorEntryDto wrongMonitorEntry = new MonitorEntryDto(1L, ServiceType.GITLAB, null, new Date(), new Date(), 5L, null, true);
             this.monitorManager.updateMonitorEntry(wrongMonitorEntry);
         });
     }
@@ -96,7 +96,7 @@ class MonitorManagerTest {
     void shouldNotUpdateMonitorEntryWithMonitorEntryViewObjectWhenMonitorEntryCannotBeFound() {
         assertThrows(MonitorEntryNotFound.class, () -> {
             when(repository.findByServiceName(ServiceType.GITLAB)).thenReturn(Optional.empty());
-            this.monitorManager.updateMonitorEntry(monitorEntryView);
+            this.monitorManager.updateMonitorEntry(monitorEntryDto);
         });
     }
 
@@ -122,7 +122,7 @@ class MonitorManagerTest {
     @Test
     void shouldGetAllMonitorEntries() {
         when(repository.findAll()).thenReturn(Collections.singletonList(monitorEntry));
-        List<MonitorEntryView> results = this.monitorManager.getAllMonitorEntries();
+        List<MonitorEntryDto> results = this.monitorManager.getAllMonitorEntries();
         assertThat("Different list size", results.size() == 1);
         assertThat("Different entries", results.get(0).getServiceName().equals(monitorEntry.getServiceName()));
     }
@@ -130,8 +130,8 @@ class MonitorManagerTest {
     @Test
     void shouldGetMonitorEntries() {
         when(repository.findByServiceName(ServiceType.GITLAB)).thenReturn(Optional.of(monitorEntry));
-        MonitorEntryView monitorEntryView = this.monitorManager.getMonitorEntries("GITLAB");
-        assertThat("ServiceType mismatch",monitorEntryView.getServiceName().equals(ServiceType.GITLAB));
+        MonitorEntryDto monitorEntryDto = this.monitorManager.getMonitorEntries("GITLAB");
+        assertThat("ServiceType mismatch", monitorEntryDto.getServiceName().equals(ServiceType.GITLAB));
     }
 
     @Test

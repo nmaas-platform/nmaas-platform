@@ -1,6 +1,6 @@
 package net.geant.nmaas.monitor;
 
-import net.geant.nmaas.monitor.model.MonitorEntryView;
+import net.geant.nmaas.monitor.model.MonitorEntryDto;
 
 public enum ServiceType {
     GITLAB {
@@ -10,8 +10,8 @@ public enum ServiceType {
         }
 
         @Override
-        public MonitorEntryView getDefaultMonitorEntry() {
-            return new MonitorEntryView(this, 1L, TimeFormat.H);
+        public MonitorEntryDto getDefaultMonitorEntry() {
+            return new MonitorEntryDto(this, 1L, TimeFormat.H);
         }
     },
     HELM {
@@ -21,8 +21,8 @@ public enum ServiceType {
         }
 
         @Override
-        public MonitorEntryView getDefaultMonitorEntry() {
-            return new MonitorEntryView(this, 1L, TimeFormat.H);
+        public MonitorEntryDto getDefaultMonitorEntry() {
+            return new MonitorEntryDto(this, 1L, TimeFormat.H);
         }
     },
     DATABASE {
@@ -32,12 +32,12 @@ public enum ServiceType {
         }
 
         @Override
-        public MonitorEntryView getDefaultMonitorEntry() {
-            return new MonitorEntryView(this, 5L, TimeFormat.MIN);
+        public MonitorEntryDto getDefaultMonitorEntry() {
+            return new MonitorEntryDto(this, 5L, TimeFormat.MIN);
         }
     };
 
     public abstract String getName();
 
-    public abstract MonitorEntryView getDefaultMonitorEntry();
+    public abstract MonitorEntryDto getDefaultMonitorEntry();
 }

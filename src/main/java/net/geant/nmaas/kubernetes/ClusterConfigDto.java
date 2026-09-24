@@ -14,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class ClusterConfigView {
+public class ClusterConfigDto {
 
     private String apiVersion;
     private String kind;

@@ -217,10 +217,10 @@ class AppInstanceReadControllerTest {
         List<AppInstanceBase> result = appInstanceReadController.getAllInstances(global.getId(), principal, "deployed", null);
 
         assertEquals(1, result.size());
-        AppInstanceBase appInstanceView = result.getFirst();
-        assertEquals(NAME, appInstanceView.getApplicationName());
-        assertEquals(admin.getUsername(), appInstanceView.getOwner().getUsername());
-        assertFalse(appInstanceView.getAutoUpgradesEnabled());
+        AppInstanceBase appInstanceBase = result.getFirst();
+        assertEquals(NAME, appInstanceBase.getApplicationName());
+        assertEquals(admin.getUsername(), appInstanceBase.getOwner().getUsername());
+        assertFalse(appInstanceBase.getAutoUpgradesEnabled());
     }
 
     @Test
@@ -254,9 +254,9 @@ class AppInstanceReadControllerTest {
         List<AppInstanceBase> result = appInstanceReadController.getMyAllInstances(principal);
 
         assertEquals(1, result.size());
-        AppInstanceBase appInstanceView = result.getFirst();
-        assertEquals(NAME, appInstanceView.getApplicationName());
-        assertEquals(admin.getUsername(), appInstanceView.getOwner().getUsername());
+        AppInstanceBase appInstanceBase = result.getFirst();
+        assertEquals(NAME, appInstanceBase.getApplicationName());
+        assertEquals(admin.getUsername(), appInstanceBase.getOwner().getUsername());
     }
 
     @Test
@@ -267,9 +267,9 @@ class AppInstanceReadControllerTest {
         List<AppInstanceBase> result = appInstanceReadController.getUserAllInstances(domain1.getId(), admin.getUsername());
 
         assertEquals(1, result.size());
-        AppInstanceBase appInstanceView = result.getFirst();
-        assertEquals(NAME, appInstanceView.getApplicationName());
-        assertEquals(admin.getUsername(), appInstanceView.getOwner().getUsername());
+        AppInstanceBase appInstanceBase = result.getFirst();
+        assertEquals(NAME, appInstanceBase.getApplicationName());
+        assertEquals(admin.getUsername(), appInstanceBase.getOwner().getUsername());
     }
 
     @Test
@@ -283,9 +283,9 @@ class AppInstanceReadControllerTest {
         List<AppInstanceBase> result = appInstanceReadController.getMyAllInstances(principal);
 
         assertEquals(1, result.size());
-        AppInstanceBase appInstanceView = result.getFirst();
-        assertEquals(NAME, appInstanceView.getApplicationName());
-        assertEquals(owner.getUsername(), appInstanceView.getOwner().getUsername());
+        AppInstanceBase appInstanceBase = result.getFirst();
+        assertEquals(NAME, appInstanceBase.getApplicationName());
+        assertEquals(owner.getUsername(), appInstanceBase.getOwner().getUsername());
     }
 
     @Test
@@ -300,9 +300,9 @@ class AppInstanceReadControllerTest {
         List<AppInstanceDto> result = appInstanceReadController.getRunningAppInstances(domain1.getId(), principal);
 
         assertEquals(1, result.size());
-        AppInstanceBase appInstanceView = result.getFirst();
-        assertEquals(NAME, appInstanceView.getApplicationName());
-        assertEquals(owner.getUsername(), appInstanceView.getOwner().getUsername());
+        AppInstanceBase appInstanceBase = result.getFirst();
+        assertEquals(NAME, appInstanceBase.getApplicationName());
+        assertEquals(owner.getUsername(), appInstanceBase.getOwner().getUsername());
     }
 
     @Disabled
@@ -325,11 +325,11 @@ class AppInstanceReadControllerTest {
         Principal principal = mock(Principal.class);
         when(principal.getName()).thenReturn(owner.getUsername());
 
-        AppInstanceCompleteDto appInstanceView = appInstanceReadController.getAppInstance(1L, principal);
+        AppInstanceCompleteDto appInstanceCompleteDto = appInstanceReadController.getAppInstance(1L, principal);
 
-        assertEquals(NAME, appInstanceView.appBaseName());
-        assertEquals(IDENTIFIER_VALUE, appInstanceView.descriptiveDeploymentId());
-        assertEquals(domain1.getId(), appInstanceView.domainId());
+        assertEquals(NAME, appInstanceCompleteDto.appBaseName());
+        assertEquals(IDENTIFIER_VALUE, appInstanceCompleteDto.descriptiveDeploymentId());
+        assertEquals(domain1.getId(), appInstanceCompleteDto.domainId());
 
         MissingElementException me = assertThrows(MissingElementException.class,
                 () -> appInstanceReadController.getAppInstance(-1L, principal)
@@ -342,25 +342,25 @@ class AppInstanceReadControllerTest {
     void shouldConvertAppInstanceToAppInstanceDtoWithApplicationIdAndDomainId() {
         ModelMapper modelMapper = new ModelMapper();
         AppInstance appInstance = new AppInstance(application, NAME, domain1, owner, false);
-        AppInstanceDto appInstanceView = modelMapper.map(appInstance, AppInstanceDto.class);
-        assertEquals(application.getId(), appInstanceView.getApplicationId());
-        assertEquals(domain1.getId(), appInstanceView.getDomainId());
+        AppInstanceDto appInstanceDto = modelMapper.map(appInstance, AppInstanceDto.class);
+        assertEquals(application.getId(), appInstanceDto.getApplicationId());
+        assertEquals(domain1.getId(), appInstanceDto.getDomainId());
     }
 
     @Test
     void shouldConvertAppInstanceToAppInstanceExtendedDtoWithApplicationViewAndDomainView() {
         ModelMapper modelMapper = new ModelMapper();
         AppInstance appInstance = new AppInstance(application, NAME, domain1, owner, false);
-        AppInstanceExtendedDto appInstanceView = modelMapper.map(appInstance, AppInstanceExtendedDto.class);
+        AppInstanceExtendedDto appInstanceExtendedDto = modelMapper.map(appInstance, AppInstanceExtendedDto.class);
 
-        assertEquals(application.getId(), appInstanceView.getApplicationId());
-        assertEquals(domain1.getId(), appInstanceView.getDomainId());
+        assertEquals(application.getId(), appInstanceExtendedDto.getApplicationId());
+        assertEquals(domain1.getId(), appInstanceExtendedDto.getDomainId());
 
-        ApplicationCompleteDto av = appInstanceView.getApplication();
+        ApplicationCompleteDto av = appInstanceExtendedDto.getApplication();
         assertEquals(application.getId(), av.getApplication().getId());
         assertEquals(application.getName(), av.getApplication().getName());
 
-        DomainBaseDto dv = appInstanceView.getDomain();
+        DomainBaseDto dv = appInstanceExtendedDto.getDomain();
         assertEquals(domain1.getId(), dv.getId());
         assertEquals(domain1.getName(), dv.getName());
         assertEquals(domain1.getCodename(), dv.getCodename());
@@ -381,9 +381,9 @@ class AppInstanceReadControllerTest {
         when(applicationInstanceService.find(1L)).thenReturn(Optional.of(appInstance));
         when(applicationInstanceService.find(-1L)).thenReturn(Optional.empty());
 
-        AppInstanceStatus ais = appInstanceReadController.getState(1L, principal);
+        AppInstanceStatus appInstanceStatus = appInstanceReadController.getState(1L, principal);
 
-        assertEquals(appInstance.getId(), ais.appInstanceId());
+        assertEquals(appInstance.getId(), appInstanceStatus.appInstanceId());
     }
 
     @Test

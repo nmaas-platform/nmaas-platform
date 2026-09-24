@@ -195,10 +195,10 @@ public class GroupController extends BaseController {
         if (checkManagerPrivileges(principal, domainGroup)) {
             Set<UserInfoDto> members = new HashSet<>(domainGroup.getManagers());
             userIds.forEach(userId -> members.add(modelMapper.map(getUser(userId), UserInfoDto.class)));
-            List<UserInfoDto> userViewMinimals = members.stream()
+            List<UserInfoDto> userInfoDtoList = members.stream()
                     .map(user -> modelMapper.map(user, UserInfoDto.class))
                     .toList();
-            domainService.updateMembers(userViewMinimals, domainGroup);
+            domainService.updateMembers(userInfoDtoList, domainGroup);
         } else {
             throw new AccessDeniedException(ACCESS_DENIED_MESSAGE);
         }

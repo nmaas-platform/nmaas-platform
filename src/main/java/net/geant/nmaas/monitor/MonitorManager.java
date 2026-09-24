@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.monitor.entities.MonitorEntry;
 import net.geant.nmaas.monitor.exceptions.MonitorEntryNotFound;
-import net.geant.nmaas.monitor.model.MonitorEntryView;
+import net.geant.nmaas.monitor.model.MonitorEntryDto;
 import net.geant.nmaas.monitor.repositories.MonitorRepository;
 import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
@@ -28,17 +28,17 @@ public class MonitorManager {
     private final ModelMapper modelMapper;
     private final ApplicationEventPublisher eventPublisher;
 
-    public void createMonitorEntry(MonitorEntryView monitorEntryView) {
-        validateMonitorEntryCreation(monitorEntryView);
-        repository.save(modelMapper.map(monitorEntryView, MonitorEntry.class));
+    public void createMonitorEntry(MonitorEntryDto monitorEntryDto) {
+        validateMonitorEntryCreation(monitorEntryDto);
+        repository.save(modelMapper.map(monitorEntryDto, MonitorEntry.class));
     }
 
-    public void updateMonitorEntry(MonitorEntryView monitorEntryView) {
-        MonitorEntry monitorEntry = repository.findByServiceName(monitorEntryView.getServiceName())
-                .orElseThrow(() -> new MonitorEntryNotFound(monitorEntryNotFoundMessage(monitorEntryView.getServiceName().getName())));
-        validateMonitorEntryUpdate(monitorEntryView);
-        monitorEntryView.setId(monitorEntry.getId());
-        repository.save(modelMapper.map(monitorEntryView, MonitorEntry.class));
+    public void updateMonitorEntry(MonitorEntryDto monitorEntryDto) {
+        MonitorEntry monitorEntry = repository.findByServiceName(monitorEntryDto.getServiceName())
+                .orElseThrow(() -> new MonitorEntryNotFound(monitorEntryNotFoundMessage(monitorEntryDto.getServiceName().getName())));
+        validateMonitorEntryUpdate(monitorEntryDto);
+        monitorEntryDto.setId(monitorEntry.getId());
+        repository.save(modelMapper.map(monitorEntryDto, MonitorEntry.class));
     }
 
     public void updateMonitorEntry(Date lastCheck, ServiceType serviceType, MonitorStatus status) {
@@ -63,15 +63,15 @@ public class MonitorManager {
         }
     }
 
-    public List<MonitorEntryView> getAllMonitorEntries() {
+    public List<MonitorEntryDto> getAllMonitorEntries() {
         return repository.findAll().stream()
-                .map(entity -> modelMapper.map(entity, MonitorEntryView.class))
+                .map(entity -> modelMapper.map(entity, MonitorEntryDto.class))
                 .toList();
     }
 
-    public MonitorEntryView getMonitorEntries(String serviceName) {
+    public MonitorEntryDto getMonitorEntries(String serviceName) {
         return repository.findByServiceName(ServiceType.valueOf(serviceName.toUpperCase()))
-                .map(entity -> modelMapper.map(entity, MonitorEntryView.class))
+                .map(entity -> modelMapper.map(entity, MonitorEntryDto.class))
                 .orElseThrow(() -> new MonitorEntryNotFound(monitorEntryNotFoundMessage(serviceName)));
     }
 
@@ -95,26 +95,26 @@ public class MonitorManager {
         }
     }
 
-    private void validateMonitorEntryUpdate(MonitorEntryView monitorEntryView) {
-        if (monitorEntryView.getServiceName() == null) {
+    private void validateMonitorEntryUpdate(MonitorEntryDto monitorEntryDto) {
+        if (monitorEntryDto.getServiceName() == null) {
             throw new IllegalStateException("Service name cannot be null");
         }
-        if (monitorEntryView.getCheckInterval() == null || monitorEntryView.getCheckInterval() <= 0) {
+        if (monitorEntryDto.getCheckInterval() == null || monitorEntryDto.getCheckInterval() <= 0) {
             throw new IllegalStateException("Check interval cannot be less or equal 0");
         }
-        if (monitorEntryView.getTimeFormat() == null) {
+        if (monitorEntryDto.getTimeFormat() == null) {
             throw new IllegalStateException("Time format cannot be null");
         }
     }
 
-    private void validateMonitorEntryCreation(MonitorEntryView monitorEntryView) {
-        if (monitorEntryView.getCheckInterval() == null || monitorEntryView.getCheckInterval() <= 0) {
+    private void validateMonitorEntryCreation(MonitorEntryDto monitorEntryDto) {
+        if (monitorEntryDto.getCheckInterval() == null || monitorEntryDto.getCheckInterval() <= 0) {
             throw new IllegalStateException("Check interval cannot be less or equal 0");
         }
-        if (monitorEntryView.getTimeFormat() == null) {
+        if (monitorEntryDto.getTimeFormat() == null) {
             throw new IllegalStateException("Time format cannot be null");
         }
-        if (monitorEntryView.getServiceName() == null || repository.existsByServiceName(monitorEntryView.getServiceName())) {
+        if (monitorEntryDto.getServiceName() == null || repository.existsByServiceName(monitorEntryDto.getServiceName())) {
             throw new IllegalStateException("Service name is null or already created");
         }
     }

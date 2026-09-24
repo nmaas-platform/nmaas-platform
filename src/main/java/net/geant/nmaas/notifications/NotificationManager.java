@@ -180,12 +180,12 @@ public class NotificationManager {
                         )
                         .getEmailsList()
                         .forEach(email -> {
-                            UserDto userView = UserDto.builder()
+                            UserDto userDto = UserDto.builder()
                                     .email(email)
                                     .username(email)
                                     .selectedLanguage("en")
                                     .build();
-                            targetUsers.add(userView);
+                            targetUsers.add(userDto);
                         });
             }
             mailAttributes.setAddresses(targetUsers);

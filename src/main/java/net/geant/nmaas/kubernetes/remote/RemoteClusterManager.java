@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.api.dto.kubernetes.RemoteKClusterBaseDto;
 import net.geant.nmaas.api.dto.kubernetes.RemoteKClusterCompleteDto;
 import net.geant.nmaas.api.dto.kubernetes.RemoteKClusterDto;
-import net.geant.nmaas.kubernetes.ClusterConfigView;
+import net.geant.nmaas.kubernetes.ClusterConfigDto;
 import net.geant.nmaas.kubernetes.KubernetesApiClientService;
 import net.geant.nmaas.kubernetes.KubernetesClusterDeploymentManager;
 import net.geant.nmaas.kubernetes.KubernetesClusterIngressManager;
@@ -129,7 +129,7 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
     @Override
     public RemoteKClusterDto mapFile(RemoteKClusterDto dto, MultipartFile file) {
         try {
-            return getRemoteClusterView(dto, file.getBytes());
+            return getRemoteClusterDto(dto, file.getBytes());
         } catch (IOException e) {
             throw new RemoteClusterConfigFileHandlingException(e);
         }
@@ -137,15 +137,15 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
 
     @Override
     public RemoteKClusterDto mapFile(RemoteKClusterDto dto, String secretNamespace, String secretName) {
-        return getRemoteClusterView(dto, kubernetesApiClientService.readClusterConfigBytesFromSecret(secretNamespace, secretName));
+        return getRemoteClusterDto(dto, kubernetesApiClientService.readClusterConfigBytesFromSecret(secretNamespace, secretName));
     }
 
-    private RemoteKClusterDto getRemoteClusterView(RemoteKClusterDto dto, byte[] fileBytes) {
+    private RemoteKClusterDto getRemoteClusterDto(RemoteKClusterDto dto, byte[] fileBytes) {
         checkRequestRead(dto);
 
         ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
         try {
-            ClusterConfigView clusterConfig = yamlMapper.readValue(fileBytes, ClusterConfigView.class);
+            ClusterConfigDto clusterConfig = yamlMapper.readValue(fileBytes, ClusterConfigDto.class);
             log.info("Mapped: {}", clusterConfig.toString());
 
             if (clusterConfig.getClusters().isEmpty()) {
