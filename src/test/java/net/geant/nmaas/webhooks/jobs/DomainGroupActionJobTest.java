@@ -67,10 +67,8 @@ class DomainGroupActionJobTest {
                 new WebhookEventDto(10L, "webhook-name", "https://example.webhook-url.pl", WebhookEventTypeDto.DOMAIN_GROUP_ACTION, null, null, null,
                         "{\"group\": $DOMAINGROUP_CODENAME, \"event\": $WEBHOOKEVENTTYPE}"));
 
-        assertThrows(JobExecutionException.class, () -> {
-            DomainGroupActionJob job = new DomainGroupActionJob(restClient, webhookEventService, mapper, webhookHistoryService, templateService);
-            job.execute(jobExecutionContext);
-        });
+        DomainGroupActionJob job = new DomainGroupActionJob(restClient, webhookEventService, mapper, webhookHistoryService, templateService);
+        assertThrows(JobExecutionException.class, () -> job.execute(jobExecutionContext));
         verify(webhookEventService).getById(10L);
         ArgumentCaptor<WebhookHistory> webhookHistoryCaptor = ArgumentCaptor.forClass(WebhookHistory.class);
         verify(webhookHistoryRepository).save(webhookHistoryCaptor.capture());

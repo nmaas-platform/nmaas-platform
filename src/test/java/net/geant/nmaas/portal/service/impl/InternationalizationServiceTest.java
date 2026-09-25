@@ -64,10 +64,8 @@ class InternationalizationServiceTest {
 
     @Test
     void shouldNotSaveWithInvalidJsonContent() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            this.language.setContent("{invalid]");
-            internationalizationService.addNewLanguage(this.language, false);
-        });
+        this.language.setContent("{invalid]");
+        assertThrows(IllegalArgumentException.class, () -> internationalizationService.addNewLanguage(this.language, false));
     }
 
     @Test

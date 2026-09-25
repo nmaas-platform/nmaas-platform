@@ -17,6 +17,7 @@ import net.geant.nmaas.portal.persistence.entity.Application;
 import net.geant.nmaas.portal.persistence.entity.ApplicationState;
 import net.geant.nmaas.portal.persistence.entity.ConfigWizardTemplate;
 import net.geant.nmaas.portal.persistence.repositories.ApplicationRepository;
+import net.geant.nmaas.portal.service.VariableService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -47,12 +48,13 @@ class ApplicationServiceImplTest {
     ApplicationRepository applicationRepository = mock(ApplicationRepository.class);
     ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);
     ConfigurationTemplateSanitizerService configurationTemplateSanitizerService = mock(ConfigurationTemplateSanitizerService.class);
+    VariableService variableService = mock(VariableService.class);
 
     ApplicationServiceImpl applicationService;
 
     @BeforeEach
     void setup() {
-        applicationService = new ApplicationServiceImpl(applicationRepository, eventPublisher, configurationTemplateSanitizerService);
+        applicationService = new ApplicationServiceImpl(applicationRepository, eventPublisher, configurationTemplateSanitizerService, variableService);
     }
 
     @Test
@@ -62,74 +64,111 @@ class ApplicationServiceImplTest {
 
     @Test
     void updateMethodShouldThrowExceptionDueToEmptyName() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            Application app = getDefaultApplication();
-            app.setName("");
-            applicationService.update(app);
-        });
+        Application app = getDefaultApplication();
+        app.setName("");
+        assertThrows(IllegalArgumentException.class, () -> applicationService.update(app));
     }
 
     @Test
     void updateMethodShouldThrowExceptionDueToEmptyVersion() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            Application app = getDefaultApplication();
-            app.setVersion("");
-            applicationService.update(app);
-        });
+        Application app = getDefaultApplication();
+        app.setVersion("");
+        assertThrows(IllegalArgumentException.class, () -> applicationService.update(app));
     }
 
     @Test
     void updateMethodShouldThrowExceptionDueToNullAppDeploymentSpec() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            Application app = getDefaultApplication();
-            app.setAppDeploymentSpec(null);
-            applicationService.update(app);
-        });
+        Application app = getDefaultApplication();
+        app.setAppDeploymentSpec(null);
+        assertThrows(IllegalArgumentException.class, () -> applicationService.update(app));
     }
 
     @Test
     void updateMethodShouldThrowExceptionDueToNullConfigTemplate() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            Application app = getDefaultApplication();
-            app.setConfigWizardTemplate(null);
-            applicationService.update(app);
-        });
+        Application app = getDefaultApplication();
+        app.setConfigWizardTemplate(null);
+        assertThrows(IllegalArgumentException.class, () -> applicationService.update(app));
     }
 
     @Test
     void updateMethodShouldThrowExceptionDueToEmptyConfigTemplate() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            Application app = getDefaultApplication();
-            app.setConfigWizardTemplate(new ConfigWizardTemplate(""));
-            applicationService.update(app);
-        });
+        Application app = getDefaultApplication();
+        app.setConfigWizardTemplate(new ConfigWizardTemplate(""));
+        assertThrows(IllegalArgumentException.class, () -> applicationService.update(app));
     }
 
     @Test
     void updateMethodShouldThrowExceptionDueToNullKubernetesTemplate() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            Application app = getDefaultApplication();
-            app.getAppDeploymentSpec().setKubernetesTemplate(null);
-            applicationService.update(app);
-        });
+        Application app = getDefaultApplication();
+        app.getAppDeploymentSpec().setKubernetesTemplate(null);
+        assertThrows(IllegalArgumentException.class, () -> applicationService.update(app));
     }
 
     @Test
     void updateMethodShouldThrowExceptionDueToNullKubernetesChart() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            Application app = getDefaultApplication();
-            app.getAppDeploymentSpec().getKubernetesTemplate().setChart(null);
-            applicationService.update(app);
-        });
+        Application app = getDefaultApplication();
+        app.getAppDeploymentSpec().getKubernetesTemplate().setChart(null);
+        assertThrows(IllegalArgumentException.class, () -> applicationService.update(app));
     }
 
     @Test
     void updateMethodShouldThrowExceptionDueToEmptyKubernetesChartName() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            Application app = getDefaultApplication();
-            app.getAppDeploymentSpec().getKubernetesTemplate().getChart().setName("");
-            applicationService.update(app);
-        });
+        Application app = getDefaultApplication();
+        app.getAppDeploymentSpec().getKubernetesTemplate().getChart().setName("");
+        assertThrows(IllegalArgumentException.class, () -> applicationService.update(app));
+    }
+
+    @Test
+    void updateMethodShouldThrowWhenReferencedVariableDoesNotExist() {
+        Application app = getDefaultApplication();
+        app.getAppDeploymentSpec().setGlobalDeployParameters(Map.of("smtp.host", "${var:smtp.host}"));
+        when(variableService.exists("smtp.host")).thenReturn(false);
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> applicationService.update(app));
+
+        assertEquals("Referenced variable smtp.host does not exist in the central variable storage", exception.getMessage());
+    }
+
+    @Test
+    void updateMethodShouldAcceptExistingReferencedVariable() {
+        Application app = getDefaultApplication();
+        app.getAppDeploymentSpec().setGlobalDeployParameters(Map.of(
+                "smtp.host", "${var:smtp.host}",
+                "logo.url", "https://example.com/logo.png"));
+        when(variableService.exists("smtp.host")).thenReturn(true);
+        when(applicationRepository.save(isA(Application.class))).thenReturn(app);
+
+        Application updated = applicationService.update(app);
+
+        assertNotNull(updated);
+        verify(variableService).exists("smtp.host");
+        verify(variableService, never()).exists("logo.url");
+    }
+
+    @Test
+    void createMethodShouldThrowWhenReferencedVariableDoesNotExist() {
+        Application app = getDefaultApplication();
+        app.setId(null);
+        app.getAppDeploymentSpec().setGlobalDeployParameters(Map.of("smtp.host", "${var:smtp.host}"));
+        when(variableService.exists("smtp.host")).thenReturn(false);
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> applicationService.create(app));
+
+        assertEquals("Referenced variable smtp.host does not exist in the central variable storage", exception.getMessage());
+    }
+
+    @Test
+    void createMethodShouldAcceptStubWithoutDeploymentSpec() {
+        // the application version creation flow first persists a name/version stub
+        Application stub = new Application("test", "testversion");
+        when(applicationRepository.save(isA(Application.class))).thenReturn(stub);
+
+        Application created = applicationService.create(stub);
+
+        assertNotNull(created);
+        verify(variableService, never()).exists(any());
     }
 
     @Test
@@ -208,11 +247,9 @@ class ApplicationServiceImplTest {
 
     @Test
     void shouldNotChangeApplicationStateDueToForbiddenStateChange() {
-        assertThrows(IllegalStateException.class, () -> {
-            Application app = getDefaultApplication();
-            app.setState(ApplicationState.DELETED);
-            applicationService.changeApplicationState(app, ApplicationState.ACTIVE);
-        });
+        Application app = getDefaultApplication();
+        app.setState(ApplicationState.DELETED);
+        assertThrows(IllegalStateException.class, () -> applicationService.changeApplicationState(app, ApplicationState.ACTIVE));
     }
 
     @Test

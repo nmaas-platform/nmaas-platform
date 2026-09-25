@@ -316,13 +316,11 @@ class ApplicationSubscriptionServiceTest {
 
     @Test
     void shouldNotSubscribeApp() {
-        assertThrows(ProcessingException.class, () -> {
-            when(appSubRepo.existsById(any())).thenReturn(false);
-            when(appSubRepo.save(any())).thenThrow(new IllegalArgumentException());
-            when(applications.isAppActive(app1)).thenReturn(true);
-            ApplicationSubscription appSub = new ApplicationSubscription(domain1, app1);
-            this.appSubSrv.subscribe(appSub);
-        });
+        when(appSubRepo.existsById(any())).thenReturn(false);
+        when(appSubRepo.save(any())).thenThrow(new IllegalArgumentException());
+        when(applications.isAppActive(app1)).thenReturn(true);
+        ApplicationSubscription appSub = new ApplicationSubscription(domain1, app1);
+        assertThrows(ProcessingException.class, () -> this.appSubSrv.subscribe(appSub));
     }
 
     @Test
@@ -332,30 +330,24 @@ class ApplicationSubscriptionServiceTest {
 
     @Test
     void shouldNotSubscribeAppWithNullAppSubId() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            ApplicationSubscription appSub = new ApplicationSubscription(domain1, app1);
-            appSub.setId(null);
-            this.appSubSrv.subscribe(appSub);
-        });
+        ApplicationSubscription appSub = new ApplicationSubscription(domain1, app1);
+        appSub.setId(null);
+        assertThrows(IllegalArgumentException.class, () -> this.appSubSrv.subscribe(appSub));
     }
 
     @Test
     void shouldNotSubscribeAppWithInactiveDomain() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            ApplicationSubscription appSub = new ApplicationSubscription(domain1, app1);
-            appSub.getDomain().setActive(false);
-            this.appSubSrv.subscribe(appSub);
-        });
+        ApplicationSubscription appSub = new ApplicationSubscription(domain1, app1);
+        appSub.getDomain().setActive(false);
+        assertThrows(IllegalArgumentException.class, () -> this.appSubSrv.subscribe(appSub));
     }
 
     @Test
     void shouldNotSubscribeAppWithDeletedApp() {
-        assertThrows(IllegalStateException.class, () -> {
-            when(appSubRepo.existsById(any())).thenReturn(false);
-            when(applications.isAppActive(app1)).thenReturn(false);
-            ApplicationSubscription appSub = new ApplicationSubscription(domain1, app1);
-            this.appSubSrv.subscribe(appSub);
-        });
+        when(appSubRepo.existsById(any())).thenReturn(false);
+        when(applications.isAppActive(app1)).thenReturn(false);
+        ApplicationSubscription appSub = new ApplicationSubscription(domain1, app1);
+        assertThrows(IllegalStateException.class, () -> this.appSubSrv.subscribe(appSub));
     }
 
     @Test
@@ -389,19 +381,15 @@ class ApplicationSubscriptionServiceTest {
 
     @Test
     void shouldNotSubscribeByDomainIdNotFound() {
-        assertThrows(ObjectNotFoundException.class, () -> {
-            when(domains.findDomain(anyLong())).thenReturn(Optional.empty());
-            this.appSubSrv.subscribe(1L, 1L, true);
-        });
+        when(domains.findDomain(anyLong())).thenReturn(Optional.empty());
+        assertThrows(ObjectNotFoundException.class, () -> this.appSubSrv.subscribe(1L, 1L, true));
     }
 
     @Test
     void shouldNotSubscribeByAppIdNotFound() {
-        assertThrows(MissingElementException.class, () -> {
-            when(domains.findDomain(anyLong())).thenReturn(Optional.of(domain1));
-            when(applications.getBaseApp(anyLong())).thenThrow(new MissingElementException());
-            this.appSubSrv.subscribe(1L, 1L, true);
-        });
+        when(domains.findDomain(anyLong())).thenReturn(Optional.of(domain1));
+        when(applications.getBaseApp(anyLong())).thenThrow(new MissingElementException());
+        assertThrows(MissingElementException.class, () -> this.appSubSrv.subscribe(1L, 1L, true));
     }
 
     @Test
@@ -428,26 +416,22 @@ class ApplicationSubscriptionServiceTest {
 
     @Test
     void shouldNotUnsubscribeNotExistingApp() {
-        assertThrows(ObjectNotFoundException.class, () -> {
-            ApplicationSubscription appSub = new ApplicationSubscription(domain1, app1);
-            appSub.setDeleted(false);
-            when(appSubRepo.isDeleted((Domain) any(), any())).thenReturn(false);
-            when(appSubRepo.existsById(any())).thenReturn(false);
-            when(appSubRepo.save(any())).thenAnswer(i -> i.getArgument(0));
-            this.appSubSrv.unsubscribe(appSub);
-        });
+        ApplicationSubscription appSub = new ApplicationSubscription(domain1, app1);
+        appSub.setDeleted(false);
+        when(appSubRepo.isDeleted((Domain) any(), any())).thenReturn(false);
+        when(appSubRepo.existsById(any())).thenReturn(false);
+        when(appSubRepo.save(any())).thenAnswer(i -> i.getArgument(0));
+        assertThrows(ObjectNotFoundException.class, () -> this.appSubSrv.unsubscribe(appSub));
     }
 
     @Test
     void shouldNotUnsubscribeWithSaveFailure() {
-        assertThrows(ProcessingException.class, () -> {
-            ApplicationSubscription appSub = new ApplicationSubscription(domain1, app1);
-            appSub.setDeleted(false);
-            when(appSubRepo.isDeleted((Domain) any(), any())).thenReturn(false);
-            when(appSubRepo.existsById(any())).thenReturn(true);
-            when(appSubRepo.save(any())).thenThrow(new IllegalStateException());
-            this.appSubSrv.unsubscribe(appSub);
-        });
+        ApplicationSubscription appSub = new ApplicationSubscription(domain1, app1);
+        appSub.setDeleted(false);
+        when(appSubRepo.isDeleted((Domain) any(), any())).thenReturn(false);
+        when(appSubRepo.existsById(any())).thenReturn(true);
+        when(appSubRepo.save(any())).thenThrow(new IllegalStateException());
+        assertThrows(ProcessingException.class, () -> this.appSubSrv.unsubscribe(appSub));
     }
 
     @Test

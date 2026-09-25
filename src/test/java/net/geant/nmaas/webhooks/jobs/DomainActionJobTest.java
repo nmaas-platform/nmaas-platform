@@ -74,10 +74,8 @@ class DomainActionJobTest {
                         "{\"action\": $ACTION, \"event\": $WEBHOOKEVENTTYPE}"));
         when(domainService.findDomain(1L)).thenReturn(Optional.of(new Domain("name", "codename")));
 
-        assertThrows(JobExecutionException.class, () -> {
-            DomainActionJob job = new DomainActionJob(restClient, webhookEventService, mapper, webhookHistoryService, templateService);
-            job.execute(jobExecutionContext);
-        });
+        DomainActionJob job = new DomainActionJob(restClient, webhookEventService, mapper, webhookHistoryService, templateService);
+        assertThrows(JobExecutionException.class, () -> job.execute(jobExecutionContext));
 
         ArgumentCaptor<WebhookHistory> webhookHistoryCaptor = ArgumentCaptor.forClass(WebhookHistory.class);
         verify(webhookHistoryRepository).save(webhookHistoryCaptor.capture());

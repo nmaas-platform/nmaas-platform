@@ -31,41 +31,37 @@ class ConfigFilePreparerTest {
 
     @Test
     void shouldBuildConfigFromElkTemplate() {
-        assertDoesNotThrow(() -> {
-            ConfigFileTemplate elkConfigTemplate1 = new ConfigFileTemplate();
-            elkConfigTemplate1.setConfigFileName("kibana.yml");
-            elkConfigTemplate1.setConfigFileTemplateContent("server.name: kibana\nserver.host: \"0\"\nelasticsearch.hosts: [ \"http://elasticsearch:9200\" ]\nmonitoring.ui.container.elasticsearch.enabled: true\nelasticsearch.username: \"kibana\"\nelasticsearch.password: \"pristap\"  \nxpack.security.encryptionKey: \"${helper.randomString(32)}\"\nxpack.encryptedSavedObjects.encryptionKey: \"${helper.randomString(32)}\"");
-            Template template = convertToFreemarkerTemplate(elkConfigTemplate1);
-            Map<String, Object> appConfigurationModel = new HashMap<>();
-            appConfigurationModel.put("helper", new ConfigFilePreparerHelper());
-            String fileContent = configFilePreparer.buildConfigFromTemplateAndUserProvidedInput(
-                    "1",
-                    "kibana.yml",
-                    "kibana",
-                    template,
-                    appConfigurationModel).getConfigFileContent();
-            assertNotNull(fileContent);
-            System.out.println(fileContent);
-        });
+        ConfigFileTemplate elkConfigTemplate1 = new ConfigFileTemplate();
+        elkConfigTemplate1.setConfigFileName("kibana.yml");
+        elkConfigTemplate1.setConfigFileTemplateContent("server.name: kibana\nserver.host: \"0\"\nelasticsearch.hosts: [ \"http://elasticsearch:9200\" ]\nmonitoring.ui.container.elasticsearch.enabled: true\nelasticsearch.username: \"kibana\"\nelasticsearch.password: \"pristap\"  \nxpack.security.encryptionKey: \"${helper.randomString(32)}\"\nxpack.encryptedSavedObjects.encryptionKey: \"${helper.randomString(32)}\"");
+        Template template = convertToFreemarkerTemplate(elkConfigTemplate1);
+        Map<String, Object> appConfigurationModel = new HashMap<>();
+        appConfigurationModel.put("helper", new ConfigFilePreparerHelper());
+        String fileContent = assertDoesNotThrow(() -> configFilePreparer.buildConfigFromTemplateAndUserProvidedInput(
+                "1",
+                "kibana.yml",
+                "kibana",
+                template,
+                appConfigurationModel).getConfigFileContent());
+        assertNotNull(fileContent);
+        System.out.println(fileContent);
     }
 
     @Test
     void shouldBuildConfigFromLibrenmsTemplate() {
-        assertDoesNotThrow(() -> {
-            ConfigFileTemplate librenmsConfigTemplate1 = new ConfigFileTemplate();
-            librenmsConfigTemplate1.setConfigFileName("addhosts.cfg");
-            librenmsConfigTemplate1.setConfigFileTemplateContent("<#list targets as target>\\n-f ${target.ipAddress} ${target.snmpCommunity} ${target.snmpVersion}\\n</#list>");
-            Template template = convertToFreemarkerTemplate(librenmsConfigTemplate1);
-            NmServiceConfiguration nmServiceConfiguration =
-                    configFilePreparer.buildConfigFromTemplateAndUserProvidedInput(
-                            "2",
-                            "addhosts.cfg",
-                            null,
-                            template,
-                            testLibreNmsDefaultConfigurationInputModel());
-            assertThat(nmServiceConfiguration.getConfigFileContent(),
-                    Matchers.allOf(containsString("192.168.1.1"), containsString("v2c"), containsString("private")));
-        });
+        ConfigFileTemplate librenmsConfigTemplate1 = new ConfigFileTemplate();
+        librenmsConfigTemplate1.setConfigFileName("addhosts.cfg");
+        librenmsConfigTemplate1.setConfigFileTemplateContent("<#list targets as target>\\n-f ${target.ipAddress} ${target.snmpCommunity} ${target.snmpVersion}\\n</#list>");
+        Template template = convertToFreemarkerTemplate(librenmsConfigTemplate1);
+        NmServiceConfiguration nmServiceConfiguration =
+                assertDoesNotThrow(() -> configFilePreparer.buildConfigFromTemplateAndUserProvidedInput(
+                        "2",
+                        "addhosts.cfg",
+                        null,
+                        template,
+                        testLibreNmsDefaultConfigurationInputModel()));
+        assertThat(nmServiceConfiguration.getConfigFileContent(),
+                Matchers.allOf(containsString("192.168.1.1"), containsString("v2c"), containsString("private")));
     }
 
     private Map<String, Object> testLibreNmsDefaultConfigurationInputModel() {
@@ -87,37 +83,35 @@ class ConfigFilePreparerTest {
 
     @Test
     void shouldBuildConfigFromOxidizedTemplate() {
-        assertDoesNotThrow(() -> {
-            ConfigFileTemplate oxidizedConfigTemplate1 = new ConfigFileTemplate();
-            oxidizedConfigTemplate1.setConfigFileName("config");
-            oxidizedConfigTemplate1.setConfigFileTemplateContent("---\\nusername: ${oxidizedUsername}\\npassword: ${oxidizedPassword}\\nmodel: junos\\ninterval: 600\\nuse_syslog: false\\ndebug: false\\nthreads: 30\\ntimeout: 20\\nretries: 3\\nprompt: !ruby/regexp /^([\\w.@-]+[#>]\\s?)$/\\nrest: 0.0.0.0:8888\\nvars: {}\\ngroups: {}\\npid: \\\"/root/.config/oxidized/pid\\\"\\ninput:\\n  default: ssh, telnet\\n  debug: false\\n  ssh:\\n    secure: false\\noutput:\\n  default: git\\n  file:\\n    directory: \\\"/root/.config/oxidized/configs\\\"\\n  git:\\n    user: oxidized\\n    email: oxidized@man.poznan.pl\\n    repo: \\\"/root/.config/oxidized/oxidized.git\\\"\\nsource:\\n  default: csv\\n  csv:\\n    file: \\\"/root/.config/oxidized/router.db\\\"\\n    delimiter: !ruby/regexp /:/\\n    map:\\n      name: 0\\n      model: 1\\nmodel_map:\\n  cisco: ios\\n  juniper: junos");
-            ConfigFileTemplate oxidizedConfigTemplate2 = new ConfigFileTemplate();
-            oxidizedConfigTemplate2.setConfigFileName("router.db");
-            oxidizedConfigTemplate2.setConfigFileTemplateContent("<#list targets as target>\\n${target.ipAddress}:junos\\n</#list>");
-            Template template = convertToFreemarkerTemplate(oxidizedConfigTemplate1);
-            NmServiceConfiguration nmServiceConfiguration =
-                    configFilePreparer.buildConfigFromTemplateAndUserProvidedInput(
-                            "3",
-                            "config",
-                            null,
-                            template,
-                            testOxidizedDefaultConfigurationInputModel());
-            assertThat(nmServiceConfiguration.getConfigFileName(), equalTo("config"));
-            assertThat(nmServiceConfiguration.getConfigFileContent(),
-                    Matchers.allOf(containsString("user123"), containsString("pass123")));
-            template = convertToFreemarkerTemplate(oxidizedConfigTemplate2);
-            nmServiceConfiguration =
-                    configFilePreparer.buildConfigFromTemplateAndUserProvidedInput(
-                            "4",
-                            "router.db",
-                            "config",
-                            template,
-                            testOxidizedDefaultConfigurationInputModel());
-            assertThat(nmServiceConfiguration.getConfigFileName(), equalTo("router.db"));
-            assertThat(nmServiceConfiguration.getConfigFileDirectory(), equalTo("config"));
-            assertThat(nmServiceConfiguration.getConfigFileContent(),
-                    Matchers.allOf(containsString("7.7.7.7"), containsString("8.8.8.8")));
-        });
+        ConfigFileTemplate oxidizedConfigTemplate1 = new ConfigFileTemplate();
+        oxidizedConfigTemplate1.setConfigFileName("config");
+        oxidizedConfigTemplate1.setConfigFileTemplateContent("---\\nusername: ${oxidizedUsername}\\npassword: ${oxidizedPassword}\\nmodel: junos\\ninterval: 600\\nuse_syslog: false\\ndebug: false\\nthreads: 30\\ntimeout: 20\\nretries: 3\\nprompt: !ruby/regexp /^([\\w.@-]+[#>]\\s?)$/\\nrest: 0.0.0.0:8888\\nvars: {}\\ngroups: {}\\npid: \\\"/root/.config/oxidized/pid\\\"\\ninput:\\n  default: ssh, telnet\\n  debug: false\\n  ssh:\\n    secure: false\\noutput:\\n  default: git\\n  file:\\n    directory: \\\"/root/.config/oxidized/configs\\\"\\n  git:\\n    user: oxidized\\n    email: oxidized@man.poznan.pl\\n    repo: \\\"/root/.config/oxidized/oxidized.git\\\"\\nsource:\\n  default: csv\\n  csv:\\n    file: \\\"/root/.config/oxidized/router.db\\\"\\n    delimiter: !ruby/regexp /:/\\n    map:\\n      name: 0\\n      model: 1\\nmodel_map:\\n  cisco: ios\\n  juniper: junos");
+        ConfigFileTemplate oxidizedConfigTemplate2 = new ConfigFileTemplate();
+        oxidizedConfigTemplate2.setConfigFileName("router.db");
+        oxidizedConfigTemplate2.setConfigFileTemplateContent("<#list targets as target>\\n${target.ipAddress}:junos\\n</#list>");
+        Template template = convertToFreemarkerTemplate(oxidizedConfigTemplate1);
+        NmServiceConfiguration nmServiceConfiguration =
+                assertDoesNotThrow(() -> configFilePreparer.buildConfigFromTemplateAndUserProvidedInput(
+                        "3",
+                        "config",
+                        null,
+                        template,
+                        testOxidizedDefaultConfigurationInputModel()));
+        assertThat(nmServiceConfiguration.getConfigFileName(), equalTo("config"));
+        assertThat(nmServiceConfiguration.getConfigFileContent(),
+                Matchers.allOf(containsString("user123"), containsString("pass123")));
+        Template routerDbTemplate = convertToFreemarkerTemplate(oxidizedConfigTemplate2);
+        nmServiceConfiguration =
+                assertDoesNotThrow(() -> configFilePreparer.buildConfigFromTemplateAndUserProvidedInput(
+                        "4",
+                        "router.db",
+                        "config",
+                        routerDbTemplate,
+                        testOxidizedDefaultConfigurationInputModel()));
+        assertThat(nmServiceConfiguration.getConfigFileName(), equalTo("router.db"));
+        assertThat(nmServiceConfiguration.getConfigFileDirectory(), equalTo("config"));
+        assertThat(nmServiceConfiguration.getConfigFileContent(),
+                Matchers.allOf(containsString("7.7.7.7"), containsString("8.8.8.8")));
     }
 
     private Map<String, Object> testOxidizedDefaultConfigurationInputModel() {
@@ -137,22 +131,20 @@ class ConfigFilePreparerTest {
 
     @Test
     void shouldBuildConfigFromTemplateAndDeploymentParameters() {
-        assertDoesNotThrow(() -> {
-            ConfigFileTemplate template1 = new ConfigFileTemplate();
-            template1.setConfigFileName("config.yml");
-            template1.setConfigFileTemplateContent("server.name: \"${RELEASE_NAME}\"");
-            Template template = convertToFreemarkerTemplate(template1);
-            Map<String, Object> appConfigurationModel = new HashMap<>();
-            appConfigurationModel.put("RELEASE_NAME", "release_name");
-            String fileContent = configFilePreparer.buildConfigFromTemplateAndUserProvidedInput(
-                    "10",
-                    "config.yml",
-                    null,
-                    template,
-                    appConfigurationModel).getConfigFileContent();
-            assertNotNull(fileContent);
-            assertEquals("server.name: \"release_name\"", fileContent);
-        });
+        ConfigFileTemplate template1 = new ConfigFileTemplate();
+        template1.setConfigFileName("config.yml");
+        template1.setConfigFileTemplateContent("server.name: \"${RELEASE_NAME}\"");
+        Template template = convertToFreemarkerTemplate(template1);
+        Map<String, Object> appConfigurationModel = new HashMap<>();
+        appConfigurationModel.put("RELEASE_NAME", "release_name");
+        String fileContent = assertDoesNotThrow(() -> configFilePreparer.buildConfigFromTemplateAndUserProvidedInput(
+                "10",
+                "config.yml",
+                null,
+                template,
+                appConfigurationModel).getConfigFileContent());
+        assertNotNull(fileContent);
+        assertEquals("server.name: \"release_name\"", fileContent);
     }
 
 }

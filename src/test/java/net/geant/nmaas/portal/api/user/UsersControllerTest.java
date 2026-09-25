@@ -114,11 +114,9 @@ class UsersControllerTest {
 
     @Test
     void shouldNotRetrieveNonExistingUser() {
-        assertThrows(MissingElementException.class, () -> {
-            Long userId = 5L;
-            when(userService.findById(userId)).thenReturn(Optional.empty());
-            usersController.getUser(userId, principal);
-        });
+        Long userId = 5L;
+        when(userService.findById(userId)).thenReturn(Optional.empty());
+        assertThrows(MissingElementException.class, () -> usersController.getUser(userId, principal));
     }
 
     @Test
@@ -133,43 +131,34 @@ class UsersControllerTest {
 
     @Test
     void shouldNotUpdateNonExistingUser() {
-        assertThrows(MissingElementException.class, () -> {
-            Long userId = 5L;
-            when(userService.findById(userId)).thenReturn(Optional.empty());
-            UserRequest userRequest = new UserRequest(userId, "test", "pass");
-            usersController.updateUser(userId, userRequest, principal);
-        });
+        Long userId = 5L;
+        when(userService.findById(userId)).thenReturn(Optional.empty());
+        UserRequest userRequest = new UserRequest(userId, "test", "pass");
+        assertThrows(MissingElementException.class, () -> usersController.updateUser(userId, userRequest, principal));
     }
 
     @Test
     void shouldNotUpdateWithNullId() {
-        assertThrows(MissingElementException.class, () -> {
-            Long userId = null;
-            UserRequest userRequest = new UserRequest(userId, userList.getFirst().getUsername(), userList.getFirst().getPassword());
-            when(userService.findById(userId)).thenReturn(Optional.empty());
-            usersController.updateUser(userId, userRequest, principal);
-        });
+        Long userId = null;
+        UserRequest userRequest = new UserRequest(userId, userList.getFirst().getUsername(), userList.getFirst().getPassword());
+        when(userService.findById(userId)).thenReturn(Optional.empty());
+        assertThrows(MissingElementException.class, () -> usersController.updateUser(userId, userRequest, principal));
     }
 
     @Test
     void shouldNotUpdateWithNullUserRequest() {
-        assertThrows(MissingElementException.class, () -> {
-            Long userId = 1L;
-            usersController.updateUser(userId, null, principal);
-        });
+        Long userId = 1L;
+        assertThrows(MissingElementException.class, () -> usersController.updateUser(userId, null, principal));
     }
 
     @Test
     void shouldNotUpdateUserWithNonUniqueEmail() {
         when(principal.getName()).thenReturn(userList.getFirst().getUsername());
-        assertThrows(ProcessingException.class, () -> {
-            when(userService.existsByEmail(anyString())).thenReturn(true);
-            UserRequest userRequest = new UserRequest(userList.getFirst().getId(), userList.getFirst().getUsername(), userList.get(0).getPassword());
-            userRequest.setEmail("test@nmaas.net");
-            userRequest.setFirstname("test");
-            usersController.updateUser(userList.getFirst().getId(), userRequest, principal);
-            verify(userService, times(2)).update(userList.getFirst());
-        });
+        when(userService.existsByEmail(anyString())).thenReturn(true);
+        UserRequest userRequest = new UserRequest(userList.getFirst().getId(), userList.getFirst().getUsername(), userList.get(0).getPassword());
+        userRequest.setEmail("test@nmaas.net");
+        userRequest.setFirstname("test");
+        assertThrows(ProcessingException.class, () -> usersController.updateUser(userList.getFirst().getId(), userRequest, principal));
     }
 
     @Test
@@ -191,11 +180,9 @@ class UsersControllerTest {
 
     @Test
     void shouldNotGetUserRolesForNonExistingUser() {
-        assertThrows(MissingElementException.class, () -> {
-            Long userId = 5L;
-            when(userService.findById(userId)).thenReturn(Optional.empty());
-            Set<UserRoleDto> result = usersController.getUserRoles(userId);
-        });
+        Long userId = 5L;
+        when(userService.findById(userId)).thenReturn(Optional.empty());
+        assertThrows(MissingElementException.class, () -> usersController.getUserRoles(userId));
     }
 
     @Test
@@ -238,31 +225,25 @@ class UsersControllerTest {
 
     @Test
     void shouldNotRemoveUserRoleWhenUserIdIsNull() {
-        assertThrows(MissingElementException.class, () -> {
-            Long userId = null;
-            UserRoleDto userRole = new UserRoleDto();
-            userRole.setRole(RoleDto.ROLE_OPERATOR);
-            when(userService.findById(userId)).thenReturn(Optional.empty());
-            usersController.removeUserRole(userId, userRole, principal);
-        });
+        Long userId = null;
+        UserRoleDto userRole = new UserRoleDto();
+        userRole.setRole(RoleDto.ROLE_OPERATOR);
+        when(userService.findById(userId)).thenReturn(Optional.empty());
+        assertThrows(MissingElementException.class, () -> usersController.removeUserRole(userId, userRole, principal));
     }
 
     @Test
     void shouldNotRemoveUserRoleWhenUserRoleIsNull() {
-        assertThrows(MissingElementException.class, () -> {
-            UserRoleDto userRole = null;
-            usersController.removeUserRole(userList.getFirst().getId(), userRole, principal);
-        });
+        UserRoleDto userRole = null;
+        assertThrows(MissingElementException.class, () -> usersController.removeUserRole(userList.getFirst().getId(), userRole, principal));
     }
 
     @Test
     void shouldNotRemoveUserRoleWithoutDomain() {
-        assertThrows(MissingElementException.class, () -> {
-            UserRoleDto userRole = new UserRoleDto();
-            userRole.setRole(RoleDto.ROLE_OPERATOR);
-            when(domainService.getGlobalDomain()).thenReturn(Optional.empty());
-            usersController.removeUserRole(userList.getFirst().getId(), userRole, principal);
-        });
+        UserRoleDto userRole = new UserRoleDto();
+        userRole.setRole(RoleDto.ROLE_OPERATOR);
+        when(domainService.getGlobalDomain()).thenReturn(Optional.empty());
+        assertThrows(MissingElementException.class, () -> usersController.removeUserRole(userList.getFirst().getId(), userRole, principal));
     }
 
     @Test
@@ -277,14 +258,11 @@ class UsersControllerTest {
 
     @Test
     void shouldNotChangePasswordOnPreviousPasswordMismatch() {
-        assertThrows(ProcessingException.class, () -> {
-            when(principal.getName()).thenReturn(userList.getFirst().getUsername());
-            when(userService.findByUsername(userList.getFirst().getUsername())).thenReturn(Optional.of(userList.getFirst()));
-            PasswordChangeRequest passwordChange = new PasswordChangeRequest("wrongpass", "test1234");
-            when(passwordEncoder.matches(userList.getFirst().getPassword(), passwordChange.password())).thenReturn(false);
-            usersController.changePassword(principal, passwordChange);
-            verify(userService, times(1)).update(userList.getFirst());
-        });
+        when(principal.getName()).thenReturn(userList.getFirst().getUsername());
+        when(userService.findByUsername(userList.getFirst().getUsername())).thenReturn(Optional.of(userList.getFirst()));
+        PasswordChangeRequest passwordChange = new PasswordChangeRequest("wrongpass", "test1234");
+        when(passwordEncoder.matches(userList.getFirst().getPassword(), passwordChange.password())).thenReturn(false);
+        assertThrows(ProcessingException.class, () -> usersController.changePassword(principal, passwordChange));
     }
 
     @Test
@@ -306,22 +284,18 @@ class UsersControllerTest {
 
     @Test
     void shouldNotGetDomainUserWhenDomainNotExists() {
-        assertThrows(MissingElementException.class, () -> {
-            Long domainId = 5L;
-            Long userId = 1L;
-            when(domainService.getMember(domainId, userId)).thenThrow(ObjectNotFoundException.class);
-            UserDto user = usersController.getDomainUser(domainId, userId);
-        });
+        Long domainId = 5L;
+        Long userId = 1L;
+        when(domainService.getMember(domainId, userId)).thenThrow(ObjectNotFoundException.class);
+        assertThrows(MissingElementException.class, () -> usersController.getDomainUser(domainId, userId));
     }
 
     @Test
     void shouldNotGetDomainUserWhenUserNotExist() {
-        assertThrows(ProcessingException.class, () -> {
-            Long domainId = 1L;
-            Long userId = 8L;
-            when(domainService.getMember(domainId, userId)).thenThrow(ProcessingException.class);
-            usersController.getDomainUser(domainId, userId);
-        });
+        Long domainId = 1L;
+        Long userId = 8L;
+        when(domainService.getMember(domainId, userId)).thenThrow(ProcessingException.class);
+        assertThrows(ProcessingException.class, () -> usersController.getDomainUser(domainId, userId));
     }
 
     @Test
@@ -368,43 +342,35 @@ class UsersControllerTest {
 
     @Test
     void shouldNotAddUserRoleWithNullUserRole() {
-        assertThrows(MissingElementException.class, () -> {
-            UserRoleDto userRole = new UserRoleDto();
-            userRole.setRole(null);
-            usersController.addUserRole(GLOBAL_DOMAIN.getId(), userList.getFirst().getId(), userRole, principal);
-        });
+        UserRoleDto userRole = new UserRoleDto();
+        userRole.setRole(null);
+        assertThrows(MissingElementException.class, () -> usersController.addUserRole(GLOBAL_DOMAIN.getId(), userList.getFirst().getId(), userRole, principal));
     }
 
     @Test
     void shouldNotAddGlobalUserRoleInNotGlobalDomain() {
-        assertThrows(ProcessingException.class, () -> {
-            UserRoleDto userRole = new UserRoleDto();
-            userRole.setDomainId(DOMAIN.getId());
-            userRole.setRole(RoleDto.ROLE_OPERATOR);
-            when(domainService.findDomain(GLOBAL_DOMAIN.getId())).thenReturn(Optional.of(GLOBAL_DOMAIN));
-            usersController.addUserRole(GLOBAL_DOMAIN.getId(), userList.getFirst().getId(), userRole, principal);
-        });
+        UserRoleDto userRole = new UserRoleDto();
+        userRole.setDomainId(DOMAIN.getId());
+        userRole.setRole(RoleDto.ROLE_OPERATOR);
+        when(domainService.findDomain(GLOBAL_DOMAIN.getId())).thenReturn(Optional.of(GLOBAL_DOMAIN));
+        assertThrows(ProcessingException.class, () -> usersController.addUserRole(GLOBAL_DOMAIN.getId(), userList.getFirst().getId(), userRole, principal));
     }
 
     @Test
     void shouldNotAddNonGlobalRoleToGlobalDomain() {
-        assertThrows(ProcessingException.class, () -> {
-            UserRoleDto userRole = new UserRoleDto();
-            userRole.setDomainId(GLOBAL_DOMAIN.getId());
-            userRole.setRole(RoleDto.ROLE_DOMAIN_ADMIN);
-            when(domainService.findDomain(GLOBAL_DOMAIN.getId())).thenReturn(Optional.of(GLOBAL_DOMAIN));
-            usersController.addUserRole(GLOBAL_DOMAIN.getId(), userList.getFirst().getId(), userRole, principal);
-        });
+        UserRoleDto userRole = new UserRoleDto();
+        userRole.setDomainId(GLOBAL_DOMAIN.getId());
+        userRole.setRole(RoleDto.ROLE_DOMAIN_ADMIN);
+        when(domainService.findDomain(GLOBAL_DOMAIN.getId())).thenReturn(Optional.of(GLOBAL_DOMAIN));
+        assertThrows(ProcessingException.class, () -> usersController.addUserRole(GLOBAL_DOMAIN.getId(), userList.getFirst().getId(), userRole, principal));
     }
 
     @Test
     void shouldNotAddGlobalRoleToCustomDomain() {
-        assertThrows(ProcessingException.class, () -> {
-            UserRoleDto userRole = new UserRoleDto();
-            userRole.setDomainId(DOMAIN.getId());
-            userRole.setRole(RoleDto.ROLE_SYSTEM_ADMIN);
-            usersController.addUserRole(GLOBAL_DOMAIN.getId(), userList.getFirst().getId(), userRole, principal);
-        });
+        UserRoleDto userRole = new UserRoleDto();
+        userRole.setDomainId(DOMAIN.getId());
+        userRole.setRole(RoleDto.ROLE_SYSTEM_ADMIN);
+        assertThrows(ProcessingException.class, () -> usersController.addUserRole(GLOBAL_DOMAIN.getId(), userList.getFirst().getId(), userRole, principal));
     }
 
     @Test
