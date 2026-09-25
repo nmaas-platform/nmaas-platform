@@ -382,6 +382,37 @@
       "REJECT": "No"
     }
   },
+  "BUNDLES": {
+    "TITLE": "Bundles",
+    "ADD_BUTTON": "Add",
+    "CODENAME": "Codename",
+    "NAME": "Name",
+    "QUANTITY": "Quantity",
+    "DESCRIPTION": "Description",
+    "DETAILS": {
+      "TITLE": "Bundle details",
+      "NAME": "Name",
+      "CODENAME": "Codename",
+      "ID": "Id in db",
+      "DESCRIPTIONS": "Descriptions",
+      "APPLICATIONS": "Applications",
+      "EDIT_BUTTON": "Edit",
+      "CREATE_BUTTON": "Create",
+      "DESCRIPTION": {
+        "BRIEF": "Short description",
+        "FULL": "Long description",
+        "REMOVE": "Remove description",
+        "MISSING": "Description is missing",
+        "ADD": "Add mew description"
+      },
+      "APPLICATION": {
+        "ADD": "Add",
+        "ICON": "Icon",
+        "NAME": "Name",
+        "OWNER": "Owner"
+      }
+    }
+  },
   "MONITOR": {
     "TITLE": "Internal monitoring",
     "SERVICE_NAME": "Service name",
