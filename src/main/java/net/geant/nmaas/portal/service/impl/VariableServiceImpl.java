@@ -134,6 +134,27 @@ public class VariableServiceImpl implements VariableService {
                 .map(entity -> toDto(entity, true));
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public boolean exists(String name) {
+        return variableRepository.existsByName(name);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public String getRawValue(String name, String domainCodename) {
+        // a domain level variable takes precedence over an instance level variable
+        // with the same name
+        Optional<Variable> domainVariable = domainCodename != null
+                ? domainRepository.findByCodename(domainCodename)
+                        .flatMap(domain -> variableRepository.findByNameAndDomainId(name, domain.getId()))
+                : Optional.empty();
+        return domainVariable
+                .or(() -> variableRepository.findByNameAndDomainIsNull(name))
+                .map(Variable::getValue)
+                .orElseThrow(() -> new MissingElementException("Variable " + name + " does not exist"));
+    }
+
     private void validateScope(VariableDto dto) {
         if (dto.getScope() == VariableScopeDto.DOMAIN) {
             if (dto.getDomainId() == null) {

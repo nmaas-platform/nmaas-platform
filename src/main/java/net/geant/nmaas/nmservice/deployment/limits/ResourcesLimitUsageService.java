@@ -55,10 +55,11 @@ public class ResourcesLimitUsageService {
         return usage;
     }
 
+    // TODO use countRunningContainersInDomain in the future
     private void populateUsage(String domainCodename, ResourceLimitUsage usage) {
         List<AppInstance> runningInstances = appInstanceRepository.findAllActiveInDomain(domainCodename);
         usage.setInstancesNoUsed(runningInstances.size());
-        usage.setContainersNoUsed(countRunningContainersInDomain(domainCodename));
+        usage.setContainersNoUsed(0);
         usage.setCpuUsed(runningInstances.stream()
                 .mapToInt(x -> x.getApplication().getAppDeploymentSpec().getConsumedCpu())
                 .sum());
@@ -82,9 +83,7 @@ public class ResourcesLimitUsageService {
 
     private int countRunningContainersInNamespace(KCluster cluster, String namespace) {
         try {
-            // temporary fix
-            // return kubernetesApiClientService.getPods(cluster, namespace).getItems().size();
-            return 0;
+            return kubernetesApiClientService.getPods(cluster, namespace).getItems().size();
         } catch (Exception _) {
             return 0;
         }

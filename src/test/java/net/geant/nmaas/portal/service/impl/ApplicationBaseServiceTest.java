@@ -106,26 +106,20 @@ class ApplicationBaseServiceTest {
 
     @Test
     void shouldNotUpdateWhenNameIsEmpty() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            ApplicationBase temp = new ApplicationBase(12L, "");
-            this.appBaseService.update(temp);
-        });
+        ApplicationBase temp = new ApplicationBase(12L, "");
+        assertThrows(IllegalArgumentException.class, () -> this.appBaseService.update(temp));
     }
 
     @Test
     void shouldNotUpdateWhenNameContainsIllegalCharacters() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            ApplicationBase temp = new ApplicationBase(12L, "%^&!@#");
-            this.appBaseService.update(temp);
-        });
+        ApplicationBase temp = new ApplicationBase(12L, "%^&!@#");
+        assertThrows(IllegalArgumentException.class, () -> this.appBaseService.update(temp));
     }
 
     @Test
     void shouldNotUpdateWhenDescriptionsAreEmpty() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            applicationBase2.setDescriptions(Collections.emptyList());
-            this.appBaseService.update(applicationBase2);
-        });
+        applicationBase2.setDescriptions(Collections.emptyList());
+        assertThrows(IllegalArgumentException.class, () -> this.appBaseService.update(applicationBase2));
     }
 
     @Test
@@ -165,10 +159,8 @@ class ApplicationBaseServiceTest {
 
     @Test
     void shouldNotGetBaseAppWhenNotExist() {
-        assertThrows(MissingElementException.class, () -> {
-            when(appBaseRepo.findById(anyLong())).thenReturn(Optional.empty());
-            appBaseService.getBaseApp(1L);
-        });
+        when(appBaseRepo.findById(anyLong())).thenReturn(Optional.empty());
+        assertThrows(MissingElementException.class, () -> appBaseService.getBaseApp(1L));
     }
 
     @Test
@@ -189,10 +181,8 @@ class ApplicationBaseServiceTest {
 
     @Test
     void shouldNotFindByNameWhenAppNotExists() {
-        assertThrows(MissingElementException.class, () -> {
-            when(appBaseRepo.findByName(applicationBase1.getName())).thenReturn(Optional.empty());
-            appBaseService.findByName(applicationBase1.getName());
-        });
+        when(appBaseRepo.findByName(applicationBase1.getName())).thenReturn(Optional.empty());
+        assertThrows(MissingElementException.class, () -> appBaseService.findByName(applicationBase1.getName()));
     }
 
 }

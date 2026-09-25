@@ -65,11 +65,9 @@ class KubernetesClusterDeploymentManagerTest {
 
     @Test
     void shouldThrowExceptionDuringNamespaceConfigOptionValidation() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            manager.setNamespaceConfigOption(NamespaceConfigOption.USE_DEFAULT_NAMESPACE);
-            manager.setDefaultNamespace(null);
-            manager.getNamespaceConfigOption().validate(manager.getKClusterDeploymentDto());
-        });
+        manager.setNamespaceConfigOption(NamespaceConfigOption.USE_DEFAULT_NAMESPACE);
+        manager.setDefaultNamespace(null);
+        assertThrows(IllegalArgumentException.class, () -> manager.getNamespaceConfigOption().validate(manager.getKClusterDeploymentDto()));
     }
 
     @Test

@@ -300,22 +300,18 @@ class UserServiceImplTest {
 
     @Test
     void shouldNotRegisterUserWhenUserAlreadyExists() {
-        assertThrows(SignupException.class, () -> {
-            Registration registration = new Registration("test", "testpass", "test@test.com", "name", "surname", 1L, true, true);
-            Domain domain = new Domain("GLOBAL", "GLOBAL");
-            when(userRepository.existsByUsername(registration.getUsername())).thenReturn(true);
-            userService.register(registration, domain, null);
-        });
+        Registration registration = new Registration("test", "testpass", "test@test.com", "name", "surname", 1L, true, true);
+        Domain domain = new Domain("GLOBAL", "GLOBAL");
+        when(userRepository.existsByUsername(registration.getUsername())).thenReturn(true);
+        assertThrows(SignupException.class, () -> userService.register(registration, domain, null));
     }
 
     @Test
     void shouldNotRegisterUserWhenUserAlreadyExistsByMail() {
-        assertThrows(SignupException.class, () -> {
-            Registration registration = new Registration("test", "testpass", "test@test.com", "name", "surname", 1L, true, true);
-            Domain domain = new Domain("GLOBAL", "GLOBAL");
-            when(userRepository.existsByEmail(registration.getEmail())).thenReturn(true);
-            userService.register(registration, domain, null);
-        });
+        Registration registration = new Registration("test", "testpass", "test@test.com", "name", "surname", 1L, true, true);
+        Domain domain = new Domain("GLOBAL", "GLOBAL");
+        when(userRepository.existsByEmail(registration.getEmail())).thenReturn(true);
+        assertThrows(SignupException.class, () -> userService.register(registration, domain, null));
     }
 
     @Test
@@ -327,20 +323,16 @@ class UserServiceImplTest {
 
     @Test
     void updateShouldFailDueToEmptyUserId() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            User user = new User("test", true);
-            userService.update(user);
-        });
+        User user = new User("test", true);
+        assertThrows(IllegalArgumentException.class, () -> userService.update(user));
     }
 
     @Test
     void updateShouldFailDueToUserDoNotExist() {
-        assertThrows(ProcessingException.class, () -> {
-            when(userRepository.existsById(anyLong())).thenReturn(false);
-            User user = new User("test", true);
-            user.setId((long) 0);
-            userService.update(user);
-        });
+        when(userRepository.existsById(anyLong())).thenReturn(false);
+        User user = new User("test", true);
+        user.setId((long) 0);
+        assertThrows(ProcessingException.class, () -> userService.update(user));
     }
 
     @Test

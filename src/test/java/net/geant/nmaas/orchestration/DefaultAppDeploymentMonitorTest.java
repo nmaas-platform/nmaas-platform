@@ -106,12 +106,9 @@ class DefaultAppDeploymentMonitorTest {
 
     @Test
     void shouldNotReturnUserAccessDetailsIfNotExist() {
-        assertThrows(InvalidDeploymentIdException.class, () -> {
-            when(repositoryManager.loadState(deploymentId)).thenReturn(APPLICATION_DEPLOYMENT_VERIFIED);
-            when(deploy.serviceAccessDetails(deploymentId)).thenThrow(new CouldNotRetrieveServiceAccessDetailsException(""));
-            AppUiAccessDetails accessDetails = monitor.userAccessDetails(deploymentId);
-            assertThat(accessDetails, is(notNullValue()));
-        });
+        when(repositoryManager.loadState(deploymentId)).thenReturn(APPLICATION_DEPLOYMENT_VERIFIED);
+        when(deploy.serviceAccessDetails(deploymentId)).thenThrow(new CouldNotRetrieveServiceAccessDetailsException(""));
+        assertThrows(InvalidDeploymentIdException.class, () -> monitor.userAccessDetails(deploymentId));
     }
 
     @Test

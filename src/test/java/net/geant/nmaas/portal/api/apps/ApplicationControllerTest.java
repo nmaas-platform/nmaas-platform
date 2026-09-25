@@ -32,6 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -189,6 +190,31 @@ class ApplicationControllerTest {
                 () -> controller.deleteApplication(appId, principal("regular-user")));
 
         verify(applicationService, never()).delete(any(Long.class));
+    }
+
+    @Test
+    void shouldPersistNewApplicationVersionThroughUpdateWhichValidatesVariableReferences() {
+        // the new application version flow maps the full DTO and persists it via
+        // applicationService.update, which runs the variable reference validation
+        ApplicationBase base = new ApplicationBase(1L, "my-app");
+        base.setOwner("admin");
+        Application stub = new Application("my-app", "2.0.0");
+        stub.setId(10L);
+
+        when(userService.findByUsername("admin"))
+                .thenReturn(Optional.of(userWithRoles("admin", Role.ROLE_SYSTEM_ADMIN)));
+        when(applicationBaseService.findByName("my-app")).thenReturn(base);
+        when(applicationService.create(isA(Application.class))).thenReturn(stub);
+        when(applicationService.findApplication("my-app", "2.0.0")).thenReturn(Optional.empty());
+        when(applicationService.update(isA(Application.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        net.geant.nmaas.api.dto.applications.ApplicationDto dto = new net.geant.nmaas.api.dto.applications.ApplicationDto();
+        dto.setName("my-app");
+        dto.setVersion("2.0.0");
+        controller.addApplicationVersion(dto, principal("admin"));
+
+        // update is the persistence point where checkApp (incl. variable references) runs
+        verify(applicationService).update(isA(Application.class));
     }
 
     private static Principal principal(String name) {

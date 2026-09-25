@@ -1,10 +1,10 @@
 package net.geant.nmaas.portal.service.impl;
 
-import net.geant.nmaas.portal.api.exceptions.MissingElementException;
-import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.api.dto.variables.VariableDto;
 import net.geant.nmaas.api.dto.variables.VariableScopeDto;
 import net.geant.nmaas.api.dto.variables.VariableTypeDto;
+import net.geant.nmaas.portal.api.exceptions.MissingElementException;
+import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
 import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.entity.Variable;
@@ -19,16 +19,17 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class VariableServiceImplTest {
+class VariableServiceImplTest {
 
     private final VariableRepository variableRepository = mock(VariableRepository.class);
     private final DomainRepository domainRepository = mock(DomainRepository.class);
@@ -269,6 +270,76 @@ public class VariableServiceImplTest {
 
         assertThrows(MissingElementException.class, () -> variableService.get(404L));
         assertThrows(MissingElementException.class, () -> variableService.delete(404L));
+    }
+
+    @Test
+    void shouldCheckVariableExistenceByName() {
+        when(variableRepository.existsByName("proxy.url")).thenReturn(true);
+        when(variableRepository.existsByName("missing")).thenReturn(false);
+
+        assertTrue(variableService.exists("proxy.url"));
+        assertFalse(variableService.exists("missing"));
+    }
+
+    @Test
+    void shouldReturnRawValueForInternalUse() {
+        Variable secret = Variable.builder()
+                .id(1L)
+                .name("api.password")
+                .value("s3cr3t")
+                .type(VariableType.SECRET)
+                .build();
+        when(variableRepository.findByNameAndDomainIsNull("api.password")).thenReturn(Optional.of(secret));
+
+        // internal consumers (e.g. application deployment) need the real value, even for secrets
+        assertEquals("s3cr3t", variableService.getRawValue("api.password", null));
+    }
+
+    @Test
+    void shouldThrowWhenRawValueOfMissingVariableRequested() {
+        when(variableRepository.findByNameAndDomainIsNull("missing")).thenReturn(Optional.empty());
+
+        assertThrows(MissingElementException.class, () -> variableService.getRawValue("missing", null));
+    }
+
+    @Test
+    void shouldReturnEffectiveRawValueWithDomainPrecedence() {
+        Variable globalVariable = Variable.builder()
+                .id(1L)
+                .name("proxy.url")
+                .value("https://proxy.example.com")
+                .type(VariableType.STANDARD)
+                .build();
+        Variable domainVariable = Variable.builder()
+                .id(2L)
+                .name("proxy.url")
+                .value("https://domain-proxy.example.com")
+                .type(VariableType.STANDARD)
+                .domain(new Domain(5L))
+                .build();
+        Domain domain = new Domain(5L);
+        when(domainRepository.findByCodename("testdom")).thenReturn(Optional.of(domain));
+        when(variableRepository.findByNameAndDomainId("proxy.url", 5L)).thenReturn(Optional.of(domainVariable));
+        when(variableRepository.findByNameAndDomainIsNull("proxy.url")).thenReturn(Optional.of(globalVariable));
+
+        // a domain level variable shadows an instance level variable with the same name
+        assertEquals("https://domain-proxy.example.com", variableService.getRawValue("proxy.url", "testdom"));
+    }
+
+    @Test
+    void shouldFallBackToInstanceLevelRawValueWhenNoDomainVariable() {
+        Variable globalVariable = Variable.builder()
+                .id(1L)
+                .name("proxy.url")
+                .value("https://proxy.example.com")
+                .type(VariableType.STANDARD)
+                .build();
+        Domain domain = new Domain(5L);
+        when(domainRepository.findByCodename("testdom")).thenReturn(Optional.of(domain));
+        when(variableRepository.findByNameAndDomainId("proxy.url", 5L)).thenReturn(Optional.empty());
+        when(variableRepository.findByNameAndDomainIsNull("proxy.url")).thenReturn(Optional.of(globalVariable));
+
+        assertEquals("https://proxy.example.com", variableService.getRawValue("proxy.url", "testdom"));
     }
 
     @Test

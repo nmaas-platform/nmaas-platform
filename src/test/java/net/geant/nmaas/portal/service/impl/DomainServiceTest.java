@@ -144,19 +144,15 @@ class DomainServiceTest {
         String codename = "test-domain-too-long";
         Domain domain = new Domain(name, codename);
         when(domainRepository.save(domain)).thenReturn(domain);
-        assertThrows(ProcessingException.class, () -> {
-            domainService.createDomain(new DomainRequest(name, codename, true));
-            verifyNoInteractions(eventPublisher);
-        });
+        assertThrows(ProcessingException.class, () -> domainService.createDomain(new DomainRequest(name, codename, true)));
+        verifyNoInteractions(eventPublisher);
     }
 
     @Test
     void shouldNotCreateDomainWithNullName() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            String codename = "test-domain";
-            domainService.createDomain(new DomainRequest(null, codename, true));
-            verifyNoInteractions(eventPublisher);
-        });
+        String codename = "test-domain";
+        assertThrows(IllegalArgumentException.class, () -> domainService.createDomain(new DomainRequest(null, codename, true)));
+        verifyNoInteractions(eventPublisher);
     }
 
     @Test
@@ -347,38 +343,32 @@ class DomainServiceTest {
 
     @Test
     void shouldNotGetMember() {
-        assertThrows(ProcessingException.class, () -> {
-            Long domainId = 1L;
-            Long userId = 1L;
-            Domain domain = new Domain(domainId, "testdom", "testdom", true);
-            User user = new User("user");
-            when(userService.findById(userId)).thenReturn(Optional.of(user));
-            when(domainRepository.findById(domainId)).thenReturn(Optional.of(domain));
-            when(userRoleRepo.findDomainMember(domain.getId(), user.getId())).thenReturn(Optional.empty());
-            this.domainService.getMember(domainId, userId);
-        });
+        Long domainId = 1L;
+        Long userId = 1L;
+        Domain domain = new Domain(domainId, "testdom", "testdom", true);
+        User user = new User("user");
+        when(userService.findById(userId)).thenReturn(Optional.of(user));
+        when(domainRepository.findById(domainId)).thenReturn(Optional.of(domain));
+        when(userRoleRepo.findDomainMember(domain.getId(), user.getId())).thenReturn(Optional.empty());
+        assertThrows(ProcessingException.class, () -> this.domainService.getMember(domainId, userId));
     }
 
     @Test
     void shouldNotGetMemberWithEmptyUser() {
-        assertThrows(ProcessingException.class, () -> {
-            Long domainId = 1L;
-            Domain domain = new Domain(domainId, "testdom", "testdom");
-            when(userService.findById(1L)).thenReturn(Optional.empty());
-            when(domainRepository.findById(domainId)).thenReturn(Optional.of(domain));
-            this.domainService.getMember(domainId, 1L);
-        });
+        Long domainId = 1L;
+        Domain domain = new Domain(domainId, "testdom", "testdom");
+        when(userService.findById(1L)).thenReturn(Optional.empty());
+        when(domainRepository.findById(domainId)).thenReturn(Optional.of(domain));
+        assertThrows(ProcessingException.class, () -> this.domainService.getMember(domainId, 1L));
     }
 
     @Test
     void shouldThrowAnExceptionWhenGetMemberWithNullDomain() {
-        assertThrows(ProcessingException.class, () -> {
-            Long userId = 1L;
-            User user = new User("user");
-            when(userService.findById(userId)).thenReturn(Optional.of(user));
-            when(domainRepository.findById(1L)).thenReturn(Optional.empty());
-            this.domainService.getMember(1L, userId);
-        });
+        Long userId = 1L;
+        User user = new User("user");
+        when(userService.findById(userId)).thenReturn(Optional.of(user));
+        when(domainRepository.findById(1L)).thenReturn(Optional.empty());
+        assertThrows(ProcessingException.class, () -> this.domainService.getMember(1L, userId));
     }
 
     @Test

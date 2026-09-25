@@ -77,11 +77,9 @@ class UserDomainAssignmentJobTest {
         when(domainService.findDomain(1L)).thenReturn(Optional.of(new Domain("name", "codename")));
         when(userService.findById(8L)).thenReturn(Optional.of(new User("name", true)));
 
-        assertThrows(JobExecutionException.class, () -> {
-            UserDomainAssignmentJob job =
-                    new UserDomainAssignmentJob(restClient, webhookEventService, mapper, webhookHistoryService, domainService, userService, templateService);
-            job.execute(jobExecutionContext);
-        });
+        UserDomainAssignmentJob job =
+                new UserDomainAssignmentJob(restClient, webhookEventService, mapper, webhookHistoryService, domainService, userService, templateService);
+        assertThrows(JobExecutionException.class, () -> job.execute(jobExecutionContext));
         verify(webhookEventService).getById(10L);
         ArgumentCaptor<WebhookHistory> webhookHistoryCaptor = ArgumentCaptor.forClass(WebhookHistory.class);
         verify(webhookHistoryRepository).save(webhookHistoryCaptor.capture());
