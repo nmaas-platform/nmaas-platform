@@ -22,4 +22,6 @@ public interface VariableRepository extends JpaRepository<Variable, Long> {
 
     boolean existsByNameAndDomainId(String name, Long domainId);
 
+    boolean existsByName(String name);
+
 }

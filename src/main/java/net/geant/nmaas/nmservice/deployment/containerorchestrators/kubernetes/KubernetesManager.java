@@ -45,6 +45,7 @@ import net.geant.nmaas.orchestration.entities.AppStorageVolume;
 import net.geant.nmaas.orchestration.exceptions.InvalidConfigurationException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
+import net.geant.nmaas.portal.service.VariableService;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.apache.commons.lang3.StringUtils;
@@ -90,6 +91,7 @@ public class KubernetesManager implements ContainerOrchestrator {
     private final KubernetesApiJanitorService kubernetesApiJanitorService;
     private final RemoteClusterManagementService remoteClusterManager;
     private final RemoteClusterMonitoringService remoteClusterMonitor;
+    private final VariableService variableService;
 
     @Override
     @Loggable(LogLevel.INFO)
@@ -133,7 +135,10 @@ public class KubernetesManager implements ContainerOrchestrator {
             additionalParameters.putAll(createAdditionalParametersMap(deploymentId, appDeploymentSpec.getDeployParameters(), serviceInfo.getRemoteCluster()));
         }
         if (appDeploymentSpec.getGlobalDeployParameters() != null && !appDeploymentSpec.getGlobalDeployParameters().isEmpty()) {
-            additionalParameters.putAll(KubernetesParameterGenerator.createAdditionalGlobalParametersMap(appDeploymentSpec.getGlobalDeployParameters()));
+            // resolve variable references (${var:NAME}) into actual values from the central variable storage
+            additionalParameters.putAll(KubernetesParameterGenerator.createAdditionalGlobalParametersMap(
+                    appDeploymentSpec.getGlobalDeployParameters(),
+                    this::resolveVariableReference));
         }
         serviceInfo.setAdditionalParameters(additionalParameters);
         repositoryManager.storeService(serviceInfo);
@@ -143,6 +148,20 @@ public class KubernetesManager implements ContainerOrchestrator {
         return storageVolumes.stream()
                 .map(ServiceStorageVolume::fromAppStorageVolume)
                 .collect(Collectors.toSet());
+    }
+
+    /**
+     * Replaces a variable reference with the actual value of the referenced variable
+     * from the central variable storage, or throws a meaningful exception if the
+     * variable no longer exists.
+     */
+    private String resolveVariableReference(String variableName) {
+        try {
+            return variableService.getRawValue(variableName);
+        } catch (Exception e) {
+            throw new ServiceRequestVerificationException(
+                    "Referenced variable " + variableName + " no longer exists in the central variable storage");
+        }
     }
 
     private Set<ServiceAccessMethod> generateTemplateAccessMethods(Set<AppAccessMethod> accessMethods) {
