@@ -52,8 +52,10 @@ public interface VariableService {
     /**
      * Returns the stored value of the given variable without masking. Intended
      * for internal platform use only (e.g. application deployment), never to be
-     * exposed through the API.
+     * exposed through the API. When a domain codename is provided, a domain
+     * level variable takes precedence over an instance level variable with the
+     * same name.
      */
-    String getRawValue(String name);
+    String getRawValue(String name, String domainCodename);
 
 }

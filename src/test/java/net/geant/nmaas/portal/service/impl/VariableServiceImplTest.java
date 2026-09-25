@@ -292,14 +292,54 @@ class VariableServiceImplTest {
         when(variableRepository.findByNameAndDomainIsNull("api.password")).thenReturn(Optional.of(secret));
 
         // internal consumers (e.g. application deployment) need the real value, even for secrets
-        assertEquals("s3cr3t", variableService.getRawValue("api.password"));
+        assertEquals("s3cr3t", variableService.getRawValue("api.password", null));
     }
 
     @Test
     void shouldThrowWhenRawValueOfMissingVariableRequested() {
         when(variableRepository.findByNameAndDomainIsNull("missing")).thenReturn(Optional.empty());
 
-        assertThrows(MissingElementException.class, () -> variableService.getRawValue("missing"));
+        assertThrows(MissingElementException.class, () -> variableService.getRawValue("missing", null));
+    }
+
+    @Test
+    void shouldReturnEffectiveRawValueWithDomainPrecedence() {
+        Variable globalVariable = Variable.builder()
+                .id(1L)
+                .name("proxy.url")
+                .value("https://proxy.example.com")
+                .type(VariableType.STANDARD)
+                .build();
+        Variable domainVariable = Variable.builder()
+                .id(2L)
+                .name("proxy.url")
+                .value("https://domain-proxy.example.com")
+                .type(VariableType.STANDARD)
+                .domain(new Domain(5L))
+                .build();
+        Domain domain = new Domain(5L);
+        when(domainRepository.findByCodename("testdom")).thenReturn(Optional.of(domain));
+        when(variableRepository.findByNameAndDomainId("proxy.url", 5L)).thenReturn(Optional.of(domainVariable));
+        when(variableRepository.findByNameAndDomainIsNull("proxy.url")).thenReturn(Optional.of(globalVariable));
+
+        // a domain level variable shadows an instance level variable with the same name
+        assertEquals("https://domain-proxy.example.com", variableService.getRawValue("proxy.url", "testdom"));
+    }
+
+    @Test
+    void shouldFallBackToInstanceLevelRawValueWhenNoDomainVariable() {
+        Variable globalVariable = Variable.builder()
+                .id(1L)
+                .name("proxy.url")
+                .value("https://proxy.example.com")
+                .type(VariableType.STANDARD)
+                .build();
+        Domain domain = new Domain(5L);
+        when(domainRepository.findByCodename("testdom")).thenReturn(Optional.of(domain));
+        when(variableRepository.findByNameAndDomainId("proxy.url", 5L)).thenReturn(Optional.empty());
+        when(variableRepository.findByNameAndDomainIsNull("proxy.url")).thenReturn(Optional.of(globalVariable));
+
+        assertEquals("https://proxy.example.com", variableService.getRawValue("proxy.url", "testdom"));
     }
 
     @Test

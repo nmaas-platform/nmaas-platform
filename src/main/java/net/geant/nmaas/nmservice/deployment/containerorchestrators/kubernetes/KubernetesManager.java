@@ -135,10 +135,9 @@ public class KubernetesManager implements ContainerOrchestrator {
             additionalParameters.putAll(createAdditionalParametersMap(deploymentId, appDeploymentSpec.getDeployParameters(), serviceInfo.getRemoteCluster()));
         }
         if (appDeploymentSpec.getGlobalDeployParameters() != null && !appDeploymentSpec.getGlobalDeployParameters().isEmpty()) {
-            // resolve variable references (${var:NAME}) into actual values from the central variable storage
             additionalParameters.putAll(KubernetesParameterGenerator.createAdditionalGlobalParametersMap(
                     appDeploymentSpec.getGlobalDeployParameters(),
-                    this::resolveVariableReference));
+                    name -> this.resolveVariableReference(name, appDeployment.getDomain())));
         }
         serviceInfo.setAdditionalParameters(additionalParameters);
         repositoryManager.storeService(serviceInfo);
@@ -153,11 +152,13 @@ public class KubernetesManager implements ContainerOrchestrator {
     /**
      * Replaces a variable reference with the actual value of the referenced variable
      * from the central variable storage, or throws a meaningful exception if the
-     * variable no longer exists.
+     * variable no longer exists. The domain of the deployment is taken into account,
+     * so a domain level variable takes precedence over an instance level variable
+     * with the same name.
      */
-    private String resolveVariableReference(String variableName) {
+    private String resolveVariableReference(String variableName, String domainCodename) {
         try {
-            return variableService.getRawValue(variableName);
+            return variableService.getRawValue(variableName, domainCodename);
         } catch (Exception e) {
             throw new ServiceRequestVerificationException(
                     "Referenced variable " + variableName + " no longer exists in the central variable storage");

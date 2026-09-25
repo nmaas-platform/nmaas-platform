@@ -307,6 +307,36 @@ class KubernetesManagerTest {
         assertTrue(serviceInfo.getValue().getAdditionalParameters().get("customkey7").matches("\\d+"));
     }
 
+    @Test
+    void shouldResolveGlobalDeployParameterVariableReferenceWithDeploymentDomain() {
+        AppDeployment deployment = AppDeployment.builder()
+                .deploymentId(DEPLOYMENT_ID)
+                .descriptiveDeploymentId(Identifier.newInstance("descriptiveDeploymentId"))
+                .domain("testdom")
+                .deploymentName("appInstanceName")
+                .build();
+        AppDeploymentSpec spec = AppDeploymentSpec.builder()
+                .supportedDeploymentEnvironments(Collections.singletonList(AppDeploymentEnv.KUBERNETES))
+                .kubernetesTemplate(new KubernetesTemplate("chartName", "chartVersion", null))
+                .accessMethods(Set.of(
+                        AppAccessMethod.builder()
+                                .type(ServiceAccessMethodType.EXTERNAL).name("name").tag("tag")
+                                .build()))
+                .storageVolumes(Set.of(new AppStorageVolume(ServiceStorageVolumeType.MAIN, 2, null)))
+                .globalDeployParameters(Map.of("smtp.host", "${var:smtp.host}"))
+                .build();
+        when(variableService.getRawValue("smtp.host", "testdom")).thenReturn("smtp.example.com");
+
+        ArgumentCaptor<KubernetesNmServiceInfo> serviceInfo = ArgumentCaptor.forClass(KubernetesNmServiceInfo.class);
+        manager.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(DEPLOYMENT_ID, deployment, spec);
+
+        // the effective value is resolved using the domain of the deployment, so that
+        // a domain level variable takes precedence over an instance level one
+        verify(variableService).getRawValue("smtp.host", "testdom");
+        verify(repositoryManager, times(1)).storeService(serviceInfo.capture());
+        assertEquals("smtp.example.com", serviceInfo.getValue().getAdditionalParameters().get("smtp.host"));
+    }
+
     private Map<String, String> getStringStringMap() {
         Map<String, String> globalDeployParameters = new HashMap<>();
         globalDeployParameters.put("customkey1", "customvalue1");

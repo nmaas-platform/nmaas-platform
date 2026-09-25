@@ -142,10 +142,15 @@ public class VariableServiceImpl implements VariableService {
 
     @Override
     @Transactional(readOnly = true)
-    public String getRawValue(String name) {
-        // domain level variables are not taken into account here: application catalogue
-        // deployment parameters reference instance level variables only
-        return variableRepository.findByNameAndDomainIsNull(name)
+    public String getRawValue(String name, String domainCodename) {
+        // a domain level variable takes precedence over an instance level variable
+        // with the same name
+        Optional<Variable> domainVariable = domainCodename != null
+                ? domainRepository.findByCodename(domainCodename)
+                        .flatMap(domain -> variableRepository.findByNameAndDomainId(name, domain.getId()))
+                : Optional.empty();
+        return domainVariable
+                .or(() -> variableRepository.findByNameAndDomainIsNull(name))
                 .map(Variable::getValue)
                 .orElseThrow(() -> new MissingElementException("Variable " + name + " does not exist"));
     }
