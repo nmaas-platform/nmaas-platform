@@ -149,13 +149,6 @@ public class KubernetesManager implements ContainerOrchestrator {
                 .collect(Collectors.toSet());
     }
 
-    /**
-     * Replaces a variable reference with the actual value of the referenced variable
-     * from the central variable storage, or throws a meaningful exception if the
-     * variable no longer exists. The domain of the deployment is taken into account,
-     * so a domain level variable takes precedence over an instance level variable
-     * with the same name.
-     */
     private String resolveVariableReference(String variableName, String domainCodename) {
         try {
             return variableService.getRawValue(variableName, domainCodename);
