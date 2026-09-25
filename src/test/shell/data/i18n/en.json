@@ -409,7 +409,10 @@
         "ADD": "Add",
         "ICON": "Icon",
         "NAME": "Name",
-        "OWNER": "Owner"
+        "OWNER": "Owner",
+        "TITLE": "Add application",
+        "ADD_INFO": "Select application to add",
+        "ID": "Id"
       }
     }
   },
