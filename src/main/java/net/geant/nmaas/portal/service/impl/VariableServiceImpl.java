@@ -95,11 +95,13 @@ public class VariableServiceImpl implements VariableService {
         List<Variable> entities;
         if (scope == VariableScopeDto.GLOBAL) {
             entities = variableRepository.findByDomainIsNull();
-        } else {
-            if (domainId == null) {
-                throw new ProcessingException("Domain identifier is required for domain scope");
-            }
+        } else if (domainId != null) {
             entities = variableRepository.findByDomainId(domainId);
+        } else {
+            // no domain selected: list domain level variables from all domains
+            // (only reachable by system admins, guarded by the OWNER permission
+            // check on the global domain in the API layer)
+            entities = variableRepository.findByDomainIsNotNull();
         }
         return entities.stream()
                 .map(entity -> toDto(entity, true))

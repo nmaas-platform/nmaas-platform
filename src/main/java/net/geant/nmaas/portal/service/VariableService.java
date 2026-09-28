@@ -26,7 +26,9 @@ public interface VariableService {
     VariableDto get(Long id);
 
     /**
-     * Lists variables defined directly at the given scope (instance level, or within a domain).
+     * Lists variables defined directly at the given scope (instance level, or within
+     * a domain). In domain scope without a domain identifier, lists domain level
+     * variables from all domains (system admins only, enforced by the API layer).
      */
     List<VariableDto> list(VariableScopeDto scope, Long domainId);
 

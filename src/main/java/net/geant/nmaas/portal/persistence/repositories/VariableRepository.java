@@ -12,6 +12,8 @@ public interface VariableRepository extends JpaRepository<Variable, Long> {
 
     List<Variable> findByDomainIsNull();
 
+    List<Variable> findByDomainIsNotNull();
+
     List<Variable> findByDomainId(Long domainId);
 
     Optional<Variable> findByNameAndDomainIsNull(String name);
