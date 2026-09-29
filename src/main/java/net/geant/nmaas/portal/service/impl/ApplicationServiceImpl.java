@@ -12,8 +12,11 @@ import net.geant.nmaas.portal.events.ApplicationListUpdatedEvent;
 import net.geant.nmaas.portal.events.ApplicationListUpdatedEvent.ApplicationAction;
 import net.geant.nmaas.portal.persistence.entity.Application;
 import net.geant.nmaas.portal.persistence.entity.ApplicationState;
+import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.portal.persistence.repositories.ApplicationRepository;
 import net.geant.nmaas.portal.service.ApplicationService;
+import net.geant.nmaas.portal.service.VariableReference;
+import net.geant.nmaas.portal.service.VariableService;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.context.ApplicationEventPublisher;
@@ -42,6 +45,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     private final ApplicationRepository applicationRepository;
     private final ApplicationEventPublisher eventPublisher;
     private final ConfigurationTemplateSanitizerService configurationTemplateSanitizerService;
+    private final VariableService variableService;
 
     @Override
     @Transactional
@@ -75,6 +79,11 @@ public class ApplicationServiceImpl implements ApplicationService {
     public Application create(Application application) {
         if (application.getId() != null) {
             throw new ProcessingException("While creating id must be null");
+        }
+        // a stub with no deployment spec can be created (full validation happens on update),
+        // but a fully populated application must pass variable reference validation
+        if (application.getAppDeploymentSpec() != null) {
+            checkVariableReferences(application.getAppDeploymentSpec());
         }
         clearIds(application);
         Application saved = applicationRepository.save(application);
@@ -154,7 +163,29 @@ public class ApplicationServiceImpl implements ApplicationService {
         app.validate();
         app.getAppDeploymentSpec().validate();
         app.getAppDeploymentSpec().getKubernetesTemplate().validate();
+        checkVariableReferences(app.getAppDeploymentSpec());
         checkTemplates(app);
+    }
+
+    /**
+     * Verifies that every variable referenced in the global deployment parameters
+     * (using the {@code ${var:NAME}} notation) exists in the central variable storage.
+     */
+    private void checkVariableReferences(AppDeploymentSpec spec) {
+        Map<String, String> globalDeployParameters = spec.getGlobalDeployParameters();
+        if (globalDeployParameters == null || globalDeployParameters.isEmpty()) {
+            return;
+        }
+        globalDeployParameters.values().stream()
+                .filter(VariableReference::isReference)
+                .map(VariableReference::extractName)
+                .flatMap(Optional::stream)
+                .filter(name -> !variableService.exists(name))
+                .findFirst()
+                .ifPresent(name -> {
+                    throw new IllegalArgumentException(
+                            "Referenced variable " + name + " does not exist in the central variable storage");
+                });
     }
 
     private void checkTemplates(Application app) {

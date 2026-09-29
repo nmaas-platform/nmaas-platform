@@ -48,34 +48,26 @@ class MonitorManagerTest {
 
     @Test
     void shouldNotCreateMonitorEntryWithNullCheckInterval() {
-        assertThrows(IllegalStateException.class, () -> {
-            MonitorEntryDto wrongMonitorEntry = new MonitorEntryDto(1L, ServiceType.GITLAB, MonitorStatus.SUCCESS, new Date(), new Date(), null, TimeFormat.MIN, true);
-            this.monitorManager.createMonitorEntry(wrongMonitorEntry);
-        });
+        MonitorEntryDto wrongMonitorEntry = new MonitorEntryDto(1L, ServiceType.GITLAB, MonitorStatus.SUCCESS, new Date(), new Date(), null, TimeFormat.MIN, true);
+        assertThrows(IllegalStateException.class, () -> this.monitorManager.createMonitorEntry(wrongMonitorEntry));
     }
 
     @Test
     void shouldNotCreateMonitorEntryWithCheckIntervalLessThanZero() {
-        assertThrows(IllegalStateException.class, () -> {
-            MonitorEntryDto wrongMonitorEntry = new MonitorEntryDto(1L, ServiceType.GITLAB, MonitorStatus.SUCCESS, new Date(), new Date(), -5L, TimeFormat.MIN, true);
-            this.monitorManager.createMonitorEntry(wrongMonitorEntry);
-        });
+        MonitorEntryDto wrongMonitorEntry = new MonitorEntryDto(1L, ServiceType.GITLAB, MonitorStatus.SUCCESS, new Date(), new Date(), -5L, TimeFormat.MIN, true);
+        assertThrows(IllegalStateException.class, () -> this.monitorManager.createMonitorEntry(wrongMonitorEntry));
     }
 
     @Test
     void shouldNotCreateMonitorEntryWithNullServiceName() {
-        assertThrows(IllegalStateException.class, () -> {
-            MonitorEntryDto wrongMonitorEntry = new MonitorEntryDto(1L, null, MonitorStatus.SUCCESS, new Date(), new Date(), 5L, TimeFormat.MIN, true);
-            this.monitorManager.createMonitorEntry(wrongMonitorEntry);
-        });
+        MonitorEntryDto wrongMonitorEntry = new MonitorEntryDto(1L, null, MonitorStatus.SUCCESS, new Date(), new Date(), 5L, TimeFormat.MIN, true);
+        assertThrows(IllegalStateException.class, () -> this.monitorManager.createMonitorEntry(wrongMonitorEntry));
     }
 
     @Test
     void shouldNotCreateMonitorEntryWhenMonitorEntryAlreadyExists() {
-        assertThrows(IllegalStateException.class, () -> {
-            when(repository.existsByServiceName(ServiceType.GITLAB)).thenReturn(true);
-            this.monitorManager.createMonitorEntry(monitorEntryDto);
-        });
+        when(repository.existsByServiceName(ServiceType.GITLAB)).thenReturn(true);
+        assertThrows(IllegalStateException.class, () -> this.monitorManager.createMonitorEntry(monitorEntryDto));
     }
 
     @Test
@@ -86,18 +78,14 @@ class MonitorManagerTest {
 
     @Test
     void shouldNotUpdateMonitorEntryWithMonitorEntryViewObjectTimeFormatIsNull() {
-        assertThrows(IllegalStateException.class, () -> {
-            MonitorEntryDto wrongMonitorEntry = new MonitorEntryDto(1L, ServiceType.GITLAB, null, new Date(), new Date(), 5L, null, true);
-            this.monitorManager.updateMonitorEntry(wrongMonitorEntry);
-        });
+        MonitorEntryDto wrongMonitorEntry = new MonitorEntryDto(1L, ServiceType.GITLAB, null, new Date(), new Date(), 5L, null, true);
+        assertThrows(IllegalStateException.class, () -> this.monitorManager.updateMonitorEntry(wrongMonitorEntry));
     }
 
     @Test
     void shouldNotUpdateMonitorEntryWithMonitorEntryViewObjectWhenMonitorEntryCannotBeFound() {
-        assertThrows(MonitorEntryNotFound.class, () -> {
-            when(repository.findByServiceName(ServiceType.GITLAB)).thenReturn(Optional.empty());
-            this.monitorManager.updateMonitorEntry(monitorEntryDto);
-        });
+        when(repository.findByServiceName(ServiceType.GITLAB)).thenReturn(Optional.empty());
+        assertThrows(MonitorEntryNotFound.class, () -> this.monitorManager.updateMonitorEntry(monitorEntryDto));
     }
 
     @Test
@@ -136,10 +124,8 @@ class MonitorManagerTest {
 
     @Test
     void shouldNotGetNonExistingService() {
-        assertThrows(MonitorEntryNotFound.class, () -> {
-            when(repository.findByServiceName(ServiceType.GITLAB)).thenReturn(Optional.empty());
-            this.monitorManager.getMonitorEntries("GITLAB");
-        });
+        when(repository.findByServiceName(ServiceType.GITLAB)).thenReturn(Optional.empty());
+        assertThrows(MonitorEntryNotFound.class, () -> this.monitorManager.getMonitorEntries("GITLAB"));
     }
 
 }

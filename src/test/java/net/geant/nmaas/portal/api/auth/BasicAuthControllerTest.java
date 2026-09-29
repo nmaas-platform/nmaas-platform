@@ -68,10 +68,8 @@ class BasicAuthControllerTest {
 
     @Test
     void testValidateWithValidUserNameAndWrongPassword() throws AuthenticationException {
-        assertThrows(AuthenticationException.class, () -> {
-            when(passwordEncoder.matches(any(), any())).thenReturn(false);
-            basicAuthController.validate("TEST", "TEST", "TEST", true);
-        });
+        when(passwordEncoder.matches(any(), any())).thenReturn(false);
+        assertThrows(AuthenticationException.class, () -> basicAuthController.validate("TEST", "TEST", "TEST", true));
     }
 
     @Test

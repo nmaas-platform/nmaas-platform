@@ -130,10 +130,8 @@ class WebhookEventServiceTest {
     void shouldThrowExceptionWhenDeletingNonExistentWebhook() {
         when(webhookEventRepository.existsById(999L)).thenReturn(false);
 
-        assertThrows(RuntimeException.class, () -> {
-            when(userService.isAdmin("test")).thenReturn(true);
-            webhookEventService.remove(999L);
-        });
+        when(userService.isAdmin("test")).thenReturn(true);
+        assertThrows(RuntimeException.class, () -> webhookEventService.remove(999L));
     }
 
     @Test
