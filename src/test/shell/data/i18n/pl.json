@@ -382,6 +382,40 @@
       "REJECT" : "Nie"
     }
   },
+  "BUNDLES": {
+    "TITLE": "Paczki",
+    "ADD_BUTTON": "Dodaj",
+    "CODENAME": "Nazwa kodowa",
+    "NAME": "Nazwa",
+    "QUANTITY": "Ilość",
+    "DESCRIPTION": "Opis",
+    "DETAILS": {
+      "TITLE": "Szczegóły paczek",
+      "NAME": "Nazwa",
+      "CODENAME": "Nazwa kodowa",
+      "ID": "Id w bazie",
+      "DESCRIPTIONS": "Opisy",
+      "APPLICATIONS": "Aplikacje",
+      "EDIT_BUTTON": "Edytuj",
+      "CREATE_BUTTON": "Utwórz",
+      "DESCRIPTION": {
+        "BRIEF": "Krótki opis",
+        "FULL": "Pełen opis",
+        "REMOVE": "Usuń opis",
+        "MISSING": "Brakuje opisu",
+        "ADD": "Dodaj nowy opis"
+      },
+      "APPLICATION": {
+        "ADD": "Dodaj",
+        "ICON": "Ikona",
+        "NAME": "Nazwa",
+        "OWNER": "Właściciel",
+        "TITLE": "Dodaj aplikacje",
+        "ADD_INFO": "Wybierz aplikacje do dodania",
+        "ID": "Id"
+      }
+    }
+  },
   "MONITOR": {
     "TITLE": "Monitorowanie komponentów",
     "SERVICE_NAME": "Nazwa usługi",
