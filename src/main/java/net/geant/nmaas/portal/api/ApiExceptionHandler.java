@@ -7,6 +7,8 @@ import net.geant.nmaas.api.dto.ApiError;
 import net.geant.nmaas.nmservice.configuration.exceptions.InvalidWebhookException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.portal.api.exceptions.AuthenticationException;
+import net.geant.nmaas.portal.api.exceptions.BundleNotFoundException;
+import net.geant.nmaas.portal.api.exceptions.InvalidBundleException;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.exceptions.PortalException;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
@@ -20,6 +22,7 @@ import net.geant.nmaas.portal.exceptions.UndergoingMaintenanceException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -99,6 +102,15 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         } else {
             return createApiError(e, HttpStatus.SERVICE_UNAVAILABLE);
         }
+    }
+    @ExceptionHandler(InvalidBundleException.class)
+    public ProblemDetail handleInvalidBundle(InvalidBundleException ex) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.UNPROCESSABLE_CONTENT, ex.getMessage());
+    }
+
+    @ExceptionHandler(BundleNotFoundException.class)
+    public ProblemDetail handleNotFound(BundleNotFoundException ex) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
     private ApiError createApiErrorAndLogStacktrace(Exception ex, HttpStatus status) {
