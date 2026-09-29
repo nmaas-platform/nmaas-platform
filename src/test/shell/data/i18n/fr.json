@@ -390,6 +390,7 @@
     "NAME": "Name",
     "QUANTITY": "Quantity",
     "DESCRIPTION": "Description",
+    "EDIT": "Edit",
     "DETAILS": {
       "TITLE": "Bundle details",
       "NAME": "Name",
@@ -397,7 +398,7 @@
       "ID": "Id in db",
       "DESCRIPTIONS": "Descriptions",
       "APPLICATIONS": "Applications",
-      "EDIT_BUTTON": "Edit",
+      "SAVE_BUTTON": "Save",
       "CREATE_BUTTON": "Create",
       "DESCRIPTION": {
         "BRIEF": "Short description",

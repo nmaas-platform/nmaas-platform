@@ -389,6 +389,7 @@
     "NAME": "Nazwa",
     "QUANTITY": "Ilość",
     "DESCRIPTION": "Opis",
+    "EDIT": "Edytuj",
     "DETAILS": {
       "TITLE": "Szczegóły paczek",
       "NAME": "Nazwa",
@@ -396,7 +397,7 @@
       "ID": "Id w bazie",
       "DESCRIPTIONS": "Opisy",
       "APPLICATIONS": "Aplikacje",
-      "EDIT_BUTTON": "Edytuj",
+      "SAVE_BUTTON": "Zapisz",
       "CREATE_BUTTON": "Utwórz",
       "DESCRIPTION": {
         "BRIEF": "Krótki opis",
