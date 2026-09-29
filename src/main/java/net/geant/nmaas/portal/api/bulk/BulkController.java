@@ -215,15 +215,15 @@ public class BulkController {
     }
 
     private <T extends BulkDeploymentBaseDto> T mapToDto(BulkDeployment bulk, Class<T> viewType) {
-        T bulkView = modelMapper.map(bulk, viewType);
+        T bulkDto = modelMapper.map(bulk, viewType);
         try {
-            bulkView.setCreator(getUserInfo(bulk.getCreator().getId()));
+            bulkDto.setCreator(getUserInfo(bulk.getCreator().getId()));
         } catch (Exception _) {
             log.error("Can't find user who requested bulk {} (provided id: {})", bulk.getId(), bulk.getCreator().getId());
             return null;
         }
-        mapDetails(bulk, bulkView);
-        return bulkView;
+        mapDetails(bulk, bulkDto);
+        return bulkDto;
     }
 
     private BulkDeploymentDto mapToDto(BulkDeployment deployment) {

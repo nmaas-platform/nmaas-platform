@@ -2,11 +2,11 @@ package net.geant.nmaas.portal.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.portal.api.exceptions.MissingElementException;
-import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.api.dto.variables.VariableDto;
 import net.geant.nmaas.api.dto.variables.VariableScopeDto;
 import net.geant.nmaas.api.dto.variables.VariableTypeDto;
+import net.geant.nmaas.portal.api.exceptions.MissingElementException;
+import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
 import net.geant.nmaas.portal.persistence.entity.Variable;
 import net.geant.nmaas.portal.persistence.entity.VariableType;
@@ -41,7 +41,6 @@ public class VariableServiceImpl implements VariableService {
         }
         Variable entity = new Variable();
         mapToEntity(dto, entity);
-        // initially, the last modification timestamp equals the creation time
         entity.setLastModified(System.currentTimeMillis());
         entity = variableRepository.save(entity);
         log.info("Created variable {} of type {} in scope {}", entity.getName(), entity.getType(), describeScope(entity));
@@ -95,11 +94,10 @@ public class VariableServiceImpl implements VariableService {
         List<Variable> entities;
         if (scope == VariableScopeDto.GLOBAL) {
             entities = variableRepository.findByDomainIsNull();
-        } else {
-            if (domainId == null) {
-                throw new ProcessingException("Domain identifier is required for domain scope");
-            }
+        } else if (domainId != null) {
             entities = variableRepository.findByDomainId(domainId);
+        } else {
+            entities = variableRepository.findByDomainIsNotNull();
         }
         return entities.stream()
                 .map(entity -> toDto(entity, true))
@@ -147,7 +145,7 @@ public class VariableServiceImpl implements VariableService {
         // with the same name
         Optional<Variable> domainVariable = domainCodename != null
                 ? domainRepository.findByCodename(domainCodename)
-                        .flatMap(domain -> variableRepository.findByNameAndDomainId(name, domain.getId()))
+                .flatMap(domain -> variableRepository.findByNameAndDomainId(name, domain.getId()))
                 : Optional.empty();
         return domainVariable
                 .or(() -> variableRepository.findByNameAndDomainIsNull(name))

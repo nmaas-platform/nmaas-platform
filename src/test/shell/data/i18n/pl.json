@@ -38,7 +38,8 @@
       "TITLE": "Webhooks",
       "LIST": "Lista",
       "HISTORY": "Historia"
-    }
+    },
+    "VARIABLES": "Zmienne"
   },
   "WELCOME": {
     "LOGIN": "Logowanie",
@@ -1493,6 +1494,23 @@
       "RESPONSE_BODY": "Treść odpowiedzi"
     }
   },
+  "VARIABLES": {
+    "TITLE": "Zmienne",
+    "NAME": "Nazwa",
+    "VALUE": "Wartość",
+    "TYPE": "Typ",
+    "SCOPE": "Zakres",
+    "DOMAIN": "Domena",
+    "NEW": "Dodaj",
+    "EDIT": "Edytuj",
+    "REMOVE": "Usuń",
+    "SAVE": "Zapisz",
+    "TITLE_NEW": "Nowa zmienna",
+    "TITLE_EDIT": "Edycja zmiennej",
+    "NAME_REQUIRED": "Nazwa jest wymagana",
+    "NAME_PATTERN": "Nieprawidłowa nazwa zmiennej",
+    "SECRET_PLACEHOLDER": "Wartość tajna"
+  },
   "DASHBOARD": {
     "NUMBERS_OF_USERS": "Aktualna liczba użytkowników",
     "NUMBERS_OF_DOMAINS": "Aktualna liczba domen",
@@ -1524,7 +1542,8 @@
       "NOTIFICATION": "Powiadomienie zostało wysłane",
       "NEW_WEBHOOK": "Dodano nowy webhook",
       "WEBHOOK": "Dane webhooka zostały zaktualizowane",
-      "GLOBAL_LIMIT": "Globalny limity zostały zaktualizowane"
+      "GLOBAL_LIMIT": "Globalny limity zostały zaktualizowane",
+      "NEW_VARIABLE": "Nowa zmienna została dodana"
     },
     "ERROR": {
       "NEW_DOMAIN": "Nie udało się dodać nowej domeny",
@@ -1532,7 +1551,8 @@
       "NEW_GROUP": "Nie udało się dodać nowej grupy",
       "SETTINGS": "Aktualizacja ustawień nie powiodła się",
       "NOTIFICATION": "Nie udało się wysłać wiadomości",
-      "WEBHOOK": "Aktualizacja danych webhooka nie powiodła się"
+      "WEBHOOK": "Aktualizacja danych webhooka nie powiodła się",
+      "NEW_VARIABLE": "Nie udało się dodać nowej zmiennej"
     }
   }
 }

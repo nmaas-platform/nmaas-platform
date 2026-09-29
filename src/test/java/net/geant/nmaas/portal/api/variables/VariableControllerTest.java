@@ -26,15 +26,22 @@ class VariableControllerTest {
         VariableDto dto = testVariableDto(1L);
         when(variableService.list(VariableScopeDto.GLOBAL, null)).thenReturn(List.of(dto));
         when(variableService.list(VariableScopeDto.DOMAIN, 5L)).thenReturn(List.of(dto));
+        when(variableService.list(VariableScopeDto.DOMAIN, null)).thenReturn(List.of(dto));
 
         ResponseEntity<List<VariableDto>> instanceLevel = controller.list(VariableScopeDto.GLOBAL, null);
         ResponseEntity<List<VariableDto>> domainLevel = controller.list(VariableScopeDto.DOMAIN, 5L);
+        // a system admin can request domain scope without a domain identifier
+        // to list domain level variables from all domains at once
+        ResponseEntity<List<VariableDto>> allDomains = controller.list(VariableScopeDto.DOMAIN, null);
 
         assertEquals(200, instanceLevel.getStatusCode().value());
         assert instanceLevel.getBody() != null;
         assertEquals(1, instanceLevel.getBody().size());
         assert domainLevel.getBody() != null;
         assertEquals(1, domainLevel.getBody().size());
+        assertEquals(200, allDomains.getStatusCode().value());
+        assert allDomains.getBody() != null;
+        assertEquals(1, allDomains.getBody().size());
     }
 
     @Test

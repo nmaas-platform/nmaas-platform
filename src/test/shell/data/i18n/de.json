@@ -38,7 +38,8 @@
       "TITLE": "Webhooks",
       "LIST": "Liste",
       "HISTORY": "Webhook-Verlauf"
-    }
+    },
+    "VARIABLES": "Variablen"
   },
   "WELCOME": {
     "LOGIN": "Login",
@@ -1490,6 +1491,23 @@
       "RESPONSE_BODY": "Response body"
     }
   },
+  "VARIABLES": {
+    "TITLE": "Variablen",
+    "NAME": "Name",
+    "VALUE": "Wert",
+    "TYPE": "Typ",
+    "SCOPE": "Bereich",
+    "DOMAIN": "Domäne",
+    "NEW": "Hinzufügen",
+    "EDIT": "Bearbeiten",
+    "REMOVE": "Entfernen",
+    "SAVE": "Speichern",
+    "TITLE_NEW": "Neue Variable",
+    "TITLE_EDIT": "Variable bearbeiten",
+    "NAME_REQUIRED": "Name ist erforderlich",
+    "NAME_PATTERN": "Ungültiger Variablenname",
+    "SECRET_PLACEHOLDER": "Geheimer Wert"
+  },
   "DASHBOARD": {
     "NUMBERS_OF_USERS": "Aktuelle Anzahl der Benutzer",
     "NUMBERS_OF_DOMAINS": "Aktuelle Anzahl der Domänen",
@@ -1521,7 +1539,8 @@
       "NOTIFICATION": "Benachrichtigung erfolgreich gesendet",
       "NEW_WEBHOOK": "Neuer Webhook hinzugefügt",
       "WEBHOOK": "Webhook aktualisiert",
-      "GLOBAL_LIMIT": "Globales Limit hinzugefügt"
+      "GLOBAL_LIMIT": "Globales Limit hinzugefügt",
+      "NEW_VARIABLE": "Neue Variable hinzugefügt"
     },
     "ERROR": {
       "NEW_DOMAIN": "Das Hinzufügen einer neuen Domäne ist fehlgeschlagen",
@@ -1529,7 +1548,8 @@
       "NEW_GROUP": "Es war nicht möglich, eine neue Gruppe hinzuzufügen",
       "SETTINGS": "Aktualisierung der Einstellungen fehlgeschlagen ",
       "NOTIFICATION": "Die Nachricht konnte nicht gesendet werden.",
-      "WEBHOOK": "Das Webhook-Update ist fehlgeschlagen"
+      "WEBHOOK": "Das Webhook-Update ist fehlgeschlagen",
+      "NEW_VARIABLE": "Das Hinzufügen einer neuen Variable ist fehlgeschlagen"
     }
   }
 }
