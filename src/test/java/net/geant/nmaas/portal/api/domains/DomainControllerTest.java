@@ -152,7 +152,7 @@ class DomainControllerTest {
     }
 
     @Test
-    void shouldReturnBaseDomainViewForRegularUser() {
+    void shouldReturnBaseDomainDtoForRegularUser() {
         Principal principal = () -> "user";
         User user = new User("user", true);
         Domain domainUser = new Domain(10L, "d10", "d10", true);
