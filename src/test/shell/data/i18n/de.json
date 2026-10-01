@@ -398,6 +398,8 @@
       "APPLICATIONS": "Applications",
       "SAVE_BUTTON": "Save",
       "CREATE_BUTTON": "Create",
+      "NAME_REQUIRED": "Name is required.",
+      "CODENAME_REQUIRED": "Codename is required.",
       "DESCRIPTION": {
         "BRIEF": "Short description",
         "FULL": "Long description",
@@ -412,7 +414,8 @@
         "OWNER": "Owner",
         "TITLE": "Add application",
         "ADD_INFO": "Select application to add",
-        "ID": "Id"
+        "ID": "Id",
+        "MINIMUM": "Select at least two applications"
       }
     }
   },
