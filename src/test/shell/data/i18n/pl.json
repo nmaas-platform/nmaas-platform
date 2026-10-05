@@ -400,6 +400,8 @@
       "APPLICATIONS": "Aplikacje",
       "SAVE_BUTTON": "Zapisz",
       "CREATE_BUTTON": "Utwórz",
+      "NAME_REQUIRED": "Nazwa jest wymagana.",
+      "CODENAME_REQUIRED": "Nazwa kodowa jest wymagana.",
       "DESCRIPTION": {
         "BRIEF": "Krótki opis",
         "FULL": "Pełen opis",
@@ -414,7 +416,8 @@
         "OWNER": "Właściciel",
         "TITLE": "Dodaj aplikacje",
         "ADD_INFO": "Wybierz aplikacje do dodania",
-        "ID": "Id"
+        "ID": "Id",
+        "MINIMUM": "Wybierz conajmniej dwie aplikacje"
       }
     }
   },
