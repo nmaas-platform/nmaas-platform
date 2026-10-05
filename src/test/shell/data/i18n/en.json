@@ -38,7 +38,8 @@
       "TITLE": "Webhooks",
       "LIST": "List",
       "HISTORY": "History"
-    }
+    },
+    "VARIABLES": "Variables"
   },
   "WELCOME": {
     "LOGIN": "Login",
@@ -1497,6 +1498,23 @@
       "RESPONSE_BODY": "Response body"
     }
   },
+  "VARIABLES": {
+    "TITLE": "Variables",
+    "NAME": "Name",
+    "VALUE": "Value",
+    "TYPE": "Type",
+    "SCOPE": "Scope",
+    "DOMAIN": "Domain",
+    "NEW": "Add",
+    "EDIT": "Edit",
+    "REMOVE": "Remove",
+    "SAVE": "Save",
+    "TITLE_NEW": "New variable",
+    "TITLE_EDIT": "Edit variable",
+    "NAME_REQUIRED": "Name is required",
+    "NAME_PATTERN": "Invalid variable name",
+    "SECRET_PLACEHOLDER": "Secret value"
+  },
   "DASHBOARD": {
     "NUMBERS_OF_USERS": "Current number of users",
     "NUMBERS_OF_DOMAINS": "Current number of domains",
@@ -1528,7 +1546,8 @@
       "NOTIFICATION": "Notification sent",
       "NEW_WEBHOOK": "New webhook added",
       "WEBHOOK": "Webhook data updated",
-      "GLOBAL_LIMIT": "Global limits updated"
+      "GLOBAL_LIMIT": "Global limits updated",
+      "NEW_VARIABLE": "New variable added"
     },
     "ERROR": {
       "NEW_GROUP": "Failed to add new group.",
@@ -1536,7 +1555,8 @@
       "NEW_CLUSTER": "Failed to add new cluster",
       "SETTINGS": "Settings update failed",
       "NOTIFICATION": "Message could not be sent",
-      "WEBHOOK": "Webhook data update failed"
+      "WEBHOOK": "Webhook data update failed",
+      "NEW_VARIABLE": "Failed to add new variable"
     }
   }
 }

@@ -89,17 +89,17 @@ dependencies {
 
     implementation('org.modelmapper:modelmapper:3.2.6')
     implementation('org.modelmapper.extensions:modelmapper-spring:3.2.6')
-    implementation('org.apache.commons:commons-lang3:3.20.0')
+    implementation('org.apache.commons:commons-lang3:3.21.0')
 
     // nmaas DTO classes
-    implementation('net.geant.nmaas:nmaas-platform-dto:0.2.14')
+    implementation('net.geant.nmaas:nmaas-platform-dto:0.3.0')
 
     // Database
     runtimeOnly('com.h2database:h2')
     runtimeOnly('org.postgresql:postgresql')
 
     // Database audit trail
-    implementation 'org.hibernate.orm:hibernate-envers:7.2.25.Final'
+    implementation 'org.hibernate.orm:hibernate-envers:7.4.12.Final'
 
     // Database migrations
     implementation("org.springframework.boot:spring-boot-starter-flyway")
@@ -125,6 +125,8 @@ dependencies {
     // Tests
     testImplementation('org.mockito:mockito-core:5.24.0')
     testImplementation('org.springframework.boot:spring-boot-starter-test')
+    // @WebMvcTest slice support (Spring Boot 4 modularized test auto-configuration)
+    testImplementation('org.springframework.boot:spring-boot-webmvc-test')
     testImplementation('org.yaml:snakeyaml:2.7')
 
     integrationTestImplementation('org.springframework.boot:spring-boot-starter-test')

@@ -89,14 +89,12 @@ class BulkControllerTest {
 
     @Test
     void shouldProcessBulkApplicationRequest() {
-        assertThrows(MissingElementException.class, () -> {
-            MultipartFile file = new MockMultipartFile("test.csv", "test.csv", "text/csv", "content".getBytes());
-            when(bulkCsvProcessor.isCSVFormat(any())).thenReturn(true);
-            when(principalMock.getName()).thenReturn("user");
-            when(userService.findByUsername("user")).thenReturn(Optional.of(new User("user")));
+        MultipartFile file = new MockMultipartFile("test.csv", "test.csv", "text/csv", "content".getBytes());
+        when(bulkCsvProcessor.isCSVFormat(any())).thenReturn(true);
+        when(principalMock.getName()).thenReturn("user");
+        when(userService.findByUsername("user")).thenReturn(Optional.of(new User("user")));
 
-            bulkController.uploadApplications(principalMock, "applicationName", 2, file);
-        });
+        assertThrows(MissingElementException.class, () -> bulkController.uploadApplications(principalMock, "applicationName", 2, file));
     }
 
     @Test

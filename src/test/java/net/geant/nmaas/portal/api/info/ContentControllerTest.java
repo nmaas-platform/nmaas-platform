@@ -34,10 +34,8 @@ class ContentControllerTest {
 
     @Test
     void shouldThrowAnExceptionWhenContentNotFound() {
-        assertThrows(ProcessingException.class, () -> {
-            when(repository.findByName(CONTENT.getName())).thenReturn(Optional.empty());
-            contentController.getContent(CONTENT.getName());
-        });
+        when(repository.findByName(CONTENT.getName())).thenReturn(Optional.empty());
+        assertThrows(ProcessingException.class, () -> contentController.getContent(CONTENT.getName()));
     }
 
 }

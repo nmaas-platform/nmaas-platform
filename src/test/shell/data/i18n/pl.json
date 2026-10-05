@@ -38,7 +38,8 @@
       "TITLE": "Webhooks",
       "LIST": "Lista",
       "HISTORY": "Historia"
-    }
+    },
+    "VARIABLES": "Zmienne"
   },
   "WELCOME": {
     "LOGIN": "Logowanie",
@@ -383,40 +384,40 @@
     }
   },
   "BUNDLES": {
-    "TITLE": "Bundles",
-    "ADD_BUTTON": "Add",
-    "CODENAME": "Codename",
-    "NAME": "Name",
-    "QUANTITY": "Quantity",
-    "DESCRIPTION": "Description",
-    "EDIT": "Edit",
+    "TITLE": "Paczki",
+    "ADD_BUTTON": "Dodaj",
+    "CODENAME": "Nazwa kodowa",
+    "NAME": "Nazwa",
+    "QUANTITY": "Ilość",
+    "DESCRIPTION": "Opis",
+    "EDIT": "Edytuj",
     "DETAILS": {
-      "TITLE": "Bundle details",
-      "NAME": "Name",
-      "CODENAME": "Codename",
-      "ID": "Id in db",
-      "DESCRIPTIONS": "Descriptions",
-      "APPLICATIONS": "Applications",
-      "SAVE_BUTTON": "Save",
-      "CREATE_BUTTON": "Create",
-      "NAME_REQUIRED": "Name is required.",
-      "CODENAME_REQUIRED": "Codename is required.",
+      "TITLE": "Szczegóły paczek",
+      "NAME": "Nazwa",
+      "CODENAME": "Nazwa kodowa",
+      "ID": "Id w bazie",
+      "DESCRIPTIONS": "Opisy",
+      "APPLICATIONS": "Aplikacje",
+      "SAVE_BUTTON": "Zapisz",
+      "CREATE_BUTTON": "Utwórz",
+      "NAME_REQUIRED": "Nazwa jest wymagana.",
+      "CODENAME_REQUIRED": "Nazwa kodowa jest wymagana.",
       "DESCRIPTION": {
-        "BRIEF": "Short description",
-        "FULL": "Long description",
-        "REMOVE": "Remove description",
-        "MISSING": "Description is missing",
-        "ADD": "Add mew description"
+        "BRIEF": "Krótki opis",
+        "FULL": "Pełen opis",
+        "REMOVE": "Usuń opis",
+        "MISSING": "Brakuje opisu",
+        "ADD": "Dodaj nowy opis"
       },
       "APPLICATION": {
-        "ADD": "Add",
-        "ICON": "Icon",
-        "NAME": "Name",
-        "OWNER": "Owner",
-        "TITLE": "Add application",
-        "ADD_INFO": "Select application to add",
+        "ADD": "Dodaj",
+        "ICON": "Ikona",
+        "NAME": "Nazwa",
+        "OWNER": "Właściciel",
+        "TITLE": "Dodaj aplikacje",
+        "ADD_INFO": "Wybierz aplikacje do dodania",
         "ID": "Id",
-        "MINIMUM": "Select at least two applications"
+        "MINIMUM": "Wybierz conajmniej dwie aplikacje"
       }
     }
   },
@@ -1496,6 +1497,23 @@
       "RESPONSE_BODY": "Treść odpowiedzi"
     }
   },
+  "VARIABLES": {
+    "TITLE": "Zmienne",
+    "NAME": "Nazwa",
+    "VALUE": "Wartość",
+    "TYPE": "Typ",
+    "SCOPE": "Zakres",
+    "DOMAIN": "Domena",
+    "NEW": "Dodaj",
+    "EDIT": "Edytuj",
+    "REMOVE": "Usuń",
+    "SAVE": "Zapisz",
+    "TITLE_NEW": "Nowa zmienna",
+    "TITLE_EDIT": "Edycja zmiennej",
+    "NAME_REQUIRED": "Nazwa jest wymagana",
+    "NAME_PATTERN": "Nieprawidłowa nazwa zmiennej",
+    "SECRET_PLACEHOLDER": "Wartość tajna"
+  },
   "DASHBOARD": {
     "NUMBERS_OF_USERS": "Aktualna liczba użytkowników",
     "NUMBERS_OF_DOMAINS": "Aktualna liczba domen",
@@ -1527,7 +1545,8 @@
       "NOTIFICATION": "Powiadomienie zostało wysłane",
       "NEW_WEBHOOK": "Dodano nowy webhook",
       "WEBHOOK": "Dane webhooka zostały zaktualizowane",
-      "GLOBAL_LIMIT": "Globalny limity zostały zaktualizowane"
+      "GLOBAL_LIMIT": "Globalny limity zostały zaktualizowane",
+      "NEW_VARIABLE": "Nowa zmienna została dodana"
     },
     "ERROR": {
       "NEW_DOMAIN": "Nie udało się dodać nowej domeny",
@@ -1535,7 +1554,8 @@
       "NEW_GROUP": "Nie udało się dodać nowej grupy",
       "SETTINGS": "Aktualizacja ustawień nie powiodła się",
       "NOTIFICATION": "Nie udało się wysłać wiadomości",
-      "WEBHOOK": "Aktualizacja danych webhooka nie powiodła się"
+      "WEBHOOK": "Aktualizacja danych webhooka nie powiodła się",
+      "NEW_VARIABLE": "Nie udało się dodać nowej zmiennej"
     }
   }
 }

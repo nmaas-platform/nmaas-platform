@@ -254,7 +254,7 @@ class RemoteClusterManagerTest {
         when(kClusterRepository.findById(id)).thenReturn(Optional.of(existing));
         when(kClusterRepository.save(isA(KCluster.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        RemoteKClusterCompleteDto view = RemoteKClusterCompleteDto.builder()
+        RemoteKClusterCompleteDto completeDto = RemoteKClusterCompleteDto.builder()
                 .id(id)
                 .name("Cluster")
                 .codename("cluster")
@@ -266,7 +266,7 @@ class RemoteClusterManagerTest {
                 .build();
         when(domainService.findDomain("domain")).thenReturn(Optional.of(specificDomain));
 
-        remoteClusterManager.updateCluster(view, id);
+        remoteClusterManager.updateCluster(completeDto, id);
 
         assertEquals("updated-kube-config-content", existing.getClusterConfigFile());
         assertNotNull(existing.getPathConfigFile());

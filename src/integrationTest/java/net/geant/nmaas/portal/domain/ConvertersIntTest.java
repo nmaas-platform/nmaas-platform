@@ -102,7 +102,7 @@ public class ConvertersIntTest {
     }
 
     @Test
-    void testConvertAppBaseViewToAppBase() {
+    void testConvertAppBaseDtoToAppBase() {
         tagRepository.save(new Tag("network"));
 
         ApplicationBaseDto appDto = new ApplicationBaseDto();

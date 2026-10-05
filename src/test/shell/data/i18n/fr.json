@@ -38,7 +38,8 @@
       "TITLE": "Webhooks",
       "LIST": "Liste",
       "HISTORY": "Histoire"
-    }
+    },
+    "VARIABLES": "Variables"
   },
   "WELCOME": {
     "LOGIN": "S'identifier",
@@ -1497,6 +1498,23 @@
       "RESPONSE_BODY": "Response body"
     }
   },
+  "VARIABLES": {
+    "TITLE": "Variables",
+    "NAME": "Nom",
+    "VALUE": "Valeur",
+    "TYPE": "Type",
+    "SCOPE": "Portée",
+    "DOMAIN": "Domaine",
+    "NEW": "Ajouter",
+    "EDIT": "Modifier",
+    "REMOVE": "Supprimer",
+    "SAVE": "Enregistrer",
+    "TITLE_NEW": "Nouvelle variable",
+    "TITLE_EDIT": "Modifier la variable",
+    "NAME_REQUIRED": "Le nom est requis",
+    "NAME_PATTERN": "Nom de variable invalide",
+    "SECRET_PLACEHOLDER": "Valeur secrète"
+  },
   "DASHBOARD": {
     "NUMBERS_OF_USERS": "Nombre actuel d'utilisateurs",
     "NUMBERS_OF_DOMAINS": "Nombre actuel de domaines",
@@ -1528,7 +1546,8 @@
       "NOTIFICATION": "Notification envoyée avec succès",
       "NEW_WEBHOOK": "Nouveau webhook ajouté",
       "WEBHOOK": "Webhook mis à jour",
-      "GLOBAL_LIMIT": "Limite globale ajoutée"
+      "GLOBAL_LIMIT": "Limite globale ajoutée",
+      "NEW_VARIABLE": "Nouvelle variable ajoutée"
     },
     "ERROR": {
       "NEW_GROUP": "Échec de l’ajout d’un nouveau groupe.",
@@ -1536,7 +1555,8 @@
       "NEW_CLUSTER": "Échec de l'ajout d'un nouveau cluster",
       "SETTINGS": "La mise à jour des paramètres a échoué",
       "NOTIFICATION": "Le message n'a pas pu être envoyé.",
-      "WEBHOOK": "Échec de la mise à jour du Webhook"
+      "WEBHOOK": "Échec de la mise à jour du Webhook",
+      "NEW_VARIABLE": "Échec de l'ajout d'une nouvelle variable"
     }
   }
 }

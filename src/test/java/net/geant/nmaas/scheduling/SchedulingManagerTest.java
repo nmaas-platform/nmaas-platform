@@ -46,11 +46,9 @@ class SchedulingManagerTest {
     }
 
     @Test
-    void shouldNotCreateJobWhenJobExists() {
-        assertThrows(IllegalStateException.class, () -> {
-            when(scheduler.checkExists(JobKey.jobKey(ServiceType.GITLAB.getName()))).thenReturn(true);
-            this.scheduleManager.createJob(this.gitLabMonitorService, monitorEntryDto);
-        });
+    void shouldNotCreateJobWhenJobExists() throws Exception {
+        when(scheduler.checkExists(JobKey.jobKey(ServiceType.GITLAB.getName()))).thenReturn(true);
+        assertThrows(IllegalStateException.class, () -> this.scheduleManager.createJob(this.gitLabMonitorService, monitorEntryDto));
     }
 
     @Test

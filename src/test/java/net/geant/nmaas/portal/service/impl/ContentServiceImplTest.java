@@ -132,10 +132,7 @@ class ContentServiceImplTest {
     @Test
     void shouldNotRemoveContentRecordDueToContentDoNotExist() {
         Content testContent = new Content((long) 0, "testName", "Lorem", "testTitle");
-        assertThrows(ProcessingException.class, () -> {
-            contentService.delete(testContent);
-            verify(contentRepository).delete(testContent);
-        });
+        assertThrows(ProcessingException.class, () -> contentService.delete(testContent));
     }
 
 }

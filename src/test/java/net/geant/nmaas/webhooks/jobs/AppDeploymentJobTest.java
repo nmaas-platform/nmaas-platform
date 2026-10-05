@@ -75,10 +75,8 @@ class AppDeploymentJobTest {
         when(kubernetesRepositoryManager.loadService(Identifier.newInstance("id"))).thenReturn(
                 new KubernetesNmServiceInfo());
 
-        assertThrows(JobExecutionException.class, () -> {
-            AppDeploymentJob job = new AppDeploymentJob(restClient, webhookEventService, mapper, appDeploymentRepositoryManager, kubernetesRepositoryManager, webhookHistoryService, templateService);
-            job.execute(jobExecutionContext);
-        });
+        AppDeploymentJob job = new AppDeploymentJob(restClient, webhookEventService, mapper, appDeploymentRepositoryManager, kubernetesRepositoryManager, webhookHistoryService, templateService);
+        assertThrows(JobExecutionException.class, () -> job.execute(jobExecutionContext));
 
         ArgumentCaptor<WebhookHistory> webhookHistoryCaptor = ArgumentCaptor.forClass(WebhookHistory.class);
         verify(webhookHistoryRepository).save(webhookHistoryCaptor.capture());

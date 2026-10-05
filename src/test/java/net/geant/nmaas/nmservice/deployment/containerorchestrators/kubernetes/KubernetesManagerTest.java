@@ -32,6 +32,7 @@ import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentEnv;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.entities.AppStorageVolume;
+import net.geant.nmaas.portal.service.VariableService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -73,6 +74,7 @@ class KubernetesManagerTest {
     private final RemoteClusterManagementService remoteClusterManager = mock(RemoteClusterManagementService.class);
     private final RemoteClusterMonitoringService remoteClusterMonitor = mock(RemoteClusterMonitoringService.class);
     private final KubernetesDeploymentRemoteClusterParametersProvider remoteClusterParametersProvider = mock(KubernetesDeploymentRemoteClusterParametersProvider.class);
+    private final VariableService variableService = mock(VariableService.class);
 
     private static final Identifier DEPLOYMENT_ID = Identifier.newInstance("deploymentId");
 
@@ -89,7 +91,8 @@ class KubernetesManagerTest {
             gitLabManager,
             kubernetesApiJanitorService,
             remoteClusterManager,
-            remoteClusterMonitor
+            remoteClusterMonitor,
+            variableService
     );
 
     @BeforeEach
@@ -304,6 +307,36 @@ class KubernetesManagerTest {
         assertTrue(serviceInfo.getValue().getAdditionalParameters().get("customkey7").matches("\\d+"));
     }
 
+    @Test
+    void shouldResolveGlobalDeployParameterVariableReferenceWithDeploymentDomain() {
+        AppDeployment deployment = AppDeployment.builder()
+                .deploymentId(DEPLOYMENT_ID)
+                .descriptiveDeploymentId(Identifier.newInstance("descriptiveDeploymentId"))
+                .domain("testdom")
+                .deploymentName("appInstanceName")
+                .build();
+        AppDeploymentSpec spec = AppDeploymentSpec.builder()
+                .supportedDeploymentEnvironments(Collections.singletonList(AppDeploymentEnv.KUBERNETES))
+                .kubernetesTemplate(new KubernetesTemplate("chartName", "chartVersion", null))
+                .accessMethods(Set.of(
+                        AppAccessMethod.builder()
+                                .type(ServiceAccessMethodType.EXTERNAL).name("name").tag("tag")
+                                .build()))
+                .storageVolumes(Set.of(new AppStorageVolume(ServiceStorageVolumeType.MAIN, 2, null)))
+                .globalDeployParameters(Map.of("smtp.host", "${var:smtp.host}"))
+                .build();
+        when(variableService.getRawValue("smtp.host", "testdom")).thenReturn("smtp.example.com");
+
+        ArgumentCaptor<KubernetesNmServiceInfo> serviceInfo = ArgumentCaptor.forClass(KubernetesNmServiceInfo.class);
+        manager.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(DEPLOYMENT_ID, deployment, spec);
+
+        // the effective value is resolved using the domain of the deployment, so that
+        // a domain level variable takes precedence over an instance level one
+        verify(variableService).getRawValue("smtp.host", "testdom");
+        verify(repositoryManager, times(1)).storeService(serviceInfo.capture());
+        assertEquals("smtp.example.com", serviceInfo.getValue().getAdditionalParameters().get("smtp.host"));
+    }
+
     private Map<String, String> getStringStringMap() {
         Map<String, String> globalDeployParameters = new HashMap<>();
         globalDeployParameters.put("customkey1", "customvalue1");
@@ -340,10 +373,8 @@ class KubernetesManagerTest {
 
     @Test
     void shouldVerifyRequestAndThrowException() {
-        assertThrows(ContainerOrchestratorInternalErrorException.class, () -> {
-            doThrow(new KClusterCheckException("")).when(clusterValidator).checkClusterStatusAndPrerequisites();
-            manager.verifyRequestAndObtainInitialDeploymentDetails(DEPLOYMENT_ID);
-        });
+        doThrow(new KClusterCheckException("")).when(clusterValidator).checkClusterStatusAndPrerequisites();
+        assertThrows(ContainerOrchestratorInternalErrorException.class, () -> manager.verifyRequestAndObtainInitialDeploymentDetails(DEPLOYMENT_ID));
     }
 
     @Test
@@ -414,38 +445,36 @@ class KubernetesManagerTest {
         when(kubernetesApiJanitorService.retrieveServiceIp(null, Identifier.newInstance("deploymentId-component1"), "domain"))
                 .thenReturn("192.168.100.2");
         when(kubernetesApiJanitorService.checkServiceExists(any(), any(), any())).thenReturn(false);
-        assertDoesNotThrow(() -> {
-            manager.checkService(Identifier.newInstance("deploymentId"));
+        assertDoesNotThrow(() -> manager.checkService(Identifier.newInstance("deploymentId")));
 
-            ArgumentCaptor<Set<ServiceAccessMethod>> accessMethodsArg = ArgumentCaptor.forClass(HashSet.class);
-            verify(repositoryManager, times(2)).updateKServiceAccessMethods(accessMethodsArg.capture());
-            assertEquals(10, accessMethodsArg.getAllValues().getFirst().size());
-            assertTrue(accessMethodsArg.getAllValues().getFirst().stream().anyMatch(m ->
-                    m.isOfType(ServiceAccessMethodType.INTERNAL)
-                            && m.getName().equals("ssh-service")
-                            && m.getProtocol().equals("SSH")
-                            && m.getUrl().equals("netops@192.168.100.1")));
-            assertTrue(accessMethodsArg.getAllValues().getFirst().stream().anyMatch(m ->
-                    m.isOfType(ServiceAccessMethodType.INTERNAL)
-                            && m.getName().equals("ssh-service-with-port")
-                            && m.getProtocol().equals("SSH")
-                            && m.getUrl().equals("netops@192.168.100.1 (port: 22)")));
-            assertTrue(accessMethodsArg.getAllValues().getFirst().stream().anyMatch(m ->
-                    m.isOfType(ServiceAccessMethodType.INTERNAL)
-                            && m.getName().equals("ssh-service-with-access-user")
-                            && m.getProtocol().equals("SSH")
-                            && m.getUrl().equals("testUser@192.168.100.1")));
-            assertTrue(accessMethodsArg.getAllValues().getFirst().stream().anyMatch(m ->
-                    m.isOfType(ServiceAccessMethodType.INTERNAL)
-                            && m.getName().equals("data-service-with-access-user")
-                            && m.getProtocol().equals("DATA")
-                            && m.getUrl().equals("testUser@192.168.100.1")));
-            assertTrue(accessMethodsArg.getAllValues().getFirst().stream().anyMatch(m ->
-                    m.isOfType(ServiceAccessMethodType.INTERNAL)
-                            && m.getName().equals("data-service")
-                            && m.getProtocol().equals("DATA")
-                            && m.getUrl().equals("192.168.100.2")));
-        });
+        ArgumentCaptor<Set<ServiceAccessMethod>> accessMethodsArg = ArgumentCaptor.forClass(HashSet.class);
+        verify(repositoryManager, times(2)).updateKServiceAccessMethods(accessMethodsArg.capture());
+        assertEquals(10, accessMethodsArg.getAllValues().getFirst().size());
+        assertTrue(accessMethodsArg.getAllValues().getFirst().stream().anyMatch(m ->
+                m.isOfType(ServiceAccessMethodType.INTERNAL)
+                        && m.getName().equals("ssh-service")
+                        && m.getProtocol().equals("SSH")
+                        && m.getUrl().equals("netops@192.168.100.1")));
+        assertTrue(accessMethodsArg.getAllValues().getFirst().stream().anyMatch(m ->
+                m.isOfType(ServiceAccessMethodType.INTERNAL)
+                        && m.getName().equals("ssh-service-with-port")
+                        && m.getProtocol().equals("SSH")
+                        && m.getUrl().equals("netops@192.168.100.1 (port: 22)")));
+        assertTrue(accessMethodsArg.getAllValues().getFirst().stream().anyMatch(m ->
+                m.isOfType(ServiceAccessMethodType.INTERNAL)
+                        && m.getName().equals("ssh-service-with-access-user")
+                        && m.getProtocol().equals("SSH")
+                        && m.getUrl().equals("testUser@192.168.100.1")));
+        assertTrue(accessMethodsArg.getAllValues().getFirst().stream().anyMatch(m ->
+                m.isOfType(ServiceAccessMethodType.INTERNAL)
+                        && m.getName().equals("data-service-with-access-user")
+                        && m.getProtocol().equals("DATA")
+                        && m.getUrl().equals("testUser@192.168.100.1")));
+        assertTrue(accessMethodsArg.getAllValues().getFirst().stream().anyMatch(m ->
+                m.isOfType(ServiceAccessMethodType.INTERNAL)
+                        && m.getName().equals("data-service")
+                        && m.getProtocol().equals("DATA")
+                        && m.getUrl().equals("192.168.100.2")));
     }
 
     @Test
@@ -454,10 +483,8 @@ class KubernetesManagerTest {
         when(kubernetesApiJanitorService.checkIfReady(any(), any(), any())).thenReturn(true);
         when(kubernetesApiJanitorService.retrieveServiceIp(any(), any(), any())).thenThrow(new JanitorException(""));
         when(kubernetesApiJanitorService.checkServiceExists(any(), any(), any())).thenReturn(false);
-        assertDoesNotThrow(() -> {
-            manager.checkService(Identifier.newInstance("deploymentId"));
-            verify(repositoryManager, times(1)).updateKServiceAccessMethods(any());
-        });
+        assertDoesNotThrow(() -> manager.checkService(Identifier.newInstance("deploymentId")));
+        verify(repositoryManager, times(1)).updateKServiceAccessMethods(any());
     }
 
     @Test
