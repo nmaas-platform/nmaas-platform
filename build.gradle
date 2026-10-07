@@ -88,7 +88,7 @@ dependencies {
     implementation('org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.1')
 
     implementation('org.modelmapper:modelmapper:3.2.6')
-    implementation('org.modelmapper.extensions:modelmapper-spring:3.2.6')
+    implementation('org.modelmapper.extensions:modelmapper-spring:3.2.7')
     implementation('org.apache.commons:commons-lang3:3.21.0')
 
     // nmaas DTO classes
