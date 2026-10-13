@@ -3,6 +3,7 @@ bin
 bin/
 bin/*
 out/
+.run/
 .gradle/
 .gradle/*
 /build/
