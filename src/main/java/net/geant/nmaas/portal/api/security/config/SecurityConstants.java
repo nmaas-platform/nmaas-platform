@@ -26,11 +26,18 @@ public class SecurityConstants {
     static final String AUTH_SSO_LOGIN = API_VERSIONED_PATTERN + "/auth/sso/login";
     static final String AUTH_OIDC_LOGIN_PAGE = API_VERSIONED_PATTERN + "/oauth2/authorization/my-oidc";
     static final String AUTH_OIDC_LOGIN = API_VERSIONED_PATTERN + "/auth/oidc/login";
+    /**
+     * Landing endpoint of the OAuth2 login flow. Reached with the OAuth2 session
+     * established by the security filters, therefore intentionally NOT whitelisted:
+     * anonymous requests are rejected with 401 by the authorization rules.
+     */
     static final String AUTH_OIDC_SUCCESS = API_VERSIONED_PATTERN + "/oidc/success";
+    /**
+     * Self-authenticating endpoints (ID token and/or local credentials in the payload).
+     */
     static final String AUTH_OIDC_LINK = API_VERSIONED_PATTERN + "/oidc/link";
     static final String AUTH_OIDC_APPROVALS = API_VERSIONED_PATTERN + "/oidc/approvals";
     static final String AUTH_LOGOUT = API_VERSIONED_PATTERN + "/oidc/logout/*";
-    static final String AUTH_OIDC = API_VERSIONED_PATTERN + "/oidc/**";
     static final String AUTH_CODE = API_VERSIONED_PATTERN + "/login/oauth2/code";
 
     /**
@@ -54,6 +61,9 @@ public class SecurityConstants {
 
     /**
      * Paths whitelisted for any HTTP method without authentication.
+     * <p>
+     * Note: the OAuth2 success endpoint is deliberately absent - it must only be
+     * reachable with the authenticated OAuth2 session.
      */
     protected static final String[] AUTH_WHITELIST_ANY_METHOD = {
             AUTH_BASIC_LOGIN,
@@ -62,7 +72,6 @@ public class SecurityConstants {
             AUTH_SSO_LOGIN,
             AUTH_OIDC_LOGIN,
             AUTH_OIDC_LOGIN_PAGE,
-            AUTH_OIDC,
             AUTH_OIDC_APPROVALS,
             AUTH_LOGOUT,
             AUTH_CODE,
@@ -101,7 +110,10 @@ public class SecurityConstants {
                     AUTH_SSO_LOGIN,
                     AUTH_OIDC_LOGIN,
                     AUTH_OIDC_LOGIN_PAGE,
-                    AUTH_OIDC,
+                    AUTH_OIDC_SUCCESS,
+                    AUTH_OIDC_LINK,
+                    AUTH_OIDC_APPROVALS,
+                    AUTH_LOGOUT,
                     AUTH_CODE,
                     "/api-docs/**",
                     "/actuator/**",

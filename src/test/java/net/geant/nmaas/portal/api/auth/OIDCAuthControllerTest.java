@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.api.auth;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.ws.rs.core.HttpHeaders;
 import net.geant.nmaas.api.dto.users.UserDto;
 import net.geant.nmaas.portal.api.configuration.model.ConfigurationDto;
@@ -24,6 +25,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
@@ -34,6 +37,7 @@ import java.lang.reflect.Constructor;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -250,5 +254,71 @@ class OIDCAuthControllerTest {
 
         // then
         assertTrue(result.getUrl().contains("/login-linking?oidc-token=oidc-token"));
+    }
+
+    @Test
+    void shouldRejectOidcLoginSuccessWithoutAuthenticatedPrincipal() {
+        // when + then
+        assertThrows(AuthenticationException.class, () -> oidcAuthController.oidcLoginSuccess(null, request));
+
+        verifyNoInteractions(oidcUserService, jwtTokenService, loginRegisterService);
+    }
+
+    @Test
+    void shouldTerminateOidcSessionAfterRedirectingWithTokens() throws Exception {
+        // given
+        OidcUser oidcUser = mock(OidcUser.class);
+        OidcIdToken idToken = mock(OidcIdToken.class);
+        when(idToken.getTokenValue()).thenReturn(OIDC_TOKEN);
+        when(oidcUser.getIdToken()).thenReturn(idToken);
+
+        when(oidcUserService.externalUserRequiresLinking(any())).thenReturn(false);
+        when(oidcUserService.externalUserRequiresAupAndPn(any())).thenReturn(false);
+
+        Constructor<User> userConstructor = User.class.getDeclaredConstructor();
+        userConstructor.setAccessible(true);
+        User user = userConstructor.newInstance();
+
+        when(oidcUserService.checkUser(any())).thenReturn(user);
+        when(jwtTokenService.getToken(any())).thenReturn("jwt-token");
+        when(jwtTokenService.getRefreshToken(any())).thenReturn("refresh-token");
+
+        when(request.getHeader(HttpHeaders.HOST)).thenReturn("localhost");
+        when(request.getHeader(HttpHeaders.USER_AGENT)).thenReturn("JUnit");
+
+        HttpSession session = mock(HttpSession.class);
+        when(request.getSession(false)).thenReturn(session);
+        SecurityContextHolder.getContext().setAuthentication(mock(Authentication.class));
+
+        // when
+        RedirectView result = oidcAuthController.oidcLoginSuccess(oidcUser, request);
+
+        // then
+        assertTrue(result.getUrl().contains("login-success"));
+        verify(session).invalidate();
+        assertNull(SecurityContextHolder.getContext().getAuthentication());
+        verify(loginRegisterService).registerNewSuccessfulLogin(eq(user), any(), any(), any());
+    }
+
+    @Test
+    void shouldTerminateOidcSessionWhenExternalUserRequiresLinking() {
+        // given
+        OidcUser oidcUser = mock(OidcUser.class);
+        OidcIdToken idToken = mock(OidcIdToken.class);
+        when(idToken.getTokenValue()).thenReturn(OIDC_TOKEN);
+        when(oidcUser.getIdToken()).thenReturn(idToken);
+
+        when(oidcUserService.externalUserRequiresLinking(any())).thenReturn(true);
+
+        HttpSession session = mock(HttpSession.class);
+        when(request.getSession(false)).thenReturn(session);
+
+        // when
+        RedirectView result = oidcAuthController.oidcLoginSuccess(oidcUser, request);
+
+        // then
+        assertTrue(result.getUrl().contains("/login-linking?oidc-token=oidc-token"));
+        verify(session).invalidate();
+        verifyNoInteractions(jwtTokenService);
     }
 }

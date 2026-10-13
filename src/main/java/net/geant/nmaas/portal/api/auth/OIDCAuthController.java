@@ -2,6 +2,7 @@ package net.geant.nmaas.portal.api.auth;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.api.dto.users.UserDto;
@@ -34,6 +35,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -157,26 +159,35 @@ public class OIDCAuthController {
         );
     }
 
+    /**
+     * Landing endpoint of the OAuth2 login flow. Reached with an authenticated
+     * session established by the OAuth2 filters; must never be accessible
+     * anonymously.
+     */
     @Loggable(LogLevel.INFO)
     @GetMapping("/api/${nmaas.api.version:v1}/oidc/success")
     public RedirectView oidcLoginSuccess(@AuthenticationPrincipal OidcUser oidcUser, HttpServletRequest request) {
+        if (oidcUser == null) {
+            log.warn("OIDC login success endpoint reached without an authenticated OIDC session");
+            throw new AuthenticationException("OIDC session has not been established");
+        }
         log.info("OIDC LOGIN SUCCESS: {}", request.toString());
-        if (oidcUserService.externalUserRequiresLinking(oidcUser)) {
-            log.info("External user requires linking");
-            String linkingRedirectUrl = portalAddress
-                    + "/login-linking?oidc-token="
-                    + oidcUser.getIdToken().getTokenValue();
-            return new RedirectView(linkingRedirectUrl);
-        }
-        if (oidcUserService.externalUserRequiresAupAndPn(oidcUser)) {
-            log.info("External user requires AUP and PN confirmation");
-            String linkingRedirectUrl = portalAddress
-                    + "/sso-first-login?oidc-token="
-                    + oidcUser.getIdToken().getTokenValue();
-            return new RedirectView(linkingRedirectUrl);
-        }
-
         try {
+            if (oidcUserService.externalUserRequiresLinking(oidcUser)) {
+                log.info("External user requires linking");
+                String linkingRedirectUrl = portalAddress
+                        + "/login-linking?oidc-token="
+                        + oidcUser.getIdToken().getTokenValue();
+                return new RedirectView(linkingRedirectUrl);
+            }
+            if (oidcUserService.externalUserRequiresAupAndPn(oidcUser)) {
+                log.info("External user requires AUP and PN confirmation");
+                String linkingRedirectUrl = portalAddress
+                        + "/sso-first-login?oidc-token="
+                        + oidcUser.getIdToken().getTokenValue();
+                return new RedirectView(linkingRedirectUrl);
+            }
+
             User user = oidcUserService.checkUser(oidcUser);
 
             String redirectUrl = portalAddress
@@ -197,6 +208,21 @@ public class OIDCAuthController {
             //TODO handle this exception on the portal
             String logoutUrl = oidcAddress + OIDC_LOGOUT_PATH;
             return new RedirectView(logoutUrl + "?id_token_hint=" + oidcUser.getIdToken().getTokenValue());
+        } finally {
+            terminateOidcSession(request);
+        }
+    }
+
+    /**
+     * The portal SPA authenticates exclusively with the tokens issued in the
+     * redirect URL, so the server-side session established by the OAuth2 login
+     * flow must not outlive this request.
+     */
+    private void terminateOidcSession(HttpServletRequest request) {
+        SecurityContextHolder.clearContext();
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
         }
     }
 
