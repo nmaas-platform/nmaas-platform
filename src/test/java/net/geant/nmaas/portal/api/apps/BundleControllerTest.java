@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -62,6 +63,19 @@ class BundleControllerTest {
         assertEquals(200, result.getStatusCode().value());
         assertSame(updated, result.getBody());
         verify(bundleService).update(10L, request);
+    }
+
+    @Test
+    void shouldDeleteBundle() {
+        ResponseEntity<Void> result = controller.delete(10L);
+
+        assertEquals(204, result.getStatusCode().value());
+        verify(bundleService).delete(10L);
+    }
+
+    @Test
+    void shouldPropagateErrorWhenDeletedBundleNotFound() {
+        doThrow(new BundleNotFoundException(10L)).when(bundleService).delete(10L);        assertThrows(BundleNotFoundException.class, () -> controller.delete(10L));
     }
 
     @Test

@@ -314,6 +314,29 @@ class BundleServiceImplTest {
         verify(bundleRepository, never()).save(any());
     }
 
+    @Test
+    void shouldDeleteBundle() {
+        Bundle existingBundle = bundle(10L, "Bundle", "bundle");
+        existingBundle.getApps().addAll(Set.of(app1, app2));
+        existingBundle.getDescriptions().add(new BundleDescription(100L, "en", "brief", "full description"));
+        when(bundleRepository.findById(10L)).thenReturn(Optional.of(existingBundle));
+
+        bundleService.delete(10L);
+
+        verify(bundleRepository).delete(existingBundle);
+    }
+
+    @Test
+    void shouldThrowWhenDeletedBundleDoesNotExist() {
+        when(bundleRepository.findById(10L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> bundleService.delete(10L))
+                .isInstanceOf(BundleNotFoundException.class)
+                .hasMessage("Bundle with id 10 not found");
+
+        verify(bundleRepository, never()).delete(any());
+    }
+
     // ---------- findById ----------
 
     @Test

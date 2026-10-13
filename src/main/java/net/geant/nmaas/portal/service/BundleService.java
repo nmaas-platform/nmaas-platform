@@ -13,6 +13,8 @@ public interface BundleService {
 
     BundleDto update(Long id, BundleBasicDto bundle);
 
+    void delete(Long id);
+
     BundleDto findById(Long id);
 
     Boolean isApplicationInBundle(Long appId);

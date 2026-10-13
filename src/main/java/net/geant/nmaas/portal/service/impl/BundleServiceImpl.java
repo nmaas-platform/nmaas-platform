@@ -70,6 +70,14 @@ public class BundleServiceImpl implements BundleService {
 
     @Override
     @Transactional
+    public void delete(Long id) {
+        Bundle bundle = bundleRepository.findById(id)
+                .orElseThrow(() -> new BundleNotFoundException(id));
+        bundleRepository.delete(bundle);
+    }
+
+    @Override
+    @Transactional
     public BundleDto findById(Long id) {
         return mapper.mapToBundleDto(bundleRepository.getReferenceById(id));
     }

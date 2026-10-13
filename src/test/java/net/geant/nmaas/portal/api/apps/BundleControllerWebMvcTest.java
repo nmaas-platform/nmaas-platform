@@ -166,6 +166,23 @@ class BundleControllerWebMvcTest {
     }
 
     @Test
+    void shouldDeleteBundle() throws Exception {
+        mvc.perform(delete(BASE_URL + "/10"))
+                .andExpect(status().isNoContent());
+
+        verify(bundleService).delete(10L);
+    }
+
+    @Test
+    void shouldReturnNotFoundWhenDeletedBundleDoesNotExist() throws Exception {
+        org.mockito.Mockito.doThrow(new BundleNotFoundException(10L)).when(bundleService).delete(10L);
+
+        mvc.perform(delete(BASE_URL + "/10"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.detail").value("Bundle with id 10 not found"));
+    }
+
+    @Test
     void shouldGetOneBundle() throws Exception {
         when(bundleService.findById(10L)).thenReturn(bundleDto());
 
