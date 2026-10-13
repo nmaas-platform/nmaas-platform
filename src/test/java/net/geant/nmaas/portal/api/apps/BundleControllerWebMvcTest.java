@@ -32,6 +32,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -161,6 +162,23 @@ class BundleControllerWebMvcTest {
         mvc.perform(put(BASE_URL + "/10")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(VALID_REQUEST))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.detail").value("Bundle with id 10 not found"));
+    }
+
+    @Test
+    void shouldDeleteBundle() throws Exception {
+        mvc.perform(delete(BASE_URL + "/10"))
+                .andExpect(status().isNoContent());
+
+        verify(bundleService).delete(10L);
+    }
+
+    @Test
+    void shouldReturnNotFoundWhenDeletedBundleDoesNotExist() throws Exception {
+        org.mockito.Mockito.doThrow(new BundleNotFoundException(10L)).when(bundleService).delete(10L);
+
+        mvc.perform(delete(BASE_URL + "/10"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.detail").value("Bundle with id 10 not found"));
     }
