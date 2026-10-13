@@ -46,7 +46,9 @@ public class User implements Serializable {
 
     private String password;
 
-    /* Unique string identifying the user received from the IdP during first SAML login */
+    /* Unique string identifying the user received from the IdP during first SAML/OIDC login (OIDC subject).
+     * Kept unique at the database level: an external identity may only be linked to a single account. */
+    @Column(unique = true)
     private String samlToken;
 
     @Email

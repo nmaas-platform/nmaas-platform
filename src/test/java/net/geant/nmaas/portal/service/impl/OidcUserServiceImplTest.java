@@ -190,6 +190,18 @@ class OidcUserServiceImplTest {
     }
 
     @Test
+    void registerNewUserFromValidatedClaimsShouldThrowWhenExternalIdentityAlreadyLinkedToAnotherUser() {
+        OidcUserClaims claims = new OidcUserClaims("taken-sub", "new@example.com", "newuser", "John", "Doe");
+        when(userRepository.existsBySamlToken("taken-sub")).thenReturn(true);
+
+        SignupException ex = assertThrows(SignupException.class,
+                () -> oidcUserService.registerNewUser(claims, "newuser", true, true));
+        assertEquals("External identity is already linked to another user", ex.getMessage());
+        verifyNoInteractions(domainService);
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
     void registerNewUserShouldThrowSignupExceptionWhenGlobalDomainMissing() {
         OidcUserClaims claims = new OidcUserClaims("uuid", "x@example.com", "ab", "A", "B");
         when(domainService.getGlobalDomain()).thenReturn(Optional.empty());
@@ -250,6 +262,43 @@ class OidcUserServiceImplTest {
         assertThrows(ExternalUserCanNotBeLinked.class, () -> oidcUserService.linkUser(claims));
         verify(userService, never()).update(existingUser);
         assertEquals("other-sub", existingUser.getSamlToken());
+    }
+
+    @Test
+    void linkUserShouldRejectWhenExternalIdentityLinkedToAnotherAccount() {
+        User existingUser = new User("testuser");
+        existingUser.setId(1L);
+        existingUser.setEmail("test@example.com");
+
+        User otherAccount = new User("otheruser");
+        otherAccount.setId(2L);
+        otherAccount.setEmail("other@example.com");
+        otherAccount.setSamlToken("new-sub");
+
+        when(userService.findByEmail("test@example.com")).thenReturn(existingUser);
+        when(userRepository.findBySamlToken("new-sub")).thenReturn(Optional.of(otherAccount));
+
+        OidcUserClaims claims = new OidcUserClaims("new-sub", "test@example.com", null, "John", "Doe");
+
+        assertThrows(ExternalUserCanNotBeLinked.class, () -> oidcUserService.linkUser(claims));
+        verify(userService, never()).update(existingUser);
+    }
+
+    @Test
+    void linkUserShouldAllowWhenExternalIdentityLinkedToSameAccount() {
+        User existingUser = new User("testuser");
+        existingUser.setId(1L);
+        existingUser.setEmail("test@example.com");
+        existingUser.setSamlToken("new-sub");
+
+        when(userService.findByEmail("test@example.com")).thenReturn(existingUser);
+        when(userRepository.findBySamlToken("new-sub")).thenReturn(Optional.of(existingUser));
+
+        OidcUserClaims claims = new OidcUserClaims("new-sub", "test@example.com", null, "John", "Doe");
+        User result = oidcUserService.linkUser(claims);
+
+        assertEquals("new-sub", result.getSamlToken());
+        verify(userService).update(existingUser);
     }
 
     @Test

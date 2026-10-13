@@ -75,8 +75,10 @@ public class OidcUserServiceImpl implements OidcUserService {
 
     @Override
     public User registerNewUser(OidcUserClaims claims, String requestedUsername, boolean isAupAccepted, boolean isPnAccepted) {
+        String username = resolveUsername(claims, requestedUsername);
+        assertExternalIdentityAvailable(claims.sub());
         try {
-            return register(resolveUsername(claims, requestedUsername),
+            return register(username,
                     claims.email(),
                     claims.familyName(),
                     claims.givenName(),
@@ -101,8 +103,21 @@ public class OidcUserServiceImpl implements OidcUserService {
         throw new SignupException("Username is required");
     }
 
+    /**
+     * Ensures the external identity is not linked to any other account yet.
+     * The database-level unique constraint remains the last line of defense
+     * against concurrent requests.
+     */
+    private void assertExternalIdentityAvailable(String samlToken) {
+        if (samlToken != null && userRepository.existsBySamlToken(samlToken)) {
+            log.warn("Rejected registration attempt for external identity [{}] already linked to another user", samlToken);
+            throw new SignupException("External identity is already linked to another user");
+        }
+    }
+
     @Override
     public User registerNewUser(OidcUser oidcUser) {
+        assertExternalIdentityAvailable(oidcUser.getAttribute("sub"));
         try {
             return register(oidcUser, domains.getGlobalDomain().orElseThrow(MissingElementException::new));
         } catch (ObjectAlreadyExistsException _) {
@@ -194,6 +209,13 @@ public class OidcUserServiceImpl implements OidcUserService {
                     claims.sub(), user.getUsername());
             throw new ExternalUserCanNotBeLinked("User " + user.getUsername() + " is already linked to a different external identity");
         }
+        userRepository.findBySamlToken(claims.sub()).ifPresent(existing -> {
+            if (!existing.getId().equals(user.getId())) {
+                log.warn("Rejected attempt to link external identity [{}] to user [{}] while it is already linked to user [{}]",
+                        claims.sub(), user.getUsername(), existing.getUsername());
+                throw new ExternalUserCanNotBeLinked("This external identity is already linked to another account");
+            }
+        });
         user.setSamlToken(claims.sub());
         if (claims.givenName() != null) {
             user.setFirstname(claims.givenName());
