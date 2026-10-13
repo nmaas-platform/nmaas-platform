@@ -2,7 +2,7 @@ package net.geant.nmaas.portal.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.portal.api.auth.OidcApprovals;
+import net.geant.nmaas.portal.api.exceptions.ExternalUserCanNotBeLinked;
 import net.geant.nmaas.portal.api.exceptions.ExternalUserMatchException;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.exceptions.SignupException;
@@ -13,8 +13,10 @@ import net.geant.nmaas.portal.persistence.entity.User;
 import net.geant.nmaas.portal.persistence.repositories.UserRepository;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.DomainService;
+import net.geant.nmaas.portal.service.OidcUserClaims;
 import net.geant.nmaas.portal.service.OidcUserService;
 import net.geant.nmaas.portal.service.UserService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Service;
@@ -72,21 +74,31 @@ public class OidcUserServiceImpl implements OidcUserService {
     }
 
     @Override
-    public User registerNewUser(OidcApprovals oidcUser) {
+    public User registerNewUser(OidcUserClaims claims, String requestedUsername, boolean isAupAccepted, boolean isPnAccepted) {
         try {
-            return register(oidcUser.username(),
-                    oidcUser.email(),
-                    oidcUser.lastName(),
-                    oidcUser.firstName(),
-                    oidcUser.uuid(),
-                    oidcUser.isAupApprove(),
-                    oidcUser.isPnApprove(),
+            return register(resolveUsername(claims, requestedUsername),
+                    claims.email(),
+                    claims.familyName(),
+                    claims.givenName(),
+                    claims.sub(),
+                    isAupAccepted,
+                    isPnAccepted,
                     domains.getGlobalDomain().orElseThrow(MissingElementException::new));
         } catch (ObjectAlreadyExistsException _) {
             throw new SignupException("User already exists");
         } catch (MissingElementException _) {
             throw new SignupException("Domain not found");
         }
+    }
+
+    private String resolveUsername(OidcUserClaims claims, String requestedUsername) {
+        if (StringUtils.isNotBlank(requestedUsername)) {
+            return requestedUsername;
+        }
+        if (StringUtils.isNotBlank(claims.preferredUsername())) {
+            return claims.preferredUsername();
+        }
+        throw new SignupException("Username is required");
     }
 
     @Override
@@ -175,11 +187,20 @@ public class OidcUserServiceImpl implements OidcUserService {
     }
 
     @Override
-    public User linkUser(String email, String samlToken, String firstName, String lastName) {
-        User user = userService.findByEmail(email);
-        user.setSamlToken(samlToken);
-        user.setFirstname(firstName);
-        user.setLastname(lastName);
+    public User linkUser(OidcUserClaims claims) {
+        User user = userService.findByEmail(claims.email());
+        if (StringUtils.isNotBlank(user.getSamlToken()) && !user.getSamlToken().equals(claims.sub())) {
+            log.warn("Rejected attempt to link external identity [{}] to user [{}] already linked to another external identity",
+                    claims.sub(), user.getUsername());
+            throw new ExternalUserCanNotBeLinked("User " + user.getUsername() + " is already linked to a different external identity");
+        }
+        user.setSamlToken(claims.sub());
+        if (claims.givenName() != null) {
+            user.setFirstname(claims.givenName());
+        }
+        if (claims.familyName() != null) {
+            user.setLastname(claims.familyName());
+        }
 
         userService.update(user);
         return user;

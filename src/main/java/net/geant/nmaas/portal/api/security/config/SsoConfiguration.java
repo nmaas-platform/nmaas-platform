@@ -24,6 +24,11 @@ import java.util.List;
 @PropertySource("classpath:application-oidc.properties")
 public class SsoConfiguration {
 
+    /**
+     * Identifier of the single OIDC client registration used by the platform.
+     */
+    public static final String OIDC_REGISTRATION_ID = "my-oidc";
+
     @Value("${spring.security.oauth2.client.registration.my-oidc.client-id}")
     private String clientId;
 
@@ -43,7 +48,7 @@ public class SsoConfiguration {
     public ClientRegistrationRepository clientRegistrationRepository() {
         ClientRegistration registration = ClientRegistrations
                 .fromIssuerLocation(issuerUri)
-                .registrationId("my-oidc")
+                .registrationId(OIDC_REGISTRATION_ID)
                 .clientId(clientId)
                 .clientSecret(clientSecret)
                 .scope(parseScope(scope))

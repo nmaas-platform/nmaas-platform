@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.service.impl;
 
-import net.geant.nmaas.portal.api.auth.OidcApprovals;
 import net.geant.nmaas.portal.api.configuration.model.ConfigurationDto;
+import net.geant.nmaas.portal.api.exceptions.ExternalUserCanNotBeLinked;
 import net.geant.nmaas.portal.api.exceptions.ExternalUserMatchException;
 import net.geant.nmaas.portal.api.exceptions.SignupException;
 import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
@@ -10,6 +10,7 @@ import net.geant.nmaas.portal.persistence.entity.User;
 import net.geant.nmaas.portal.persistence.repositories.UserRepository;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.DomainService;
+import net.geant.nmaas.portal.service.OidcUserClaims;
 import net.geant.nmaas.portal.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,7 +28,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -101,26 +104,16 @@ class OidcUserServiceImplTest {
     }
 
     @Test
-    void registerNewUserFromOidcApprovalsShouldSaveUserWithApprovalsAndDefaults() {
+    void registerNewUserFromValidatedClaimsShouldSaveUserWithApprovalsAndDefaults() {
         Domain global = new Domain(100L, "GLOBAL", "GLOBAL", true);
         ConfigurationDto configuration = ConfigurationDto.builder().defaultLanguage("pl").build();
-        OidcApprovals approvals = new OidcApprovals(
-                "token",
-                "new@example.com",
-                "ignored",
-                "uuid-123",
-                "Jan",
-                "Kowalski",
-                "jkowalski",
-                true,
-                true
-        );
+        OidcUserClaims claims = new OidcUserClaims("uuid-123", "new@example.com", "jkowalski", "Jan", "Kowalski");
 
         when(domainService.getGlobalDomain()).thenReturn(Optional.of(global));
         when(configurationManager.getConfiguration()).thenReturn(configuration);
         when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0, User.class));
 
-        User result = oidcUserService.registerNewUser(approvals);
+        User result = oidcUserService.registerNewUser(claims, "jkowalski", true, true);
 
         assertEquals("jkowalski", result.getUsername());
         assertEquals("new@example.com", result.getEmail());
@@ -135,22 +128,48 @@ class OidcUserServiceImplTest {
     }
 
     @Test
-    void registerNewUserFromOidcApprovalsShouldMapObjectAlreadyExistsToSignupException() {
+    void registerNewUserFromValidatedClaimsShouldFallBackToPreferredUsernameWhenRequestedUsernameBlank() {
         Domain global = new Domain(101L, "GLOBAL", "GLOBAL", true);
         ConfigurationDto configuration = ConfigurationDto.builder().defaultLanguage("en").build();
-        OidcApprovals approvals = new OidcApprovals("token", "x@example.com", "ignored", "uuid", "A", "B", "ab", false, false);
+        OidcUserClaims claims = new OidcUserClaims("uuid-456", "new2@example.com", "tokenuser", "Anna", "Nowak");
+
+        when(domainService.getGlobalDomain()).thenReturn(Optional.of(global));
+        when(configurationManager.getConfiguration()).thenReturn(configuration);
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0, User.class));
+
+        User result = oidcUserService.registerNewUser(claims, "  ", true, true);
+
+        assertEquals("tokenuser", result.getUsername());
+    }
+
+    @Test
+    void registerNewUserFromValidatedClaimsShouldThrowWhenNoUsernameAvailable() {
+        OidcUserClaims claims = new OidcUserClaims("uuid-789", "new3@example.com", null, null, null);
+
+        SignupException ex = assertThrows(SignupException.class,
+                () -> oidcUserService.registerNewUser(claims, null, true, true));
+        assertEquals("Username is required", ex.getMessage());
+        verifyNoInteractions(userRepository);
+    }
+
+    @Test
+    void registerNewUserFromValidatedClaimsShouldMapObjectAlreadyExistsToSignupException() {
+        Domain global = new Domain(102L, "GLOBAL", "GLOBAL", true);
+        ConfigurationDto configuration = ConfigurationDto.builder().defaultLanguage("en").build();
+        OidcUserClaims claims = new OidcUserClaims("uuid", "x@example.com", "ab", "A", "B");
 
         when(domainService.getGlobalDomain()).thenReturn(Optional.of(global));
         when(configurationManager.getConfiguration()).thenReturn(configuration);
         when(userRepository.save(any(User.class))).thenThrow(new ObjectAlreadyExistsException("exists"));
 
-        SignupException ex = assertThrows(SignupException.class, () -> oidcUserService.registerNewUser(approvals));
+        SignupException ex = assertThrows(SignupException.class,
+                () -> oidcUserService.registerNewUser(claims, "ab", false, false));
         assertEquals("User already exists", ex.getMessage());
     }
 
     @Test
     void registerNewUserFromOidcUserShouldUseUsernameFallbackWhenPreferredUsernameMissing() {
-        Domain global = new Domain(102L, "GLOBAL", "GLOBAL", true);
+        Domain global = new Domain(103L, "GLOBAL", "GLOBAL", true);
         ConfigurationDto configuration = ConfigurationDto.builder().defaultLanguage("en").build();
 
         when(oidcUser.getAttribute("preferred_username")).thenReturn(null);
@@ -172,10 +191,11 @@ class OidcUserServiceImplTest {
 
     @Test
     void registerNewUserShouldThrowSignupExceptionWhenGlobalDomainMissing() {
-        OidcApprovals approvals = new OidcApprovals("token", "x@example.com", "ignored", "uuid", "A", "B", "ab", false, false);
+        OidcUserClaims claims = new OidcUserClaims("uuid", "x@example.com", "ab", "A", "B");
         when(domainService.getGlobalDomain()).thenReturn(Optional.empty());
 
-        SignupException ex = assertThrows(SignupException.class, () -> oidcUserService.registerNewUser(approvals));
+        SignupException ex = assertThrows(SignupException.class,
+                () -> oidcUserService.registerNewUser(claims, "ab", false, false));
         assertEquals("Domain not found", ex.getMessage());
     }
 
@@ -207,12 +227,59 @@ class OidcUserServiceImplTest {
 
         when(userService.findByEmail("test@example.com")).thenReturn(existingUser);
 
-        User result = oidcUserService.linkUser("test@example.com", "new-sub", "John", "Doe");
+        OidcUserClaims claims = new OidcUserClaims("new-sub", "test@example.com", null, "John", "Doe");
+        User result = oidcUserService.linkUser(claims);
 
         assertEquals(existingUser, result);
         assertEquals("new-sub", result.getSamlToken());
         assertEquals("John", result.getFirstname());
         assertEquals("Doe", result.getLastname());
         verify(userService).update(existingUser);
+    }
+
+    @Test
+    void linkUserShouldRejectUserAlreadyLinkedToDifferentExternalIdentity() {
+        User existingUser = new User("testuser");
+        existingUser.setEmail("test@example.com");
+        existingUser.setSamlToken("other-sub");
+
+        when(userService.findByEmail("test@example.com")).thenReturn(existingUser);
+
+        OidcUserClaims claims = new OidcUserClaims("new-sub", "test@example.com", null, "John", "Doe");
+
+        assertThrows(ExternalUserCanNotBeLinked.class, () -> oidcUserService.linkUser(claims));
+        verify(userService, never()).update(existingUser);
+        assertEquals("other-sub", existingUser.getSamlToken());
+    }
+
+    @Test
+    void linkUserShouldAllowRelinkingSameExternalIdentity() {
+        User existingUser = new User("testuser");
+        existingUser.setEmail("test@example.com");
+        existingUser.setSamlToken("new-sub");
+
+        when(userService.findByEmail("test@example.com")).thenReturn(existingUser);
+
+        OidcUserClaims claims = new OidcUserClaims("new-sub", "test@example.com", null, "John", "Doe");
+        User result = oidcUserService.linkUser(claims);
+
+        assertEquals("new-sub", result.getSamlToken());
+        verify(userService).update(existingUser);
+    }
+
+    @Test
+    void linkUserShouldKeepExistingNamesWhenClaimsDoNotContainThem() {
+        User existingUser = new User("testuser");
+        existingUser.setEmail("test@example.com");
+        existingUser.setFirstname("Existing");
+        existingUser.setLastname("Name");
+
+        when(userService.findByEmail("test@example.com")).thenReturn(existingUser);
+
+        OidcUserClaims claims = new OidcUserClaims("new-sub", "test@example.com", null, null, null);
+        User result = oidcUserService.linkUser(claims);
+
+        assertEquals("Existing", result.getFirstname());
+        assertEquals("Name", result.getLastname());
     }
 }

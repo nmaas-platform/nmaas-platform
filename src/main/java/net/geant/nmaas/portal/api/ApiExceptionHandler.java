@@ -8,6 +8,7 @@ import net.geant.nmaas.nmservice.configuration.exceptions.InvalidWebhookExceptio
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.portal.api.exceptions.AuthenticationException;
 import net.geant.nmaas.portal.api.exceptions.BundleNotFoundException;
+import net.geant.nmaas.portal.api.exceptions.ExternalUserCanNotBeLinked;
 import net.geant.nmaas.portal.api.exceptions.InvalidBundleException;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.exceptions.PortalException;
@@ -60,6 +61,12 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(value = {SignupException.class})
     @ResponseStatus(HttpStatus.CONFLICT)
     public ApiError handleSignupException(WebRequest req, PortalException ex) {
+        return createApiError(ex, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(value = {ExternalUserCanNotBeLinked.class})
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ApiError handleExternalUserCanNotBeLinked(WebRequest req, Exception ex) {
         return createApiError(ex, HttpStatus.CONFLICT);
     }
 

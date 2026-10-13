@@ -21,6 +21,8 @@ import net.geant.nmaas.portal.persistence.entity.User;
 import net.geant.nmaas.portal.persistence.entity.UserRole;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.DomainService;
+import net.geant.nmaas.portal.service.OidcIdTokenValidator;
+import net.geant.nmaas.portal.service.OidcUserClaims;
 import net.geant.nmaas.portal.service.OidcUserService;
 import net.geant.nmaas.portal.service.UserLoginRegisterService;
 import net.geant.nmaas.portal.service.UserService;
@@ -62,6 +64,7 @@ public class OIDCAuthController {
 
     private static final String OIDC_LOGOUT_PATH = "/protocol/openid-connect/logout";
 
+    private final OidcIdTokenValidator oidcIdTokenValidator;
     private final OidcUserService oidcUserService;
     private final JWTTokenService jwtTokenService;
     private final UserLoginRegisterService loginRegisterService;
@@ -79,13 +82,25 @@ public class OIDCAuthController {
     @Value("${spring.security.oauth2.client.provider.my-oidc.issuer-uri}")
     private String oidcAddress;
 
+    /**
+     * Links an existing local account with an external OIDC identity.
+     *
+     * <p>Identity of the external user (subject, email, names) is taken exclusively
+     * from the OIDC ID token validated server-side. The local account is resolved
+     * by the email claim of that token and ownership of the local account is proven
+     * with the password provided in the request.</p>
+     */
     @Loggable(LogLevel.INFO)
     @PostMapping("/api/${nmaas.api.version:v1}/oidc/link")
     public UserOidcToken oidcLinkedSuccess(@RequestBody final OidcLogin oidcLogin, HttpServletRequest request) {
-        User user = userService.findByEmail(oidcLogin.email());
+        OidcUserClaims claims = oidcIdTokenValidator.validate(oidcLogin.oidcToken());
+        if (!claims.email().equals(oidcLogin.email())) {
+            throw new AuthenticationException("Invalid Credentials");
+        }
+        User user = userService.findByEmail(claims.email());
         try {
             validate(
-                    oidcLogin.email(),
+                    claims.email(),
                     oidcLogin.password(),
                     user.getPassword(),
                     user.isEnabled());
@@ -105,12 +120,7 @@ public class OIDCAuthController {
             throw new UndergoingMaintenanceException("Application is undergoing maintenance right now");
         }
 
-        User linkedUser = oidcUserService.linkUser(
-                oidcLogin.email(),
-                oidcLogin.uuid(),
-                oidcLogin.firstName(),
-                oidcLogin.lastName()
-        );
+        User linkedUser = oidcUserService.linkUser(claims);
 
         registerSuccessfulLogin(request, user);
         return new UserOidcToken(
@@ -120,10 +130,18 @@ public class OIDCAuthController {
         );
     }
 
+    /**
+     * Registers a new account for an external OIDC user after AUP/PN approval.
+     *
+     * <p>Identity of the external user (subject, email, names) is taken exclusively
+     * from the OIDC ID token validated server-side; only the requested username
+     * and the approval flags are accepted from the request payload.</p>
+     */
     @Loggable(LogLevel.INFO)
     @PostMapping("/api/${nmaas.api.version:v1}/oidc/approvals")
-    public UserOidcToken oidcApprovalsSuccess(@RequestBody final OidcApprovals oidcLogin, HttpServletRequest request) {
-        User user = oidcUserService.registerNewUser(oidcLogin);
+    public UserOidcToken oidcApprovalsSuccess(@RequestBody final OidcApprovals oidcApprovals, HttpServletRequest request) {
+        OidcUserClaims claims = oidcIdTokenValidator.validate(oidcApprovals.oidcToken());
+        User user = oidcUserService.registerNewUser(claims, oidcApprovals.username(), oidcApprovals.isAupApprove(), oidcApprovals.isPnApprove());
         this.sendMail(userService.findAllUsersWithAdminRole().getFirst(), Map.of("newUser", user.getUsername()));
 
         if (configurationManager.getConfiguration().isMaintenance()
@@ -135,7 +153,7 @@ public class OIDCAuthController {
         return new UserOidcToken(
                 jwtTokenService.getToken(user),
                 jwtTokenService.getRefreshToken(user),
-                oidcLogin.oidcToken()
+                oidcApprovals.oidcToken()
         );
     }
 
