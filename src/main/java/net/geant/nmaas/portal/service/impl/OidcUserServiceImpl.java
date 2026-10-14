@@ -17,7 +17,7 @@ import net.geant.nmaas.portal.service.OidcUserClaims;
 import net.geant.nmaas.portal.service.OidcUserService;
 import net.geant.nmaas.portal.service.UserService;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Service;
 
@@ -35,9 +35,7 @@ public class OidcUserServiceImpl implements OidcUserService {
     private final DomainService domains;
     private final UserRepository userRepository;
     private final ConfigurationManager configurationManager;
-
-    @Value("${oidc.allowedLinkingUsersByEmail:false}")
-    private boolean allowedLinkingUsersByEmail;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public User checkUser(OidcUser oidcUser) {
@@ -158,7 +156,7 @@ public class OidcUserServiceImpl implements OidcUserService {
         User newUser = new User(
                 username,
                 true,
-                generatedString,
+                passwordEncoder.encode(generatedString),
                 globalDomain,
                 Role.ROLE_GUEST);
         newUser.setEmail(email);

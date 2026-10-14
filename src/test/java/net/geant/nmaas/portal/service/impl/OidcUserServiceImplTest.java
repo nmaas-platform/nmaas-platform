@@ -18,12 +18,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -47,6 +47,9 @@ class OidcUserServiceImplTest {
 
     @Mock
     private ConfigurationManager configurationManager;
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     @Mock
     private OidcUser oidcUser;
@@ -112,6 +115,7 @@ class OidcUserServiceImplTest {
         when(domainService.getGlobalDomain()).thenReturn(Optional.of(global));
         when(configurationManager.getConfiguration()).thenReturn(configuration);
         when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0, User.class));
+        when(passwordEncoder.encode(any())).thenReturn("encoded-password");
 
         User result = oidcUserService.registerNewUser(claims, "jkowalski", true, true);
 
@@ -123,7 +127,8 @@ class OidcUserServiceImplTest {
         assertTrue(result.isTermsOfUseAccepted());
         assertTrue(result.isPrivacyPolicyAccepted());
         assertEquals("pl", result.getSelectedLanguage());
-        assertNotNull(result.getPassword());
+        assertEquals("encoded-password", result.getPassword());
+        verify(passwordEncoder).encode(any());
         verify(userRepository).save(any(User.class));
     }
 
