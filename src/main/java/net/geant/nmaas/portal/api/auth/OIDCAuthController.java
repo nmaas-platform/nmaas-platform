@@ -27,8 +27,6 @@ import net.geant.nmaas.portal.service.OidcUserClaims;
 import net.geant.nmaas.portal.service.OidcUserService;
 import net.geant.nmaas.portal.service.UserLoginRegisterService;
 import net.geant.nmaas.portal.service.UserService;
-import net.geant.nmaas.utils.logging.LogLevel;
-import net.geant.nmaas.utils.logging.Loggable;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -92,7 +90,6 @@ public class OIDCAuthController {
      * by the email claim of that token and ownership of the local account is proven
      * with the password provided in the request.</p>
      */
-    @Loggable(LogLevel.INFO)
     @PostMapping("/api/${nmaas.api.version:v1}/oidc/link")
     public UserOidcToken oidcLinkedSuccess(@RequestBody final OidcLogin oidcLogin, HttpServletRequest request) {
         OidcUserClaims claims = oidcIdTokenValidator.validate(oidcLogin.oidcToken());
@@ -124,6 +121,7 @@ public class OIDCAuthController {
 
         User linkedUser = oidcUserService.linkUser(claims);
 
+        log.info("OIDC account linked for user [{}]", linkedUser.getUsername());
         registerSuccessfulLogin(request, user);
         return new UserOidcToken(
                 jwtTokenService.getToken(linkedUser),
@@ -139,11 +137,11 @@ public class OIDCAuthController {
      * from the OIDC ID token validated server-side; only the requested username
      * and the approval flags are accepted from the request payload.</p>
      */
-    @Loggable(LogLevel.INFO)
     @PostMapping("/api/${nmaas.api.version:v1}/oidc/approvals")
     public UserOidcToken oidcApprovalsSuccess(@RequestBody final OidcApprovals oidcApprovals, HttpServletRequest request) {
         OidcUserClaims claims = oidcIdTokenValidator.validate(oidcApprovals.oidcToken());
         User user = oidcUserService.registerNewUser(claims, oidcApprovals.username(), oidcApprovals.isAupApprove(), oidcApprovals.isPnApprove());
+        log.info("New user [{}] registered via OIDC", user.getUsername());
         this.sendMail(userService.findAllUsersWithAdminRole().getFirst(), Map.of("newUser", user.getUsername()));
 
         if (configurationManager.getConfiguration().isMaintenance()
@@ -164,7 +162,6 @@ public class OIDCAuthController {
      * session established by the OAuth2 filters; must never be accessible
      * anonymously.
      */
-    @Loggable(LogLevel.INFO)
     @GetMapping("/api/${nmaas.api.version:v1}/oidc/success")
     public RedirectView oidcLoginSuccess(@AuthenticationPrincipal OidcUser oidcUser, HttpServletRequest request) {
         if (oidcUser == null) {

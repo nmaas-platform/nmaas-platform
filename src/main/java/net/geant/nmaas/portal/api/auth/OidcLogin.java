@@ -11,4 +11,12 @@ package net.geant.nmaas.portal.api.auth;
 public record OidcLogin(String email,
                         String password,
                         String oidcToken) {
+
+    /**
+     * Masked on purpose: the password and the ID token must never reach logs.
+     */
+    @Override
+    public String toString() {
+        return "OidcLogin[email=" + email + ", password=***, oidcToken=***]";
+    }
 }

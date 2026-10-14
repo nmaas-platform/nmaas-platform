@@ -13,5 +13,13 @@ public class UserRefreshToken {
 	public UserRefreshToken(@JsonProperty(value = "refreshToken", required=true) String refreshToken) {
 		this.refreshToken = refreshToken;
 	}
-	
+
+	/**
+	 * Masked on purpose: the refresh token must never reach logs.
+	 */
+	@Override
+	public String toString() {
+		return "UserRefreshToken[refreshToken=***]";
+	}
+
 }

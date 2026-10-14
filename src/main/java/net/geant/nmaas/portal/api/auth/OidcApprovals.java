@@ -11,4 +11,14 @@ public record OidcApprovals(String oidcToken,
                             String username,
                             boolean isAupApprove,
                             boolean isPnApprove) {
+
+    /**
+     * Masked on purpose: the ID token must never reach logs.
+     */
+    @Override
+    public String toString() {
+        return "OidcApprovals[oidcToken=***, username=" + username
+                + ", isAupApprove=" + isAupApprove
+                + ", isPnApprove=" + isPnApprove + "]";
+    }
 }
