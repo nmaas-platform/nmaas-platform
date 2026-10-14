@@ -392,6 +392,7 @@
     "QUANTITY": "Quantity",
     "DESCRIPTION": "Description",
     "EDIT": "Edit",
+    "DELETE": "Delete",
     "DETAILS": {
       "TITLE": "Bundle details",
       "NAME": "Name",
