@@ -14,7 +14,6 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
@@ -30,6 +29,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizationRequestResolver;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestCustomizers;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
@@ -48,7 +48,6 @@ import java.util.function.Predicate;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-@PropertySource("classpath:application.properties")
 @Order(Ordered.LOWEST_PRECEDENCE - 100)
 @ComponentScan(basePackages = {"net.geant.nmaas.portal.api.security"})
 @RequiredArgsConstructor
@@ -62,9 +61,6 @@ public class SecurityConfig {
     private final PasswordEncoder passwordEncoder;
 
     private final GitLabProjectRepository gitLabProjectRepository;
-
-    public static final SkipPathRequestMatcher skipPathRequestMatcher =
-            new SkipPathRequestMatcher(SecurityConstants.SKIPPED_PATHS);
 
     /**
      * Configures the main {@link SecurityFilterChain}, including request authorization rules,
@@ -97,7 +93,6 @@ public class SecurityConfig {
                     auth.requestMatchers(SecurityConstants.AUTH_WHITELIST_ANY_METHOD).permitAll();
                     auth.requestMatchers(HttpMethod.GET, SecurityConstants.AUTH_WHITELIST_GET_METHOD).permitAll();
                     auth.requestMatchers(HttpMethod.OPTIONS, SecurityConstants.AUTH_WHITELIST_OPTIONS_METHOD).permitAll();
-                    auth.requestMatchers(SecurityConstants.AUTH_AUTHENTICATED_LIST).authenticated();
                     auth.anyRequest().authenticated();
                 })
                 .sessionManagement(session ->
@@ -118,6 +113,10 @@ public class SecurityConfig {
             }
             DefaultOAuth2AuthorizationRequestResolver resolver = new DefaultOAuth2AuthorizationRequestResolver(
                     clientRegistrationRepository, apiBasePath() + "/oauth2/authorization");
+            // PKCE (S256) for the authorization code flow: even though the client is
+            // confidential, the code challenge protects against authorization code
+            // interception.
+            resolver.setAuthorizationRequestCustomizer(OAuth2AuthorizationRequestCustomizers.withPkce());
 
             http.oauth2Login(oauth2 -> oauth2
                     .userInfoEndpoint(Customizer.withDefaults())
@@ -166,12 +165,13 @@ public class SecurityConfig {
     }
 
     /**
-     * Creates a filter for JWT-based authentication, skipping selected paths.
+     * Creates a filter for JWT-based authentication. The filter processes requests
+     * carrying the JWT header only; this gate is implemented in the filter itself.
      *
      * @return the configured JWT authentication filter
      */
     private Filter jwtAuthFilter() {
-        var filter = new StatelessAuthenticationFilter(skipPathRequestMatcher, tokenAuthenticationService);
+        var filter = new StatelessAuthenticationFilter(tokenAuthenticationService);
         filter.setAuthenticationFailureHandler(failureHandler());
         return filter;
     }

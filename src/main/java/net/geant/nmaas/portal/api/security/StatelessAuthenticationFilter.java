@@ -5,7 +5,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.portal.api.security.config.SkipPathRequestMatcher;
 import net.geant.nmaas.portal.api.security.exceptions.TokenAuthenticationException;
 import net.geant.nmaas.portal.service.TokenAuthenticationService;
 import org.springframework.security.core.Authentication;
@@ -13,6 +12,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import java.io.IOException;
 
@@ -20,22 +20,28 @@ import java.io.IOException;
  * Security filter for stateless JWT-based authentication.
  * This filter intercepts incoming HTTP requests, checks for a valid JWT token,
  * and authenticates the user by delegating to {@link TokenAuthenticationService}.
- * It only processes requests that are not matched by {@link SkipPathRequestMatcher}.
+ * Only requests carrying the JWT authorization header are processed, as decided
+ * by {@link #requiresAuthentication(HttpServletRequest, HttpServletResponse)}.
  */
 @Slf4j
 public class StatelessAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
+    /**
+     * Never consulted: the superclass would use it only in its default
+     * {@code requiresAuthentication} implementation, which this filter overrides
+     * with a JWT header presence check.
+     */
+    private static final RequestMatcher NEVER_MATCHES = request -> false;
+
     private final TokenAuthenticationService tokenService;
 
     /**
-     * Constructs the filter with a custom path matcher and a JWT token service.
+     * Constructs the filter with a JWT token service.
      *
-     * @param skipPathRequestMatcher matcher that defines which paths to skip
-     * @param tokenService           service responsible for parsing and validating JWT tokens
+     * @param tokenService service responsible for parsing and validating JWT tokens
      */
-    public StatelessAuthenticationFilter(SkipPathRequestMatcher skipPathRequestMatcher,
-                                         TokenAuthenticationService tokenService) {
-        super(skipPathRequestMatcher);
+    public StatelessAuthenticationFilter(TokenAuthenticationService tokenService) {
+        super(NEVER_MATCHES);
         this.tokenService = tokenService;
     }
 
