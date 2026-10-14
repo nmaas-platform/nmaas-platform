@@ -4,7 +4,6 @@ import net.geant.nmaas.portal.api.configuration.model.ConfigurationDto;
 import net.geant.nmaas.portal.api.exceptions.ExternalUserCanNotBeLinked;
 import net.geant.nmaas.portal.api.exceptions.ExternalUserMatchException;
 import net.geant.nmaas.portal.api.exceptions.SignupException;
-import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
 import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.entity.User;
 import net.geant.nmaas.portal.persistence.repositories.UserRepository;
@@ -18,6 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 
@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -107,6 +108,47 @@ class OidcUserServiceImplTest {
     }
 
     @Test
+    void checkUserShouldThrowWhenSubjectClaimMissing() {
+        when(oidcUser.getAttribute("sub")).thenReturn(null);
+
+        assertThrows(ExternalUserMatchException.class, () -> oidcUserService.checkUser(oidcUser));
+    }
+
+    @Test
+    void checkUserShouldThrowWhenEmailClaimMissing() {
+        when(oidcUser.getAttribute("email")).thenReturn(null);
+
+        assertThrows(ExternalUserMatchException.class, () -> oidcUserService.checkUser(oidcUser));
+    }
+
+    @Test
+    void checkUserShouldThrowWhenUserHasNoExternalIdentityLinked() {
+        User existingUser = new User("testuser");
+        existingUser.setEmail("test@example.com");
+
+        when(userService.existsBySamlToken("test-sub")).thenReturn(false);
+        when(userService.existsByEmail("test@example.com")).thenReturn(true);
+        when(userService.findByEmail("test@example.com")).thenReturn(existingUser);
+
+        assertThrows(ExternalUserMatchException.class, () -> oidcUserService.checkUser(oidcUser));
+        verify(userService, never()).update(existingUser);
+    }
+
+    @Test
+    void checkUserShouldHandleConcurrentLinkingOfTheSameExternalIdentity() {
+        User existingUser = new User("testuser");
+        existingUser.setEmail("test@example.com");
+        existingUser.setSamlToken("test@example.com");
+
+        when(userService.existsBySamlToken("test-sub")).thenReturn(false);
+        when(userService.existsByEmail("test@example.com")).thenReturn(true);
+        when(userService.findByEmail("test@example.com")).thenReturn(existingUser);
+        doThrow(new DataIntegrityViolationException("unique constraint")).when(userService).update(existingUser);
+
+        assertThrows(ExternalUserMatchException.class, () -> oidcUserService.checkUser(oidcUser));
+    }
+
+    @Test
     void registerNewUserFromValidatedClaimsShouldSaveUserWithApprovalsAndDefaults() {
         Domain global = new Domain(100L, "GLOBAL", "GLOBAL", true);
         ConfigurationDto configuration = ConfigurationDto.builder().defaultLanguage("pl").build();
@@ -158,18 +200,56 @@ class OidcUserServiceImplTest {
     }
 
     @Test
-    void registerNewUserFromValidatedClaimsShouldMapObjectAlreadyExistsToSignupException() {
+    void registerNewUserFromValidatedClaimsShouldMapDuplicateInsertFailureToSignupException() {
         Domain global = new Domain(102L, "GLOBAL", "GLOBAL", true);
         ConfigurationDto configuration = ConfigurationDto.builder().defaultLanguage("en").build();
         OidcUserClaims claims = new OidcUserClaims("uuid", "x@example.com", "ab", "A", "B");
 
         when(domainService.getGlobalDomain()).thenReturn(Optional.of(global));
         when(configurationManager.getConfiguration()).thenReturn(configuration);
-        when(userRepository.save(any(User.class))).thenThrow(new ObjectAlreadyExistsException("exists"));
+        when(userRepository.save(any(User.class))).thenThrow(new DataIntegrityViolationException("duplicate key"));
 
         SignupException ex = assertThrows(SignupException.class,
                 () -> oidcUserService.registerNewUser(claims, "ab", false, false));
         assertEquals("User already exists", ex.getMessage());
+    }
+
+    @Test
+    void registerNewUserFromValidatedClaimsShouldRejectWhenUsernameAlreadyTaken() {
+        Domain global = new Domain(104L, "GLOBAL", "GLOBAL", true);
+        OidcUserClaims claims = new OidcUserClaims("uuid-1", "new@example.com", "taken", "John", "Doe");
+
+        when(domainService.getGlobalDomain()).thenReturn(Optional.of(global));
+        when(userRepository.existsByUsername("taken")).thenReturn(true);
+
+        SignupException ex = assertThrows(SignupException.class,
+                () -> oidcUserService.registerNewUser(claims, "taken", true, true));
+        assertEquals("User already exists", ex.getMessage());
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    void registerNewUserFromValidatedClaimsShouldRejectWhenEmailAlreadyTaken() {
+        Domain global = new Domain(105L, "GLOBAL", "GLOBAL", true);
+        OidcUserClaims claims = new OidcUserClaims("uuid-2", "taken@example.com", "newuser", "John", "Doe");
+
+        when(domainService.getGlobalDomain()).thenReturn(Optional.of(global));
+        when(userRepository.existsByEmail("taken@example.com")).thenReturn(true);
+
+        SignupException ex = assertThrows(SignupException.class,
+                () -> oidcUserService.registerNewUser(claims, "newuser", true, true));
+        assertEquals("User already exists", ex.getMessage());
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    void registerNewUserFromValidatedClaimsShouldRejectTooLongUsername() {
+        OidcUserClaims claims = new OidcUserClaims("uuid-3", "new@example.com", null, null, null);
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> oidcUserService.registerNewUser(claims, "a".repeat(256), true, true));
+        assertTrue(ex.getMessage().contains("maximum length"));
+        verifyNoInteractions(domainService);
     }
 
     @Test
@@ -179,6 +259,7 @@ class OidcUserServiceImplTest {
 
         when(oidcUser.getAttribute("preferred_username")).thenReturn(null);
         when(oidcUser.getAttribute("username")).thenReturn("fallback-username");
+        when(oidcUser.getAttribute("name")).thenReturn(null);
         when(oidcUser.getAttribute("email")).thenReturn("fallback@example.com");
         when(oidcUser.getAttribute("family_name")).thenReturn("Family");
         when(oidcUser.getAttribute("given_name")).thenReturn("Given");
@@ -192,6 +273,27 @@ class OidcUserServiceImplTest {
 
         assertEquals("fallback-username", result.getUsername());
         assertEquals("fallback-sub", result.getSamlToken());
+    }
+
+    @Test
+    void registerNewUserFromOidcUserShouldThrowWhenSubjectMissing() {
+        when(oidcUser.getAttribute("sub")).thenReturn(null);
+
+        SignupException ex = assertThrows(SignupException.class,
+                () -> oidcUserService.registerNewUser(oidcUser));
+        assertEquals("External identity is missing", ex.getMessage());
+    }
+
+    @Test
+    void registerNewUserFromOidcUserShouldThrowWhenNoUsernameClaimAvailable() {
+        when(oidcUser.getAttribute("sub")).thenReturn("some-sub");
+        when(oidcUser.getAttribute("preferred_username")).thenReturn(null);
+        when(oidcUser.getAttribute("username")).thenReturn(null);
+        when(oidcUser.getAttribute("name")).thenReturn(null);
+
+        SignupException ex = assertThrows(SignupException.class,
+                () -> oidcUserService.registerNewUser(oidcUser));
+        assertEquals("Username is required", ex.getMessage());
     }
 
     @Test

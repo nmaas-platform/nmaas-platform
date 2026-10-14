@@ -6,7 +6,6 @@ import net.geant.nmaas.portal.api.exceptions.ExternalUserCanNotBeLinked;
 import net.geant.nmaas.portal.api.exceptions.ExternalUserMatchException;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.exceptions.SignupException;
-import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
 import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.entity.Role;
 import net.geant.nmaas.portal.persistence.entity.User;
@@ -17,19 +16,24 @@ import net.geant.nmaas.portal.service.OidcUserClaims;
 import net.geant.nmaas.portal.service.OidcUserService;
 import net.geant.nmaas.portal.service.UserService;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
+import java.util.Arrays;
 import java.util.Base64;
-import java.util.Objects;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class OidcUserServiceImpl implements OidcUserService {
+
+    /**
+     * Matches the size of the username column in the database.
+     */
+    private static final int USERNAME_MAX_LENGTH = 255;
 
     private final UserService userService;
     private final DomainService domains;
@@ -44,6 +48,10 @@ public class OidcUserServiceImpl implements OidcUserService {
         String oidcUserEmail = oidcUser.getAttribute("email");
         String oidcUserPreferredUsername = oidcUser.getAttribute("preferred_username");
 
+        if (StringUtils.isBlank(oidcUserSub) || StringUtils.isBlank(oidcUserEmail)) {
+            throw new ExternalUserMatchException("External user identity is incomplete: subject or email claim is missing");
+        }
+
         boolean existUserBySamlToken = userService
                 .existsBySamlToken(oidcUserSub);
 
@@ -55,18 +63,27 @@ public class OidcUserServiceImpl implements OidcUserService {
 
         if (userService.existsByEmail(oidcUserEmail)) { //exist by email needs work with this account
             User user = userService.findByEmail(oidcUserEmail);
-            //check if user with given email have older SamlToken as Email or Username
-            if (user.getSamlToken().equals(oidcUserEmail)
-                    || user.getSamlToken().equals(oidcUserPreferredUsername)) {
-                user.setSamlToken(oidcUserSub);
-                userService.update(user);
-                return user;
-            } else {
-                throw new ExternalUserMatchException("External user "
-                        + oidcUserSub
-                        + " does not match internal user with SamlToken " +
-                        user.getSamlToken());
+            String linkedSamlToken = user.getSamlToken();
+            if (StringUtils.isBlank(linkedSamlToken)) {
+                throw new ExternalUserMatchException("User with email " + oidcUserEmail + " has no external identity linked yet");
             }
+            if (linkedSamlToken.equals(oidcUserEmail)
+                    || linkedSamlToken.equals(oidcUserPreferredUsername)) {
+                user.setSamlToken(oidcUserSub);
+                try {
+                    userService.update(user);
+                } catch (DataIntegrityViolationException _) {
+                    // another request linked the same external identity in the meantime
+                    throw new ExternalUserMatchException("External user "
+                            + oidcUserSub
+                            + " is already linked to another user");
+                }
+                return user;
+            }
+            throw new ExternalUserMatchException("External user "
+                    + oidcUserSub
+                    + " does not match internal user with SamlToken "
+                    + linkedSamlToken);
         }
         return registerNewUser(oidcUser);
     }
@@ -84,21 +101,33 @@ public class OidcUserServiceImpl implements OidcUserService {
                     isAupAccepted,
                     isPnAccepted,
                     domains.getGlobalDomain().orElseThrow(MissingElementException::new));
-        } catch (ObjectAlreadyExistsException _) {
-            throw new SignupException("User already exists");
         } catch (MissingElementException _) {
             throw new SignupException("Domain not found");
+        } catch (DataIntegrityViolationException _) {
+            // a concurrent request registered the same user between the pre-checks and the insert
+            throw new SignupException("User already exists");
         }
     }
 
     private String resolveUsername(OidcUserClaims claims, String requestedUsername) {
-        if (StringUtils.isNotBlank(requestedUsername)) {
-            return requestedUsername;
+        return resolveUsername(requestedUsername, claims.preferredUsername());
+    }
+
+    /**
+     * Returns the first non-blank candidate. Fails with a signup error when no
+     * candidate is available, and with a validation error when the value exceeds
+     * the database column size so that oversized usernames do not surface as
+     * persistence failures.
+     */
+    private String resolveUsername(String... candidates) {
+        String username = Arrays.stream(candidates)
+                .filter(StringUtils::isNotBlank)
+                .findFirst()
+                .orElseThrow(() -> new SignupException("Username is required"));
+        if (username.length() > USERNAME_MAX_LENGTH) {
+            throw new IllegalArgumentException("Username exceeds the maximum length of " + USERNAME_MAX_LENGTH + " characters");
         }
-        if (StringUtils.isNotBlank(claims.preferredUsername())) {
-            return claims.preferredUsername();
-        }
-        throw new SignupException("Username is required");
+        return username;
     }
 
     /**
@@ -115,30 +144,28 @@ public class OidcUserServiceImpl implements OidcUserService {
 
     @Override
     public User registerNewUser(OidcUser oidcUser) {
-        assertExternalIdentityAvailable(oidcUser.getAttribute("sub"));
+        String sub = oidcUser.getAttribute("sub");
+        if (StringUtils.isBlank(sub)) {
+            throw new SignupException("External identity is missing");
+        }
+        assertExternalIdentityAvailable(sub);
+        String username = resolveUsername(oidcUser.getAttribute("preferred_username"),
+                oidcUser.getAttribute("username"),
+                oidcUser.getAttribute("name"));
         try {
-            return register(oidcUser, domains.getGlobalDomain().orElseThrow(MissingElementException::new));
-        } catch (ObjectAlreadyExistsException _) {
-            throw new SignupException("User already exists");
+            return register(username,
+                    oidcUser.getAttribute("email"),
+                    oidcUser.getAttribute("family_name"),
+                    oidcUser.getAttribute("given_name"),
+                    sub,
+                    false,
+                    false,
+                    domains.getGlobalDomain().orElseThrow(MissingElementException::new));
         } catch (MissingElementException _) {
             throw new SignupException("Domain not found");
+        } catch (DataIntegrityViolationException _) {
+            throw new SignupException("User already exists");
         }
-    }
-
-    private User register(OidcUser oidcUser, Domain globalDomain) {
-        String preferredUsername = Objects.requireNonNull(Optional.ofNullable(oidcUser.getAttribute("preferred_username"))
-                .orElseGet(() -> Optional.ofNullable(oidcUser.getAttribute("username"))
-                        .orElseGet(() -> oidcUser.getAttribute("name")))).toString();
-
-        return this.register(preferredUsername,
-                oidcUser.getAttribute("email"),
-                oidcUser.getAttribute("family_name"),
-                oidcUser.getAttribute("given_name"),
-                oidcUser.getAttribute("sub"),
-                false,
-                false,
-                globalDomain
-        );
     }
 
     private User register(String username,
@@ -149,6 +176,9 @@ public class OidcUserServiceImpl implements OidcUserService {
                           boolean isAupAccepted,
                           boolean isPnAccepted,
                           Domain globalDomain) {
+        if (userRepository.existsByUsername(username) || userRepository.existsByEmail(email)) {
+            throw new SignupException("User already exists");
+        }
         byte[] array = new byte[16];
         new SecureRandom().nextBytes(array);
         String generatedString = Base64.getEncoder().encodeToString(array);
