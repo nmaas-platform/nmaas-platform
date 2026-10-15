@@ -42,7 +42,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *   -> 302 to /api/v1/oidc/success
  * GET /api/v1/oidc/success
  *   -> the decision tree: linked user receives tokens, new user is routed to
- *      the first-login page, unlinked account is routed to linking
+ *      the first-login page, unlinked account is routed to linking, and an
+ *      account linked to a different identity is routed to the provider
+ *      logout returning to the portal login page with an error code for the
+ *      SPA to present
  * </pre>
  *
  * <p>These tests cover the framework behaviour that the platform only
@@ -50,6 +53,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * S256 code challenge), the state parameter handling, the token exchange with
  * PKCE and client authentication, and the validation of the ID token returned
  * by the provider.</p>
+ *
+ * <p>The provider logout redirect ({@code GET /api/v1/oidc/logout/{token}}),
+ * the counterpart of the login flow, is covered here as well.</p>
  */
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -63,6 +69,8 @@ class OidcLoginFlowIntTest extends AbstractOidcFlowIntTest {
     private static final String OIDC_SUCCESS_URL = "/api/v1/oidc/success";
 
     private static final String AUTHORIZATION_CODE = "stub-authorization-code";
+
+    private static final String PORTAL_ADDRESS = "http://localhost:4200";
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -223,6 +231,81 @@ class OidcLoginFlowIntTest extends AbstractOidcFlowIntTest {
         assertEquals(1, STUB_IDP.tokenRequests().size(), "the code exchange must have happened before the failure");
         mvc.perform(get(OIDC_SUCCESS_URL).session(session))
                 .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void shouldRouteConflictingAccountToProviderLogout() throws Exception {
+        String sub = "oidc-flow-conflict-sub";
+        String email = "oidc-flow-conflict@example.com";
+        seedUser("oidc-flow-conflict", email, "FlowS3cret!", "some-other-identity", true, true);
+
+        MockHttpSession session = new MockHttpSession();
+        Map<String, String> authorizationParameters =
+                queryParameters(beginAuthorizationRequest(session));
+        String idToken = STUB_IDP.mintValidIdToken(sub, email, authorizationParameters.get("nonce"));
+        STUB_IDP.setNextIdToken(idToken);
+        STUB_IDP.setUserInfo(sub, email, sub + "-user", "Given", "Family");
+
+        mvc.perform(get(CALLBACK_URL)
+                        .queryParam("code", AUTHORIZATION_CODE)
+                        .queryParam("state", authorizationParameters.get("state"))
+                        .session(session))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl(OIDC_SUCCESS_URL));
+
+        mvc.perform(get(OIDC_SUCCESS_URL).session(session))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl(STUB_IDP.issuer() + "/protocol/openid-connect/logout"
+                        + "?id_token_hint=" + idToken
+                        + "&post_logout_redirect_uri=" + PORTAL_ADDRESS + "/login?error=oidc-account-conflict"));
+        assertTrue(session.isInvalid(), "the OAuth2 session must be terminated after the rejected login");
+    }
+
+    @Test
+    void shouldRedirectProviderLogoutBackToThePortalLoginPage() throws Exception {
+        MvcResult result = mvc.perform(get("/api/v1/oidc/logout/stub-id-token-value"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl(STUB_IDP.issuer() + "/protocol/openid-connect/logout"
+                        + "?id_token_hint=stub-id-token-value"
+                        + "&post_logout_redirect_uri=" + PORTAL_ADDRESS + "/login"))
+                .andReturn();
+        assertFalse(result.getResponse().getRedirectedUrl().contains("error="),
+                "a plain logout must not carry an error signal");
+    }
+
+    /**
+     * Signal for the SPA guard: a linked user with pending AUP/Privacy Notice
+     * approvals receives a JWT whose {@code global_role} claim carries
+     * {@code ROLE_NOT_ACCEPTED}; the portal must route such a user to the
+     * terms-acceptance screen instead of the application.
+     */
+    @Test
+    void shouldIssueNotAcceptedRoleWhenLinkedUserHasPendingApprovals() throws Exception {
+        String sub = "oidc-flow-pending-sub";
+        String email = "oidc-flow-pending@example.com";
+        seedUser("oidc-flow-pending", email, "FlowS3cret!", sub, false, false);
+
+        MockHttpSession session = new MockHttpSession();
+        Map<String, String> authorizationParameters =
+                queryParameters(beginAuthorizationRequest(session));
+        prepareStubForCallback(authorizationParameters, sub, email);
+
+        mvc.perform(get(CALLBACK_URL)
+                        .queryParam("code", AUTHORIZATION_CODE)
+                        .queryParam("state", authorizationParameters.get("state"))
+                        .session(session))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl(OIDC_SUCCESS_URL));
+
+        MvcResult result = mvc.perform(get(OIDC_SUCCESS_URL).session(session))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("**/login-success?token=**"))
+                .andReturn();
+
+        String payload = jwtPayload(queryParameters(result.getResponse().getRedirectedUrl()).get("token"));
+        assertTrue(payload.contains("ROLE_NOT_ACCEPTED"),
+                "Token issued for a linked user with pending approvals must carry ROLE_NOT_ACCEPTED, payload was: " + payload);
+        assertTrue(session.isInvalid(), "the OAuth2 session must be terminated once tokens are issued");
     }
 
     /**

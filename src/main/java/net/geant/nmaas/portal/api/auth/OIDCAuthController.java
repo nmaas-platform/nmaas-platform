@@ -51,6 +51,35 @@ import java.util.Set;
 
 import static java.lang.String.format;
 
+/**
+ * OIDC authentication endpoints.
+ *
+ * <p><b>Contract with the portal SPA — signals to catch after an OIDC login
+ * attempt:</b></p>
+ * <ul>
+ *     <li>{@code GET <portal>/login?error=oidc-account-conflict} — the login
+ *     was rejected: the external identity is already linked to a different
+ *     local account, the identity claims are incomplete, or no local account
+ *     matches. The provider session is terminated server-side; the SPA should
+ *     present a localized message on the login page (offering the basic
+ *     username/password login as the fallback).</li>
+ *     <li>{@code GET <portal>/login-success?token=..&refresh-token=..&oidc-token=..}
+ *     — successful login. When the {@code global_role} claim of the issued JWT
+ *     contains {@link Role#ROLE_NOT_ACCEPTED}, the user has not accepted the
+ *     AUP or the Privacy Notice yet: the SPA must route the user to the
+ *     terms-acceptance screen instead of the application.</li>
+ *     <li>{@code GET <portal>/login-linking?oidc-token=..} — a local account
+ *     with this email exists but has no external identity linked yet; the SPA
+ *     completes the flow with {@code POST /api/v1/oidc/link} (401 invalid
+ *     credentials or token, 409 identity conflict, 406 maintenance
+ *     mode).</li>
+ *     <li>{@code GET <portal>/sso-first-login?oidc-token=..} — no local
+ *     account exists for this identity; the SPA completes the registration
+ *     with {@code POST /api/v1/oidc/approvals} (400 missing consent flags,
+ *     401 invalid token, 409 consent refused or account already exists,
+ *     406 maintenance mode).</li>
+ * </ul>
+ */
 @RestController
 @RequiredArgsConstructor
 @Slf4j
@@ -63,6 +92,20 @@ import static java.lang.String.format;
 public class OIDCAuthController {
 
     private static final String OIDC_LOGOUT_PATH = "/protocol/openid-connect/logout";
+
+    /**
+     * Name of the query parameter carrying an OIDC login rejection code to
+     * the portal SPA in the post-logout redirect URL.
+     */
+    private static final String PORTAL_ERROR_PARAMETER = "error";
+
+    /**
+     * Rejection code for an external identity that cannot be matched to a
+     * usable local account: linked to a different account, incomplete claims,
+     * or no matching account at all. The SPA reads it from
+     * {@code <portal>/login?error=oidc-account-conflict}.
+     */
+    private static final String PORTAL_ERROR_ACCOUNT_CONFLICT = "oidc-account-conflict";
 
     private final OidcIdTokenValidator oidcIdTokenValidator;
     private final OidcUserService oidcUserService;
@@ -172,6 +215,16 @@ public class OIDCAuthController {
      * Landing endpoint of the OAuth2 login flow. Reached with an authenticated
      * session established by the OAuth2 filters; must never be accessible
      * anonymously.
+     *
+     * <p>On success the browser is redirected to
+     * {@code <portal>/login-success} with the access, refresh and OIDC tokens
+     * in the URL. When the local account has pending AUP/Privacy Notice
+     * approvals, the issued JWT carries {@link Role#ROLE_NOT_ACCEPTED} in its
+     * {@code global_role} claim — the SPA must check this claim and route the
+     * user to the terms-acceptance screen. A rejected identity terminates the
+     * provider session and redirects back to the login page with the
+     * {@code error} query parameter; see the class documentation for the full
+     * signal contract.</p>
      */
     @GetMapping("/api/${nmaas.api.version:v1}/oidc/success")
     public RedirectView oidcLoginSuccess(@AuthenticationPrincipal OidcUser oidcUser, HttpServletRequest request) {
@@ -209,14 +262,11 @@ public class OIDCAuthController {
 
             registerSuccessfulLogin(request, user);
             return new RedirectView(redirectUrl);
-        } catch (ExternalUserMatchException _) {
-            //TODO handle this exception on the portal
-            String logoutUrl = oidcAddress + OIDC_LOGOUT_PATH;
-            return new RedirectView(logoutUrl + "?id_token_hint=" + oidcUser.getIdToken().getTokenValue());
-        } catch (ExternalUserCanNotBeLinked _) {
-            //TODO handle this exception on the portal
-            String logoutUrl = oidcAddress + OIDC_LOGOUT_PATH;
-            return new RedirectView(logoutUrl + "?id_token_hint=" + oidcUser.getIdToken().getTokenValue());
+        } catch (ExternalUserMatchException e) {
+            log.warn("OIDC login rejected for an external identity, terminating the provider session: {}", e.getMessage());
+            return providerLogoutRedirect(
+                    oidcUser.getIdToken().getTokenValue(),
+                    PORTAL_ERROR_ACCOUNT_CONFLICT);
         } finally {
             terminateOidcSession(request);
         }
@@ -259,8 +309,36 @@ public class OIDCAuthController {
 
     @GetMapping("/api/${nmaas.api.version:v1}/oidc/logout/{oidcToken}")
     public RedirectView logout(@PathVariable String oidcToken) {
-        String logoutUrl = oidcAddress + OIDC_LOGOUT_PATH;
-        return new RedirectView(logoutUrl + "?id_token_hint=" + oidcToken);
+        return providerLogoutRedirect(oidcToken);
+    }
+
+    /**
+     * Terminates the SSO session at the identity provider. The
+     * {@code post_logout_redirect_uri} parameter brings the user back to the
+     * portal login page instead of leaving them stranded on the provider's
+     * post-logout page.
+     *
+     * <p>When {@code portalError} is provided, it is appended to the redirect
+     * URL as the {@code error} query parameter so that the SPA can present
+     * the matching message on the login page (see the class documentation for
+     * the full signal contract). Deployment note: every variant of the
+     * redirect URL, including the {@code ?error=...} ones, must be listed in
+     * the identity provider client configuration ("Valid post logout redirect
+     * URIs" in Keycloak).</p>
+     */
+    private RedirectView providerLogoutRedirect(String idTokenValue, String portalError) {
+        String postLogoutRedirectUri = portalAddress + "/login";
+        if (portalError != null) {
+            postLogoutRedirectUri += "?" + PORTAL_ERROR_PARAMETER + "=" + portalError;
+        }
+        String logoutUrl = oidcAddress + OIDC_LOGOUT_PATH
+                + "?id_token_hint=" + idTokenValue
+                + "&post_logout_redirect_uri=" + postLogoutRedirectUri;
+        return new RedirectView(logoutUrl);
+    }
+
+    private RedirectView providerLogoutRedirect(String idTokenValue) {
+        return providerLogoutRedirect(idTokenValue, null);
     }
 
     void validate(String email, String providedPassword, String actualPassword, boolean isEnabled) {
