@@ -88,7 +88,10 @@ public class OIDCAuthController {
      * <p>Identity of the external user (subject, email, names) is taken exclusively
      * from the OIDC ID token validated server-side. The local account is resolved
      * by the email claim of that token and ownership of the local account is proven
-     * with the password provided in the request.</p>
+     * with the password provided in the request. When the AUP or Privacy Notice
+     * has not been accepted yet, the issued tokens carry the
+     * {@link Role#ROLE_NOT_ACCEPTED} role so that the portal enforces the
+     * approval screens, mirroring the basic login flow.</p>
      */
     @PostMapping("/api/${nmaas.api.version:v1}/oidc/link")
     public UserOidcToken oidcLinkedSuccess(@RequestBody final OidcLogin oidcLogin, HttpServletRequest request) {
@@ -112,7 +115,6 @@ public class OIDCAuthController {
             );
             throw new AuthenticationException(ae.getMessage());
         }
-//        checkUserApprovals(user);
 
         if (configurationManager.getConfiguration().isMaintenance()
                 && user.getRoles().stream().noneMatch(value -> value.getRole().equals(Role.ROLE_SYSTEM_ADMIN))) {
@@ -120,6 +122,7 @@ public class OIDCAuthController {
         }
 
         User linkedUser = oidcUserService.linkUser(claims);
+        checkUserApprovals(linkedUser);
 
         log.info("OIDC account linked for user [{}]", linkedUser.getUsername());
         registerSuccessfulLogin(request, user);
@@ -135,10 +138,18 @@ public class OIDCAuthController {
      *
      * <p>Identity of the external user (subject, email, names) is taken exclusively
      * from the OIDC ID token validated server-side; only the requested username
-     * and the approval flags are accepted from the request payload.</p>
+     * and the approval flags are accepted from the request payload. Registration
+     * requires explicit acceptance of both the Acceptable Use Policy and the
+     * Privacy Notice.</p>
      */
     @PostMapping("/api/${nmaas.api.version:v1}/oidc/approvals")
     public UserOidcToken oidcApprovalsSuccess(@RequestBody final OidcApprovals oidcApprovals, HttpServletRequest request) {
+        if (!oidcApprovals.isAupApprove()) {
+            throw new SignupException("Terms of Use were not accepted");
+        }
+        if (!oidcApprovals.isPnApprove()) {
+            throw new SignupException("Privacy policy was not accepted");
+        }
         OidcUserClaims claims = oidcIdTokenValidator.validate(oidcApprovals.oidcToken());
         User user = oidcUserService.registerNewUser(claims, oidcApprovals.username(), oidcApprovals.isAupApprove(), oidcApprovals.isPnApprove());
         log.info("New user [{}] registered via OIDC", user.getUsername());
@@ -186,6 +197,7 @@ public class OIDCAuthController {
             }
 
             User user = oidcUserService.checkUser(oidcUser);
+            checkUserApprovals(user);
 
             String redirectUrl = portalAddress
                     + "/login-success?token="
@@ -258,6 +270,12 @@ public class OIDCAuthController {
         validateConditionAndLogMessage(!passwordEncoder.matches(providedPassword, actualPassword), format("Login failed: user [%s] entered incorrect password", email));
     }
 
+    /**
+     * Adds the {@link Role#ROLE_NOT_ACCEPTED} role, in memory only, to the user
+     * that is about to receive tokens, so that the issued JWT makes the portal
+     * present the AUP/Privacy Notice approval screens; acceptance is then recorded
+     * through {@code POST /users/terms/{username}}. Mirrors the basic login flow.
+     */
     void checkUserApprovals(User user) {
         if (!user.isTermsOfUseAccepted() || !user.isPrivacyPolicyAccepted()) {
             log.info("Check during login: Terms of Use or Privacy Policy were not accepted by user [{}]", user.getUsername());

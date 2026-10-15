@@ -6,6 +6,7 @@ import jakarta.ws.rs.core.HttpHeaders;
 import net.geant.nmaas.api.dto.users.UserDto;
 import net.geant.nmaas.portal.api.configuration.model.ConfigurationDto;
 import net.geant.nmaas.portal.api.exceptions.AuthenticationException;
+import net.geant.nmaas.portal.api.exceptions.SignupException;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
 import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.entity.Role;
@@ -20,6 +21,7 @@ import net.geant.nmaas.portal.service.UserLoginRegisterService;
 import net.geant.nmaas.portal.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -35,6 +37,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import java.lang.reflect.Constructor;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -113,6 +116,8 @@ class OIDCAuthControllerTest {
         when(configurationManager.getConfiguration()).thenReturn(config);
 
         User linkedUser = userConstructor.newInstance();
+        ReflectionTestUtils.setField(linkedUser, "termsOfUseAccepted", true);
+        ReflectionTestUtils.setField(linkedUser, "privacyPolicyAccepted", true);
         when(oidcUserService.linkUser(CLAIMS)).thenReturn(linkedUser);
         when(jwtTokenService.getToken(any())).thenReturn("jwt-token");
         when(jwtTokenService.getRefreshToken(any())).thenReturn("refresh-token");
@@ -152,6 +157,44 @@ class OIDCAuthControllerTest {
         // When + Then
         assertThrows(AuthenticationException.class, () -> oidcAuthController.oidcLinkedSuccess(oidcLogin, request));
         verifyNoInteractions(oidcUserService, userService, loginRegisterService);
+    }
+
+    @Test
+    void shouldAddNotAcceptedRoleWhenLinkedUserHasNotAcceptedApprovals() throws Exception {
+        // Given
+        OidcLogin oidcLogin = new OidcLogin("user@example.com", "pass123", OIDC_TOKEN);
+        when(oidcIdTokenValidator.validate(OIDC_TOKEN)).thenReturn(CLAIMS);
+
+        Constructor<User> userConstructor = User.class.getDeclaredConstructor();
+        userConstructor.setAccessible(true);
+        User user = userConstructor.newInstance();
+        ReflectionTestUtils.setField(user, "password", "hashed-password");
+        ReflectionTestUtils.setField(user, "enabled", true);
+
+        when(userService.findByEmail("user@example.com")).thenReturn(user);
+        when(passwordEncoder.matches(any(), any())).thenReturn(true);
+
+        ConfigurationDto config = mock(ConfigurationDto.class);
+        when(config.isMaintenance()).thenReturn(false);
+        when(configurationManager.getConfiguration()).thenReturn(config);
+
+        User linkedUser = userConstructor.newInstance();
+        when(oidcUserService.linkUser(CLAIMS)).thenReturn(linkedUser);
+        when(domainService.getGlobalDomain()).thenReturn(Optional.of(new Domain(103L, "GLOBAL", "GLOBAL", true)));
+        when(jwtTokenService.getToken(any())).thenReturn("jwt-token");
+        when(jwtTokenService.getRefreshToken(any())).thenReturn("refresh-token");
+
+        when(request.getHeader(HttpHeaders.HOST)).thenReturn("localhost");
+        when(request.getHeader(HttpHeaders.USER_AGENT)).thenReturn("JUnit");
+
+        // When
+        oidcAuthController.oidcLinkedSuccess(oidcLogin, request);
+
+        // Then
+        ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+        verify(jwtTokenService).getToken(userCaptor.capture());
+        assertTrue(userCaptor.getValue().getRoles().stream()
+                .anyMatch(role -> role.getRole().equals(Role.ROLE_NOT_ACCEPTED)));
     }
 
     @Test
@@ -206,6 +249,30 @@ class OIDCAuthControllerTest {
     }
 
     @Test
+    void shouldNotRegisterNewUserWhenAupNotAccepted() {
+        // Given
+        OidcApprovals approvals = new OidcApprovals(OIDC_TOKEN, "newuser", false, true);
+
+        // When + Then
+        SignupException ex = assertThrows(SignupException.class,
+                () -> oidcAuthController.oidcApprovalsSuccess(approvals, request));
+        assertEquals("Terms of Use were not accepted", ex.getMessage());
+        verifyNoInteractions(oidcIdTokenValidator, oidcUserService, userService, loginRegisterService);
+    }
+
+    @Test
+    void shouldNotRegisterNewUserWhenPrivacyNoticeNotAccepted() {
+        // Given
+        OidcApprovals approvals = new OidcApprovals(OIDC_TOKEN, "newuser", true, false);
+
+        // When + Then
+        SignupException ex = assertThrows(SignupException.class,
+                () -> oidcAuthController.oidcApprovalsSuccess(approvals, request));
+        assertEquals("Privacy policy was not accepted", ex.getMessage());
+        verifyNoInteractions(oidcIdTokenValidator, oidcUserService, userService, loginRegisterService);
+    }
+
+    @Test
     void shouldRedirectToLoginSuccessIfOidcUserIsValid() throws Exception {
         // given
         OidcUser oidcUser = mock(OidcUser.class);
@@ -219,6 +286,8 @@ class OIDCAuthControllerTest {
         Constructor<User> userConstructor = User.class.getDeclaredConstructor();
         userConstructor.setAccessible(true);
         User user = userConstructor.newInstance();
+        ReflectionTestUtils.setField(user, "termsOfUseAccepted", true);
+        ReflectionTestUtils.setField(user, "privacyPolicyAccepted", true);
 
         when(oidcUserService.checkUser(any())).thenReturn(user);
         when(jwtTokenService.getToken(any())).thenReturn("jwt-token");
@@ -237,6 +306,40 @@ class OIDCAuthControllerTest {
         assertTrue(result.getUrl().contains("oidc-token=oidc-token"));
 
         verify(loginRegisterService).registerNewSuccessfulLogin(eq(user), any(), any(), any());
+    }
+
+    @Test
+    void shouldAddNotAcceptedRoleWhenExistingUserHasNotAcceptedApprovals() throws Exception {
+        // given
+        OidcUser oidcUser = mock(OidcUser.class);
+        OidcIdToken idToken = mock(OidcIdToken.class);
+        when(idToken.getTokenValue()).thenReturn(OIDC_TOKEN);
+        when(oidcUser.getIdToken()).thenReturn(idToken);
+
+        when(oidcUserService.externalUserRequiresLinking(any())).thenReturn(false);
+        when(oidcUserService.externalUserRequiresAupAndPn(any())).thenReturn(false);
+
+        Constructor<User> userConstructor = User.class.getDeclaredConstructor();
+        userConstructor.setAccessible(true);
+        User user = userConstructor.newInstance();
+
+        when(oidcUserService.checkUser(any())).thenReturn(user);
+        when(domainService.getGlobalDomain()).thenReturn(Optional.of(new Domain(103L, "GLOBAL", "GLOBAL", true)));
+        when(jwtTokenService.getToken(any())).thenReturn("jwt-token");
+        when(jwtTokenService.getRefreshToken(any())).thenReturn("refresh-token");
+
+        when(request.getHeader(HttpHeaders.HOST)).thenReturn("localhost");
+        when(request.getHeader(HttpHeaders.USER_AGENT)).thenReturn("JUnit");
+
+        // when
+        RedirectView result = oidcAuthController.oidcLoginSuccess(oidcUser, request);
+
+        // then
+        assertTrue(result.getUrl().contains("login-success"));
+        ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+        verify(jwtTokenService).getToken(userCaptor.capture());
+        assertTrue(userCaptor.getValue().getRoles().stream()
+                .anyMatch(role -> role.getRole().equals(Role.ROLE_NOT_ACCEPTED)));
     }
 
     @Test
@@ -278,6 +381,8 @@ class OIDCAuthControllerTest {
         Constructor<User> userConstructor = User.class.getDeclaredConstructor();
         userConstructor.setAccessible(true);
         User user = userConstructor.newInstance();
+        ReflectionTestUtils.setField(user, "termsOfUseAccepted", true);
+        ReflectionTestUtils.setField(user, "privacyPolicyAccepted", true);
 
         when(oidcUserService.checkUser(any())).thenReturn(user);
         when(jwtTokenService.getToken(any())).thenReturn("jwt-token");

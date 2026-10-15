@@ -253,47 +253,15 @@ class OidcUserServiceImplTest {
     }
 
     @Test
-    void registerNewUserFromOidcUserShouldUseUsernameFallbackWhenPreferredUsernameMissing() {
-        Domain global = new Domain(103L, "GLOBAL", "GLOBAL", true);
-        ConfigurationDto configuration = ConfigurationDto.builder().defaultLanguage("en").build();
+    void checkUserShouldThrowWhenNoLocalAccountMatches() {
+        when(userService.existsBySamlToken("test-sub")).thenReturn(false);
+        when(userService.existsByEmail("test@example.com")).thenReturn(false);
 
-        when(oidcUser.getAttribute("preferred_username")).thenReturn(null);
-        when(oidcUser.getAttribute("username")).thenReturn("fallback-username");
-        when(oidcUser.getAttribute("name")).thenReturn(null);
-        when(oidcUser.getAttribute("email")).thenReturn("fallback@example.com");
-        when(oidcUser.getAttribute("family_name")).thenReturn("Family");
-        when(oidcUser.getAttribute("given_name")).thenReturn("Given");
-        when(oidcUser.getAttribute("sub")).thenReturn("fallback-sub");
-
-        when(domainService.getGlobalDomain()).thenReturn(Optional.of(global));
-        when(configurationManager.getConfiguration()).thenReturn(configuration);
-        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0, User.class));
-
-        User result = oidcUserService.registerNewUser(oidcUser);
-
-        assertEquals("fallback-username", result.getUsername());
-        assertEquals("fallback-sub", result.getSamlToken());
-    }
-
-    @Test
-    void registerNewUserFromOidcUserShouldThrowWhenSubjectMissing() {
-        when(oidcUser.getAttribute("sub")).thenReturn(null);
-
-        SignupException ex = assertThrows(SignupException.class,
-                () -> oidcUserService.registerNewUser(oidcUser));
-        assertEquals("External identity is missing", ex.getMessage());
-    }
-
-    @Test
-    void registerNewUserFromOidcUserShouldThrowWhenNoUsernameClaimAvailable() {
-        when(oidcUser.getAttribute("sub")).thenReturn("some-sub");
-        when(oidcUser.getAttribute("preferred_username")).thenReturn(null);
-        when(oidcUser.getAttribute("username")).thenReturn(null);
-        when(oidcUser.getAttribute("name")).thenReturn(null);
-
-        SignupException ex = assertThrows(SignupException.class,
-                () -> oidcUserService.registerNewUser(oidcUser));
-        assertEquals("Username is required", ex.getMessage());
+        ExternalUserMatchException ex = assertThrows(ExternalUserMatchException.class,
+                () -> oidcUserService.checkUser(oidcUser));
+        assertTrue(ex.getMessage().contains("No local account matches"));
+        verify(userRepository, never()).save(any(User.class));
+        verifyNoInteractions(domainService, configurationManager);
     }
 
     @Test

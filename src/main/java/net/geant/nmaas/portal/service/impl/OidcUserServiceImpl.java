@@ -41,6 +41,18 @@ public class OidcUserServiceImpl implements OidcUserService {
     private final ConfigurationManager configurationManager;
     private final PasswordEncoder passwordEncoder;
 
+    /**
+     * Resolves the local account matching the external identity: either already
+     * linked by subject, or linked by email under a legacy token equal to the
+     * email or preferred username (migrated to the subject on the fly).
+     *
+     * <p>Never creates accounts: registration is only possible through the
+     * approvals endpoint with explicit AUP and Privacy Notice consent.</p>
+     *
+     * @throws ExternalUserMatchException when no local account matches, the
+     *         identity is incomplete, or the account is linked to a different
+     *         external identity
+     */
     @Override
     public User checkUser(OidcUser oidcUser) {
 
@@ -85,7 +97,11 @@ public class OidcUserServiceImpl implements OidcUserService {
                     + " does not match internal user with SamlToken "
                     + linkedSamlToken);
         }
-        return registerNewUser(oidcUser);
+        // Registration is only possible through the approvals endpoint, which
+        // requires explicit AUP and Privacy Notice consent. Reaching this point
+        // means no local account matches the external identity (e.g. it was
+        // removed concurrently with the login request).
+        throw new ExternalUserMatchException("No local account matches external user " + oidcUserSub);
     }
 
     @Override
@@ -142,32 +158,6 @@ public class OidcUserServiceImpl implements OidcUserService {
         }
     }
 
-    @Override
-    public User registerNewUser(OidcUser oidcUser) {
-        String sub = oidcUser.getAttribute("sub");
-        if (StringUtils.isBlank(sub)) {
-            throw new SignupException("External identity is missing");
-        }
-        assertExternalIdentityAvailable(sub);
-        String username = resolveUsername(oidcUser.getAttribute("preferred_username"),
-                oidcUser.getAttribute("username"),
-                oidcUser.getAttribute("name"));
-        try {
-            return register(username,
-                    oidcUser.getAttribute("email"),
-                    oidcUser.getAttribute("family_name"),
-                    oidcUser.getAttribute("given_name"),
-                    sub,
-                    false,
-                    false,
-                    domains.getGlobalDomain().orElseThrow(MissingElementException::new));
-        } catch (MissingElementException _) {
-            throw new SignupException("Domain not found");
-        } catch (DataIntegrityViolationException _) {
-            throw new SignupException("User already exists");
-        }
-    }
-
     private User register(String username,
                           String email,
                           String lastName,
@@ -214,6 +204,13 @@ public class OidcUserServiceImpl implements OidcUserService {
         return false;
     }
 
+    /**
+     * Returns true only for external users without a local account, who must be
+     * directed to the first-login registration page where AUP and Privacy Notice
+     * consent is collected. Existing accounts are never routed there: their
+     * pending approvals are enforced at token issuance time with the
+     * {@code ROLE_NOT_ACCEPTED} role, exactly like in the basic login flow.
+     */
     @Override
     public boolean externalUserRequiresAupAndPn(OidcUser oidcUser) {
 
@@ -221,12 +218,6 @@ public class OidcUserServiceImpl implements OidcUserService {
 
         return !userService.existsByEmail(oidcUserEmail);
 
-//        if (userService.existsByEmail(oidcUserEmail)) {
-//            final User user = userService.findByEmail(oidcUserEmail);
-//            return !user.isTermsOfUseAccepted() || !user.isPrivacyPolicyAccepted();
-//        }
-//
-//        return true;
     }
 
     @Override

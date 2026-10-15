@@ -29,6 +29,9 @@ import org.springframework.test.context.bean.override.convention.TestBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
@@ -40,7 +43,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *     <li>the OAuth2 success endpoint must reject anonymous requests instead of
  *     failing with a server error,</li>
  *     <li>tokens are only issued for a valid OIDC session,</li>
- *     <li>the server-side session is terminated once tokens have been issued.</li>
+ *     <li>the server-side session is terminated once tokens have been issued,</li>
+ *     <li>pending AUP/Privacy Notice approvals are enforced with the
+ *     ROLE_NOT_ACCEPTED role in the issued token.</li>
  * </ul>
  *
  * The {@link ClientRegistrationRepository} is replaced with a repository backed
@@ -122,6 +127,38 @@ public class OidcAuthSecurityIntTest extends BaseControllerTestSetup {
                 .andReturn();
 
         assertTrue(session.isInvalid(), "OIDC session should be invalidated also when linking is required");
+    }
+
+    @Test
+    public void shouldAddNotAcceptedRoleToIssuedTokenWhenApprovalsNotAccepted() throws Exception {
+        User user = new User("oidc-it-notaccepted", true, "password",
+                domains.getGlobalDomain().get(), Role.ROLE_USER, false, false);
+        user.setEmail("oidc-it-notaccepted@example.com");
+        user.setSamlToken("oidc-it-notaccepted-sub");
+        userRepository.save(user);
+
+        MockHttpSession session = oidcSession("oidc-it-notaccepted-sub", "oidc-it-notaccepted@example.com");
+        MvcResult result = mvc.perform(get(OIDC_SUCCESS_URL).session(session))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("**/login-success?token=**"))
+                .andReturn();
+
+        String jwt = extractQueryParameter(result.getResponse().getRedirectedUrl(), "token");
+        String payload = new String(Base64.getUrlDecoder().decode(jwt.split("\\.")[1]), StandardCharsets.UTF_8);
+        assertTrue(payload.contains("ROLE_NOT_ACCEPTED"),
+                "Issued token should carry ROLE_NOT_ACCEPTED when AUP/PN were not accepted");
+        assertTrue(session.isInvalid(), "OIDC session should be invalidated after issuing tokens");
+    }
+
+    private String extractQueryParameter(String url, String name) {
+        String query = url.substring(url.indexOf('?') + 1);
+        for (String param : query.split("&")) {
+            int equalsIndex = param.indexOf('=');
+            if (equalsIndex > 0 && param.substring(0, equalsIndex).equals(name)) {
+                return param.substring(equalsIndex + 1);
+            }
+        }
+        throw new IllegalArgumentException("Parameter " + name + " not found in " + url);
     }
 
     private User oidcUser(String username, String email, String samlToken) {
