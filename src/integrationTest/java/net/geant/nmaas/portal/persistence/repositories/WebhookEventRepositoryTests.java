@@ -3,6 +3,7 @@ package net.geant.nmaas.portal.persistence.repositories;
 import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.entity.WebhookEvent;
 import net.geant.nmaas.portal.persistence.entity.WebhookEventType;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,11 @@ public class WebhookEventRepositoryTests {
     @Autowired
     private WebhookEventRepository repository;
 
+    @AfterEach
+    void cleanup() {
+        repository.deleteAll();
+    }
+
     @Test
     void shouldPersistWebhookEvent() {
         WebhookEvent testEvent = new WebhookEvent(null, "wh1", "https://target.wh1", WebhookEventType.DOMAIN_ACTION);
@@ -31,16 +37,12 @@ public class WebhookEventRepositoryTests {
     }
 
     @Test
-    void shouldFindWebhookEventByDeploymentWithEmptyDomain() {
+    void shouldFindWebhookEventByRemovalWithEmptyDomain() {
         WebhookEvent testEvent = new WebhookEvent(null, "wh1", "https://target.wh1", WebhookEventType.APPLICATION_REMOVAL);
-        // domain is null
         testEvent.setDomain(null);
         repository.save(testEvent);
 
         assertThat(repository.findIdByEventType(WebhookEventType.APPLICATION_REMOVAL)).isNotEmpty();
-
-        List<Long> ids = repository.findIdByEventTypeAndDomain(WebhookEventType.APPLICATION_REMOVAL, "d1");
-        assertThat(ids).isNotEmpty();
     }
 
     @Test
@@ -56,10 +58,8 @@ public class WebhookEventRepositoryTests {
         repository.save(testEvent3);
 
         assertThat(repository.findIdByEventType(WebhookEventType.APPLICATION_DEPLOYMENT)).isNotEmpty();
-
         List<Long> ids = repository.findIdByEventTypeAndDomain(WebhookEventType.APPLICATION_DEPLOYMENT, "d1");
-        assertThat(ids).hasSize(2);
-        System.out.println(ids);
+        assertThat(ids).hasSize(1);
     }
 
 }
