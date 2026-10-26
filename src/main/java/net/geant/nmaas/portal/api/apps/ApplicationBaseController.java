@@ -74,7 +74,7 @@ public class ApplicationBaseController extends AppBaseController {
                 .filter(app -> isSystemAdmin || app.getOwner().equals(principal.getName()))
                 .map(app -> modelMapper.map(app, ApplicationBaseDto.class))
                 //.map(this::setAppRating) -> rating information is no longer used
-                .sorted(Comparator.comparing(ApplicationBaseDto::getName))
+                .sorted(Comparator.comparing(ApplicationBaseDto::getName, String.CASE_INSENSITIVE_ORDER))
                 .toList();
     }
 

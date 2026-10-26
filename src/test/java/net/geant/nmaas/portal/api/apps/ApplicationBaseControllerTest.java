@@ -91,18 +91,20 @@ class ApplicationBaseControllerTest {
         when(userService.findByUsername("admin")).thenReturn(
                 Optional.of(userWithRoles("admin", Role.ROLE_SYSTEM_ADMIN)));
 
-        ApplicationBase base1 = new ApplicationBase(1L, "charlie");
+        ApplicationBase base1 = new ApplicationBase(1L, "delta");
         base1.setOwner("owner-a");
-        ApplicationBase base2 = new ApplicationBase(2L, "alpha");
+        ApplicationBase base2 = new ApplicationBase(2L, "Alpha");
         base2.setOwner("owner-b");
         ApplicationBase base3 = new ApplicationBase(3L, "bravo");
         base3.setOwner("owner-c");
+        ApplicationBase base4 = new ApplicationBase(4L, "CHARLIE");
+        base4.setOwner("owner-d");
 
-        when(applicationBaseService.findAll()).thenReturn(List.of(base1, base2, base3));
+        when(applicationBaseService.findAll()).thenReturn(List.of(base1, base2, base3, base4));
 
         var result = controller.getAllApplicationBaseBasedByRole(principal);
 
-        assertEquals(List.of("alpha", "bravo", "charlie"), result.stream().map(ApplicationBaseDto::getName).toList());
+        assertEquals(List.of("Alpha", "bravo", "CHARLIE", "delta"), result.stream().map(ApplicationBaseDto::getName).toList());
     }
 
     private static Principal principal(String name) {
