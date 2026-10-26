@@ -99,7 +99,7 @@ dependencies {
     runtimeOnly('org.postgresql:postgresql')
 
     // Database audit trail
-    implementation 'org.hibernate.orm:hibernate-envers:7.4.13.Final'
+    implementation 'org.hibernate.orm:hibernate-envers:7.4.14.Final'
 
     // Database migrations
     implementation("org.springframework.boot:spring-boot-starter-flyway")
@@ -111,7 +111,7 @@ dependencies {
     implementation('com.vdurmont:semver4j:3.1.0')
 
     // nmaas statistics extracted from the database
-    implementation('io.micrometer:micrometer-registry-prometheus:1.17.1')
+    implementation('io.micrometer:micrometer-registry-prometheus:1.17.2')
 
     // Kubernetes API client
     implementation('io.fabric8:kubernetes-client:7.9.0')
@@ -204,7 +204,7 @@ tasks.register('generateOpenApiJson', Test) {
 }
 
 jacoco {
-    toolVersion = "0.8.15"
+    toolVersion = "0.8.16"
     reportsDirectory = layout.buildDirectory.dir('jacoco')
 }
 
