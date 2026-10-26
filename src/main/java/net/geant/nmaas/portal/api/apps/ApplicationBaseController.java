@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -72,7 +73,8 @@ public class ApplicationBaseController extends AppBaseController {
         return applicationBaseService.findAll().stream()
                 .filter(app -> isSystemAdmin || app.getOwner().equals(principal.getName()))
                 .map(app -> modelMapper.map(app, ApplicationBaseDto.class))
-                .map(this::setAppRating)
+                //.map(this::setAppRating) -> rating information is no longer used
+                .sorted(Comparator.comparing(ApplicationBaseDto::getName))
                 .toList();
     }
 

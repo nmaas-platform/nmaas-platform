@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.api.apps;
 
+import net.geant.nmaas.api.dto.applications.ApplicationBaseDto;
 import net.geant.nmaas.portal.persistence.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.entity.Role;
@@ -57,13 +58,12 @@ class ApplicationBaseControllerTest {
         ApplicationBase base2 = new ApplicationBase(2L, "app-b");
         base2.setOwner("owner-b");
 
-        when(applicationBaseService.findAll()).thenReturn(List.of(base1, base2));
-        when(ratingRepository.getApplicationRating(1L)).thenReturn(new Integer[]{4, 5});
-        when(ratingRepository.getApplicationRating(2L)).thenReturn(new Integer[]{3});
+        when(applicationBaseService.findAll()).thenReturn(List.of(base2, base1));
 
         var result = controller.getAllApplicationBaseBasedByRole(principal);
 
         assertEquals(2, result.size());
+        assertEquals(List.of("app-a", "app-b"), result.stream().map(ApplicationBaseDto::getName).toList());
     }
 
     @Test
@@ -78,12 +78,31 @@ class ApplicationBaseControllerTest {
         other.setOwner("another-user");
 
         when(applicationBaseService.findAll()).thenReturn(List.of(owned, other));
-        when(ratingRepository.getApplicationRating(1L)).thenReturn(new Integer[]{5});
 
         var result = controller.getAllApplicationBaseBasedByRole(principal);
 
         assertEquals(1, result.size());
         assertEquals("owned-app", result.getFirst().getName());
+    }
+
+    @Test
+    void shouldSortResultsByName() {
+        Principal principal = principal("admin");
+        when(userService.findByUsername("admin")).thenReturn(
+                Optional.of(userWithRoles("admin", Role.ROLE_SYSTEM_ADMIN)));
+
+        ApplicationBase base1 = new ApplicationBase(1L, "charlie");
+        base1.setOwner("owner-a");
+        ApplicationBase base2 = new ApplicationBase(2L, "alpha");
+        base2.setOwner("owner-b");
+        ApplicationBase base3 = new ApplicationBase(3L, "bravo");
+        base3.setOwner("owner-c");
+
+        when(applicationBaseService.findAll()).thenReturn(List.of(base1, base2, base3));
+
+        var result = controller.getAllApplicationBaseBasedByRole(principal);
+
+        assertEquals(List.of("alpha", "bravo", "charlie"), result.stream().map(ApplicationBaseDto::getName).toList());
     }
 
     private static Principal principal(String name) {
