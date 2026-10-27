@@ -54,7 +54,7 @@
     "COST_REDUCTION_HEADER": "Cost reduction",
     "COST_REDUCTION_TEXT": "With nmaas, users do not have to bear the ownership costs and risks related to maintenance and control of the network management infrastructure.",
     "SECURITY_HEADER": "Security",
-    "SECURITY_TEXT": "With nmaas, you don't have to worry about security. We provide safe connection to separated instances by VPN to your network - to allow institutions and projects to safe management of network.",
+    "SECURITY_TEXT": "With nmaas, you don't have to worry about security. We provide safe connection to separated instances by VPN to your network - allowing institutions and projects to safely manage their networks.",
     "SCALING_HEADER": "Flexible scaling",
     "SCALING_TEXT": "If You need some horizontal scaling - there is no problem with that on nmaas. You can very easily scale Your instances in few minutes.",
     "NMAAS_FEATURES_HEADER": "nmaas Features",
@@ -63,11 +63,11 @@
     "OWN_APPS_HEADER": "Own applications",
     "OWN_APPS_TEXT": "You want to share your own application with the community? nmaas is open for addition of new applications.",
     "EDUGAIN_SUPPORT_HEADER": "eduGAIN support",
-    "EDUGAIN_SUPPORT_TEXT": "You don't need to create a new account. Login using an existing account from you identity provider federated under eduGAIN.",
+    "EDUGAIN_SUPPORT_TEXT": "You don't need to create a new account. Login using an existing account from your identity provider federated under eduGAIN.",
     "FAST_DEPLOYMENT_HEADER": "Fast & easy deployment",
     "FAST_DEPLOYMENT_TEXT": "Upon your request applications are deployed within minutes with custom configuration provided through a simple wizard.",
     "WEB_PORTAL_HEADER": "Modern user interface",
-    "WEB_PORTAL_TEXT": "nmaas provides a modern web-based user portal that follows reactive design principle.",
+    "WEB_PORTAL_TEXT": "nmaas provides a modern web-based user portal that follows responsive design principles.",
     "KUBERNETES_HEADER": "Kubernetes deployment",
     "KUBERNETES_TEXT": "User application instances are deployed in Kubernetes cluster run on top of dedicated hardware infrastructure assuring high performance and reliability.",
     "TECHNOLOGIES_USED_HEADER": "Technologies used",
@@ -87,7 +87,7 @@
     "PRIVACY_POLICY": "Privacy Notice",
     "SUBMIT": "Submit",
     "FORM_SUBMISSION": "Registration form submission",
-    "THANK_YOU_MESSAGE": "Thank you for submitting the registration form. Your account needs to be enabled by the system administrator. This make take some time.",
+    "THANK_YOU_MESSAGE": "Thank you for submitting the registration form. Your account needs to be enabled by the system administrator. This may take some time.",
     "DONE_MESSAGE": "Done",
     "INVALID_INPUT_MESSAGE": "Invalid input data",
     "USER_ALREADY_EXISTS_MESSAGE": "User already exists.",
@@ -98,7 +98,7 @@
     "ACCEPTABLE_USE_POLICY": "Acceptable Use Policy",
     "TERMS_PANEL": {
       "HEADER": "Privacy Policy and Acceptable Use Policy",
-      "INFO": "You are trying to log in to an local account, you should first read the Privacy Policy and Acceptable Use Policy.",
+      "INFO": "You are trying to log in to a local account. You should first read the Privacy Policy and Acceptable Use Policy.",
       "CONFIRM": "Confirm"
     }
   },
@@ -116,12 +116,12 @@
   },
   "ACCOUNT_LINKING": {
     "HEADER": "Account linking",
-    "INFO": "You are trying to log in to an local account that already exists in our system with the email address you provided. Please enter your password to verify it's You and confirm linking of these accounts.",
+    "INFO": "You are trying to log in to a local account that already exists in our system with the email address you provided. Please enter your password to verify it's you and confirm linking of these accounts.",
     "CONFIRM": "Confirm"
   },
   "TEST_INSTANCE_MODAL": {
     "HEADER": "nmaas test instance",
-    "BODY": "Please be aware that this is a test nmaas instance. The user isolation and data security measures are not so strict as on the production instance. Do not use this instance to monitor real equipment.",
+    "BODY": "Please be aware that this is a test nmaas instance. The user isolation and data security measures are not as strict as on the production instance. Do not use this instance to monitor real equipment.",
     "OK_BUTTON": "OK"
   },
   "PROVIDE_SSH_KEY_MODAL": {
@@ -178,7 +178,7 @@
     "EDIT_BUTTON": "Edit",
     "REMOVE_BUTTON": "Remove",
     "SUBMIT_BUTTON": "Submit",
-    "HOST_SSH_USERNAME_VALIDATION_MESSAGE": "Helm host address must contain only digits and dots",
+    "HOST_SSH_USERNAME_VALIDATION_MESSAGE": "Host SSH username is invalid",
     "HOST_ADDRESS_REQUIRED_MESSAGE": "Helm host address is required",
     "HOST_ADDRESS_VALIDATION_MESSAGE": "Helm host address must contain only digits and dots",
     "HOST_SSH_USERNAME_REQUIRED_MESSAGE": "Host SSH username is required",
@@ -188,7 +188,7 @@
     "REST_API_HOST_ADDRESS_VALIDATION_MESSAGE": "REST API host address must contain only numbers and dots",
     "REST_API_PORT_REQUIRED_MESSAGE": "REST API host port is required",
     "NAMESPACE_PATTERN_VALIDATION_MESSAGE": "Namespace must contain only lower case letters and - character.",
-    "NAMESPACE_MAX_LENGTH_VALIDATION_MESSAGE": "Maximal length of namespace is 64.",
+    "NAMESPACE_MAX_LENGTH_VALIDATION_MESSAGE": "Maximum length of namespace is 64.",
     "IP_REQUIRED_MESSAGE": "IP is required",
     "IP_VALIDATION_MESSAGE": "IP must contain only digits and dots",
     "NETWORK_REQUIRED_MESSAGE": "Network is required",
@@ -232,10 +232,10 @@
       "STEP_1" : "General information",
       "STEP_2" : "Basic cluster settings",
       "STEP_3" : "Advanced cluster settings",
-      "STEP_1_INFO" : "Kubernetes configuration is required to proceed. Please paste the content of the .kuberconfig file in the text area or point to a secret object with the respective configuration.",
+      "STEP_1_INFO" : "Kubernetes configuration is required to proceed. Please paste the content of the .kubeconfig file in the text area or point to a secret object with the respective configuration.",
       "STEP_2_INFO" : "Provide basic information about the new cluster and assign it to one of Your domains.",
-      "STEP_3_INFO" : "Cluster Ingress and Storage properties were populated with default values. Update it according to your remote cluster configuration.",
-      "TOOLTIP_1" : "You need to provide kubernetes config file to proceed",
+      "STEP_3_INFO" : "Cluster Ingress and Storage properties were populated with default values. Update them according to your remote cluster configuration.",
+      "TOOLTIP_1" : "You need to provide Kubernetes config file to proceed",
       "TOOLTIP_2" : "All fields must be filled"
     }
   },
@@ -408,15 +408,15 @@
         "FULL": "Long description",
         "REMOVE": "Remove description",
         "MISSING": "Description is missing",
-        "ADD": "Add mew description"
+        "ADD": "Add new description"
       },
       "APPLICATION": {
         "ADD": "Add",
         "ICON": "Icon",
         "NAME": "Name",
         "OWNER": "Owner",
-        "TITLE": "Add application",
-        "ADD_INFO": "Select application to add",
+        "TITLE": "Select applications",
+        "ADD_INFO": "Choose applications to be part of the bundle",
         "ID": "Id",
         "MINIMUM": "Select at least two applications"
       }
@@ -461,7 +461,7 @@
     "SEND_APP_INSTANCE_FAILURE_EMAILS": "Send emails when app instance fails to deploy",
     "SEND_APP_INSTANCE_FAILURE_EMAILS_LIST": "Recipients of app deployment failed emails",
     "DOMAIN_SELECTION_ENABLED": "Domain selection during registration",
-    "BULK_DOMAINS_ALLOW_FOR_SSO_ACCOUNTS": "Allow for creation or update of a SSO-enabled account in bulk process",
+    "BULK_DOMAINS_ALLOW_FOR_SSO_ACCOUNTS": "Allow for creation or update of an SSO-enabled account in bulk process",
     "BULK_DOMAINS_SEND_EMAIL_FOR_NEW_ACCOUNTS": "Send notification email for new accounts created in bulk process",
     "BULK_DEPLOYMENT_CRON": "Bulk deployment job cron",
     "BULK_DEPLOYMENT_LIMIT": "Bulk deployment parallel limit",
@@ -507,7 +507,7 @@
     "CODE_NAME_PATTERN_MESSAGE_1": "Codename must contain only lower case letters, digits and - character.",
     "CODE_NAME_PATTERN_MESSAGE_2": "Codename has to be 2-8 characters long.",
     "NAMESPACE_PATTERN_VALIDATION_MESSAGE": "Namespace must contain only lower case letters, digits and - character.",
-    "NAMESPACE_MAX_LENGTH_VALIDATION_MESSAGE": "Maximal length of namespace is 64.",
+    "NAMESPACE_MAX_LENGTH_VALIDATION_MESSAGE": "Maximum length of namespace is 64.",
     "EXTERNAL_SERVICE_DOMAIN": "External service domain",
     "DCN_DEPLOYMENT_TYPE": "DCN deployment type",
     "CUSTOMER_NETWORKS": "Customer networks",
@@ -561,7 +561,7 @@
     "ROLE": "Role",
     "ADD_BUTTON": "Add/Update",
     "REMOVE_BUTTON": "Remove",
-    "NO_ROLES_INFO": "Your aren't assigned to any domain yet. Please contact the administrator if You have further questions."
+    "NO_ROLES_INFO": "You aren't assigned to any domain yet. Please contact the administrator if You have further questions."
   },
   "SCREENSHOTS": {
     "HEADER": "Screenshots",
@@ -623,7 +623,7 @@
     "INSTANCE_NAME_PATTERN_ERROR": "Instance name must only contain a-z, A-Z, 0-9 and - characters",
     "INSTANCE_NAME_LENGTH_ERROR": "Instance name has to be 3-10 characters long",
     "INSTANCE_NAME_REQUIRED_ERROR": "Instance name is required",
-    "INSTANCE_NAME_FORBIDDEN_WORD_ERROR": "Name „test“ cannot be used",
+    "INSTANCE_NAME_FORBIDDEN_WORD_ERROR": "The name \"test\" cannot be used",
     "DOMAIN": "Domain",
     "CLOSE_BUTTON": "Cancel",
     "DEPLOY_BUTTON": "Deploy",
@@ -653,7 +653,7 @@
   },
   "DISABLE_AUTO_UPGRADES_MODAL": {
     "HEADER": "Automatic upgrades confirmation",
-    "BODY": "Do you want to disable automatic upgrades for this application instance?<br>You will be still able to trigger upgrades manually.",
+    "BODY": "Do you want to disable automatic upgrades for this application instance?<br>You will still be able to trigger upgrades manually.",
     "OK_BUTTON": "Confirm",
     "CANCEL_BUTTON": "Cancel"
   },
@@ -692,9 +692,10 @@
       "NO_LIMIT": "No limit"
     },
     "ADD_MEMBERS_BUTTON": "Members",
-    "UPDATE_CONFIG_BUTTON": "Configure",
-    "ENABLE_AUTO_UPGRADES_BUTTON": "Enable auto upgrades",
-    "DISABLE_AUTO_UPGRADES_BUTTON": "Disable auto upgrades",
+    "UPDATE_CONFIG_GIT_BUTTON": "Configure with git",
+    "UPDATE_CONFIG_FORM_BUTTON": "Update configuration",
+    "ENABLE_AUTO_UPGRADES_BUTTON": "Enable automatic upgrades",
+    "DISABLE_AUTO_UPGRADES_BUTTON": "Disable automatic upgrades",
     "DEPLOYMENT_IN_PROGRESS": "Application is being activated. This process may take up to several minutes. <br>You will be notified with an email once your instance is ready.",
     "ADDITIONAL_INFO": "Additional Information",
     "INSTALLATION_PROGRESS": {
@@ -859,11 +860,11 @@
     "TEXT": "To reset your password, enter the email address you used to sign in to nmaas.",
     "SUBMIT_BUTTON": "Submit",
     "EMAIL": "Email",
-    "INVALID_TOKEN": "Your link has already expired. Please fill out forget password form again.",
+    "INVALID_TOKEN": "Your link has already expired. Please fill out the password reset form again.",
     "GO_BACK": "Go back to the nmaas page",
     "MODAL": {
       "HEADER": "Please check your email",
-      "BODY": "If you have provided valid email we will send to you link for resetting password. Please be advised that you can only reset password for local account.",
+      "BODY": "If you have provided a valid email we will send you a link to reset your password. Please be advised that you can only reset password for local account.",
       "CLOSE_BUTTON": "Close"
     },
     "SITE": {
@@ -930,7 +931,7 @@
     "UPDATE_CONFIG_WIZARD_PREVIEW_HEADER": "Update configuration wizard preview"
   },
   "APPS_WIZARD": {
-    "FIRST_PAGE_MESSAGE": "You are about to fill in a request for adding new application to the nmaas portfolio. You will be guided through a few step process of providing all necessary information about the application, its description, deployment and configuration details. Once the request is submitted it will be reviewed by administrator and either approved or rejected with a proper comment send via email. By checking the box below you confirm that you have the right to publish this application in nmaas.",
+    "FIRST_PAGE_MESSAGE": "You are about to fill in a request for adding new application to the nmaas portfolio. You will be guided through a few step process of providing all necessary information about the application, its description, deployment and configuration details. Once the request is submitted it will be reviewed by administrator and either approved or rejected with a proper comment sent via email. By checking the box below you confirm that you have the right to publish this application in nmaas.",
     "ACCEPT_RULES_CHECKBOX": "I read the general instructions above",
     "NEXT_BUTTON": "Next",
     "SUBMIT_BUTTON": "Submit",
@@ -963,7 +964,7 @@
     "UPDATE_CONFIG_WIZARD_TEMPLATE_LABEL": "Application update configuration wizard template",
     "NEW_APP_MODAL": {
       "HEADER": "New application submitted correctly",
-      "BODY": "Thank you for submitting new application. Your request must be now reviewed by nmaas Team. It may take some time.",
+      "BODY": "Thank you for submitting new application. Your request will now be reviewed by nmaas Team. It may take some time.",
       "BACK_TO_APP_MANAGEMENT_BUTTON": "Back"
     },
     "EDIT_APP_MODAL": {
@@ -1016,7 +1017,7 @@
     "OPTIONAL_LANGS_TOOLTIP": "You can provide additional translations of descriptions into optional languages.",
     "CONSUMED_PODS": "Consumed number of pods",
     "CONSUMED_PODS_TOOLTIP": "Number of pods run by a single application instance",
-    "CONSUMED_CPU": "Consumed CPU (in miliCPU)",
+    "CONSUMED_CPU": "Consumed CPU (in mCPU)",
     "CONSUMED_CPU_TOOLTIP": "Amount of CPU used by a single application instance",
     "CONSUMED_MEMORY": "Consumed Memory (in MB)",
     "CONSUMED_MEMORY_TOOLTIP": "Amount of memory used by a single application instance",
@@ -1173,7 +1174,7 @@
       "APP_LIST": "List of lab applications",
       "APP_LIST_DESCRIPTION": "Tentative list of applications that you would like to use in your lab",
       "START_DAY": "Start date",
-      "END_DAY": "Finish date",
+      "END_DAY": "End date",
       "MESSAGE_ADDITIONAL": "Additional information",
       "MESSAGE_ADDITIONAL_PLACEHOLDER": "Additional information",
       "APP_LIST_ADD": "Add application"
@@ -1314,7 +1315,7 @@
   },
   "GUEST_USER_MODAL": {
     "HEADER": "Guest account",
-    "CONTENT": "You are currently logged as guest user. In order to deploy applications, You need to be assigned to a domain. Contact your administrator for further information.",
+    "CONTENT": "You are currently logged in as a guest user. In order to deploy applications, You need to be assigned to a domain. Contact your administrator for further information.",
     "CONFIRM_BUTTON": "OK"
   },
   "SSH_KEYS": {
@@ -1337,7 +1338,7 @@
       "BUTTON_CANCEL": "Cancel",
       "ERROR": {
         "NAME_REQUIRED": "Name is required",
-        "NAME_MINLENGTH": "Name must have at lest 6 characters",
+        "NAME_MINLENGTH": "Name must have at least 6 characters",
         "NAME_MAXLENGTH": "Name cannot be longer than 16 characters",
         "KEY_REQUIRED": "Key is required",
         "KEY_PATTERN": "Key does not match required pattern"

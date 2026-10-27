@@ -414,10 +414,10 @@
         "ICON": "Ikona",
         "NAME": "Nazwa",
         "OWNER": "Właściciel",
-        "TITLE": "Dodaj aplikacje",
-        "ADD_INFO": "Wybierz aplikacje do dodania",
+        "TITLE": "Wybierz aplikacje",
+        "ADD_INFO": "Wybierz aplikacje do paczki",
         "ID": "Id",
-        "MINIMUM": "Wybierz conajmniej dwie aplikacje"
+        "MINIMUM": "Wybierz co najmniej dwie aplikacje"
       }
     }
   },
@@ -690,7 +690,8 @@
       "PLACEHOLDER_LIMIT": "Limit logów",
       "NO_LIMIT": "Bez limitu"
     },
-    "UPDATE_CONFIG_BUTTON": "Konfiguracja",
+    "UPDATE_CONFIG_GIT_BUTTON": "Configure with git",
+    "UPDATE_CONFIG_FORM_BUTTON": "Update configuration",
     "ENABLE_AUTO_UPGRADES_BUTTON": "Włącz automatyczne aktualizacje",
     "DISABLE_AUTO_UPGRADES_BUTTON": "Wyłącz automatyczne aktualizacje",
     "ADD_MEMBERS_BUTTON": "Osoby",

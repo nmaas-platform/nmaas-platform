@@ -414,8 +414,8 @@
         "ICON": "Icon",
         "NAME": "Name",
         "OWNER": "Owner",
-        "TITLE": "Add application",
-        "ADD_INFO": "Select application to add",
+        "TITLE": "Select applications",
+        "ADD_INFO": "Choose applications to be part of the bundle",
         "ID": "Id",
         "MINIMUM": "Select at least two applications"
       }
@@ -690,7 +690,8 @@
       "PLACEHOLDER_LIMIT": "Log limit",
       "NO_LIMIT": "No limit"
     },
-    "UPDATE_CONFIG_BUTTON": "Konfigurieren",
+    "UPDATE_CONFIG_GIT_BUTTON": "Configure with git",
+    "UPDATE_CONFIG_FORM_BUTTON": "Update configuration",
     "ENABLE_AUTO_UPGRADES_BUTTON": "Auto upgrades aktivieren",
     "DISABLE_AUTO_UPGRADES_BUTTON": "Auto upgrades deaktivieren",
     "ADD_MEMBERS_BUTTON": "Add members",
