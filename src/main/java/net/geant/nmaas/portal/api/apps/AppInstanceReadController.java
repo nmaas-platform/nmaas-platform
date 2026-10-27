@@ -569,9 +569,9 @@ public class AppInstanceReadController extends AppBaseController {
         }
 
         try {
-            ai.setAppConfigRepositoryAccessDetails(appDeploymentMonitor.configRepositoryAccessDetails(identifier));
+            ai.setAppConfigRepositoryAccessDto(appDeploymentMonitor.configRepositoryAccessDetails(identifier));
         } catch (InvalidAppStateException | InvalidDeploymentIdException _) {
-            ai.setAppConfigRepositoryAccessDetails(null);
+            ai.setAppConfigRepositoryAccessDto(null);
         }
 
         try {

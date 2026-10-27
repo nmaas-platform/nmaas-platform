@@ -1,6 +1,6 @@
 package net.geant.nmaas.nmservice.configuration.gitlab;
 
-import net.geant.nmaas.api.dto.applications.AppConfigRepositoryAccessDetails;
+import net.geant.nmaas.api.dto.applications.AppConfigRepositoryAccessDto;
 import net.geant.nmaas.gitlab.GitLabManager;
 import net.geant.nmaas.nmservice.configuration.entities.GitLabProject;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
@@ -74,7 +74,7 @@ class GitLabConfigHandlerTest {
         GitLabProject gitLabProject = new GitLabProject(deploymentId, "", "", "", "testCloneUrl", null);
         when(repositoryManager.loadGitLabProject(deploymentId)).thenReturn(Optional.of(gitLabProject));
 
-        AppConfigRepositoryAccessDetails repositoryAccessDetails = handler.configRepositoryAccessDetails(deploymentId);
+        AppConfigRepositoryAccessDto repositoryAccessDetails = handler.configRepositoryAccessDetails(deploymentId);
 
         assertThat(repositoryAccessDetails.getCloneUrl()).isEqualTo("testCloneUrl");
     }
