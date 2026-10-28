@@ -1558,7 +1558,8 @@
       "SETTINGS": "Settings update failed",
       "NOTIFICATION": "Message could not be sent",
       "WEBHOOK": "Webhook data update failed",
-      "NEW_VARIABLE": "Failed to add new variable"
+      "NEW_VARIABLE": "Failed to add new variable",
+      "FILE": "The file is too large. The maximum allowed size is 2 MB."
     }
   }
 }

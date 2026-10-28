@@ -1558,7 +1558,8 @@
       "SETTINGS": "La mise à jour des paramètres a échoué",
       "NOTIFICATION": "Le message n'a pas pu être envoyé.",
       "WEBHOOK": "Échec de la mise à jour du Webhook",
-      "NEW_VARIABLE": "Échec de l'ajout d'une nouvelle variable"
+      "NEW_VARIABLE": "Échec de l'ajout d'une nouvelle variable",
+      "FILE": "Le fichier est trop volumineux. La taille maximale autorisée est de 2 Mo."
     }
   }
 }

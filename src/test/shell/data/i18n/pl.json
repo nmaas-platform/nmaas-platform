@@ -391,6 +391,7 @@
     "QUANTITY": "Ilość",
     "DESCRIPTION": "Opis",
     "EDIT": "Edytuj",
+    "DELETE": "Usuń",
     "DETAILS": {
       "TITLE": "Szczegóły paczek",
       "NAME": "Nazwa",
@@ -1556,7 +1557,8 @@
       "SETTINGS": "Aktualizacja ustawień nie powiodła się",
       "NOTIFICATION": "Nie udało się wysłać wiadomości",
       "WEBHOOK": "Aktualizacja danych webhooka nie powiodła się",
-      "NEW_VARIABLE": "Nie udało się dodać nowej zmiennej"
+      "NEW_VARIABLE": "Nie udało się dodać nowej zmiennej",
+      "FILE": "Plik jest za duży. Maksymalny dozwolony rozmiar to 2 MB."
     }
   }
 }
