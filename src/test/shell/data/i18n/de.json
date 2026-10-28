@@ -1553,7 +1553,8 @@
       "SETTINGS": "Aktualisierung der Einstellungen fehlgeschlagen ",
       "NOTIFICATION": "Die Nachricht konnte nicht gesendet werden.",
       "WEBHOOK": "Das Webhook-Update ist fehlgeschlagen",
-      "NEW_VARIABLE": "Das Hinzufügen einer neuen Variable ist fehlgeschlagen"
+      "NEW_VARIABLE": "Das Hinzufügen einer neuen Variable ist fehlgeschlagen",
+      "FILE": "Die Datei ist zu groß. Die maximal zulässige Größe beträgt 2 MB."
     }
   }
 }
