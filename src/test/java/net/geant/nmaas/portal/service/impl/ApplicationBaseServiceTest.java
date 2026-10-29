@@ -2,6 +2,10 @@ package net.geant.nmaas.portal.service.impl;
 
 import net.geant.nmaas.api.dto.applications.ApplicationBaseInfoDto;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
+import net.geant.nmaas.portal.domain.converters.AppDescriptionConverter;
+import net.geant.nmaas.portal.domain.converters.AppDescriptionInverseConverter;
+import net.geant.nmaas.portal.domain.converters.TagConverter;
+import net.geant.nmaas.portal.domain.converters.TagInverseConverter;
 import net.geant.nmaas.portal.events.ApplicationActivatedEvent;
 import net.geant.nmaas.portal.persistence.entity.AppDescription;
 import net.geant.nmaas.portal.persistence.entity.ApplicationBase;
@@ -16,6 +20,7 @@ import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
 import net.geant.nmaas.portal.service.DomainService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.modelmapper.Conditions;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.ApplicationEventPublisher;
 
@@ -49,7 +54,17 @@ class ApplicationBaseServiceTest {
     private final ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);
     private final DomainService domainService = mock(DomainService.class);
 
-    private final ModelMapper modelMapper = new ModelMapper();
+    private final ModelMapper modelMapper = buildModelMapper();
+
+    private static ModelMapper buildModelMapper() {
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setPropertyCondition(Conditions.isNotNull());
+        modelMapper.addConverter(new AppDescriptionConverter());
+        modelMapper.addConverter(new AppDescriptionInverseConverter());
+        modelMapper.addConverter(new TagConverter());
+        modelMapper.addConverter(new TagInverseConverter());
+        return modelMapper;
+    }
 
     private ApplicationBaseService appBaseService;
 
