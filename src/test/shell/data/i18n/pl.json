@@ -404,6 +404,8 @@
       "NAME_REQUIRED": "Nazwa jest wymagana.",
       "CODENAME_REQUIRED": "Nazwa kodowa jest wymagana.",
       "DESCRIPTION": {
+        "OPTIONAL_DESCRIPTIONS_HEADER": "Opcjonalne opisy",
+        "OPTIONAL_LANGS_LABEL": "Wybierz dodatkowe języki",
         "BRIEF": "Krótki opis",
         "FULL": "Pełen opis",
         "REMOVE": "Usuń opis",
@@ -1003,6 +1005,7 @@
     "REPOSITORY_REQUIRED_TOOLTIP": "nmaas może wykorzystać GitLab aby zachować konfiguracje każdej instancji.",
     "DISABLED_NEXT_BUTTON_TOOLTIP": "Musisz wypełnić wszystkie wymagane pola!",
     "DEPLOY_PARAMETERS_DROPDOWN": "Wybierz parametry globalne",
+    "RESOURCES_SPECIFICATION": "Specyfikacja wykorzystanych zasobów",
     "CONFIG_FILENAME_LABEL": "Nazwa pliku konfiguracyjnego",
     "CONFIG_FILENAME_TOOLTIP": "Podaj nazwę pliku konfiguracyjnego",
     "CONFIG_FILEDIRECTORY_LABEL": "Nazwa katalogu",
