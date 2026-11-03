@@ -55,7 +55,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * by the provider.</p>
  *
  * <p>The provider logout redirect ({@code GET /api/v1/oidc/logout/{token}}),
- * the counterpart of the login flow, is covered here as well.</p>
+ * the counterpart of the login flow, is covered here as well. A broken dance
+ * (state mismatch, invalid ID token signature) is routed back to the portal
+ * login page with the {@code error=oidc-failure} code.</p>
  */
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -224,11 +226,34 @@ class OidcLoginFlowIntTest extends AbstractOidcFlowIntTest {
         mvc.perform(get(CALLBACK_URL)
                         .queryParam("code", AUTHORIZATION_CODE)
                         .queryParam("state", authorizationParameters.get("state"))
-                        .session(session));
+                        .session(session))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl(PORTAL_ADDRESS + "/login?error=oidc-failure"));
 
         // the code was exchanged, but the ID token failed signature verification:
         // no authenticated session may have been established
         assertEquals(1, STUB_IDP.tokenRequests().size(), "the code exchange must have happened before the failure");
+        mvc.perform(get(OIDC_SUCCESS_URL).session(session))
+                .andExpect(status().isUnauthorized());
+    }
+
+    /**
+     * A callback with a mismatched state parameter must not authenticate the
+     * request; the user is routed back to the portal login page with the
+     * generic OIDC failure code.
+     */
+    @Test
+    void shouldRouteBrokenDanceBackToThePortalLoginPage() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        queryParameters(beginAuthorizationRequest(session));
+
+        mvc.perform(get(CALLBACK_URL)
+                        .queryParam("code", AUTHORIZATION_CODE)
+                        .queryParam("state", "tampered-state-value")
+                        .session(session))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl(PORTAL_ADDRESS + "/login?error=oidc-failure"));
+
         mvc.perform(get(OIDC_SUCCESS_URL).session(session))
                 .andExpect(status().isUnauthorized());
     }

@@ -63,6 +63,11 @@ import static java.lang.String.format;
  *     matches. The provider session is terminated server-side; the SPA should
  *     present a localized message on the login page (offering the basic
  *     username/password login as the fallback).</li>
+ *     <li>{@code GET <portal>/login?error=oidc-failure} — the OAuth2/OIDC
+ *     dance itself failed (rejected authorization, state mismatch, failed
+ *     token exchange or ID token validation). Emitted by the security
+ *     filters, so the provider session is not terminated server-side; the
+ *     SPA should invite the user to retry the sign-in.</li>
  *     <li>{@code GET <portal>/login-success?token=..&refresh-token=..&oidc-token=..}
  *     — successful login. When the {@code global_role} claim of the issued JWT
  *     contains {@link Role#ROLE_NOT_ACCEPTED}, the user has not accepted the

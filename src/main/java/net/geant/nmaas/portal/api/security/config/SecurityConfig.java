@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.nmservice.configuration.api.security.StatelessGitlabAuthenticationFilter;
 import net.geant.nmaas.nmservice.configuration.repositories.GitLabProjectRepository;
+import net.geant.nmaas.portal.api.auth.OidcPortalErrors;
 import net.geant.nmaas.portal.api.security.StatelessAuthenticationFilter;
 import net.geant.nmaas.portal.api.security.StatelessUUIDAuthenticationFilter;
 import net.geant.nmaas.portal.service.TokenAuthenticationService;
@@ -123,6 +124,12 @@ public class SecurityConfig {
                     .authorizationEndpoint(authorization -> authorization
                             .authorizationRequestResolver(resolver))
                     .defaultSuccessUrl(apiBasePath() + "/oidc/success", true)
+                    // a failed OAuth2/OIDC dance (rejected authorization, state
+                    // mismatch, token exchange or ID token validation failure)
+                    // must land the user on the portal login page with an error
+                    // code, not on a backend URL the SPA cannot render
+                    .failureUrl(portalAddress() + "/login?"
+                            + OidcPortalErrors.ERROR_PARAMETER + "=" + OidcPortalErrors.LOGIN_FAILURE)
                     .redirectionEndpoint(redirection ->
                             redirection.baseUri(apiBasePath() + "/login/oauth2/code/*"))
             );
@@ -144,6 +151,14 @@ public class SecurityConfig {
 
     private String apiBasePath() {
         return "/api/" + env.getProperty("nmaas.api.version", "v1");
+    }
+
+    /**
+     * Base address of the portal SPA, the target of OAuth2 login failure
+     * redirects.
+     */
+    private String portalAddress() {
+        return env.getProperty("portal.address");
     }
 
     /**
