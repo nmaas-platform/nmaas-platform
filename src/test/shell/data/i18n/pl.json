@@ -591,6 +591,7 @@
     "REMOVED": "Ten komentarz został usunięty"
   },
   "APPLICATIONS": {
+    "BUNDLES": "Available bundles",
     "DETAILS_BUTTON": "Szczegóły",
     "SUBSCRIBE_BUTTON": "Subskrybuj",
     "SUBSCRIBED_BUTTON": "Subskrybowane",
