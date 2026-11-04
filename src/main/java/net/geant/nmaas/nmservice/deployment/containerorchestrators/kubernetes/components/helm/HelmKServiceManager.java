@@ -71,11 +71,14 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
     }
 
     private void installHelmChart(KubernetesNmServiceInfo serviceInfo) {
+        Map<String, String> arguments = createArgumentsMap(serviceInfo);
+        // complete list of install arguments is stored to make it available for helm upgrade
+        repositoryManager.addAdditionalParameters(serviceInfo.getDeploymentId(), arguments);
         helmCommandExecutor.executeHelmInstallCommand(
                 getTargetNamespace(serviceInfo),
                 serviceInfo.getDescriptiveDeploymentId().getValue(),
                 serviceInfo.getKubernetesTemplate(),
-                createArgumentsMap(serviceInfo),
+                arguments,
                 serviceInfo.getRemoteCluster() != null ? serviceInfo.getRemoteCluster().getPathConfigFile() : null
         );
     }
@@ -137,6 +140,9 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
     }
 
     static Map<String, String> removeRedundantParameters(Map<String, String> additionalParameters) {
+        if (additionalParameters == null) {
+            return new HashMap<>();
+        }
         return additionalParameters.entrySet().stream().filter(entry ->
                 !entry.getKey().contains(RANDOM_ARGUMENT_EXPRESSION_PREFIX)
                         && !entry.getKey().contains(PUBLIC_ACCESS_SELECTOR_ARGUMENT_EXPRESSION_PREFIX)
@@ -221,10 +227,11 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
             if (!helmRepoUpdateAsyncEnabled && !HelmChartUtils.isOciChart(targetVersion)) {
                 updateHelmRepo();
             }
-            helmCommandExecutor.executeHelmUpgradeCommand(
+            helmCommandExecutor.executeHelmUpgradeWithConfigCommand(
                     getTargetNamespace(serviceInfo),
                     serviceInfo.getDescriptiveDeploymentId().getValue(),
                     targetVersion,
+                    removeRedundantParameters(serviceInfo.getAdditionalParameters()),
                     serviceInfo.getRemoteCluster() != null ? serviceInfo.getRemoteCluster().getPathConfigFile() : null
             );
         } catch (CommandExecutionException cee) {
@@ -241,7 +248,7 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
                     getTargetNamespace(serviceInfo),
                     serviceInfo.getDescriptiveDeploymentId().getValue(),
                     serviceInfo.getKubernetesTemplate(),
-                    serviceInfo.getAdditionalParameters(),
+                    removeRedundantParameters(serviceInfo.getAdditionalParameters()),
                     serviceInfo.getRemoteCluster() != null ? serviceInfo.getRemoteCluster().getPathConfigFile() : null
             );
         } catch (CommandExecutionException cee) {

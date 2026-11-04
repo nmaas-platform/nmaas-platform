@@ -16,7 +16,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.modelmapper.ModelMapper;
-import org.quartz.SchedulerException;
 import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.List;
@@ -48,7 +47,7 @@ class DomainGroupServiceTest {
     }
 
     @Test
-    void shouldCreateDomainGroup() throws SchedulerException {
+    void shouldCreateDomainGroup() {
         // Setup domain group
         String name = "testgroup";
         String codename = "testgrp";
@@ -106,7 +105,7 @@ class DomainGroupServiceTest {
     }
 
     @Test
-    void shouldDeleteDomainGroup() throws SchedulerException {
+    void shouldDeleteDomainGroup() {
         DomainGroup domainGroup = new DomainGroup("testgroup", "testgrp");
         domainGroup.setId(10L);
         when(domainGroupRepository.findById(10L)).thenReturn(Optional.of(domainGroup));

@@ -73,6 +73,7 @@ class HelmKServiceManagerTest {
                 helmCommandExecutor,
                 domainTechDetailsRepository);
         KubernetesNmServiceInfo service = new KubernetesNmServiceInfo();
+        service.setDeploymentId(deploymentId);
         service.setDomain("domain");
         Set<ServiceStorageVolume> storageVolumes = new HashSet<>();
         Map<HelmChartPersistenceVariable, String> pvMap = new HashMap<>();
@@ -163,6 +164,33 @@ class HelmKServiceManagerTest {
                 any(Map.class),
                 eq(null)
         );
+    }
+
+    @Test
+    void shouldPersistInstallArgumentsAsAdditionalParameters() {
+        when(namespaceService.namespace("domain")).thenReturn("namespace");
+        when(ingressManager.getResourceConfigOption()).thenReturn(IngressResourceConfigOption.DEPLOY_FROM_CHART);
+        when(ingressManager.getIngressPerDomain()).thenReturn(false);
+        when(ingressManager.getSupportedIngressClass()).thenReturn("testIngressClass");
+        when(ingressManager.getTlsSupported()).thenReturn(true);
+        when(ingressManager.getIssuerOrWildcardName()).thenReturn("testIssuerName");
+        when(ingressManager.getCertificateConfigOption()).thenReturn(IngressCertificateConfigOption.USE_LETSENCRYPT);
+
+        manager.deployService(deploymentId);
+
+        ArgumentCaptor<Map<String, String>> persistedArg = ArgumentCaptor.forClass(HashMap.class);
+        verify(repositoryManager, times(1)).addAdditionalParameters(eq(deploymentId), persistedArg.capture());
+        ArgumentCaptor<Map<String, String>> installArg = ArgumentCaptor.forClass(HashMap.class);
+        verify(helmCommandExecutor, times(1)).executeHelmInstallCommand(
+                eq("namespace"),
+                eq("descriptiveDeploymentId"),
+                any(KubernetesTemplate.class),
+                installArg.capture(),
+                isNull()
+        );
+        // the complete set of install arguments must be persisted for later helm upgrade
+        assertThat(persistedArg.getValue()).isEqualTo(installArg.getValue());
+        assertThat(persistedArg.getValue().size()).isEqualTo(11);
     }
 
     @Test
@@ -300,14 +328,27 @@ class HelmKServiceManagerTest {
     @Test
     void shouldUpgradeService() {
         when(namespaceService.namespace("domain")).thenReturn("namespace");
+        Map<String, String> additionalParameters = new HashMap<>();
+        additionalParameters.put("key1", "value1");
+        additionalParameters.put("%RANDOM_STRING_8%", "value2");
+        KubernetesNmServiceInfo service = repositoryManager.loadService(deploymentId);
+        service.setAdditionalParameters(additionalParameters);
+        when(repositoryManager.loadService(deploymentId)).thenReturn(service);
+
         manager.upgradeService(deploymentId, new KubernetesTemplate());
+
         verify(helmCommandExecutor, times(1)).executeHelmRepoUpdateCommand();
-        verify(helmCommandExecutor, times(1)).executeHelmUpgradeCommand(
+        ArgumentCaptor<Map<String, String>> argumentsArg = ArgumentCaptor.forClass(HashMap.class);
+        verify(helmCommandExecutor, times(1)).executeHelmUpgradeWithConfigCommand(
                 eq("namespace"),
                 eq("descriptiveDeploymentId"),
                 any(KubernetesTemplate.class),
+                argumentsArg.capture(),
                 isNull()
         );
+        assertThat(argumentsArg.getValue())
+                .hasSize(1)
+                .containsEntry("key1", "value1");
     }
 
     @Test
@@ -323,10 +364,11 @@ class HelmKServiceManagerTest {
         verify(namespaceService, times(1)).namespace(remoteCluster, "domain");
         verify(namespaceService, never()).namespace("domain");
         verify(helmCommandExecutor, times(1)).executeHelmRepoUpdateCommand();
-        verify(helmCommandExecutor, times(1)).executeHelmUpgradeCommand(
+        verify(helmCommandExecutor, times(1)).executeHelmUpgradeWithConfigCommand(
                 eq("remote-namespace"),
                 eq("descriptiveDeploymentId"),
                 any(KubernetesTemplate.class),
+                any(Map.class),
                 eq("mock/path/to/kubeconfig")
         );
     }
@@ -343,10 +385,11 @@ class HelmKServiceManagerTest {
         manager.upgradeService(deploymentId, targetTemplate);
 
         verify(helmCommandExecutor, never()).executeHelmRepoUpdateCommand();
-        verify(helmCommandExecutor, times(1)).executeHelmUpgradeCommand(
+        verify(helmCommandExecutor, times(1)).executeHelmUpgradeWithConfigCommand(
                 eq("namespace"),
                 eq("descriptiveDeploymentId"),
                 any(KubernetesTemplate.class),
+                any(Map.class),
                 isNull()
         );
     }
@@ -371,6 +414,32 @@ class HelmKServiceManagerTest {
                 eq(additionalParameters),
                 isNull()
         );
+    }
+
+    @Test
+    void shouldUpdateServiceWithConfigAndSkipRedundantParameters() {
+        when(namespaceService.namespace("domain")).thenReturn("namespace");
+        KubernetesNmServiceInfo service = repositoryManager.loadService(deploymentId);
+        Map<String, String> additionalParameters = new HashMap<>();
+        additionalParameters.put("key1", "value1");
+        additionalParameters.put("%RANDOM_STRING_8%", "value2");
+        additionalParameters.put("accessmethods.public.method", "value3");
+        service.setAdditionalParameters(additionalParameters);
+        when(repositoryManager.loadService(deploymentId)).thenReturn(service);
+
+        manager.updateService(deploymentId);
+
+        ArgumentCaptor<Map<String, String>> argumentsArg = ArgumentCaptor.forClass(HashMap.class);
+        verify(helmCommandExecutor, times(1)).executeHelmUpgradeWithConfigCommand(
+                eq("namespace"),
+                eq("descriptiveDeploymentId"),
+                eq(service.getKubernetesTemplate()),
+                argumentsArg.capture(),
+                isNull()
+        );
+        assertThat(argumentsArg.getValue())
+                .hasSize(1)
+                .containsEntry("key1", "value1");
     }
 
     @Test
