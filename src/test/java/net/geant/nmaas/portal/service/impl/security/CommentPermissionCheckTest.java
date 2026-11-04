@@ -20,76 +20,76 @@ import static org.mockito.Mockito.when;
 
 class CommentPermissionCheckTest {
 
-	private CommentPermissionCheck cpch;
+    private CommentPermissionCheck cpch;
 
-	private final CommentRepository comments = mock(CommentRepository.class);
-	
-	private final DomainService domains = mock(DomainService.class);
-	
-	@BeforeEach
-	void setUp() throws Exception {
-		this.cpch = new CommentPermissionCheck(comments);
+    private final CommentRepository comments = mock(CommentRepository.class);
 
-		when(comments.findById(UsersHelper.COMMENT1.getId())).thenReturn(Optional.of(UsersHelper.COMMENT1));
-		when(comments.findById(UsersHelper.COMMENT2.getId())).thenReturn(Optional.of(UsersHelper.COMMENT2));
-		when(comments.findById(UsersHelper.COMMENT3.getId())).thenReturn(Optional.of(UsersHelper.COMMENT3));
-	}
+    private final DomainService domains = mock(DomainService.class);
 
-	@Test
-	final void testSupport() {
-		assertTrue(cpch.supports("comment"));
-		assertTrue(cpch.supports("COMMENT"));
-		assertTrue(cpch.supports("Comment"));
-		
-		assertFalse(cpch.supports("comments"));
-		assertFalse(cpch.supports(null));
-	}
+    @BeforeEach
+    void setUp() {
+        this.cpch = new CommentPermissionCheck(comments);
 
-	@Test
-	void testSystemAdminEvaluatePermissions() {
-		Set<Permissions> perms = cpch.evaluatePermissions(UsersHelper.ADMIN, UsersHelper.COMMENT1.getId(), CommentPermissionCheck.COMMENT);
-		assertEquals(5, perms.size());
-		assertThat(perms, hasItems(Permissions.READ, Permissions.WRITE, Permissions.CREATE, Permissions.DELETE, Permissions.OWNER));
-	}
-	
-	@Test
-	void testDomainAdminEvaluatePermissions() {
-		Set<Permissions> perms = null;
-		
-		perms = cpch.evaluatePermissions(UsersHelper.DOMAIN1_ADMIN, UsersHelper.COMMENT1.getId(), CommentPermissionCheck.COMMENT);
-		assertEquals(2, perms.size());
-		assertThat(perms, hasItems(Permissions.READ, Permissions.CREATE));
-	}
-	
-	@Test
-	void testToolManagerEvaluatePermissions() {
-		Set<Permissions> perms = null;
-		
-		perms = cpch.evaluatePermissions(UsersHelper.TOOL_MANAGER, UsersHelper.COMMENT1.getId(), CommentPermissionCheck.COMMENT);
-		assertEquals(4, perms.size());
-		assertThat(perms, hasItems(Permissions.READ, Permissions.WRITE, Permissions.CREATE, Permissions.OWNER));
-	}
-	
-	@Test
-	void testDomainUserEvaluatePermissions() {
-		Set<Permissions> perms = null;
+        when(comments.findById(UsersHelper.COMMENT1.getId())).thenReturn(Optional.of(UsersHelper.COMMENT1));
+        when(comments.findById(UsersHelper.COMMENT2.getId())).thenReturn(Optional.of(UsersHelper.COMMENT2));
+        when(comments.findById(UsersHelper.COMMENT3.getId())).thenReturn(Optional.of(UsersHelper.COMMENT3));
+    }
 
-		perms = cpch.evaluatePermissions(UsersHelper.DOMAIN1_USER1, UsersHelper.COMMENT1.getId(), CommentPermissionCheck.COMMENT);
-		assertEquals(5, perms.size());
-		assertThat(perms, hasItems(Permissions.CREATE, Permissions.READ, Permissions.WRITE, Permissions.DELETE, Permissions.OWNER));
+    @Test
+    final void testSupport() {
+        assertTrue(cpch.supports("comment"));
+        assertTrue(cpch.supports("COMMENT"));
+        assertTrue(cpch.supports("Comment"));
 
-		perms = cpch.evaluatePermissions(UsersHelper.DOMAIN1_USER2, UsersHelper.COMMENT1.getId(), CommentPermissionCheck.COMMENT);
-		assertEquals(2, perms.size());
-		assertThat(perms, hasItems(Permissions.CREATE, Permissions.READ));
-	}
-	
-	@Test
-	void testDomainGuestEvaluatePermissions() {
-		Set<Permissions> perms = null;
-		
-		perms = cpch.evaluatePermissions(UsersHelper.DOMAIN1_GUEST, UsersHelper.COMMENT1.getId(), CommentPermissionCheck.COMMENT);
-		assertEquals(2, perms.size());
-		assertThat(perms, hasItems(Permissions.CREATE, Permissions.READ));
-	}
-	
+        assertFalse(cpch.supports("comments"));
+        assertFalse(cpch.supports(null));
+    }
+
+    @Test
+    void testSystemAdminEvaluatePermissions() {
+        Set<Permissions> perms = cpch.evaluatePermissions(UsersHelper.ADMIN, UsersHelper.COMMENT1.getId(), CommentPermissionCheck.COMMENT);
+        assertEquals(5, perms.size());
+        assertThat(perms, hasItems(Permissions.READ, Permissions.WRITE, Permissions.CREATE, Permissions.DELETE, Permissions.OWNER));
+    }
+
+    @Test
+    void testDomainAdminEvaluatePermissions() {
+        Set<Permissions> perms = null;
+
+        perms = cpch.evaluatePermissions(UsersHelper.DOMAIN1_ADMIN, UsersHelper.COMMENT1.getId(), CommentPermissionCheck.COMMENT);
+        assertEquals(2, perms.size());
+        assertThat(perms, hasItems(Permissions.READ, Permissions.CREATE));
+    }
+
+    @Test
+    void testToolManagerEvaluatePermissions() {
+        Set<Permissions> perms = null;
+
+        perms = cpch.evaluatePermissions(UsersHelper.TOOL_MANAGER, UsersHelper.COMMENT1.getId(), CommentPermissionCheck.COMMENT);
+        assertEquals(4, perms.size());
+        assertThat(perms, hasItems(Permissions.READ, Permissions.WRITE, Permissions.CREATE, Permissions.OWNER));
+    }
+
+    @Test
+    void testDomainUserEvaluatePermissions() {
+        Set<Permissions> perms = null;
+
+        perms = cpch.evaluatePermissions(UsersHelper.DOMAIN1_USER1, UsersHelper.COMMENT1.getId(), CommentPermissionCheck.COMMENT);
+        assertEquals(5, perms.size());
+        assertThat(perms, hasItems(Permissions.CREATE, Permissions.READ, Permissions.WRITE, Permissions.DELETE, Permissions.OWNER));
+
+        perms = cpch.evaluatePermissions(UsersHelper.DOMAIN1_USER2, UsersHelper.COMMENT1.getId(), CommentPermissionCheck.COMMENT);
+        assertEquals(2, perms.size());
+        assertThat(perms, hasItems(Permissions.CREATE, Permissions.READ));
+    }
+
+    @Test
+    void testDomainGuestEvaluatePermissions() {
+        Set<Permissions> perms = null;
+
+        perms = cpch.evaluatePermissions(UsersHelper.DOMAIN1_GUEST, UsersHelper.COMMENT1.getId(), CommentPermissionCheck.COMMENT);
+        assertEquals(2, perms.size());
+        assertThat(perms, hasItems(Permissions.CREATE, Permissions.READ));
+    }
+
 }

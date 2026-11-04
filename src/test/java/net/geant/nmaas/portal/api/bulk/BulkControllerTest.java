@@ -18,7 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
@@ -62,7 +61,7 @@ class BulkControllerTest {
     }
 
     @Test
-    void shouldProcessBulkDomainRequest() throws IOException {
+    void shouldProcessBulkDomainRequest() {
         MultipartFile file = new MockMultipartFile("test.csv", "test.csv", "text/csv", "content".getBytes());
         when(bulkCsvProcessor.isCSVFormat(any())).thenReturn(true);
         when(userService.findByUsername("user")).thenReturn(Optional.of(new User("user")));

@@ -3,7 +3,6 @@ package net.geant.nmaas.utils.bash;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.util.function.Predicate;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -14,7 +13,7 @@ class DefaultCommandExecutorTest {
 
     @Disabled("Only for local test run manually")
     @Test
-    void shouldRunExampleCommand() throws IOException {
+    void shouldRunExampleCommand() {
         String output = executor.executeWithOutput(new Command() {
             @Override
             public String asString() {
