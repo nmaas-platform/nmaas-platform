@@ -439,6 +439,8 @@ class UserServiceImplTest {
         csvUser.setSsoEnabled(true);
         Domain domain = new Domain("GLOBAL", "GLOBAL");
 
+        userService.registerBulk(csvUser, domain, null);
+
         verify(userRepository, times(1)).save(any());
         verify(eventPublisher, times(1)).publishEvent(any());
     }
@@ -452,6 +454,8 @@ class UserServiceImplTest {
         csvUser.setEmail("test@email.com");
         csvUser.setSsoEnabled(false);
         Domain domain = new Domain("GLOBAL", "GLOBAL");
+
+        userService.registerBulk(csvUser, domain, null);
 
         verify(userRepository, times(1)).save(any());
         verify(eventPublisher, times(1)).publishEvent(any());
