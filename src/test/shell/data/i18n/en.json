@@ -934,7 +934,8 @@
     "UPDATE_CONFIG_WIZARD_PREVIEW_HEADER": "Update configuration wizard preview"
   },
   "APPS_WIZARD": {
-    "FIRST_PAGE_MESSAGE": "You are about to fill in a request for adding new application to the nmaas portfolio. You will be guided through a few step process of providing all necessary information about the application, its description, deployment and configuration details. Once the request is submitted it will be reviewed by administrator and either approved or rejected with a proper comment sent via email. By checking the box below you confirm that you have the right to publish this application in nmaas.",
+    "APP_CONFIG_SPECIFICATION": "Application configuration specification",
+    "FIRST_PAGE_MESSAGE": "You are about to fill in a request for adding new application to the nmaas portfolio. You will be guided through a few step process of providing all necessary information about the application, its description, deployment and configuration details. Once the request is submitted it will be reviewed by administrator and either approved or rejected with a proper comment send via email. By checking the box below you confirm that you have the right to publish this application in nmaas.",
     "ACCEPT_RULES_CHECKBOX": "I read the general instructions above",
     "NEXT_BUTTON": "Next",
     "SUBMIT_BUTTON": "Submit",
