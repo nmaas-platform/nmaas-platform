@@ -71,9 +71,9 @@ public class ApplicationStatePerDomainServiceImpl implements ApplicationStatePer
 
     @Override
     public List<ApplicationStatePerDomain> updateDomain(DomainDto changes) {
-        Domain updatedDomain = domainRepository.getReferenceById(changes.getId());
-        List<ApplicationStatePerDomain> list = updatedDomain.getApplicationStatePerDomain();
-        for (ApplicationStatePerDomain appState : list) {
+        Domain updatedDomainFromDb = domainRepository.getReferenceById(changes.getId());
+        List<ApplicationStatePerDomain> appStateListFromDb = updatedDomainFromDb.getApplicationStatePerDomain();
+        for (ApplicationStatePerDomain appState : appStateListFromDb) {
             for (ApplicationStatePerDomainDto appStateDto : changes.getApplicationStatePerDomain()) {
                 if (appState.getApplicationBase().getId().equals(appStateDto.getApplicationBaseId())) {
                     // rewrite state
@@ -81,7 +81,7 @@ public class ApplicationStatePerDomainServiceImpl implements ApplicationStatePer
                 }
             }
         }
-        return list;
+        return appStateListFromDb;
     }
 
     @Override
