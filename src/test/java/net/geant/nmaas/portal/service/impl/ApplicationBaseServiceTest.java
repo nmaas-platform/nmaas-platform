@@ -1,11 +1,18 @@
 package net.geant.nmaas.portal.service.impl;
 
+import net.geant.nmaas.api.dto.applications.ApplicationBaseInfoDto;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
+import net.geant.nmaas.portal.domain.converters.AppDescriptionConverter;
+import net.geant.nmaas.portal.domain.converters.AppDescriptionInverseConverter;
+import net.geant.nmaas.portal.domain.converters.TagConverter;
+import net.geant.nmaas.portal.domain.converters.TagInverseConverter;
 import net.geant.nmaas.portal.events.ApplicationActivatedEvent;
 import net.geant.nmaas.portal.persistence.entity.AppDescription;
 import net.geant.nmaas.portal.persistence.entity.ApplicationBase;
+import net.geant.nmaas.portal.persistence.entity.ApplicationBaseS;
 import net.geant.nmaas.portal.persistence.entity.ApplicationState;
 import net.geant.nmaas.portal.persistence.entity.ApplicationVersion;
+import net.geant.nmaas.portal.persistence.entity.Tag;
 import net.geant.nmaas.portal.persistence.repositories.ApplicationBaseRepository;
 import net.geant.nmaas.portal.persistence.repositories.TagRepository;
 import net.geant.nmaas.portal.service.ApplicationBaseService;
@@ -13,10 +20,13 @@ import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
 import net.geant.nmaas.portal.service.DomainService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.modelmapper.Conditions;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.ApplicationEventPublisher;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -44,7 +54,17 @@ class ApplicationBaseServiceTest {
     private final ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);
     private final DomainService domainService = mock(DomainService.class);
 
-    private final ModelMapper modelMapper = new ModelMapper();
+    private final ModelMapper modelMapper = buildModelMapper();
+
+    private static ModelMapper buildModelMapper() {
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setPropertyCondition(Conditions.isNotNull());
+        modelMapper.addConverter(new AppDescriptionConverter());
+        modelMapper.addConverter(new AppDescriptionInverseConverter());
+        modelMapper.addConverter(new TagConverter());
+        modelMapper.addConverter(new TagInverseConverter());
+        return modelMapper;
+    }
 
     private ApplicationBaseService appBaseService;
 
@@ -170,6 +190,68 @@ class ApplicationBaseServiceTest {
                 new ApplicationVersion("1.1", ApplicationState.DISABLED, 2L)
         ));
         assertTrue(appBaseService.isAppActive(applicationBase1));
+    }
+
+    @Test
+    void shouldFindAllActiveAppsSmallSortedCaseInsensitivelyByName() {
+        List<ApplicationBaseS> allSmall = Arrays.asList(
+                appSmall(3L, "zabbix"),
+                appSmall(1L, "Bind"),
+                appSmall(2L, "ansible"),
+                appSmall(4L, "Apache"));
+        when(appBaseRepo.findAllSmall()).thenReturn(allSmall);
+
+        List<ApplicationBaseInfoDto> result = appBaseService.findAllActiveAppsSmall();
+
+        assertThat(result)
+                .extracting(ApplicationBaseInfoDto::getName)
+                .containsExactly("ansible", "Apache", "Bind", "zabbix");
+    }
+
+    @Test
+    void shouldFindAllActiveAppsSmallSortedWhenNamesDifferOnlyByCase() {
+        List<ApplicationBaseS> allSmall = Arrays.asList(
+                appSmall(2L, "portal"),
+                appSmall(1L, "Portal"));
+        when(appBaseRepo.findAllSmall()).thenReturn(allSmall);
+
+        List<ApplicationBaseInfoDto> result = appBaseService.findAllActiveAppsSmall();
+
+        assertThat(result)
+                .extracting(ApplicationBaseInfoDto::getName)
+                .containsExactlyInAnyOrder("portal", "Portal");
+        assertThat(String.CASE_INSENSITIVE_ORDER.compare(result.get(0).getName(), result.get(1).getName())).isLessThanOrEqualTo(0);
+    }
+
+    @Test
+    void shouldFindAllActiveAppsSmallEmptyWhenNoApps() {
+        when(appBaseRepo.findAllSmall()).thenReturn(Collections.emptyList());
+
+        assertThat(appBaseService.findAllActiveAppsSmall()).isEmpty();
+    }
+
+    private ApplicationBaseS appSmall(Long id, String name) {
+        return new ApplicationBaseS() {
+            @Override
+            public Long getId() {
+                return id;
+            }
+
+            @Override
+            public String getName() {
+                return name;
+            }
+
+            @Override
+            public List<AppDescription> getDescriptions() {
+                return Collections.singletonList(new AppDescription(id, "en", "description", "full description"));
+            }
+
+            @Override
+            public Set<Tag> getTags() {
+                return Collections.emptySet();
+            }
+        };
     }
 
     @Test

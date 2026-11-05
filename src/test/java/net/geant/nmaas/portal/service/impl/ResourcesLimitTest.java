@@ -32,7 +32,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class ResourcesLimitTest {
+class ResourcesLimitTest {
 
     private final ResourcesLimitRepository resourcesLimitRepository = mock(ResourcesLimitRepository.class);
     private final DomainRepository domainRepository = mock(DomainRepository.class);

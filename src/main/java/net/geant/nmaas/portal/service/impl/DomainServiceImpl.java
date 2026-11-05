@@ -377,9 +377,7 @@ public class DomainServiceImpl implements DomainService {
         List<Long> idsToDelete = domain.getGroups().stream()
                 .map(DomainGroup::getId)
                 .toList();
-        idsToDelete.forEach(id -> {
-            domainGroupService.deleteDomainFromGroup(domain, id);
-        });
+        idsToDelete.forEach(id -> domainGroupService.deleteDomainFromGroup(domain, id));
     }
 
     @Override
@@ -578,23 +576,23 @@ public class DomainServiceImpl implements DomainService {
             }
         });
         userToDelete.forEach(userId -> {
-            domainGroup.getDomains().forEach(domain -> {
-                this.removeMemberRole(domain.getId(), userId, Role.ROLE_GROUP_DOMAIN_ADMIN);
-            });
+            domainGroup.getDomains().forEach(domain ->
+                    this.removeMemberRole(domain.getId(), userId, Role.ROLE_GROUP_DOMAIN_ADMIN)
+            );
         });
     }
 
     @Override
     public void updateRolesInDomainGroupByUsers(DomainGroupDto dto) {
-        dto.getDomains().forEach(domain -> {
-            dto.getManagers().forEach(user -> {
-                boolean isNotSystemAdmin = user.getRoles().stream().noneMatch(
-                        role -> role.getRole() == RoleDto.ROLE_SYSTEM_ADMIN);
-                if (isNotSystemAdmin) {
-                    this.addMemberRole(domain.getId(), user.getId(), Role.ROLE_GROUP_DOMAIN_ADMIN);
-                }
-            });
-        });
+        dto.getDomains().forEach(domain ->
+                dto.getManagers().forEach(user -> {
+                    boolean isNotSystemAdmin = user.getRoles().stream().noneMatch(
+                            role -> role.getRole() == RoleDto.ROLE_SYSTEM_ADMIN);
+                    if (isNotSystemAdmin) {
+                        this.addMemberRole(domain.getId(), user.getId(), Role.ROLE_GROUP_DOMAIN_ADMIN);
+                    }
+                })
+        );
     }
 
     @Override
@@ -604,9 +602,9 @@ public class DomainServiceImpl implements DomainService {
         toDeleteRole.removeAll(newMembers);
 
         toDeleteRole.forEach(user -> {
-            dto.getDomains().forEach(domain -> {
-                this.removeMemberRole(domain.getId(), user.getId(), Role.ROLE_GROUP_DOMAIN_ADMIN);
-            });
+            dto.getDomains().forEach(domain ->
+                    this.removeMemberRole(domain.getId(), user.getId(), Role.ROLE_GROUP_DOMAIN_ADMIN)
+            );
         });
 
         dto.setManagers(newMembers);

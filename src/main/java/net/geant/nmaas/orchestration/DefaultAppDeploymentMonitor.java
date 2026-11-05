@@ -1,7 +1,7 @@
 package net.geant.nmaas.orchestration;
 
 import lombok.RequiredArgsConstructor;
-import net.geant.nmaas.api.dto.applications.AppConfigRepositoryAccessDetails;
+import net.geant.nmaas.api.dto.applications.AppConfigRepositoryAccessDto;
 import net.geant.nmaas.nmservice.configuration.NmServiceConfigurationProvider;
 import net.geant.nmaas.nmservice.configuration.exceptions.ConfigRepositoryAccessDetailsNotFoundException;
 import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
@@ -86,7 +86,7 @@ public class DefaultAppDeploymentMonitor implements AppDeploymentMonitor {
 
     @Override
     @Loggable(LogLevel.INFO)
-    public AppConfigRepositoryAccessDetails configRepositoryAccessDetails(Identifier deploymentId) {
+    public AppConfigRepositoryAccessDto configRepositoryAccessDetails(Identifier deploymentId) {
         try {
             return serviceConfiguration.configRepositoryAccessDetails(deploymentId);
         } catch (ConfigRepositoryAccessDetailsNotFoundException e) {

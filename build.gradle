@@ -2,7 +2,7 @@ plugins {
     id 'java'
     id 'idea'
     id 'jacoco'
-    id 'org.springframework.boot' version '4.1.1'
+    id 'org.springframework.boot' version '4.1.2'
     id 'io.spring.dependency-management' version '1.1.7'
     id 'com.gorylenko.gradle-git-properties' version '4.0.1'
     id 'org.sonarqube' version '7.5.0.8588'
@@ -85,21 +85,21 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-impl:0.13.0'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.13.0'
 
-    implementation('org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.1')
+    implementation('org.springdoc:springdoc-openapi-starter-webmvc-ui:3.2.0')
 
-    implementation('org.modelmapper:modelmapper:3.2.7')
-    implementation('org.modelmapper.extensions:modelmapper-spring:3.2.7')
+    implementation('org.modelmapper:modelmapper:3.2.8')
+    implementation('org.modelmapper.extensions:modelmapper-spring:3.2.8')
     implementation('org.apache.commons:commons-lang3:3.21.0')
 
     // nmaas DTO classes
-    implementation('net.geant.nmaas:nmaas-platform-dto:0.3.0')
+    implementation('net.geant.nmaas:nmaas-platform-dto:0.3.1')
 
     // Database
     runtimeOnly('com.h2database:h2')
     runtimeOnly('org.postgresql:postgresql')
 
     // Database audit trail
-    implementation 'org.hibernate.orm:hibernate-envers:7.4.13.Final'
+    implementation 'org.hibernate.orm:hibernate-envers:7.4.14.Final'
 
     // Database migrations
     implementation("org.springframework.boot:spring-boot-starter-flyway")
@@ -111,10 +111,10 @@ dependencies {
     implementation('com.vdurmont:semver4j:3.1.0')
 
     // nmaas statistics extracted from the database
-    implementation('io.micrometer:micrometer-registry-prometheus:1.17.1')
+    implementation('io.micrometer:micrometer-registry-prometheus:1.17.2')
 
     // Kubernetes API client
-    implementation('io.fabric8:kubernetes-client:7.9.0')
+    implementation('io.fabric8:kubernetes-client:8.0.0')
 
     // GitLab API client
     implementation 'org.gitlab4j:gitlab4j-api:6.3.0'
@@ -204,7 +204,7 @@ tasks.register('generateOpenApiJson', Test) {
 }
 
 jacoco {
-    toolVersion = "0.8.15"
+    toolVersion = "0.8.16"
     reportsDirectory = layout.buildDirectory.dir('jacoco')
 }
 

@@ -37,14 +37,12 @@ public class InternationalizationServiceImpl implements InternationalizationServ
         } else {
             //add empty or override
             InternationalizationSimple is = repository.findByLanguageOrderByIdDesc(newLanguage.getLanguage()).orElseThrow(() -> new NotFoundException("Language not found"));
-            I18nDto iv = is.getAsI18nDto();
-
             if (!force) {
                 // only add new once, not override existed
                 Map<String, String> keyMap = new HashMap<>();
-                is.getLanguageNodes().forEach(node -> {
-                    keyMap.put(node.getKey(), node.getContent());
-                });
+                is.getLanguageNodes().forEach(node ->
+                        keyMap.put(node.getKey(), node.getContent())
+                );
                 InternationalizationSimple simple = newLanguage.getAsInternationalizationSimple();
                 simple.getLanguageNodes().forEach(updatedNode -> {
                     if (!keyMap.containsKey(updatedNode.getKey())) {

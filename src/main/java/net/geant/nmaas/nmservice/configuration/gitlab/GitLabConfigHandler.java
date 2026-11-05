@@ -2,7 +2,7 @@ package net.geant.nmaas.nmservice.configuration.gitlab;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.api.dto.applications.AppConfigRepositoryAccessDetails;
+import net.geant.nmaas.api.dto.applications.AppConfigRepositoryAccessDto;
 import net.geant.nmaas.gitlab.GitLabManager;
 import net.geant.nmaas.gitlab.exceptions.GitLabInvalidConfigurationException;
 import net.geant.nmaas.gitlab.exceptions.GitLabNotFoundException;
@@ -381,12 +381,12 @@ public class GitLabConfigHandler implements GitConfigHandler {
 
     @Override
     @Loggable(LogLevel.DEBUG)
-    public AppConfigRepositoryAccessDetails configRepositoryAccessDetails(Identifier deploymentId) {
+    public AppConfigRepositoryAccessDto configRepositoryAccessDetails(Identifier deploymentId) {
         Optional<GitLabProject> gitLabProject = loadGitlabProject(deploymentId);
         if (gitLabProject.isPresent()) {
             String cloneUrl = gitLabProject.get().getCloneUrl();
             if (StringUtils.isNotEmpty(cloneUrl)) {
-                return AppConfigRepositoryAccessDetails.of(cloneUrl);
+                return AppConfigRepositoryAccessDto.of(cloneUrl);
             }
         }
         throw new ConfigRepositoryAccessDetailsNotFoundException("Could not find GitLab project for deployment or cloneUrl is empty");

@@ -1,6 +1,6 @@
 package net.geant.nmaas.nmservice.configuration;
 
-import net.geant.nmaas.api.dto.applications.AppConfigRepositoryAccessDetails;
+import net.geant.nmaas.api.dto.applications.AppConfigRepositoryAccessDto;
 import net.geant.nmaas.orchestration.Identifier;
 
 import java.util.List;
@@ -17,7 +17,7 @@ public interface GitConfigHandler {
 
     List<ConfigFile> getConfigFiles(Identifier deploymentId);
 
-    AppConfigRepositoryAccessDetails configRepositoryAccessDetails(Identifier deploymentId);
+    AppConfigRepositoryAccessDto configRepositoryAccessDetails(Identifier deploymentId);
 
     void addMemberToProject(Long gitLabProjectId, Long gitLabUserId);
 
