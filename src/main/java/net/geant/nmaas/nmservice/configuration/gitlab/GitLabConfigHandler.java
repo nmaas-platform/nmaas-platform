@@ -225,7 +225,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
     }
 
     String getSshUrlToRepo(Long gitLabProjectId) throws GitLabApiException {
-        return gitLabManager.projects().getProject(gitLabProjectId).getSshUrlToRepo(); //.replace(":", "/");
+        return gitLabManager.projects().getProject(gitLabProjectId).getSshUrlToRepo();
     }
 
     String getHttpUrlToRepo(Long gitLabProjectId) throws GitLabApiException {

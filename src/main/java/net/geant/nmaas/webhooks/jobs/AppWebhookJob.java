@@ -17,7 +17,7 @@ public abstract class AppWebhookJob extends WebhookJob {
     private final AppDeploymentRepositoryManager appDeploymentRepositoryManager;
     private final KubernetesRepositoryManager serviceInfoRepositoryManager;
 
-    public AppWebhookJob(RestClient restClient, WebhookEventService webhookEventService, ModelMapper modelMapper, AppDeploymentRepositoryManager appDeploymentRepositoryManager, KubernetesRepositoryManager serviceInfoRepositoryManager, WebhookHistoryService webhookHistoryService, AutoWebhookTemplateService templateService) {
+    protected AppWebhookJob(RestClient restClient, WebhookEventService webhookEventService, ModelMapper modelMapper, AppDeploymentRepositoryManager appDeploymentRepositoryManager, KubernetesRepositoryManager serviceInfoRepositoryManager, WebhookHistoryService webhookHistoryService, AutoWebhookTemplateService templateService) {
         super(restClient, webhookEventService, modelMapper, webhookHistoryService, templateService);
         this.appDeploymentRepositoryManager = appDeploymentRepositoryManager;
         this.serviceInfoRepositoryManager = serviceInfoRepositoryManager;

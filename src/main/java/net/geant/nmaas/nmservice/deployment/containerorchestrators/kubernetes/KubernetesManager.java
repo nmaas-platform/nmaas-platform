@@ -152,7 +152,7 @@ public class KubernetesManager implements ContainerOrchestrator {
     private String resolveVariableReference(String variableName, String domainCodename) {
         try {
             return variableService.getRawValue(variableName, domainCodename);
-        } catch (Exception e) {
+        } catch (Exception _) {
             throw new ServiceRequestVerificationException(
                     "Referenced variable " + variableName + " no longer exists in the central variable storage");
         }
