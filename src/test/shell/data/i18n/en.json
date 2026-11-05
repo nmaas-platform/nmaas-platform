@@ -591,6 +591,7 @@
     "REMOVED": "This comment was removed"
   },
   "APPLICATIONS": {
+    "BUNDLES": "Available bundles",
     "DETAILS_BUTTON": "Details",
     "SUBSCRIBE_BUTTON": "Subscribe",
     "SUBSCRIBED_BUTTON": "Subscribed",

@@ -590,6 +590,7 @@
     "REMOVED": "Dieser Kommentar wurde entfernt"
   },
   "APPLICATIONS": {
+    "BUNDLES": "Available bundles",
     "DETAILS_BUTTON": "Details",
     "SUBSCRIBE_BUTTON": "Abonnieren",
     "SUBSCRIBED_BUTTON": "Abonniert",
