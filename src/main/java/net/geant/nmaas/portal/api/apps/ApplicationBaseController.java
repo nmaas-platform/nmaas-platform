@@ -85,6 +85,13 @@ public class ApplicationBaseController extends AppBaseController {
         return this.setAppRating(app);
     }
 
+    @GetMapping("/name/{name}")
+    @Transactional
+    public ApplicationBaseDto getApplicationBase(@PathVariable String name) {
+        ApplicationBaseDto app = modelMapper.map(applicationBaseService.findByName(name), ApplicationBaseDto.class);
+        return this.setAppRating(app);
+    }
+
     @PatchMapping
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
     @Transactional
@@ -116,14 +123,6 @@ public class ApplicationBaseController extends AppBaseController {
         }
         applicationSubscriptionService.unsubscribeAll(base);
         applicationBaseService.deleteAppBase(base);
-    }
-
-    @GetMapping("/name/{name}")
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
-    @Transactional
-    public ApplicationBaseDto getApplicationBase(@PathVariable String name) {
-        ApplicationBaseDto app = modelMapper.map(applicationBaseService.findByName(name), ApplicationBaseDto.class);
-        return this.setAppRating(app);
     }
 
     @GetMapping("/{id}/versions")
