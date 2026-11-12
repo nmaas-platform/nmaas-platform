@@ -1,5 +1,6 @@
 package net.geant.nmaas.utils.captcha;
 
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,6 +13,8 @@ import java.util.Objects;
 @Service
 @Slf4j
 public class CaptchaValidator {
+
+    private static final String NOT_PROVIDED = "not_provided";
 
     // set default value to `not_provided`
     @Value("${captcha.secret:not_provided}")
@@ -26,13 +29,30 @@ public class CaptchaValidator {
         restTemplate = new RestTemplate();
     }
 
+    CaptchaValidator(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
+
+    @PostConstruct
+    void warnIfCaptchaDisabled() {
+        if (isDisabled()) {
+            log.warn("Captcha validation is DISABLED (captcha.secret not configured). "
+                    + "Registration, password reset and contact form endpoints are not protected by captcha. "
+                    + "Set the CAPTCHA_SECRET environment variable to enable it.");
+        }
+    }
+
     public boolean verifyToken(String token) {
-        if (secret.equalsIgnoreCase("not_provided") || secret.isEmpty()) {
+        if (isDisabled()) {
             log.info("Skipped captcha validation due to not provided token");
             return true; // validate if secret is not provided
         }
         final Map response = restTemplate.postForObject(prepareUrl(token), null, Map.class);
         return (boolean) Objects.requireNonNull(response).get("success");
+    }
+
+    private boolean isDisabled() {
+        return secret == null || secret.isBlank() || secret.equalsIgnoreCase(NOT_PROVIDED);
     }
 
     private String prepareUrl(String token) {

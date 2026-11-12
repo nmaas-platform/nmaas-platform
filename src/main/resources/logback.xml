@@ -2,11 +2,9 @@
 
     <property name="LOGS_DIR" value="log"/>
 
-    <thresholdFilter level="DEBUG"/>
-
     <appender name="nmaas-console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d [%-15.15thread] %-5level %45.45logger{36}:%4.4line - %msg%n</pattern>
+            <pattern>%d [%-15.15thread] %highlight(%-5level) %45.45logger{36}:%4.4line - %msg%n</pattern>
         </encoder>
     </appender>
 
