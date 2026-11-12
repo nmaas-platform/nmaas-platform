@@ -132,6 +132,11 @@ public class AppInstanceReadController extends AppBaseController {
     public List<AppInstanceBase> getMyAllInstances(@NotNull Principal principal) {
         User user = userService.findByUsername(principal.getName()).orElseThrow(() ->
                 new MissingElementException(MISSING_USER_MESSAGE));
+        if (isSystemAdmin(user)) {
+            return applicationInstanceService.findAll().stream()
+                    .map(this::mapAppInstanceBase)
+                    .toList();
+        }
         return applicationInstanceService.findAllByOwner(user).stream()
                 .map(this::mapAppInstanceBase)
                 .toList();
@@ -148,6 +153,12 @@ public class AppInstanceReadController extends AppBaseController {
         pageable = pageableValidator(pageable);
         User user = userService.findByUsername(principal.getName()).orElseThrow(() ->
                 new MissingElementException(MISSING_USER_MESSAGE));
+        if (isSystemAdmin(user)) {
+            if (status != null) {
+                return instanceBaseService.findAll(pageable, status.equals(DEPLOYED_STATUS), search, remoteClusterId);
+            }
+            return instanceBaseService.findAll(pageable, remoteClusterId);
+        }
         if (status != null) {
             return instanceBaseService.findAllByOwner(user, pageable, status.equals(DEPLOYED_STATUS), search, remoteClusterId);
         }
@@ -605,16 +616,14 @@ public class AppInstanceReadController extends AppBaseController {
         log.trace("Page number: {}\tPage size:{}\tPage offset:{}\tSort:{}", p.getPageNumber(), p.getPageSize(), p.getOffset(), p.getSort());
     }
 
+    private boolean isSystemAdmin(User user) {
+        return user.getRoles().stream().anyMatch((UserRole ur) -> ur.getRole().equals(Role.ROLE_SYSTEM_ADMIN));
+    }
+
     private boolean isSystemAdminAndIsDomainGlobal(User user, Long domainId) {
-        boolean isSystemAdmin = false;
-        boolean isDomainGlobal = false;
-        if (user.getRoles().stream().anyMatch((UserRole ur) -> ur.getRole().equals(Role.ROLE_SYSTEM_ADMIN))) {
-            isSystemAdmin = true;
-        }
-        if (domainId.equals(domainService.getGlobalDomain().orElseThrow(() -> new InvalidDomainException("Global Domain not found")).getId())) {
-            isDomainGlobal = true;
-        }
-        return isSystemAdmin && isDomainGlobal;
+        boolean isDomainGlobal = domainId.equals(domainService.getGlobalDomain()
+                .orElseThrow(() -> new InvalidDomainException("Global Domain not found")).getId());
+        return isSystemAdmin(user) && isDomainGlobal;
     }
 
     private static Pageable pageableValidator(Pageable pageable) {
