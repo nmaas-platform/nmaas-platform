@@ -179,6 +179,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
             serviceRepositoryManager.addAdditionalParameters(deploymentId, additionalParameters);
         }
         if (!mandatoryParameters.isEmpty()) {
+            logWarningIfMandatoryParametersProvided(deploymentId, mandatoryParameters);
             serviceRepositoryManager.addAdditionalParameters(deploymentId, mandatoryParameters);
         }
         if (!accessCredentials.isEmpty()) {
@@ -409,12 +410,22 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
             serviceRepositoryManager.addAdditionalParameters(deploymentId, additionalParameters);
         }
         if (!mandatoryParameters.isEmpty()) {
+            logWarningIfMandatoryParametersProvided(deploymentId, mandatoryParameters);
             serviceRepositoryManager.addAdditionalParameters(deploymentId, mandatoryParameters);
         }
         if (!accessCredentials.isEmpty()) {
             triggerBasicAuthUpdate(deploymentId, accessCredentials);
         }
         eventPublisher.publishEvent(new AppUpdateConfigurationActionEvent(this, deploymentId, initiator));
+    }
+
+    /**
+     * Mandatory parameters are deprecated and will no longer be consumed at deployment time. The log message
+     * reports deployments that still provide them, so they can be migrated to additional parameters.
+     */
+    private void logWarningIfMandatoryParametersProvided(Identifier deploymentId, Map<String, String> mandatoryParameters) {
+        log.warn("Mandatory parameters were provided for deployment {} and will be ignored in the future: {}",
+                deploymentId, mandatoryParameters.keySet());
     }
 
     @Override

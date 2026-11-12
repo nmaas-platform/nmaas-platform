@@ -15,6 +15,7 @@ import net.geant.nmaas.kubernetes.remote.entities.KCluster;
 import net.geant.nmaas.nmservice.deployment.ContainerOrchestrator;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster.KClusterCheckException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmChartIngressVariable;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmKServiceManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.ingress.IngressControllerManipulationException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
@@ -507,8 +508,7 @@ public class KubernetesManager implements ContainerOrchestrator {
     @Override
     public Map<String, String> serviceDeployParameters(Identifier deploymentId) {
         try {
-            // TODO filter only relevant parameters
-            return repositoryManager.loadService(deploymentId).getAdditionalParameters();
+            return HelmKServiceManager.removeRedundantParameters(repositoryManager.loadService(deploymentId).getAdditionalParameters());
         } catch (Exception _) {
             throw new ProcessingException("Can't find additional parameters for " + deploymentId.value());
         }

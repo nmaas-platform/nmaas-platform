@@ -139,7 +139,7 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
                 .collect(Collectors.toSet());
     }
 
-    static Map<String, String> removeRedundantParameters(Map<String, String> additionalParameters) {
+    public static Map<String, String> removeRedundantParameters(Map<String, String> additionalParameters) {
         if (additionalParameters == null) {
             return new HashMap<>();
         }
