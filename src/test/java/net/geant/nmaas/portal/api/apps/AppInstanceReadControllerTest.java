@@ -244,9 +244,9 @@ class AppInstanceReadControllerTest {
     }
 
     @Test
-    void shouldGetAllMyInstancesInAllDomainWhenIsSystemAdminAndDomainIsGlobal() {
-        AppInstance appInstance = new AppInstance(application, NAME, domain1, admin, false);
-        when(applicationInstanceService.findAllByOwner(admin)).thenReturn(List.of(appInstance));
+    void shouldGetAllInstancesWhenUserIsSystemAdmin() {
+        AppInstance appInstance = new AppInstance(application, NAME, domain1, owner, false);
+        when(applicationInstanceService.findAll()).thenReturn(List.of(appInstance));
 
         Principal principal = mock(Principal.class);
         when(principal.getName()).thenReturn(admin.getUsername());
@@ -256,7 +256,7 @@ class AppInstanceReadControllerTest {
         assertEquals(1, result.size());
         AppInstanceBase appInstanceBase = result.getFirst();
         assertEquals(NAME, appInstanceBase.getApplicationName());
-        assertEquals(admin.getUsername(), appInstanceBase.getOwner().getUsername());
+        assertEquals(owner.getUsername(), appInstanceBase.getOwner().getUsername());
     }
 
     @Test
