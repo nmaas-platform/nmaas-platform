@@ -259,6 +259,16 @@ class DefaultAppLifecycleManagerTest {
     }
 
     @Test
+    void shouldRestoreParamKeysAsInverseOfPreprocessParameters() {
+        Map<String, String> original = new HashMap<>();
+        original.put("targets_bracket_0_bracket__dot_Addresses_bracket_0_bracket__dot_ipAddress", "1.1.1.1:1000");
+        original.put("persistence_dot_size", "8Gi");
+        Map<String, String> processed = DefaultAppLifecycleManager.preprocessParameters(original);
+        Map<String, String> restored = ParamKeySanitizer.restoreKeys(processed);
+        assertThat(restored, is(equalTo(original)));
+    }
+
+    @Test
     void shouldGetMapFromJson() {
         Map<String, String> map = appLifecycleManager.getMapFromJson("{\"key1\": \"val1\", \"key2\": \"val2\"}");
         assertThat(map.size(), is(2));

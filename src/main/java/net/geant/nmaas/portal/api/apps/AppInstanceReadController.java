@@ -16,6 +16,7 @@ import net.geant.nmaas.api.dto.applications.ServiceAccessMethodTypeDto;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.AppLifecycleState;
+import net.geant.nmaas.orchestration.ParamKeySanitizer;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.api.model.AppDeploymentHistoryDto;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
@@ -399,9 +400,11 @@ public class AppInstanceReadController extends AppBaseController {
 
     @GetMapping("/{appInstanceId}/parameters")
     @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
-    public Map<String, String> getDeploymentParameters(@PathVariable Long appInstanceId) {
+    public Map<String, String> getDeploymentParameters(@PathVariable Long appInstanceId,
+                                                       @RequestParam(required = false, defaultValue = "false") boolean restoreKeys) {
         Identifier internalId = findAppInstance(appInstanceId).getInternalId();
-        return appDeploymentMonitor.appDeploymentParameters(internalId);
+        Map<String, String> parameters = appDeploymentMonitor.appDeploymentParameters(internalId);
+        return restoreKeys ? ParamKeySanitizer.restoreKeys(parameters) : parameters;
     }
 
     private List<AppInstanceDto> getAllRunningByDomain(Domain domain) {
