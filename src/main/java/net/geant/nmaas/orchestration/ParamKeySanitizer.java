@@ -48,29 +48,9 @@ public final class ParamKeySanitizer {
     }
 
     private static String restoreKey(String name) {
-        StringBuilder restored = new StringBuilder();
-        int i = 0;
-        while (i < name.length()) {
-            char c = name.charAt(i);
-            if (c == '.') {
-                restored.append(TAG_DOT);
-                i++;
-            } else if (c == '[') {
-                // find matching closing bracket
-                int close = name.indexOf(']', i);
-                if (close < 0) {
-                    restored.append(c);
-                    i++;
-                } else {
-                    restored.append(TAG_BRACKET).append(name, i + 1, close).append(TAG_BRACKET);
-                    i = close + 1;
-                }
-            } else {
-                restored.append(c);
-                i++;
-            }
-        }
-        return restored.toString();
+        return name.replace(".", TAG_DOT)
+                .replace("[", TAG_BRACKET)
+                .replace("]", TAG_BRACKET);
     }
 
     public static int countBrackets(String text) {

@@ -32,11 +32,11 @@ class ParamKeySanitizerTest {
     }
 
     @Test
-    void shouldLeaveOpenBracketAsIsWhenNoClosingBracket() {
+    void shouldConvertBracketsIndependentlyOfPairing() {
         Map<String, String> input = new HashMap<>();
         input.put("keywith[", "value");
         Map<String, String> output = ParamKeySanitizer.restoreKeys(input);
-        assertThat(output.get("keywith["), is(equalTo("value")));
+        assertThat(output.get("keywith_bracket_"), is(equalTo("value")));
     }
 
     @Test
