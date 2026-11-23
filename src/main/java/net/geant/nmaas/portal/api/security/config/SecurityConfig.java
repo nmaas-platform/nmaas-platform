@@ -35,7 +35,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 import org.springframework.web.util.pattern.PathPatternParser;
 
 import java.util.Arrays;
@@ -206,15 +205,5 @@ public class SecurityConfig {
             response.flushBuffer();
 
         };
-    }
-
-    /**
-     * Required for method-level security to resolve handler mappings for endpoint permissions.
-     *
-     * @return handler mapping introspector bean
-     */
-    @Bean
-    public HandlerMappingIntrospector handlerMappingIntrospector() {
-        return new HandlerMappingIntrospector();
     }
 }
