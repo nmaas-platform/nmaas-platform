@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -72,7 +73,8 @@ public class ApplicationBaseController extends AppBaseController {
         return applicationBaseService.findAll().stream()
                 .filter(app -> isSystemAdmin || app.getOwner().equals(principal.getName()))
                 .map(app -> modelMapper.map(app, ApplicationBaseDto.class))
-                .map(this::setAppRating)
+                //.map(this::setAppRating) -> rating information is no longer used
+                .sorted(Comparator.comparing(ApplicationBaseDto::getName, String.CASE_INSENSITIVE_ORDER))
                 .toList();
     }
 
@@ -80,6 +82,13 @@ public class ApplicationBaseController extends AppBaseController {
     @Transactional
     public ApplicationBaseDto getApplicationBase(@PathVariable Long id) {
         ApplicationBaseDto app = modelMapper.map(applicationBaseService.getBaseApp(id), ApplicationBaseDto.class);
+        return this.setAppRating(app);
+    }
+
+    @GetMapping("/name/{name}")
+    @Transactional
+    public ApplicationBaseDto getApplicationBase(@PathVariable String name) {
+        ApplicationBaseDto app = modelMapper.map(applicationBaseService.findByName(name), ApplicationBaseDto.class);
         return this.setAppRating(app);
     }
 
@@ -114,14 +123,6 @@ public class ApplicationBaseController extends AppBaseController {
         }
         applicationSubscriptionService.unsubscribeAll(base);
         applicationBaseService.deleteAppBase(base);
-    }
-
-    @GetMapping("/name/{name}")
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
-    @Transactional
-    public ApplicationBaseDto getApplicationBase(@PathVariable String name) {
-        ApplicationBaseDto app = modelMapper.map(applicationBaseService.findByName(name), ApplicationBaseDto.class);
-        return this.setAppRating(app);
     }
 
     @GetMapping("/{id}/versions")

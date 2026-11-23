@@ -16,6 +16,7 @@ import net.geant.nmaas.api.dto.applications.ServiceAccessMethodTypeDto;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.AppLifecycleState;
+import net.geant.nmaas.orchestration.ParamKeySanitizer;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.api.model.AppDeploymentHistoryDto;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
@@ -132,6 +133,11 @@ public class AppInstanceReadController extends AppBaseController {
     public List<AppInstanceBase> getMyAllInstances(@NotNull Principal principal) {
         User user = userService.findByUsername(principal.getName()).orElseThrow(() ->
                 new MissingElementException(MISSING_USER_MESSAGE));
+        if (isSystemAdmin(user)) {
+            return applicationInstanceService.findAll().stream()
+                    .map(this::mapAppInstanceBase)
+                    .toList();
+        }
         return applicationInstanceService.findAllByOwner(user).stream()
                 .map(this::mapAppInstanceBase)
                 .toList();
@@ -148,6 +154,12 @@ public class AppInstanceReadController extends AppBaseController {
         pageable = pageableValidator(pageable);
         User user = userService.findByUsername(principal.getName()).orElseThrow(() ->
                 new MissingElementException(MISSING_USER_MESSAGE));
+        if (isSystemAdmin(user)) {
+            if (status != null) {
+                return instanceBaseService.findAll(pageable, status.equals(DEPLOYED_STATUS), search, remoteClusterId);
+            }
+            return instanceBaseService.findAll(pageable, remoteClusterId);
+        }
         if (status != null) {
             return instanceBaseService.findAllByOwner(user, pageable, status.equals(DEPLOYED_STATUS), search, remoteClusterId);
         }
@@ -388,9 +400,11 @@ public class AppInstanceReadController extends AppBaseController {
 
     @GetMapping("/{appInstanceId}/parameters")
     @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
-    public Map<String, String> getDeploymentParameters(@PathVariable Long appInstanceId) {
+    public Map<String, String> getDeploymentParameters(@PathVariable Long appInstanceId,
+                                                       @RequestParam(required = false, defaultValue = "false") boolean restoreKeys) {
         Identifier internalId = findAppInstance(appInstanceId).getInternalId();
-        return appDeploymentMonitor.appDeploymentParameters(internalId);
+        Map<String, String> parameters = appDeploymentMonitor.appDeploymentParameters(internalId);
+        return restoreKeys ? ParamKeySanitizer.restoreKeys(parameters) : parameters;
     }
 
     private List<AppInstanceDto> getAllRunningByDomain(Domain domain) {
@@ -569,9 +583,9 @@ public class AppInstanceReadController extends AppBaseController {
         }
 
         try {
-            ai.setAppConfigRepositoryAccessDetails(appDeploymentMonitor.configRepositoryAccessDetails(identifier));
+            ai.setAppConfigRepositoryAccessDto(appDeploymentMonitor.configRepositoryAccessDetails(identifier));
         } catch (InvalidAppStateException | InvalidDeploymentIdException _) {
-            ai.setAppConfigRepositoryAccessDetails(null);
+            ai.setAppConfigRepositoryAccessDto(null);
         }
 
         try {
@@ -605,16 +619,14 @@ public class AppInstanceReadController extends AppBaseController {
         log.trace("Page number: {}\tPage size:{}\tPage offset:{}\tSort:{}", p.getPageNumber(), p.getPageSize(), p.getOffset(), p.getSort());
     }
 
+    private boolean isSystemAdmin(User user) {
+        return user.getRoles().stream().anyMatch((UserRole ur) -> ur.getRole().equals(Role.ROLE_SYSTEM_ADMIN));
+    }
+
     private boolean isSystemAdminAndIsDomainGlobal(User user, Long domainId) {
-        boolean isSystemAdmin = false;
-        boolean isDomainGlobal = false;
-        if (user.getRoles().stream().anyMatch((UserRole ur) -> ur.getRole().equals(Role.ROLE_SYSTEM_ADMIN))) {
-            isSystemAdmin = true;
-        }
-        if (domainId.equals(domainService.getGlobalDomain().orElseThrow(() -> new InvalidDomainException("Global Domain not found")).getId())) {
-            isDomainGlobal = true;
-        }
-        return isSystemAdmin && isDomainGlobal;
+        boolean isDomainGlobal = domainId.equals(domainService.getGlobalDomain()
+                .orElseThrow(() -> new InvalidDomainException("Global Domain not found")).getId());
+        return isSystemAdmin(user) && isDomainGlobal;
     }
 
     private static Pageable pageableValidator(Pageable pageable) {

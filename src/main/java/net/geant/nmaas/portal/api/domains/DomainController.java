@@ -210,28 +210,30 @@ public class DomainController extends BaseController {
     @PutMapping("/{domainId}")
     @Transactional
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
-    public Id updateDomain(@PathVariable Long domainId, @RequestBody(required = true) DomainDto domainUpdate) {
-        if (!domainId.equals(domainUpdate.getId())) {
+    public Id updateDomain(@PathVariable Long domainId, @RequestBody(required = true) DomainDto updated) {
+        if (!domainId.equals(updated.getId())) {
             throw new ProcessingException(UNABLE_TO_CHANGE_DOMAIN_ID);
         }
 
         Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND));
-        domain.setName(domainUpdate.getName());
-        domain.setActive(domainUpdate.getActive());
-        domain.getDomainTechDetails().setKubernetesNamespace(domainUpdate.getDomainTechDetails().getKubernetesNamespace());
-        domain.getDomainTechDetails().setKubernetesIngressClass(domainUpdate.getDomainTechDetails().getKubernetesIngressClass());
-        domain.getDomainTechDetails().setKubernetesStorageClass(domainUpdate.getDomainTechDetails().getKubernetesStorageClass());
-        domain.getDomainDcnDetails().setDcnDeploymentType(DcnDeploymentType.valueOf(domainUpdate.getDomainDcnDetails().getDcnDeploymentType().name()));
+        domain.setName(updated.getName());
+        domain.setActive(updated.getActive());
+        domain.getDomainTechDetails().setKubernetesNamespace(updated.getDomainTechDetails().getKubernetesNamespace());
+        domain.getDomainTechDetails().setKubernetesIngressClass(updated.getDomainTechDetails().getKubernetesIngressClass());
+        domain.getDomainTechDetails().setKubernetesStorageClass(updated.getDomainTechDetails().getKubernetesStorageClass());
+        domain.getDomainDcnDetails().setDcnDeploymentType(DcnDeploymentType.valueOf(updated.getDomainDcnDetails().getDcnDeploymentType().name()));
         domain.getDomainDcnDetails().getCustomerNetworks().clear();
-        domainUpdate.getDomainDcnDetails().getCustomerNetworks().stream().map(CustomerNetwork::of).forEach(net -> domain.getDomainDcnDetails().getCustomerNetworks().add(net));
-        if (StringUtils.isEmpty(domainUpdate.getDomainTechDetails().getExternalServiceDomain())) {
-            domain.getDomainTechDetails().setExternalServiceDomain(domainUpdate.getDomainTechDetails().getExternalServiceDomain());
-        } else if (!domainUpdate.getDomainTechDetails().getExternalServiceDomain().equalsIgnoreCase(domain.getDomainTechDetails().getExternalServiceDomain())) {
-            Validate.isTrue(!domainService.existsDomainByExternalServiceDomain(domainUpdate.getDomainTechDetails().getExternalServiceDomain()), "External service domain is not unique");
-            domain.getDomainTechDetails().setExternalServiceDomain(domainUpdate.getDomainTechDetails().getExternalServiceDomain());
+        updated.getDomainDcnDetails().getCustomerNetworks().stream()
+                .map(CustomerNetwork::of)
+                .forEach(net -> domain.getDomainDcnDetails().getCustomerNetworks().add(net));
+        if (StringUtils.isEmpty(updated.getDomainTechDetails().getExternalServiceDomain())) {
+            domain.getDomainTechDetails().setExternalServiceDomain(updated.getDomainTechDetails().getExternalServiceDomain());
+        } else if (!updated.getDomainTechDetails().getExternalServiceDomain().equalsIgnoreCase(domain.getDomainTechDetails().getExternalServiceDomain())) {
+            Validate.isTrue(!domainService.existsDomainByExternalServiceDomain(updated.getDomainTechDetails().getExternalServiceDomain()), "External service domain is not unique");
+            domain.getDomainTechDetails().setExternalServiceDomain(updated.getDomainTechDetails().getExternalServiceDomain());
         }
 
-        List<ApplicationStatePerDomain> applicationStatePerDomainList = applicationStatePerDomainService.updateDomain(domainUpdate);
+        List<ApplicationStatePerDomain> applicationStatePerDomainList = applicationStatePerDomainService.updateDomain(updated);
         domain.setApplicationStatePerDomain(applicationStatePerDomainList);
 
         domainService.updateDomain(domain);

@@ -42,8 +42,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
@@ -55,9 +53,6 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 @RequiredArgsConstructor
 @Slf4j
 public class DefaultAppLifecycleManager implements AppLifecycleManager {
-
-    public static final String TAG_DOT = "_dot_";
-    public static final String TAG_BRACKET = "_bracket_";
 
     private final AppDeploymentRepositoryManager deploymentRepositoryManager;
     private final ApplicationEventPublisher eventPublisher;
@@ -179,6 +174,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
             serviceRepositoryManager.addAdditionalParameters(deploymentId, additionalParameters);
         }
         if (!mandatoryParameters.isEmpty()) {
+            logWarningIfMandatoryParametersProvided(deploymentId, mandatoryParameters);
             serviceRepositoryManager.addAdditionalParameters(deploymentId, mandatoryParameters);
         }
         if (!accessCredentials.isEmpty()) {
@@ -290,25 +286,10 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
         Map<String, String> newMap = new HashMap<>();
         for (Map.Entry<String, String> entry : parameters.entrySet()) {
             if (StringUtils.isNotEmpty(entry.getValue())) {
-                newMap.put(processParamName(entry.getKey()), processParamValue(entry.getValue()));
+                newMap.put(ParamKeySanitizer.sanitizeKey(entry.getKey()), processParamValue(entry.getValue()));
             }
         }
         return newMap;
-    }
-
-    private static String processParamName(String name) {
-        String processed = name.replace(TAG_DOT, ".");
-        if (countBrackets(name) == 2) {
-            processed = processed.replaceFirst(TAG_BRACKET, "[").replaceFirst(TAG_BRACKET, "]");
-        }
-        return processed;
-    }
-
-    public static int countBrackets(String text) {
-        Matcher m = Pattern.compile(Pattern.quote(TAG_BRACKET)).matcher(text);
-        int count = 0;
-        while (m.find()) count++;
-        return count;
     }
 
     private static String processParamValue(String value) {
@@ -409,12 +390,22 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
             serviceRepositoryManager.addAdditionalParameters(deploymentId, additionalParameters);
         }
         if (!mandatoryParameters.isEmpty()) {
+            logWarningIfMandatoryParametersProvided(deploymentId, mandatoryParameters);
             serviceRepositoryManager.addAdditionalParameters(deploymentId, mandatoryParameters);
         }
         if (!accessCredentials.isEmpty()) {
             triggerBasicAuthUpdate(deploymentId, accessCredentials);
         }
         eventPublisher.publishEvent(new AppUpdateConfigurationActionEvent(this, deploymentId, initiator));
+    }
+
+    /**
+     * Mandatory parameters are deprecated and will no longer be consumed at deployment time. The log message
+     * reports deployments that still provide them, so they can be migrated to additional parameters.
+     */
+    private void logWarningIfMandatoryParametersProvided(Identifier deploymentId, Map<String, String> mandatoryParameters) {
+        log.warn("Mandatory parameters were provided for deployment {} and will be ignored in the future: {}",
+                deploymentId, mandatoryParameters.keySet());
     }
 
     @Override

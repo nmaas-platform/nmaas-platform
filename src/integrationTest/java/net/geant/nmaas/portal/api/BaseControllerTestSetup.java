@@ -22,8 +22,8 @@ import java.util.List;
 @Import(DummyKubernetesApiClientServiceConfig.class)
 public class BaseControllerTestSetup {
 
-    protected final static String ADMIN_USERNAME = "admin";
-    protected final static String ADMIN_PASSWORD = "admin";
+    protected static final String ADMIN_USERNAME = "admin";
+    protected static final String ADMIN_PASSWORD = "admin";
 
     @Autowired
     protected WebApplicationContext context;

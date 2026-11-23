@@ -1,6 +1,6 @@
 package net.geant.nmaas.orchestration;
 
-import net.geant.nmaas.api.dto.applications.AppConfigRepositoryAccessDetails;
+import net.geant.nmaas.api.dto.applications.AppConfigRepositoryAccessDto;
 import net.geant.nmaas.orchestration.api.model.AppDeploymentHistoryDto;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
@@ -67,7 +67,7 @@ public interface AppDeploymentMonitor {
      * @param deploymentId unique identifier of the deployed user application
      * @return a class containing the URL to be used for cloning the repository with SSH
      */
-    AppConfigRepositoryAccessDetails configRepositoryAccessDetails(Identifier deploymentId);
+    AppConfigRepositoryAccessDto configRepositoryAccessDetails(Identifier deploymentId);
 
     /**
      * Retrieves information about application deployment state transitions.

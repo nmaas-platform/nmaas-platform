@@ -1,6 +1,6 @@
 package net.geant.nmaas.orchestration;
 
-import net.geant.nmaas.api.dto.applications.AppConfigRepositoryAccessDetails;
+import net.geant.nmaas.api.dto.applications.AppConfigRepositoryAccessDto;
 import net.geant.nmaas.nmservice.configuration.NmServiceConfigurationProvider;
 import net.geant.nmaas.nmservice.configuration.exceptions.ConfigRepositoryAccessDetailsNotFoundException;
 import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
@@ -121,8 +121,8 @@ class DefaultAppDeploymentMonitorTest {
 
     @Test
     void shouldRetrieveConfigRepoAccessDetails() {
-        when(configure.configRepositoryAccessDetails(deploymentId)).thenReturn(AppConfigRepositoryAccessDetails.of("testCloneURL"));
-        AppConfigRepositoryAccessDetails repositoryAccessDetails = monitor.configRepositoryAccessDetails(deploymentId);
+        when(configure.configRepositoryAccessDetails(deploymentId)).thenReturn(AppConfigRepositoryAccessDto.of("testCloneURL"));
+        AppConfigRepositoryAccessDto repositoryAccessDetails = monitor.configRepositoryAccessDetails(deploymentId);
         assertEquals("testCloneURL", repositoryAccessDetails.getCloneUrl());
     }
 

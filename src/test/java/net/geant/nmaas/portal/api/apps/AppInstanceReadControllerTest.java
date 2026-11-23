@@ -50,6 +50,7 @@ import org.springframework.data.domain.Sort;
 import java.security.Principal;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -244,9 +245,9 @@ class AppInstanceReadControllerTest {
     }
 
     @Test
-    void shouldGetAllMyInstancesInAllDomainWhenIsSystemAdminAndDomainIsGlobal() {
-        AppInstance appInstance = new AppInstance(application, NAME, domain1, admin, false);
-        when(applicationInstanceService.findAllByOwner(admin)).thenReturn(List.of(appInstance));
+    void shouldGetAllInstancesWhenUserIsSystemAdmin() {
+        AppInstance appInstance = new AppInstance(application, NAME, domain1, owner, false);
+        when(applicationInstanceService.findAll()).thenReturn(List.of(appInstance));
 
         Principal principal = mock(Principal.class);
         when(principal.getName()).thenReturn(admin.getUsername());
@@ -256,7 +257,7 @@ class AppInstanceReadControllerTest {
         assertEquals(1, result.size());
         AppInstanceBase appInstanceBase = result.getFirst();
         assertEquals(NAME, appInstanceBase.getApplicationName());
-        assertEquals(admin.getUsername(), appInstanceBase.getOwner().getUsername());
+        assertEquals(owner.getUsername(), appInstanceBase.getOwner().getUsername());
     }
 
     @Test
@@ -384,6 +385,36 @@ class AppInstanceReadControllerTest {
         AppInstanceStatus appInstanceStatus = appInstanceReadController.getState(1L, principal);
 
         assertEquals(appInstance.getId(), appInstanceStatus.appInstanceId());
+    }
+
+    @Test
+    void shouldGetDeploymentParametersWithoutKeyRestorationByDefault() {
+        AppInstance appInstance = new AppInstance(application, NAME, domain1, owner, false);
+        appInstance.setId(1L);
+        appInstance.setInternalId(new Identifier(IDENTIFIER_VALUE));
+
+        when(applicationInstanceService.find(1L)).thenReturn(Optional.of(appInstance));
+        Map<String, String> storedParameters = Map.of("targets[0].Addresses[0].ipAddress", "1.1.1.1:1000");
+        when(appDeploymentMonitor.appDeploymentParameters(appInstance.getInternalId())).thenReturn(storedParameters);
+
+        Map<String, String> result = appInstanceReadController.getDeploymentParameters(1L, false);
+
+        assertEquals(storedParameters, result);
+    }
+
+    @Test
+    void shouldGetDeploymentParametersWithRestoredKeysOnRequest() {
+        AppInstance appInstance = new AppInstance(application, NAME, domain1, owner, false);
+        appInstance.setId(1L);
+        appInstance.setInternalId(new Identifier(IDENTIFIER_VALUE));
+
+        when(applicationInstanceService.find(1L)).thenReturn(Optional.of(appInstance));
+        Map<String, String> storedParameters = Map.of("targets[0].Addresses[0].ipAddress", "1.1.1.1:1000");
+        when(appDeploymentMonitor.appDeploymentParameters(appInstance.getInternalId())).thenReturn(storedParameters);
+
+        Map<String, String> result = appInstanceReadController.getDeploymentParameters(1L, true);
+
+        assertEquals(Map.of("targets_bracket_0_bracket__dot_Addresses_bracket_0_bracket__dot_ipAddress", "1.1.1.1:1000"), result);
     }
 
     @Test

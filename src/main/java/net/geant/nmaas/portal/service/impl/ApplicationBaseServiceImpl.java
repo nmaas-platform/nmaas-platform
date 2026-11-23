@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -149,6 +150,7 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
                         .descriptions(mapList(modelMapper, app.getDescriptions(), AppDescriptionDto.class))
                         .tags(mapSet(modelMapper, app.getTags(), AppTagDto.class))
                         .build())
+                .sorted(Comparator.comparing(ApplicationBaseInfoDto::getName, String.CASE_INSENSITIVE_ORDER))
                 .collect(Collectors.toList());
         LocalDateTime finish = LocalDateTime.now();
         log.trace("Complete data is ready after next {}ms", finish.toInstant(ZoneOffset.UTC).toEpochMilli() - end.toInstant(ZoneOffset.UTC).toEpochMilli());

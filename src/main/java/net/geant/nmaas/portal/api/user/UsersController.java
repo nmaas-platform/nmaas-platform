@@ -633,11 +633,13 @@ public class UsersController {
         this.userService.setUserTheme(userId, defaultTheme);
     }
 
-    @GetMapping(value = "/users/search", params = {"searchPart"})
+    @GetMapping("/users/search")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') or hasRole('ROLE_DOMAIN_ADMIN') or hasRole('ROLE_GROUP_MANAGER')")
     public List<UserInfoDto> searchUser(@RequestParam(required = false) String searchPart, @RequestParam(required = false) Long domainId) {
+        if (searchPart == null) {
+            return Collections.emptyList();
+        }
         String search = searchPart.toLowerCase();
-
         List<User> allUsers = this.userService.findAll().stream()
                 .filter(User::isEnabled)
                 .filter(user -> Objects.nonNull(user.getEmail()))
@@ -648,17 +650,19 @@ public class UsersController {
                     .filter(user -> user.getRoles().stream().noneMatch(roles -> roles.getDomain().getId().equals(domainId)))
                     .map(this::mapUserInfo)
                     .toList();
-        } else {
-            return allUsers.stream()
-                    .filter(user -> user.getEmail().toLowerCase().contentEquals(search))
-                    .map(this::mapUserInfo)
-                    .toList();
         }
+        return allUsers.stream()
+                .filter(user -> user.getEmail().toLowerCase().contentEquals(search))
+                .map(this::mapUserInfo)
+                .toList();
     }
 
-    @GetMapping(value = "/users/search/managers", params = {"searchPart"})
+    @GetMapping("/users/search/managers")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') or hasRole('ROLE_GROUP_MANAGER')")
     public List<UserInfoDto> searchGroupManagers(@RequestParam(required = false) String searchPart) {
+        if (searchPart == null) {
+            return Collections.emptyList();
+        }
         String search = searchPart.toLowerCase();
         return userService.findAll().stream()
                 .filter(User::isEnabled)

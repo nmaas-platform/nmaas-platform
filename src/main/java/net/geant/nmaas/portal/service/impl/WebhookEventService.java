@@ -101,6 +101,7 @@ public class WebhookEventService {
                     }
                 }).toList();
     }
+
     @Transactional(readOnly = true)
     public Page<WebhookEventDto> getAllWebhooks(Pageable pageable, String searchValue) {
         if (searchValue == null || searchValue.isEmpty()) {
@@ -111,7 +112,7 @@ public class WebhookEventService {
                     throw new WebhookEncryptionException(e);
                 }
             });
-        }else {
+        } else {
             return webhookRepository.findByNameContaining(searchValue, pageable).map(x -> {
                 try {
                     return getWebhookEventDto(x);
@@ -121,6 +122,7 @@ public class WebhookEventService {
             });
         }
     }
+
     @Transactional(readOnly = true)
     public Page<WebhookEventDto> getAllWebhooks(Long domainId, Pageable pageable, String searchValue) {
         if (searchValue == null || searchValue.isEmpty()) {
@@ -131,7 +133,7 @@ public class WebhookEventService {
                     throw new WebhookEncryptionException(e);
                 }
             });
-        }else {
+        } else {
             return webhookRepository.findAllByDomainIdAndNameContaining(domainId, searchValue, pageable).map(x -> {
                 try {
                     return getWebhookEventDto(x);
@@ -172,10 +174,6 @@ public class WebhookEventService {
         WebhookEventDto dto = modelMapper.map(event, WebhookEventDto.class);
         dto.setTokenValue(event.getTokenValue() == null ? null : encryptionService.decrypt(event.getTokenValue()));
         return dto;
-    }
-
-    private boolean checkPrivileges(Long id, String username, Domain domain) {
-        return userService.isAdmin(username) || userService.isUserAdminInAnyDomain(domain != null ? List.of(domain) : List.of(), username);
     }
 
 }

@@ -176,6 +176,26 @@ class KubernetesManagerTest {
     }
 
     @Test
+    void shouldRemoveRedundantParametersFromServiceDeployParameters() {
+        KubernetesNmServiceInfo service = new KubernetesNmServiceInfo();
+        Map<String, String> additionalParameters = new HashMap<>();
+        additionalParameters.put("key1", "value1");
+        additionalParameters.put("key2", "value2");
+        additionalParameters.put("%RANDOM_STRING_8%", "random-value");
+        additionalParameters.put("accessmethods.public.method", "public-access");
+        service.setAdditionalParameters(additionalParameters);
+        when(repositoryManager.loadService(any())).thenReturn(service);
+
+        Map<String, String> result = manager.serviceDeployParameters(DEPLOYMENT_ID);
+
+        assertEquals(2, result.size());
+        assertTrue(result.containsKey("key1"));
+        assertTrue(result.containsKey("key2"));
+        assertFalse(result.containsKey("%RANDOM_STRING_8%"));
+        assertFalse(result.containsKey("accessmethods.public.method"));
+    }
+
+    @Test
     void shouldVerifyDeploymentWithEmptyAppDeployment() {
         ServiceRequestVerificationException thrown = assertThrows(ServiceRequestVerificationException.class, () -> {
             manager.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(DEPLOYMENT_ID, null, null);

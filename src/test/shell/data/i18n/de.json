@@ -380,6 +380,11 @@
       "HEADER": "Bestätigung",
       "ACCEPT": "Ja",
       "REJECT": "Nein"
+    },
+    "NO_INSTANCE": {
+      "HEADER": "No instances yet",
+      "CONTENT": "Choose an application and deploy your first instance.\n Your instances will appear here once created.",
+      "BUTTON": "Browse applications"
     }
   },
   "BUNDLES": {
@@ -390,6 +395,7 @@
     "QUANTITY": "Quantity",
     "DESCRIPTION": "Description",
     "EDIT": "Edit",
+    "DELETE": "Delete",
     "DETAILS": {
       "TITLE": "Bundle details",
       "NAME": "Name",
@@ -398,10 +404,12 @@
       "DESCRIPTIONS": "Descriptions",
       "APPLICATIONS": "Applications",
       "SAVE_BUTTON": "Save",
-      "CREATE_BUTTON": "Create",
+      "CREATE_BUTTON": "Submit",
       "NAME_REQUIRED": "Name is required.",
       "CODENAME_REQUIRED": "Codename is required.",
       "DESCRIPTION": {
+        "OPTIONAL_DESCRIPTIONS_HEADER": "Optionale Beschreibungen",
+        "OPTIONAL_LANGS_LABEL": "Optionale Sprachen auswählen",
         "BRIEF": "Short description",
         "FULL": "Long description",
         "REMOVE": "Remove description",
@@ -413,8 +421,8 @@
         "ICON": "Icon",
         "NAME": "Name",
         "OWNER": "Owner",
-        "TITLE": "Add application",
-        "ADD_INFO": "Select application to add",
+        "TITLE": "Select applications",
+        "ADD_INFO": "Choose applications to be part of the bundle",
         "ID": "Id",
         "MINIMUM": "Select at least two applications"
       }
@@ -587,6 +595,7 @@
     "REMOVED": "Dieser Kommentar wurde entfernt"
   },
   "APPLICATIONS": {
+    "BUNDLES": "Available bundles",
     "DETAILS_BUTTON": "Details",
     "SUBSCRIBE_BUTTON": "Abonnieren",
     "SUBSCRIBED_BUTTON": "Abonniert",
@@ -689,7 +698,8 @@
       "PLACEHOLDER_LIMIT": "Log limit",
       "NO_LIMIT": "No limit"
     },
-    "UPDATE_CONFIG_BUTTON": "Konfigurieren",
+    "UPDATE_CONFIG_GIT_BUTTON": "Configure with git",
+    "UPDATE_CONFIG_FORM_BUTTON": "Update configuration",
     "ENABLE_AUTO_UPGRADES_BUTTON": "Auto upgrades aktivieren",
     "DISABLE_AUTO_UPGRADES_BUTTON": "Auto upgrades deaktivieren",
     "ADD_MEMBERS_BUTTON": "Add members",
@@ -928,6 +938,7 @@
     "UPDATE_CONFIG_WIZARD_PREVIEW_HEADER": "Aktualisiere Konfigurationsassistenten Vorschau"
   },
   "APPS_WIZARD": {
+    "APP_CONFIG_SPECIFICATION": "Application configuration specification",
     "FIRST_PAGE_MESSAGE": "You are about to fill in a request for adding new application to the nmaas portfolio. You will be guided through a few step process of providing all necessary information about the application, its description, deployment and configuration details. Once the request is submitted it will be reviewed by administrator and either approved or rejected with a proper comment send via email. By checking the box below you confirm that you have the right to publish this application in nmaas.",
     "ACCEPT_RULES_CHECKBOX": "I read the general instructions above",
     "NEXT_BUTTON": "Weiter",
@@ -1000,6 +1011,7 @@
     "REPOSITORY_REQUIRED_TOOLTIP": "nmaas kann GitLab für die Konfiguration jeder Instanz verwenden.",
     "DISABLED_NEXT_BUTTON_TOOLTIP": "Sie müssen alle benötigten Felder ausfüllen!",
     "DEPLOY_PARAMETERS_DROPDOWN": "Wählen Sie globale Installationsparamter aus",
+    "RESOURCES_SPECIFICATION": "Spezifikation der verbrauchten Ressourcen",
     "CONFIG_FILENAME_LABEL": "Name der Konfigurationsdatei",
     "CONFIG_FILENAME_TOOLTIP": "Geben Sie den Namen der Konfigurationsdatei an",
     "CONFIG_FILEDIRECTORY_LABEL": "Configuration file directory (folder name)",
@@ -1552,7 +1564,8 @@
       "SETTINGS": "Aktualisierung der Einstellungen fehlgeschlagen ",
       "NOTIFICATION": "Die Nachricht konnte nicht gesendet werden.",
       "WEBHOOK": "Das Webhook-Update ist fehlgeschlagen",
-      "NEW_VARIABLE": "Das Hinzufügen einer neuen Variable ist fehlgeschlagen"
+      "NEW_VARIABLE": "Das Hinzufügen einer neuen Variable ist fehlgeschlagen",
+      "FILE": "Die Datei ist zu groß. Die maximal zulässige Größe beträgt 2 MB."
     }
   }
 }

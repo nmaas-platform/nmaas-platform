@@ -55,9 +55,9 @@ public class ApplicationStatePerDomain implements Serializable {
         this.pvStorageSizeLimit = pvStorageSizeLimit;
     }
 
-    public void applyChangedState(ApplicationStatePerDomainDto appStateView) {
-        this.enabled = appStateView.getEnabled();
-        this.pvStorageSizeLimit = appStateView.getPvStorageSizeLimit();
+    public void applyChangedState(ApplicationStatePerDomainDto dto) {
+        this.enabled = dto.getEnabled();
+        this.pvStorageSizeLimit = dto.getPvStorageSizeLimit();
     }
 
 }

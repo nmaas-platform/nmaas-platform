@@ -1,4 +1,4 @@
-FROM eclipse-temurin:25.0.4_7-jdk-alpine AS builder
+FROM eclipse-temurin:25.0.5.1_2-jdk-alpine-3.24 AS builder
 
 COPY . /build/
 WORKDIR /build/
@@ -6,7 +6,7 @@ WORKDIR /build/
 RUN chmod +x ./gradlew \
     && ./gradlew -Dorg.gradle.daemon=false build -x test
 
-FROM eclipse-temurin:25.0.4_7-jre-alpine
+FROM eclipse-temurin:25.0.5.1_2-jre-alpine-3.24
 
 LABEL maintainer=nmaas@lists.geant.org
 

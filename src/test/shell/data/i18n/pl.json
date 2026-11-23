@@ -381,6 +381,11 @@
       "HEADER" : "Potwierdzenie",
       "ACCEPT" : "Tak",
       "REJECT" : "Nie"
+    },
+    "NO_INSTANCE": {
+      "HEADER": "No instances yet",
+      "CONTENT": "Choose an application and deploy your first instance.\n Your instances will appear here once created.",
+      "BUTTON": "Browse applications"
     }
   },
   "BUNDLES": {
@@ -391,6 +396,7 @@
     "QUANTITY": "Ilość",
     "DESCRIPTION": "Opis",
     "EDIT": "Edytuj",
+    "DELETE": "Usuń",
     "DETAILS": {
       "TITLE": "Szczegóły paczek",
       "NAME": "Nazwa",
@@ -403,6 +409,8 @@
       "NAME_REQUIRED": "Nazwa jest wymagana.",
       "CODENAME_REQUIRED": "Nazwa kodowa jest wymagana.",
       "DESCRIPTION": {
+        "OPTIONAL_DESCRIPTIONS_HEADER": "Opcjonalne opisy",
+        "OPTIONAL_LANGS_LABEL": "Wybierz dodatkowe języki",
         "BRIEF": "Krótki opis",
         "FULL": "Pełen opis",
         "REMOVE": "Usuń opis",
@@ -414,10 +422,10 @@
         "ICON": "Ikona",
         "NAME": "Nazwa",
         "OWNER": "Właściciel",
-        "TITLE": "Dodaj aplikacje",
-        "ADD_INFO": "Wybierz aplikacje do dodania",
+        "TITLE": "Wybierz aplikacje",
+        "ADD_INFO": "Wybierz aplikacje do paczki",
         "ID": "Id",
-        "MINIMUM": "Wybierz conajmniej dwie aplikacje"
+        "MINIMUM": "Wybierz co najmniej dwie aplikacje"
       }
     }
   },
@@ -588,6 +596,7 @@
     "REMOVED": "Ten komentarz został usunięty"
   },
   "APPLICATIONS": {
+    "BUNDLES": "Available bundles",
     "DETAILS_BUTTON": "Szczegóły",
     "SUBSCRIBE_BUTTON": "Subskrybuj",
     "SUBSCRIBED_BUTTON": "Subskrybowane",
@@ -690,7 +699,8 @@
       "PLACEHOLDER_LIMIT": "Limit logów",
       "NO_LIMIT": "Bez limitu"
     },
-    "UPDATE_CONFIG_BUTTON": "Konfiguracja",
+    "UPDATE_CONFIG_GIT_BUTTON": "Configure with git",
+    "UPDATE_CONFIG_FORM_BUTTON": "Update configuration",
     "ENABLE_AUTO_UPGRADES_BUTTON": "Włącz automatyczne aktualizacje",
     "DISABLE_AUTO_UPGRADES_BUTTON": "Wyłącz automatyczne aktualizacje",
     "ADD_MEMBERS_BUTTON": "Osoby",
@@ -929,6 +939,7 @@
     "UPDATE_CONFIG_WIZARD_PREVIEW_HEADER": "Podgląd formularza do aktualizacji konfiguracji aplikacji"
   },
   "APPS_WIZARD": {
+    "APP_CONFIG_SPECIFICATION": "Application configuration specification",
     "FIRST_PAGE_MESSAGE": "You are about to fill in a request for adding new application to the nmaas portfolio. You will be guided through a few step process of providing all necessary information about the application, its description, deployment and configuration details. Once the request is submitted it will be reviewed by administrator and either approved or rejected with a proper comment send via email. By checking the box below you confirm that you have the right to publish this application in nmaas.",
     "ACCEPT_RULES_CHECKBOX": "Zapoznałem się z instrukcją powyżej",
     "NEXT_BUTTON": "Następne",
@@ -1001,6 +1012,7 @@
     "REPOSITORY_REQUIRED_TOOLTIP": "nmaas może wykorzystać GitLab aby zachować konfiguracje każdej instancji.",
     "DISABLED_NEXT_BUTTON_TOOLTIP": "Musisz wypełnić wszystkie wymagane pola!",
     "DEPLOY_PARAMETERS_DROPDOWN": "Wybierz parametry globalne",
+    "RESOURCES_SPECIFICATION": "Specyfikacja wykorzystanych zasobów",
     "CONFIG_FILENAME_LABEL": "Nazwa pliku konfiguracyjnego",
     "CONFIG_FILENAME_TOOLTIP": "Podaj nazwę pliku konfiguracyjnego",
     "CONFIG_FILEDIRECTORY_LABEL": "Nazwa katalogu",
@@ -1555,7 +1567,8 @@
       "SETTINGS": "Aktualizacja ustawień nie powiodła się",
       "NOTIFICATION": "Nie udało się wysłać wiadomości",
       "WEBHOOK": "Aktualizacja danych webhooka nie powiodła się",
-      "NEW_VARIABLE": "Nie udało się dodać nowej zmiennej"
+      "NEW_VARIABLE": "Nie udało się dodać nowej zmiennej",
+      "FILE": "Plik jest za duży. Maksymalny dozwolony rozmiar to 2 MB."
     }
   }
 }

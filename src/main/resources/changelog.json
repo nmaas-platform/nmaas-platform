@@ -1,6 +1,77 @@
 {
   "versions" : [
     {
+      "verNo" : "1.11.0",
+      "date" : "(2026/11/13)",
+      "topic" : [
+        {
+          "title" : "Central variable storage",
+          "tags" : "[New Feature]",
+          "description" : "System and domain level variables can now be defined centrally and used as values in application deployment specification parameters, with domain level values taking precedence"
+        },
+        {
+          "title" : "Application bundles",
+          "tags" : "[New Feature]",
+          "description" : "Added support for application bundles, which can be composed of multiple applications with a title and description"
+        },
+        {
+          "title" : "Update of release values without redeploying",
+          "tags" : "[New Feature]",
+          "description" : "Application instance configuration can now be updated by executing a Helm upgrade command with new values, without the need to redeploy the application"
+        },
+        {
+          "title" : "Extended permissions for group managers",
+          "tags" : "[New Feature]",
+          "description" : "Group managers can now add, edit and delete individual domains, manage resource limits on group level, update domain technical details and annotations, and access domain users and details"
+        },
+        {
+          "title" : "Admin dashboard with detailed domain group activity logs",
+          "tags" : "[New Feature]",
+          "description" : "Added a new dashboard displaying detailed logs of activities within a domain group"
+        },
+        {
+          "title" : "Templates for webhook content",
+          "tags" : "[Enhancement]",
+          "description" : "Webhook request content can now be generated from templates, with webhook history storing the actual body sent"
+        },
+        {
+          "title" : "External kubeconfig support",
+          "tags" : "[Enhancement]",
+          "description" : "The Platform can now run using an external kubeconfig file for central cluster management, and edited kubeconfig files of remote clusters are persisted to the file system"
+        },
+        {
+          "title" : "Improved remote cluster management",
+          "tags" : "[Enhancement]",
+          "description" : "Added endpoints for retrieval of complete remote cluster information and filtering of application instances deployed on a given remote cluster"
+        },
+        {
+          "title" : "More advanced configuration passed as Helm install values",
+          "tags" : "[Enhancement]",
+          "description" : "Nested JSON objects can now be passed as additional parameters from the deployment wizard to the Helm install command, with all arguments persisted"
+        },
+        {
+          "title" : "Application state history improvements",
+          "tags" : "[Enhancement]",
+          "description" : "History entries now include information about the user that initiated each state change"
+        },
+        {
+          "title" : "REST API security improvement",
+          "tags" : "[Enhancement]",
+          "description" : "Requests with an invalid authorization header now return a 401 response instead of a 302 redirect"
+        },
+        {
+          "title" : "Fixed display of the UUID token",
+          "tags" : "[Bugfix]",
+          "description" : "Corrected the value returned for the user access UUID token"
+        },
+        {
+          "title" : "Platform and dependency upgrades",
+          "tags" : "[Enhancement]",
+          "description" : "Upgraded the platform to Java 25, Kubernetes client to version 8 and other supporting dependencies"
+        }
+      ]
+    },
+    {
       "verNo": "1.10.0",
       "date": "(2026/05/29)",
       "topic": [

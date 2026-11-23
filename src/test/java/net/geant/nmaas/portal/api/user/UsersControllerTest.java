@@ -120,6 +120,61 @@ class UsersControllerTest {
     }
 
     @Test
+    void shouldReturnEmptyListWhenSearchPartNotProvided() {
+        List<UserInfoDto> result = usersController.searchUser(null, null);
+        assertEquals(0, result.size());
+        verifyNoInteractions(userService);
+    }
+
+    @Test
+    void shouldSearchUserWithSearchPart() {
+        when(userService.findAll()).thenReturn(userList.stream().map(this::userWithEmail).toList());
+        List<UserInfoDto> result = usersController.searchUser(userList.get(0).getUsername() + "@example.com", null);
+        assertEquals(1, result.size());
+        assertEquals(userList.get(0).getUsername(), result.getFirst().getUsername());
+    }
+
+    @Test
+    void shouldSearchUserWithSearchPartAndDomainId() {
+        when(userService.findAll()).thenReturn(userList.stream().map(this::userWithEmail).toList());
+        List<UserInfoDto> result = usersController.searchUser(userList.get(0).getUsername() + "@example.com", DOMAIN.getId());
+        // both fixture users are members of DOMAIN, so they are excluded
+        assertEquals(0, result.size());
+    }
+
+    @Test
+    void shouldReturnEmptyListWhenSearchPartNotProvidedButDomainIdGiven() {
+        List<UserInfoDto> result = usersController.searchUser(null, DOMAIN.getId());
+        assertEquals(0, result.size());
+        verifyNoInteractions(userService);
+    }
+
+    @Test
+    void shouldReturnEmptyListForGroupManagersSearchWhenSearchPartNotProvided() {
+        List<UserInfoDto> result = usersController.searchGroupManagers(null);
+        assertEquals(0, result.size());
+        verifyNoInteractions(userService);
+    }
+
+    @Test
+    void shouldSearchGroupManagersWithSearchPart() {
+        User groupManager = new User("groupmanager", true, "gm123", DOMAIN, Role.ROLE_GROUP_MANAGER);
+        groupManager.setId(3L);
+        when(userService.findAll()).thenReturn(List.of(
+                userWithEmail(userList.get(0)),
+                userWithEmail(userList.get(1)),
+                userWithEmail(groupManager)));
+        List<UserInfoDto> result = usersController.searchGroupManagers("groupmanager@example.com");
+        assertEquals(1, result.size());
+        assertEquals("groupmanager", result.getFirst().getUsername());
+    }
+
+    private User userWithEmail(User user) {
+        user.setEmail(user.getUsername() + "@example.com");
+        return user;
+    }
+
+    @Test
     void shouldUpdateUser() {
         when(principal.getName()).thenReturn(userList.getFirst().getUsername());
         UserRequest userRequest = new UserRequest(userList.getFirst().getId(), userList.getFirst().getUsername(), userList.getFirst().getPassword());

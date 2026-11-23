@@ -148,10 +148,10 @@ class RemoteClusterManagerTest {
 
     @Test
     void getAllClusterView_returnsClusterManagerViews() {
-        KCluster cluster1 = KCluster.builder().id(1L).name("Cluster1").build();
-        KCluster cluster2 = KCluster.builder().id(2L).name("Cluster2").build();
+        KCluster cluster11 = KCluster.builder().id(1L).name("Cluster11").build();
+        KCluster cluster12 = KCluster.builder().id(2L).name("Cluster12").build();
 
-        when(kClusterRepository.findAll()).thenReturn(List.of(cluster1, cluster2));
+        when(kClusterRepository.findAll()).thenReturn(List.of(cluster11, cluster12));
 
         List<RemoteKClusterDto> result = remoteClusterManager.getAllClusters();
 

@@ -188,8 +188,7 @@ public class DomainGroupServiceImpl implements DomainGroupService {
         if (!domainGroupId.equals(dto.getId())) {
             throw new ProcessingException(String.format("Wrong domain group identifier (%s)", domainGroupId));
         }
-        DomainGroup domainGroup = this.domainGroupRepository.findById(domainGroupId).orElseThrow();
-        // updateRolesInDomainsByUsers(dto);
+        DomainGroup domainGroup = domainGroupRepository.findById(domainGroupId).orElseThrow();
         domainGroup.setCodename(dto.getCodename());
         domainGroup.setName(dto.getName());
         domainGroup.setManagers(dto.getManagers().stream()

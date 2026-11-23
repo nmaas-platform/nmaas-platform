@@ -15,6 +15,7 @@ import net.geant.nmaas.kubernetes.remote.entities.KCluster;
 import net.geant.nmaas.nmservice.deployment.ContainerOrchestrator;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster.KClusterCheckException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmChartIngressVariable;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmKServiceManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.ingress.IngressControllerManipulationException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
@@ -152,7 +153,7 @@ public class KubernetesManager implements ContainerOrchestrator {
     private String resolveVariableReference(String variableName, String domainCodename) {
         try {
             return variableService.getRawValue(variableName, domainCodename);
-        } catch (Exception e) {
+        } catch (Exception _) {
             throw new ServiceRequestVerificationException(
                     "Referenced variable " + variableName + " no longer exists in the central variable storage");
         }
@@ -507,8 +508,7 @@ public class KubernetesManager implements ContainerOrchestrator {
     @Override
     public Map<String, String> serviceDeployParameters(Identifier deploymentId) {
         try {
-            // TODO filter only relevant parameters
-            return repositoryManager.loadService(deploymentId).getAdditionalParameters();
+            return HelmKServiceManager.removeRedundantParameters(repositoryManager.loadService(deploymentId).getAdditionalParameters());
         } catch (Exception _) {
             throw new ProcessingException("Can't find additional parameters for " + deploymentId.value());
         }

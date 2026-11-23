@@ -6,19 +6,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class UserRoleTest {
 
-    final private User user = new User("username");
-    final private Domain domain = new Domain(1L, "name", "codename");
-    final private Role role = Role.ROLE_DOMAIN_ADMIN;
+    private static final User USER = new User("username");
+    private static final Domain DOMAIN = new Domain(1L, "name", "codename");
+    private static final Role ROLE = Role.ROLE_DOMAIN_ADMIN;
 
     @Test
     void shouldBeEqual() {
-        assertEquals(new UserRole(user, domain, role).getId(),
-                     new UserRole(new User("username"), new Domain(1L, "name", "codename"), Role.ROLE_DOMAIN_ADMIN).getId());
+        assertEquals(new UserRole(USER, DOMAIN, ROLE).getId(),
+                new UserRole(new User("username"), new Domain(1L, "name", "codename"), Role.ROLE_DOMAIN_ADMIN).getId());
     }
 
     @Test
     void shouldGetCorrectAuthorityString() {
-        UserRole userRole = new UserRole(user, domain, role);
+        UserRole userRole = new UserRole(USER, DOMAIN, ROLE);
         assertEquals("1:ROLE_DOMAIN_ADMIN", userRole.getAuthority());
     }
 

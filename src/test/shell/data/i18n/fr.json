@@ -382,6 +382,11 @@
       "HEADER": "Confirmation",
       "ACCEPT": "Oui",
       "REJECT": "Non"
+    },
+    "NO_INSTANCE": {
+      "HEADER": "No instances yet",
+      "CONTENT": "Choose an application and deploy your first instance.\n Your instances will appear here once created.",
+      "BUTTON": "Browse applications"
     }
   },
   "BUNDLES": {
@@ -392,6 +397,7 @@
     "QUANTITY": "Quantity",
     "DESCRIPTION": "Description",
     "EDIT": "Edit",
+    "DELETE": "Delete",
     "DETAILS": {
       "TITLE": "Bundle details",
       "NAME": "Name",
@@ -400,10 +406,12 @@
       "DESCRIPTIONS": "Descriptions",
       "APPLICATIONS": "Applications",
       "SAVE_BUTTON": "Save",
-      "CREATE_BUTTON": "Create",
+      "CREATE_BUTTON": "Submit",
       "NAME_REQUIRED": "Name is required.",
       "CODENAME_REQUIRED": "Codename is required.",
       "DESCRIPTION": {
+        "OPTIONAL_DESCRIPTIONS_HEADER": "Descriptions facultatives",
+        "OPTIONAL_LANGS_LABEL": "Sélectionner des langues supplémentaires",
         "BRIEF": "Short description",
         "FULL": "Long description",
         "REMOVE": "Remove description",
@@ -415,8 +423,8 @@
         "ICON": "Icon",
         "NAME": "Name",
         "OWNER": "Owner",
-        "TITLE": "Add application",
-        "ADD_INFO": "Select application to add",
+        "TITLE": "Select applications",
+        "ADD_INFO": "Choose applications to be part of the bundle",
         "ID": "Id",
         "MINIMUM": "Select at least two applications"
       }
@@ -589,6 +597,7 @@
     "REMOVED": "Ce commentaire a été supprimé"
   },
   "APPLICATIONS": {
+    "BUNDLES": "Available bundles",
     "DETAILS_BUTTON": "Details",
     "SUBSCRIBE_BUTTON": "S'enregister",
     "SUBSCRIBED_BUTTON": "Souscrit",
@@ -692,7 +701,8 @@
       "NO_LIMIT": "No limit"
     },
     "ADD_MEMBERS_BUTTON": "Add members",
-    "UPDATE_CONFIG_BUTTON": "Update configuration",
+    "UPDATE_CONFIG_GIT_BUTTON": "Configure with git",
+    "UPDATE_CONFIG_FORM_BUTTON": "Update configuration",
     "ENABLE_AUTO_UPGRADES_BUTTON": "Enable auto upgrades",
     "DISABLE_AUTO_UPGRADES_BUTTON": "Disable auto upgrades",
     "ADDITIONAL_INFO": "Additional Information",
@@ -929,6 +939,7 @@
     "UPDATE_CONFIG_WIZARD_PREVIEW_HEADER": "Update configuration wizard preview"
   },
   "APPS_WIZARD": {
+    "APP_CONFIG_SPECIFICATION": "Application configuration specification",
     "FIRST_PAGE_MESSAGE": "You are about to fill in a request for adding new application to the nmaas portfolio. You will be guided through a few step process of providing all necessary information about the application, its description, deployment and configuration details. Once the request is submitted it will be reviewed by administrator and either approved or rejected with a proper comment send via email. By checking the box below you confirm that you have the right to publish this application in nmaas.",
     "ACCEPT_RULES_CHECKBOX": "I read the general instructions above",
     "NEXT_BUTTON": "Next",
@@ -1001,6 +1012,7 @@
     "REPOSITORY_REQUIRED_TOOLTIP": "nmaas can use GitLab to store configuration of each instance.",
     "DISABLED_NEXT_BUTTON_TOOLTIP": "You have to fill all required fields!",
     "DEPLOY_PARAMETERS_DROPDOWN": "Select global deployment parameters",
+    "RESOURCES_SPECIFICATION": "Spécification des ressources consommées",
     "CONFIG_FILENAME_LABEL": "Configuration filename",
     "CONFIG_FILENAME_TOOLTIP": "Enter name of configuration file",
     "CONFIG_FILEDIRECTORY_LABEL": "Configuration file directory (folder name)",
@@ -1556,7 +1568,8 @@
       "SETTINGS": "La mise à jour des paramètres a échoué",
       "NOTIFICATION": "Le message n'a pas pu être envoyé.",
       "WEBHOOK": "Échec de la mise à jour du Webhook",
-      "NEW_VARIABLE": "Échec de l'ajout d'une nouvelle variable"
+      "NEW_VARIABLE": "Échec de l'ajout d'une nouvelle variable",
+      "FILE": "Le fichier est trop volumineux. La taille maximale autorisée est de 2 Mo."
     }
   }
 }
