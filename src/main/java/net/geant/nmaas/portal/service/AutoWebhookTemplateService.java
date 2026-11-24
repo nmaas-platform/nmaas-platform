@@ -26,7 +26,6 @@ import java.lang.reflect.Type;
 import java.time.LocalDateTime;
 import java.util.EnumMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -94,10 +93,9 @@ public class AutoWebhookTemplateService {
         if (node.isObject()) {
             ObjectNode objectNode = (ObjectNode) node;
 
-            // Use an iterator to safely modify the node while traversing
-            Iterator<Map.Entry<String, JsonNode>> fields = objectNode.fields();
-            while (fields.hasNext()) {
-                Map.Entry<String, JsonNode> field = fields.next();
+            // Iterating over the live property set is safe here: only the values of
+            // already existing keys are replaced (no structural modification of the node).
+            for (Map.Entry<String, JsonNode> field : objectNode.properties()) {
                 JsonNode child = field.getValue();
 
                 JsonNode replacedChild = replaceVariablesInNode(child, context);
@@ -280,7 +278,7 @@ public class AutoWebhookTemplateService {
     }
 
     private void buildTemplateNode(JsonNode node, String path, ObjectNode parent) {
-        node.fields().forEachRemaining(entry -> {
+        node.properties().forEach(entry -> {
             String field = entry.getKey();
             String fullPath = path.isEmpty() ? field : path + "_" + field;
             String var = "$" + fullPath.toUpperCase();
@@ -331,7 +329,7 @@ public class AutoWebhookTemplateService {
 
     // Only expose variables for primitive/simple types
     private void flattenForContext(JsonNode node, String path, Map<String, Object> context) {
-        node.fields().forEachRemaining(entry -> {
+        node.properties().forEach(entry -> {
             String fullPath = path.isEmpty() ? entry.getKey() : path + "_" + entry.getKey();
             String var = "$" + fullPath.toUpperCase();
             JsonNode value = entry.getValue();

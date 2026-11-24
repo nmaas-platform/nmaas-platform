@@ -20,7 +20,6 @@ import net.geant.nmaas.portal.api.security.exceptions.BasicAuthenticationExcepti
 import net.geant.nmaas.portal.api.security.exceptions.MissingTokenException;
 import net.geant.nmaas.portal.api.security.exceptions.TokenAuthenticationException;
 import net.geant.nmaas.portal.exceptions.UndergoingMaintenanceException;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -33,6 +32,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Locale;
 
 @RestControllerAdvice
 @Slf4j
@@ -103,7 +103,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(IOException.class)
     @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
     public ApiError exceptionHandler(IOException e, HttpServletRequest request) {
-        if (StringUtils.containsIgnoreCase(ExceptionUtils.getRootCauseMessage(e), "Broken pipe")) {
+        if (ExceptionUtils.getRootCauseMessage(e).toLowerCase(Locale.ROOT).contains("broken pipe")) {
             log.debug("Detected `Broken pipe` IOException after executing: {}", request.getRequestURL().toString());
             return null;
         } else {
