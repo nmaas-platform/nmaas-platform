@@ -90,9 +90,9 @@ public class BulkDomainServiceIntTest {
         assertEquals(1, bulkDeployment.getCreator().getId());
         assertEquals(BulkType.DOMAIN, bulkDeployment.getType());
         assertEquals(6, bulkDeployment.getEntries().size());
-        assertThat(userRepository.findByEmail("user1@test.com").orElseThrow().getSamlToken()).isEqualTo("user1@test.com");
-        assertThat(userRepository.findByEmail("user2@test.com").orElseThrow().getSamlToken()).isNull();
-        assertThat(userRepository.findByEmail("user3@test.com").orElseThrow().getSamlToken()).isEqualTo("user3@test.com");
+        assertThat(userRepository.findByEmail("user1@test.com").orElseThrow().getExternalId()).isEqualTo("user1@test.com");
+        assertThat(userRepository.findByEmail("user2@test.com").orElseThrow().getExternalId()).isNull();
+        assertThat(userRepository.findByEmail("user3@test.com").orElseThrow().getExternalId()).isEqualTo("user3@test.com");
     }
 
     @Test
@@ -125,8 +125,8 @@ public class BulkDomainServiceIntTest {
         assertEquals(1, bulkDeployment.getCreator().getId());
         assertEquals(BulkType.DOMAIN, bulkDeployment.getType());
         assertEquals(4, bulkDeployment.getEntries().size());
-        assertThat(userRepository.findByEmail("user1@test.com").orElseThrow().getSamlToken()).isNull();
-        assertThat(userRepository.findByEmail("user2@test.com").orElseThrow().getSamlToken()).isNull();
+        assertThat(userRepository.findByEmail("user1@test.com").orElseThrow().getExternalId()).isNull();
+        assertThat(userRepository.findByEmail("user2@test.com").orElseThrow().getExternalId()).isNull();
     }
 
     @Test

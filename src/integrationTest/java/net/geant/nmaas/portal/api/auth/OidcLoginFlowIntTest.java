@@ -168,7 +168,7 @@ class OidcLoginFlowIntTest extends AbstractOidcFlowIntTest {
                 .andReturn();
 
         User registered = userRepository.findByEmail(email).orElseThrow();
-        assertEquals(sub, registered.getSamlToken(), "the account must be linked with the validated token subject");
+        assertEquals(sub, registered.getExternalId(), "the account must be linked with the validated token subject");
         assertTrue(registered.isEnabled());
         String payload = jwtPayload(
                 objectMapper.readTree(approvals.getResponse().getContentAsString(StandardCharsets.UTF_8)).get("token").asText());
@@ -208,7 +208,7 @@ class OidcLoginFlowIntTest extends AbstractOidcFlowIntTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.token").isNotEmpty());
 
-        assertEquals(sub, userRepository.findByEmail(email).orElseThrow().getSamlToken(),
+        assertEquals(sub, userRepository.findByEmail(email).orElseThrow().getExternalId(),
                 "the account must be linked with the validated token subject after the password proof");
     }
 

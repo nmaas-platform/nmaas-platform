@@ -12,7 +12,7 @@ public class NotNullIfAnotherFieldIsNullValidator implements ConstraintValidator
             throw new IllegalArgumentException("@ValidUser can be applied only for User entity");
         }
         User user = (User) value;
-        if(checkParam(user.getSamlToken()) && checkParam(user.getEmail())){
+        if(checkParam(user.getExternalId()) && checkParam(user.getEmail())){
             ctx.disableDefaultConstraintViolation();
             ctx.buildConstraintViolationWithTemplate(ctx.getDefaultConstraintMessageTemplate())
                     .addPropertyNode(user.getEmail())

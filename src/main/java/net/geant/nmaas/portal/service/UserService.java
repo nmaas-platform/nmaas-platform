@@ -23,7 +23,7 @@ public interface UserService {
 
     Optional<User> findById(Long id);
 
-    Optional<User> findBySamlToken(String token);
+    Optional<User> findByExternalId(String externalId);
 
     User findByEmail(String email);
 
@@ -33,7 +33,7 @@ public interface UserService {
 
     boolean existsById(Long id);
 
-    boolean existsBySamlToken(String token);
+    boolean existsByExternalId(String externalId);
 
     User register(Registration registration, Domain globalDomain, Domain domain);
 

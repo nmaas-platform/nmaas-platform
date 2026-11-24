@@ -64,24 +64,24 @@ public class OidcUserServiceImpl implements OidcUserService {
             throw new ExternalUserMatchException("External user identity is incomplete: subject or email claim is missing");
         }
 
-        boolean existUserBySamlToken = userService
-                .existsBySamlToken(oidcUserSub);
+        boolean externalIdentityLinked = userService
+                .existsByExternalId(oidcUserSub);
 
-        if (existUserBySamlToken) { //exist by saml_token and everything is correct
+        if (externalIdentityLinked) { //already linked by external identifier
             return userService
-                    .findBySamlToken(oidcUserSub)
+                    .findByExternalId(oidcUserSub)
                     .orElseThrow();
         }
 
         if (userService.existsByEmail(oidcUserEmail)) { //exist by email needs work with this account
             User user = userService.findByEmail(oidcUserEmail);
-            String linkedSamlToken = user.getSamlToken();
-            if (StringUtils.isBlank(linkedSamlToken)) {
+            String linkedExternalId = user.getExternalId();
+            if (StringUtils.isBlank(linkedExternalId)) {
                 throw new ExternalUserMatchException("User with email " + oidcUserEmail + " has no external identity linked yet");
             }
-            if (linkedSamlToken.equals(oidcUserEmail)
-                    || linkedSamlToken.equals(oidcUserPreferredUsername)) {
-                user.setSamlToken(oidcUserSub);
+            if (linkedExternalId.equals(oidcUserEmail)
+                    || linkedExternalId.equals(oidcUserPreferredUsername)) {
+                user.setExternalId(oidcUserSub);
                 try {
                     userService.update(user);
                 } catch (DataIntegrityViolationException _) {
@@ -94,8 +94,8 @@ public class OidcUserServiceImpl implements OidcUserService {
             }
             throw new ExternalUserMatchException("External user "
                     + oidcUserSub
-                    + " does not match internal user with SamlToken "
-                    + linkedSamlToken);
+                    + " does not match internal user with external identity "
+                    + linkedExternalId);
         }
         // Registration is only possible through the approvals endpoint, which
         // requires explicit AUP and Privacy Notice consent. Reaching this point
@@ -151,9 +151,9 @@ public class OidcUserServiceImpl implements OidcUserService {
      * The database-level unique constraint remains the last line of defense
      * against concurrent requests.
      */
-    private void assertExternalIdentityAvailable(String samlToken) {
-        if (samlToken != null && userRepository.existsBySamlToken(samlToken)) {
-            log.warn("Rejected registration attempt for external identity [{}] already linked to another user", samlToken);
+    private void assertExternalIdentityAvailable(String externalId) {
+        if (externalId != null && userRepository.existsByExternalId(externalId)) {
+            log.warn("Rejected registration attempt for external identity [{}] already linked to another user", externalId);
             throw new SignupException("External identity is already linked to another user");
         }
     }
@@ -162,7 +162,7 @@ public class OidcUserServiceImpl implements OidcUserService {
                           String email,
                           String lastName,
                           String firstName,
-                          String samlToken,
+                          String externalId,
                           boolean isAupAccepted,
                           boolean isPnAccepted,
                           Domain globalDomain) {
@@ -182,7 +182,7 @@ public class OidcUserServiceImpl implements OidcUserService {
         newUser.setEmail(email);
         newUser.setLastname(lastName);
         newUser.setFirstname(firstName);
-        newUser.setSamlToken(samlToken);
+        newUser.setExternalId(externalId);
         newUser.setTermsOfUseAccepted(isAupAccepted);
         newUser.setPrivacyPolicyAccepted(isPnAccepted);
         newUser.setSelectedLanguage(configurationManager.getConfiguration().getDefaultLanguage());
@@ -198,7 +198,7 @@ public class OidcUserServiceImpl implements OidcUserService {
 
         if (userService.existsByEmail(oidcUserEmail)) {
             final User user = userService.findByEmail(oidcUserEmail);
-            return user.getSamlToken() == null || user.getSamlToken().isEmpty();
+            return user.getExternalId() == null || user.getExternalId().isEmpty();
         }
 
         return false;
@@ -223,19 +223,19 @@ public class OidcUserServiceImpl implements OidcUserService {
     @Override
     public User linkUser(OidcUserClaims claims) {
         User user = userService.findByEmail(claims.email());
-        if (StringUtils.isNotBlank(user.getSamlToken()) && !user.getSamlToken().equals(claims.sub())) {
+        if (StringUtils.isNotBlank(user.getExternalId()) && !user.getExternalId().equals(claims.sub())) {
             log.warn("Rejected attempt to link external identity [{}] to user [{}] already linked to another external identity",
                     claims.sub(), user.getUsername());
             throw new ExternalUserCanNotBeLinked("User " + user.getUsername() + " is already linked to a different external identity");
         }
-        userRepository.findBySamlToken(claims.sub()).ifPresent(existing -> {
+        userRepository.findByExternalId(claims.sub()).ifPresent(existing -> {
             if (!existing.getId().equals(user.getId())) {
                 log.warn("Rejected attempt to link external identity [{}] to user [{}] while it is already linked to user [{}]",
                         claims.sub(), user.getUsername(), existing.getUsername());
                 throw new ExternalUserCanNotBeLinked("This external identity is already linked to another account");
             }
         });
-        user.setSamlToken(claims.sub());
+        user.setExternalId(claims.sub());
         if (claims.givenName() != null) {
             user.setFirstname(claims.givenName());
         }

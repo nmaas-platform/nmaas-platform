@@ -42,17 +42,34 @@ class LoggingAspectTest {
         params.put("token", JWT);
         params.put("refreshToken", JWT);
         params.put("oidcToken", JWT);
-        params.put("samlToken", "1234567890");
 
         String result = aspect.constructArgumentsString(params);
 
         assertThat(result)
                 .doesNotContain(JWT)
-                .doesNotContain("1234567890")
                 .contains("token=***")
                 .contains("refreshToken=***")
-                .contains("oidcToken=***")
-                .contains("samlToken=***");
+                .contains("oidcToken=***");
+    }
+
+    @Test
+    void shouldMaskExternalIdLikeValues() {
+        Map<String, String> params = new LinkedHashMap<>();
+        params.put("externalId", "oidc-sub-123");
+        params.put("external_id", "oidc-sub-456");
+        params.put("userExternalId", "oidc-sub-789");
+        params.put("sub", "oidc-sub-abc");
+        params.put("email", "user@example.com");
+
+        String result = aspect.constructArgumentsString(params);
+
+        assertThat(result)
+                .doesNotContain("oidc-sub")
+                .contains("externalId=***")
+                .contains("external_id=***")
+                .contains("userExternalId=***")
+                .contains("sub=***")
+                .contains("email=user@example.com");
     }
 
     @Test

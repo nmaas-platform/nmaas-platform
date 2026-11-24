@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Verifies the database-level uniqueness of the external identity identifier
- * (saml_token column, storing the OIDC subject): a single external identity
+ * (external_id column, storing the OIDC subject): a single external identity
  * may only be linked to one account.
  */
 @ExtendWith(SpringExtension.class)
@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Transactional
 @Rollback
 @Import(DummyKubernetesApiClientServiceConfig.class)
-public class UserSamlTokenUniquenessIntTest {
+public class UserExternalIdUniquenessIntTest {
 
     @Autowired
     private UserRepository userRepository;
@@ -38,28 +38,28 @@ public class UserSamlTokenUniquenessIntTest {
     private DomainService domainService;
 
     @Test
-    public void shouldRejectSecondUserWithSameSamlToken() {
-        userRepository.saveAndFlush(user("saml-unique-user-1", "saml-unique-user-1@example.com", "sub-duplicated"));
+    public void shouldRejectSecondUserWithSameExternalId() {
+        userRepository.saveAndFlush(user("external-id-user-1", "external-id-user-1@example.com", "sub-duplicated"));
 
-        User second = user("saml-unique-user-2", "saml-unique-user-2@example.com", "sub-duplicated");
+        User second = user("external-id-user-2", "external-id-user-2@example.com", "sub-duplicated");
 
         assertThrows(DataIntegrityViolationException.class, () -> userRepository.saveAndFlush(second));
     }
 
     @Test
-    public void shouldAllowMultipleUsersWithoutSamlToken() {
-        userRepository.saveAndFlush(user("saml-null-user-1", "saml-null-user-1@example.com", null));
-        userRepository.saveAndFlush(user("saml-null-user-2", "saml-null-user-2@example.com", null));
+    public void shouldAllowMultipleUsersWithoutExternalId() {
+        userRepository.saveAndFlush(user("external-id-null-user-1", "external-id-null-user-1@example.com", null));
+        userRepository.saveAndFlush(user("external-id-null-user-2", "external-id-null-user-2@example.com", null));
 
-        assertTrue(userRepository.existsByEmail("saml-null-user-1@example.com"));
-        assertTrue(userRepository.existsByEmail("saml-null-user-2@example.com"));
-        assertFalse(userRepository.existsBySamlToken("sub-not-present"));
+        assertTrue(userRepository.existsByEmail("external-id-null-user-1@example.com"));
+        assertTrue(userRepository.existsByEmail("external-id-null-user-2@example.com"));
+        assertFalse(userRepository.existsByExternalId("sub-not-present"));
     }
 
-    private User user(String username, String email, String samlToken) {
+    private User user(String username, String email, String externalId) {
         User user = new User(username, true, "password", domainService.getGlobalDomain().get(), Role.ROLE_USER);
         user.setEmail(email);
-        user.setSamlToken(samlToken);
+        user.setExternalId(externalId);
         return user;
     }
 

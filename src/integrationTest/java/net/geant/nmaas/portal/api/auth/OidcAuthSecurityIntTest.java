@@ -134,7 +134,7 @@ public class OidcAuthSecurityIntTest extends BaseControllerTestSetup {
         User user = new User("oidc-it-notaccepted", true, "password",
                 domains.getGlobalDomain().get(), Role.ROLE_USER, false, false);
         user.setEmail("oidc-it-notaccepted@example.com");
-        user.setSamlToken("oidc-it-notaccepted-sub");
+        user.setExternalId("oidc-it-notaccepted-sub");
         userRepository.save(user);
 
         MockHttpSession session = oidcSession("oidc-it-notaccepted-sub", "oidc-it-notaccepted@example.com");
@@ -161,10 +161,10 @@ public class OidcAuthSecurityIntTest extends BaseControllerTestSetup {
         throw new IllegalArgumentException("Parameter " + name + " not found in " + url);
     }
 
-    private User oidcUser(String username, String email, String samlToken) {
+    private User oidcUser(String username, String email, String externalId) {
         User user = new User(username, true, "password", domains.getGlobalDomain().get(), Role.ROLE_USER, true, true);
         user.setEmail(email);
-        user.setSamlToken(samlToken);
+        user.setExternalId(externalId);
         return user;
     }
 

@@ -91,7 +91,7 @@ class OidcLinkAndApprovalsIntTest extends AbstractOidcFlowIntTest {
                 .andReturn();
 
         User linked = userRepository.findByEmail("oidc-link-happy@example.com").orElseThrow();
-        assertEquals("oidc-link-happy-sub", linked.getSamlToken(), "Account should be linked with the token subject");
+        assertEquals("oidc-link-happy-sub", linked.getExternalId(), "Account should be linked with the token subject");
         String payload = jwtPayload(tokenFrom(result));
         assertTrue(payload.contains("oidc-link-happy"), "Issued token should address the linked account, payload was: " + payload);
         assertFalse(payload.contains("ROLE_NOT_ACCEPTED"), "Token of a user with accepted approvals must not carry ROLE_NOT_ACCEPTED");
@@ -108,7 +108,7 @@ class OidcLinkAndApprovalsIntTest extends AbstractOidcFlowIntTest {
                                 new OidcLogin("oidc-link-badpass@example.com", "WrongPassword!", idToken))))
                 .andExpect(status().isUnauthorized());
 
-        assertNull(userRepository.findByEmail("oidc-link-badpass@example.com").orElseThrow().getSamlToken(),
+        assertNull(userRepository.findByEmail("oidc-link-badpass@example.com").orElseThrow().getExternalId(),
                 "Account must stay unlinked when the password proof fails");
     }
 
@@ -135,7 +135,7 @@ class OidcLinkAndApprovalsIntTest extends AbstractOidcFlowIntTest {
                                 new OidcLogin("oidc-link-forged@example.com", "LinkS3cret!", idToken))))
                 .andExpect(status().isUnauthorized());
 
-        assertNull(userRepository.findByEmail("oidc-link-forged@example.com").orElseThrow().getSamlToken());
+        assertNull(userRepository.findByEmail("oidc-link-forged@example.com").orElseThrow().getExternalId());
     }
 
     @Test
@@ -186,7 +186,7 @@ class OidcLinkAndApprovalsIntTest extends AbstractOidcFlowIntTest {
                                 new OidcLogin("oidc-link-target@example.com", "LinkS3cret!", idToken))))
                 .andExpect(status().isConflict());
 
-        assertNull(userRepository.findByEmail("oidc-link-target@example.com").orElseThrow().getSamlToken(),
+        assertNull(userRepository.findByEmail("oidc-link-target@example.com").orElseThrow().getExternalId(),
                 "One external identity must stay linked to a single account");
     }
 
@@ -201,7 +201,7 @@ class OidcLinkAndApprovalsIntTest extends AbstractOidcFlowIntTest {
                                 new OidcLogin("oidc-link-occupied@example.com", "LinkS3cret!", idToken))))
                 .andExpect(status().isConflict());
 
-        assertEquals("oidc-other-sub", userRepository.findByEmail("oidc-link-occupied@example.com").orElseThrow().getSamlToken());
+        assertEquals("oidc-other-sub", userRepository.findByEmail("oidc-link-occupied@example.com").orElseThrow().getExternalId());
     }
 
     @Test
@@ -233,7 +233,7 @@ class OidcLinkAndApprovalsIntTest extends AbstractOidcFlowIntTest {
                                 new OidcLogin("oidc-link-maintenance@example.com", "LinkS3cret!", idToken))))
                 .andExpect(status().isNotAcceptable());
 
-        assertNull(userRepository.findByEmail("oidc-link-maintenance@example.com").orElseThrow().getSamlToken(),
+        assertNull(userRepository.findByEmail("oidc-link-maintenance@example.com").orElseThrow().getExternalId(),
                 "Account must stay unlinked when the platform is in maintenance mode");
     }
 
@@ -254,7 +254,7 @@ class OidcLinkAndApprovalsIntTest extends AbstractOidcFlowIntTest {
 
         User registered = userRepository.findByEmail(email).orElseThrow();
         assertTrue(registered.isEnabled(), "OIDC accounts are created enabled");
-        assertEquals("oidc-reg-happy-sub", registered.getSamlToken());
+        assertEquals("oidc-reg-happy-sub", registered.getExternalId());
         assertTrue(registered.isTermsOfUseAccepted());
         assertTrue(registered.isPrivacyPolicyAccepted());
         assertTrue(registered.getRoles().stream().anyMatch(role -> role.getRole().equals(Role.ROLE_GUEST)),

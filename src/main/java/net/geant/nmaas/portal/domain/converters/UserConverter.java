@@ -24,7 +24,7 @@ public class UserConverter extends AbstractConverter<User, UserDto> {
                 .enabled(source.isEnabled())
                 .defaultDomain(source.getDefaultDomain())
                 .roles(convertUserRole(source))
-                .ssoUser(StringUtils.isNotEmpty(source.getSamlToken()))
+                .externalUser(StringUtils.isNotEmpty(source.getExternalId()))
                 .selectedLanguage(source.getSelectedLanguage())
                 .sshKeys(convertSshKeys(source))
                 .build();

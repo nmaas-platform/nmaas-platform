@@ -27,12 +27,13 @@ public class LoggingAspect {
 
     /**
      * Matches {@code key=value} fragments of {@link Object#toString()} renderings where
-     * the key ends with a well-known sensitive name, e.g. {@code password=hunter2} or
-     * {@code refreshToken=eyJ...}. Applied as defense in depth so that credential-like
-     * values never reach the log output of {@link Loggable} methods.
+     * the key ends with a well-known sensitive name, e.g. {@code password=hunter2},
+     * {@code refreshToken=eyJ...} or {@code externalId=abc-sub}. Applied as defense in
+     * depth so that credential-like values and stable external identity identifiers
+     * (OIDC {@code sub}) never reach the log output of {@link Loggable} methods.
      */
     private static final Pattern SENSITIVE_VALUE_PATTERN = Pattern.compile(
-            "(?i)([\\w.-]*(?:password|passwd|passphrase|secret|credentials?|token|jwt|api[-_]?key|access[-_]?key|secret[-_]?key|authorization))\\s*=\\s*[^,\\]}]*");
+            "(?i)([\\w.-]*(?:password|passwd|passphrase|secret|credentials?|token|jwt|api[-_]?key|access[-_]?key|secret[-_]?key|authorization|external[-_]?id|sub(?:ject)?))\\s*=\\s*[^,\\]}]*");
 
     private static final String MASKED_VALUE = "$1=***";
 

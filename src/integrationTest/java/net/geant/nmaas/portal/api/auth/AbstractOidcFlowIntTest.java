@@ -52,12 +52,12 @@ public abstract class AbstractOidcFlowIntTest extends BaseControllerTestSetup {
      * Seeds a local account the way the linking and login flows see it. The
      * password is stored encoded, exactly like in production.
      */
-    protected User seedUser(String username, String email, String rawPassword, String samlToken,
+    protected User seedUser(String username, String email, String rawPassword, String externalId,
                             boolean termsOfUseAccepted, boolean privacyPolicyAccepted) {
         User user = new User(username, true, passwordEncoder.encode(rawPassword),
                 domains.getGlobalDomain().get(), Role.ROLE_USER, termsOfUseAccepted, privacyPolicyAccepted);
         user.setEmail(email);
-        user.setSamlToken(samlToken);
+        user.setExternalId(externalId);
         return userRepository.save(user);
     }
 

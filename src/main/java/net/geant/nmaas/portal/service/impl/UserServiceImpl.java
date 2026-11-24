@@ -123,8 +123,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> findBySamlToken(String token) {
-        return (token != null ? userRepository.findBySamlToken(token) : Optional.empty());
+    public Optional<User> findByExternalId(String externalId) {
+        return (externalId != null ? userRepository.findByExternalId(externalId) : Optional.empty());
     }
 
     @Override
@@ -150,9 +150,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean existsBySamlToken(String token) {
-        checkParam(token);
-        return userRepository.existsBySamlToken(token);
+    public boolean existsByExternalId(String externalId) {
+        checkParam(externalId);
+        return userRepository.existsByExternalId(externalId);
     }
 
     @Override
@@ -195,10 +195,12 @@ public class UserServiceImpl implements UserService {
             newUser.setNewRoles(Set.of(new UserRole(newUser, domain, ROLE_DOMAIN_ADMIN)));
         }
         boolean sendMails = configurationManager.getConfiguration().isBulkDomainsSendEmailForNewAccounts();
-        // set user saml_token to email address if a sso account requested
+        // link the account with the external identity: the email is stored as a
+        // temporary placeholder and replaced with the real OIDC subject (sub)
+        // when the user logs in through the external IdP for the first time
         if (configurationManager.getConfiguration().isBulkDomainsAllowForSsoAccounts()) {
             if (csvUser.getSsoEnabled() != null && csvUser.getSsoEnabled()) {
-                newUser.setSamlToken(csvUser.getEmail());
+                newUser.setExternalId(csvUser.getEmail());
                 if (sendMails) this.sendMail(newUser, MailType.NEW_BULK_SSO_LOGIN);
             } else {
                 if (sendMails) this.sendMail(newUser, MailType.NEW_BULK_LOGIN);
@@ -294,11 +296,6 @@ public class UserServiceImpl implements UserService {
     private void checkParam(User user) {
         if (user == null)
             throw new IllegalArgumentException("user is null");
-    }
-
-    private void checkParamSaml(String samlToken) {
-        if (samlToken == null)
-            throw new IllegalArgumentException("samlToken is null");
     }
 
     @Override

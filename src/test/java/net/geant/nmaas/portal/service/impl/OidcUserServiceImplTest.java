@@ -66,11 +66,11 @@ class OidcUserServiceImplTest {
     }
 
     @Test
-    void shouldReturnExistingUserWhenSamlTokenExistsAndIsValid() {
+    void shouldReturnExistingUserWhenExternalIdExistsAndIsValid() {
         User existingUser = new User("testuser");
 
-        when(userService.existsBySamlToken("test-sub")).thenReturn(true);
-        when(userService.findBySamlToken("test-sub")).thenReturn(Optional.of(existingUser));
+        when(userService.existsByExternalId("test-sub")).thenReturn(true);
+        when(userService.findByExternalId("test-sub")).thenReturn(Optional.of(existingUser));
 
         User result = oidcUserService.checkUser(oidcUser);
 
@@ -78,29 +78,29 @@ class OidcUserServiceImplTest {
     }
 
     @Test
-    void shouldReturnExistingUserWhenSamlTokenMatchesOldEmailOrUsername() {
+    void shouldReturnExistingUserWhenExternalIdMatchesOldEmailOrUsername() {
         User existingUser = new User("testuser");
         existingUser.setEmail("test@example.com");
-        existingUser.setSamlToken("test@example.com");
+        existingUser.setExternalId("test@example.com");
 
-        when(userService.existsBySamlToken("test-sub")).thenReturn(false);
+        when(userService.existsByExternalId("test-sub")).thenReturn(false);
         when(userService.existsByEmail("test@example.com")).thenReturn(true);
         when(userService.findByEmail("test@example.com")).thenReturn(existingUser);
 
         User result = oidcUserService.checkUser(oidcUser);
 
         assertEquals(existingUser, result);
-        assertEquals("test-sub", existingUser.getSamlToken());
+        assertEquals("test-sub", existingUser.getExternalId());
         verify(userService).update(existingUser);
     }
 
     @Test
-    void shouldThrowWhenEmailExistsButSamlTokenDoesNotMatch() {
+    void shouldThrowWhenEmailExistsButExternalIdDoesNotMatch() {
         User existingUser = new User("testuser");
         existingUser.setEmail("test@example.com");
-        existingUser.setSamlToken("different-token");
+        existingUser.setExternalId("different-token");
 
-        when(userService.existsBySamlToken("test-sub")).thenReturn(false);
+        when(userService.existsByExternalId("test-sub")).thenReturn(false);
         when(userService.existsByEmail("test@example.com")).thenReturn(true);
         when(userService.findByEmail("test@example.com")).thenReturn(existingUser);
 
@@ -126,7 +126,7 @@ class OidcUserServiceImplTest {
         User existingUser = new User("testuser");
         existingUser.setEmail("test@example.com");
 
-        when(userService.existsBySamlToken("test-sub")).thenReturn(false);
+        when(userService.existsByExternalId("test-sub")).thenReturn(false);
         when(userService.existsByEmail("test@example.com")).thenReturn(true);
         when(userService.findByEmail("test@example.com")).thenReturn(existingUser);
 
@@ -138,9 +138,9 @@ class OidcUserServiceImplTest {
     void checkUserShouldHandleConcurrentLinkingOfTheSameExternalIdentity() {
         User existingUser = new User("testuser");
         existingUser.setEmail("test@example.com");
-        existingUser.setSamlToken("test@example.com");
+        existingUser.setExternalId("test@example.com");
 
-        when(userService.existsBySamlToken("test-sub")).thenReturn(false);
+        when(userService.existsByExternalId("test-sub")).thenReturn(false);
         when(userService.existsByEmail("test@example.com")).thenReturn(true);
         when(userService.findByEmail("test@example.com")).thenReturn(existingUser);
         doThrow(new DataIntegrityViolationException("unique constraint")).when(userService).update(existingUser);
@@ -165,7 +165,7 @@ class OidcUserServiceImplTest {
         assertEquals("new@example.com", result.getEmail());
         assertEquals("Jan", result.getFirstname());
         assertEquals("Kowalski", result.getLastname());
-        assertEquals("uuid-123", result.getSamlToken());
+        assertEquals("uuid-123", result.getExternalId());
         assertTrue(result.isTermsOfUseAccepted());
         assertTrue(result.isPrivacyPolicyAccepted());
         assertEquals("pl", result.getSelectedLanguage());
@@ -254,7 +254,7 @@ class OidcUserServiceImplTest {
 
     @Test
     void checkUserShouldThrowWhenNoLocalAccountMatches() {
-        when(userService.existsBySamlToken("test-sub")).thenReturn(false);
+        when(userService.existsByExternalId("test-sub")).thenReturn(false);
         when(userService.existsByEmail("test@example.com")).thenReturn(false);
 
         ExternalUserMatchException ex = assertThrows(ExternalUserMatchException.class,
@@ -267,7 +267,7 @@ class OidcUserServiceImplTest {
     @Test
     void registerNewUserFromValidatedClaimsShouldThrowWhenExternalIdentityAlreadyLinkedToAnotherUser() {
         OidcUserClaims claims = new OidcUserClaims("taken-sub", "new@example.com", "newuser", "John", "Doe");
-        when(userRepository.existsBySamlToken("taken-sub")).thenReturn(true);
+        when(userRepository.existsByExternalId("taken-sub")).thenReturn(true);
 
         SignupException ex = assertThrows(SignupException.class,
                 () -> oidcUserService.registerNewUser(claims, "newuser", true, true));
@@ -287,10 +287,10 @@ class OidcUserServiceImplTest {
     }
 
     @Test
-    void externalUserRequiresLinkingShouldReturnTrueForUserWithoutSamlToken() {
+    void externalUserRequiresLinkingShouldReturnTrueForUserWithoutExternalId() {
         User user = new User("testuser");
         user.setEmail("test@example.com");
-        user.setSamlToken("");
+        user.setExternalId("");
 
         when(userService.existsByEmail("test@example.com")).thenReturn(true);
         when(userService.findByEmail("test@example.com")).thenReturn(user);
@@ -318,7 +318,7 @@ class OidcUserServiceImplTest {
         User result = oidcUserService.linkUser(claims);
 
         assertEquals(existingUser, result);
-        assertEquals("new-sub", result.getSamlToken());
+        assertEquals("new-sub", result.getExternalId());
         assertEquals("John", result.getFirstname());
         assertEquals("Doe", result.getLastname());
         verify(userService).update(existingUser);
@@ -328,7 +328,7 @@ class OidcUserServiceImplTest {
     void linkUserShouldRejectUserAlreadyLinkedToDifferentExternalIdentity() {
         User existingUser = new User("testuser");
         existingUser.setEmail("test@example.com");
-        existingUser.setSamlToken("other-sub");
+        existingUser.setExternalId("other-sub");
 
         when(userService.findByEmail("test@example.com")).thenReturn(existingUser);
 
@@ -336,7 +336,7 @@ class OidcUserServiceImplTest {
 
         assertThrows(ExternalUserCanNotBeLinked.class, () -> oidcUserService.linkUser(claims));
         verify(userService, never()).update(existingUser);
-        assertEquals("other-sub", existingUser.getSamlToken());
+        assertEquals("other-sub", existingUser.getExternalId());
     }
 
     @Test
@@ -348,10 +348,10 @@ class OidcUserServiceImplTest {
         User otherAccount = new User("otheruser");
         otherAccount.setId(2L);
         otherAccount.setEmail("other@example.com");
-        otherAccount.setSamlToken("new-sub");
+        otherAccount.setExternalId("new-sub");
 
         when(userService.findByEmail("test@example.com")).thenReturn(existingUser);
-        when(userRepository.findBySamlToken("new-sub")).thenReturn(Optional.of(otherAccount));
+        when(userRepository.findByExternalId("new-sub")).thenReturn(Optional.of(otherAccount));
 
         OidcUserClaims claims = new OidcUserClaims("new-sub", "test@example.com", null, "John", "Doe");
 
@@ -364,15 +364,15 @@ class OidcUserServiceImplTest {
         User existingUser = new User("testuser");
         existingUser.setId(1L);
         existingUser.setEmail("test@example.com");
-        existingUser.setSamlToken("new-sub");
+        existingUser.setExternalId("new-sub");
 
         when(userService.findByEmail("test@example.com")).thenReturn(existingUser);
-        when(userRepository.findBySamlToken("new-sub")).thenReturn(Optional.of(existingUser));
+        when(userRepository.findByExternalId("new-sub")).thenReturn(Optional.of(existingUser));
 
         OidcUserClaims claims = new OidcUserClaims("new-sub", "test@example.com", null, "John", "Doe");
         User result = oidcUserService.linkUser(claims);
 
-        assertEquals("new-sub", result.getSamlToken());
+        assertEquals("new-sub", result.getExternalId());
         verify(userService).update(existingUser);
     }
 
@@ -380,14 +380,14 @@ class OidcUserServiceImplTest {
     void linkUserShouldAllowRelinkingSameExternalIdentity() {
         User existingUser = new User("testuser");
         existingUser.setEmail("test@example.com");
-        existingUser.setSamlToken("new-sub");
+        existingUser.setExternalId("new-sub");
 
         when(userService.findByEmail("test@example.com")).thenReturn(existingUser);
 
         OidcUserClaims claims = new OidcUserClaims("new-sub", "test@example.com", null, "John", "Doe");
         User result = oidcUserService.linkUser(claims);
 
-        assertEquals("new-sub", result.getSamlToken());
+        assertEquals("new-sub", result.getExternalId());
         verify(userService).update(existingUser);
     }
 
