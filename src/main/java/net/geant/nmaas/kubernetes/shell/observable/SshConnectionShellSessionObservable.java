@@ -162,7 +162,6 @@ public class SshConnectionShellSessionObservable extends GenericShellSessionObse
     }
 
     private synchronized void sendMessage(String message) {
-        this.setChanged();
         this.notifyObservers(message);
     }
 }

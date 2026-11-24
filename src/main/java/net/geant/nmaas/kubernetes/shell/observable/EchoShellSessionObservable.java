@@ -31,7 +31,6 @@ public class EchoShellSessionObservable extends GenericShellSessionObservable im
         map.put("command", commandRequest);
         try {
             String result = objectMapper.writeValueAsString(map);
-            this.setChanged();
             this.notifyObservers(result); // send update to observers
         } catch (JsonProcessingException e) {
             log.warn("Exception caught ({})", e.getMessage());
