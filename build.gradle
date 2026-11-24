@@ -97,7 +97,7 @@ dependencies {
     implementation('org.apache.commons:commons-lang3:3.22.0')
 
     // nmaas DTO classes
-    implementation('net.geant.nmaas:nmaas-platform-dto:0.3.6-SNAPSHOT-1')
+    implementation('net.geant.nmaas:nmaas-platform-dto:0.3.6')
 
     // Database
     runtimeOnly('com.h2database:h2')
