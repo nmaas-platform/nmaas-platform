@@ -12,7 +12,7 @@ import jakarta.validation.Payload;
 @Constraint(validatedBy = NotNullIfAnotherFieldIsNullValidator.class)
 public @interface ValidUser {
 
-    String message() default "User entity needs email or saml token";
+    String message() default "User entity needs email or external identifier";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

@@ -2,7 +2,9 @@ package net.geant.nmaas.portal.api.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.entity.Role;
 import net.geant.nmaas.portal.persistence.entity.User;
@@ -62,7 +64,7 @@ public class JWTTokenServiceTest {
         String invalidKey = "tslswE0MQnRWWuc6RXeA4jJNgugdsFtstP3xMShYD0FD2yCj9TIeJ0QlJrfLKvjcXdu2O5T81VZd6C51ThnyTTgNuDCDoLMchFIZ8sbxyvsY5Z83yNkbEpE9ObsxthTRYUxFlNhsZaOQX2xlMjHyK81Q0BOqLOyFKuWqYCSNtPsUn3YmfzeIJmDLpIdL6A6rmKksfR8C5hUi6LNeHm1InuaHmoFHMdG7SuaquRWYETO1jit3z6Ozn7oq26IuBgwKDKLCOiKzQ00F1ePkU8Wmh00LhS3J21TwLouK3jbxUmvQABM5VBUH0BlWdOwjKkasA3lM5uCIK7QTvDtdeHtgdJ605GrMtxCTUrdkDpFVUkJoYjuE9JUPKSZphOZUZbnXAfD0X7FOaTxlSRSXX1u0I2FwwOale07KGpttpbQ55p2WWKasqKwgihxoZjDnasfiDBHWGgp2EAPpmHVDecFb8YrmeYfJ8h8glrnPbpTdloxGAi4fjxd37qskaDz1bLF4";
 
         try {
-            Jwts.parser().setSigningKey(invalidKey).build().parseSignedClaims(token);
+            Jwts.parser().verifyWith(Keys.hmacShaKeyFor(Decoders.BASE64.decode(invalidKey))).build().parseSignedClaims(token);
             fail("Signed token has been validated with invalid key");
         } catch (SignatureException _) {
 

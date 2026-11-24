@@ -16,4 +16,12 @@ public class UserToken {
 		this.refreshToken = refreshToken;
 	}
 
+	/**
+	 * Masked on purpose: the tokens must never reach logs.
+	 */
+	@Override
+	public String toString() {
+		return "UserToken[token=***, refreshToken=***]";
+	}
+
 }

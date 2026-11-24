@@ -75,7 +75,7 @@ public class BasicAuthController {
 
     @PostMapping(value = "/token")
     public UserToken token(@RequestBody final UserRefreshToken userRefreshToken) {
-        if (userRefreshToken == null || StringUtils.isEmpty(userRefreshToken.getRefreshToken())) {
+        if (userRefreshToken == null || !StringUtils.hasText(userRefreshToken.getRefreshToken())) {
             throw new AuthenticationException("Token is missing");
         }
 

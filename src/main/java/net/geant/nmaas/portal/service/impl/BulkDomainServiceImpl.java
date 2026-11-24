@@ -230,8 +230,10 @@ public class BulkDomainServiceImpl implements BulkDomainService {
             }
             if (configurationManager.getConfiguration().isBulkDomainsAllowForSsoAccounts()) {
                 if (csvDomain.getSsoEnabled() != null && csvDomain.getSsoEnabled()) {
-                    if (StringUtils.isEmpty(user.getSamlToken())) {
-                        user.setSamlToken(csvDomain.getEmail());
+                    if (StringUtils.isEmpty(user.getExternalId())) {
+                        // email stored as a temporary placeholder, replaced with
+                        // the real OIDC subject on the user's first external login
+                        user.setExternalId(csvDomain.getEmail());
                     }
                 }
             }

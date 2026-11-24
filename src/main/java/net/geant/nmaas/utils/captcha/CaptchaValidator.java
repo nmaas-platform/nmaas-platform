@@ -5,8 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 
+import java.net.URI;
 import java.util.Map;
 import java.util.Objects;
 
@@ -22,15 +23,15 @@ public class CaptchaValidator {
 
     private static final String GOOGLE_URL = "https://www.google.com/recaptcha/api/siteverify?secret=%s&response=%s";
 
-    private final RestTemplate restTemplate;
+    private final RestClient restClient;
 
     @Autowired
     public CaptchaValidator() {
-        restTemplate = new RestTemplate();
+        restClient = RestClient.create();
     }
 
-    CaptchaValidator(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
+    CaptchaValidator(RestClient restClient) {
+        this.restClient = restClient;
     }
 
     @PostConstruct
@@ -47,7 +48,10 @@ public class CaptchaValidator {
             log.info("Skipped captcha validation due to not provided token");
             return true; // validate if secret is not provided
         }
-        final Map response = restTemplate.postForObject(prepareUrl(token), null, Map.class);
+        final Map response = restClient.post()
+                .uri(URI.create(prepareUrl(token)))
+                .retrieve()
+                .body(Map.class);
         return (boolean) Objects.requireNonNull(response).get("success");
     }
 

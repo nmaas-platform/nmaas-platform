@@ -6,8 +6,6 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -17,7 +15,7 @@ import java.util.concurrent.Executors;
  */
 @Getter
 @Slf4j
-public class ShellSessionObserver implements Observer, Serializable {
+public class ShellSessionObserver implements Serializable {
 
     private static final Long DEFAULT_HEARTBEAT_INTERVAL_MS = 30000L;
     private static final Long SSE_TIMEOUT_24H_MS = 86400000L;
@@ -66,11 +64,9 @@ public class ShellSessionObserver implements Observer, Serializable {
     /**
      * method called by observable, it passes results directly to the output SSE
      *
-     * @param observable ssh connection observable
-     * @param o          message
+     * @param o message
      */
-    @Override
-    public void update(Observable observable, Object o) {
+    public void update(Object o) {
         try {
             this.emitter.send(o);
         } catch (IOException e) {

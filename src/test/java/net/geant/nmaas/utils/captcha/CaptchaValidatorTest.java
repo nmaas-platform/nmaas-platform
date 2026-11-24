@@ -3,15 +3,15 @@ package net.geant.nmaas.utils.captcha;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 
+import java.net.URI;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -20,14 +20,14 @@ import static org.mockito.Mockito.when;
 
 class CaptchaValidatorTest {
 
-    private RestTemplate restTemplate;
+    private RestClient restClient;
 
     private CaptchaValidator validator;
 
     @BeforeEach
     void setUp() {
-        restTemplate = mock(RestTemplate.class);
-        validator = new CaptchaValidator(restTemplate);
+        restClient = mock(RestClient.class);
+        validator = new CaptchaValidator(restClient);
     }
 
     @Test
@@ -69,8 +69,7 @@ class CaptchaValidatorTest {
     @Test
     void shouldReturnTrueWhenGoogleRespondsWithSuccess() {
         ReflectionTestUtils.setField(validator, "secret", "secret-key");
-        when(restTemplate.postForObject(anyString(), any(), eq(Map.class)))
-                .thenReturn(Map.of("success", true));
+        mockGoogleResponse(Map.of("success", true));
 
         assertTrue(validator.verifyToken("token"));
     }
@@ -78,8 +77,7 @@ class CaptchaValidatorTest {
     @Test
     void shouldReturnFalseWhenGoogleRespondsWithFailure() {
         ReflectionTestUtils.setField(validator, "secret", "secret-key");
-        when(restTemplate.postForObject(anyString(), any(), eq(Map.class)))
-                .thenReturn(Map.of("success", false));
+        mockGoogleResponse(Map.of("success", false));
 
         assertFalse(validator.verifyToken("token"));
     }
@@ -98,8 +96,18 @@ class CaptchaValidatorTest {
         assertDoesNotThrow(validator::warnIfCaptchaDisabled);
     }
 
+    private void mockGoogleResponse(Map<String, Object> body) {
+        RestClient.RequestBodyUriSpec postSpec = mock(RestClient.RequestBodyUriSpec.class);
+        RestClient.RequestBodySpec requestSpec = mock(RestClient.RequestBodySpec.class);
+        RestClient.ResponseSpec responseSpec = mock(RestClient.ResponseSpec.class);
+        when(restClient.post()).thenReturn(postSpec);
+        when(postSpec.uri(any(URI.class))).thenReturn(requestSpec);
+        when(requestSpec.retrieve()).thenReturn(responseSpec);
+        when(responseSpec.body(eq(Map.class))).thenReturn(body);
+    }
+
     private void verifyNoGoogleRequest() {
-        verify(restTemplate, never()).postForObject(anyString(), any(), eq(Map.class));
+        verify(restClient, never()).post();
     }
 
 }

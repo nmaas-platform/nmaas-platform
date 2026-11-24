@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.nmservice.configuration.api.security.StatelessGitlabAuthenticationFilter;
 import net.geant.nmaas.nmservice.configuration.repositories.GitLabProjectRepository;
+import net.geant.nmaas.portal.api.auth.OidcPortalErrors;
 import net.geant.nmaas.portal.api.security.StatelessAuthenticationFilter;
 import net.geant.nmaas.portal.api.security.StatelessUUIDAuthenticationFilter;
 import net.geant.nmaas.portal.service.TokenAuthenticationService;
@@ -14,7 +15,6 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
@@ -30,11 +30,11 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizationRequestResolver;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestCustomizers;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 import org.springframework.web.util.pattern.PathPatternParser;
 
 import java.util.Arrays;
@@ -48,7 +48,6 @@ import java.util.function.Predicate;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-@PropertySource("classpath:application.properties")
 @Order(Ordered.LOWEST_PRECEDENCE - 100)
 @ComponentScan(basePackages = {"net.geant.nmaas.portal.api.security"})
 @RequiredArgsConstructor
@@ -62,9 +61,6 @@ public class SecurityConfig {
     private final PasswordEncoder passwordEncoder;
 
     private final GitLabProjectRepository gitLabProjectRepository;
-
-    public static final SkipPathRequestMatcher skipPathRequestMatcher =
-            new SkipPathRequestMatcher(SecurityConstants.SKIPPED_PATHS);
 
     /**
      * Configures the main {@link SecurityFilterChain}, including request authorization rules,
@@ -97,7 +93,6 @@ public class SecurityConfig {
                     auth.requestMatchers(SecurityConstants.AUTH_WHITELIST_ANY_METHOD).permitAll();
                     auth.requestMatchers(HttpMethod.GET, SecurityConstants.AUTH_WHITELIST_GET_METHOD).permitAll();
                     auth.requestMatchers(HttpMethod.OPTIONS, SecurityConstants.AUTH_WHITELIST_OPTIONS_METHOD).permitAll();
-                    auth.requestMatchers(SecurityConstants.AUTH_AUTHENTICATED_LIST).authenticated();
                     auth.anyRequest().authenticated();
                 })
                 .sessionManagement(session ->
@@ -118,12 +113,22 @@ public class SecurityConfig {
             }
             DefaultOAuth2AuthorizationRequestResolver resolver = new DefaultOAuth2AuthorizationRequestResolver(
                     clientRegistrationRepository, apiBasePath() + "/oauth2/authorization");
+            // PKCE (S256) for the authorization code flow: even though the client is
+            // confidential, the code challenge protects against authorization code
+            // interception.
+            resolver.setAuthorizationRequestCustomizer(OAuth2AuthorizationRequestCustomizers.withPkce());
 
             http.oauth2Login(oauth2 -> oauth2
                     .userInfoEndpoint(Customizer.withDefaults())
                     .authorizationEndpoint(authorization -> authorization
                             .authorizationRequestResolver(resolver))
                     .defaultSuccessUrl(apiBasePath() + "/oidc/success", true)
+                    // a failed OAuth2/OIDC dance (rejected authorization, state
+                    // mismatch, token exchange or ID token validation failure)
+                    // must land the user on the portal login page with an error
+                    // code, not on a backend URL the SPA cannot render
+                    .failureUrl(portalAddress() + "/login?"
+                            + OidcPortalErrors.ERROR_PARAMETER + "=" + OidcPortalErrors.LOGIN_FAILURE)
                     .redirectionEndpoint(redirection ->
                             redirection.baseUri(apiBasePath() + "/login/oauth2/code/*"))
             );
@@ -148,6 +153,14 @@ public class SecurityConfig {
     }
 
     /**
+     * Base address of the portal SPA, the target of OAuth2 login failure
+     * redirects.
+     */
+    private String portalAddress() {
+        return env.getProperty("portal.address");
+    }
+
+    /**
      * Creates a filter for UUID-based authentication using configured path matchers.
      *
      * @return the configured UUID authentication filter
@@ -166,12 +179,13 @@ public class SecurityConfig {
     }
 
     /**
-     * Creates a filter for JWT-based authentication, skipping selected paths.
+     * Creates a filter for JWT-based authentication. The filter processes requests
+     * carrying the JWT header only; this gate is implemented in the filter itself.
      *
      * @return the configured JWT authentication filter
      */
     private Filter jwtAuthFilter() {
-        var filter = new StatelessAuthenticationFilter(skipPathRequestMatcher, tokenAuthenticationService);
+        var filter = new StatelessAuthenticationFilter(tokenAuthenticationService);
         filter.setAuthenticationFailureHandler(failureHandler());
         return filter;
     }
@@ -191,15 +205,5 @@ public class SecurityConfig {
             response.flushBuffer();
 
         };
-    }
-
-    /**
-     * Required for method-level security to resolve handler mappings for endpoint permissions.
-     *
-     * @return handler mapping introspector bean
-     */
-    @Bean
-    public HandlerMappingIntrospector handlerMappingIntrospector() {
-        return new HandlerMappingIntrospector();
     }
 }

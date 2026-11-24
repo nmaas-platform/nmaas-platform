@@ -208,15 +208,15 @@ class UserServiceImplTest {
     }
 
     @Test
-    void findBySamlTokenShouldReturnEmptyOptionalWhenNull() {
-        assertEquals(Optional.empty(), userService.findBySamlToken(null));
+    void findByExternalIdShouldReturnEmptyOptionalWhenNull() {
+        assertEquals(Optional.empty(), userService.findByExternalId(null));
     }
 
     @Test
-    void findBySamlTokenShouldReturnUserObject() {
+    void findByExternalIdShouldReturnUserObject() {
         User user = new User("test1", true);
-        when(userRepository.findBySamlToken(anyString())).thenReturn(Optional.of(user));
-        Optional<User> resultUser = userService.findBySamlToken("token");
+        when(userRepository.findByExternalId(anyString())).thenReturn(Optional.of(user));
+        Optional<User> resultUser = userService.findByExternalId("token");
         assertTrue(resultUser.isPresent());
         assertEquals("test1", resultUser.get().getUsername());
     }
@@ -504,11 +504,11 @@ class UserServiceImplTest {
     }
 
     @Test
-    void existsBySamlTokenShouldValidateInputAndDelegate() {
-        assertThrows(IllegalArgumentException.class, () -> userService.existsBySamlToken(null));
+    void existsByExternalIdShouldValidateInputAndDelegate() {
+        assertThrows(IllegalArgumentException.class, () -> userService.existsByExternalId(null));
 
-        when(userRepository.existsBySamlToken("token")).thenReturn(true);
-        assertTrue(userService.existsBySamlToken("token"));
+        when(userRepository.existsByExternalId("token")).thenReturn(true);
+        assertTrue(userService.existsByExternalId("token"));
     }
 
     @Test

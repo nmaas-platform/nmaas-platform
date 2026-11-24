@@ -12,7 +12,6 @@ import net.geant.nmaas.portal.persistence.entity.InternationalizationSimple;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -69,9 +68,7 @@ public class I18nDto extends I18nBaseDto {
                 throw new IllegalArgumentException("Language node is not textual");
             }
         } else {
-            for (Iterator<Map.Entry<String, JsonNode>> it = node.fields(); it.hasNext(); ) {
-                Map.Entry<String, JsonNode> e = it.next();
-
+            for (Map.Entry<String, JsonNode> e : node.properties()) {
                 String outKey = key.equals("") ? e.getKey() : key + "." + e.getKey();
 
                 decompose(result, e.getValue(), outKey);

@@ -11,6 +11,7 @@ import org.slf4j.event.Level;
 import org.springframework.stereotype.Component;
 
 import java.text.MessageFormat;
+import java.util.regex.Pattern;
 
 /**
  * Aspect responsible for logging information when entering and leaving methods annotated with {@link Loggable}.
@@ -23,6 +24,18 @@ public class LoggingAspect {
     private static final String BEFORE_WITH_PARAMS_STRING = "> {0} PARAMS {1}";
     private static final String AFTER_RETURNING = "< {0} AND RETURNING {1}";
     private static final String AFTER_RETURNING_VOID = "< {0}";
+
+    /**
+     * Matches {@code key=value} fragments of {@link Object#toString()} renderings where
+     * the key ends with a well-known sensitive name, e.g. {@code password=hunter2},
+     * {@code refreshToken=eyJ...} or {@code externalId=abc-sub}. Applied as defense in
+     * depth so that credential-like values and stable external identity identifiers
+     * (OIDC {@code sub}) never reach the log output of {@link Loggable} methods.
+     */
+    private static final Pattern SENSITIVE_VALUE_PATTERN = Pattern.compile(
+            "(?i)([\\w.-]*(?:password|passwd|passphrase|secret|credentials?|token|jwt|api[-_]?key|access[-_]?key|secret[-_]?key|authorization|external[-_]?id|sub(?:ject)?))\\s*=\\s*[^,\\]}]*");
+
+    private static final String MASKED_VALUE = "$1=***";
 
     public Level loggableToLevel(Loggable loggable) {
         if (loggable != null) {
@@ -77,12 +90,19 @@ public class LoggingAspect {
         logger.atLevel(level).log(MessageFormat.format(AFTER_RETURNING, name, constructArgumentsString(returnValue)));
     }
 
-    private String constructArgumentsString(Object... arguments) {
+    String constructArgumentsString(Object... arguments) {
         StringBuilder buffer = new StringBuilder();
         for (Object object : arguments) {
             buffer.append(object).append(" ");
         }
-        return buffer.toString();
+        return maskSensitiveValues(buffer.toString());
+    }
+
+    String maskSensitiveValues(String message) {
+        if (message == null || message.isEmpty()) {
+            return message;
+        }
+        return SENSITIVE_VALUE_PATTERN.matcher(message).replaceAll(MASKED_VALUE);
     }
 
 }

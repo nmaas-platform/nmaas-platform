@@ -429,7 +429,7 @@ public class UsersController {
     }
 
     private void checkSSOUser(User user) {
-        if (StringUtils.isNotEmpty(user.getSamlToken())) {
+        if (StringUtils.isNotEmpty(user.getExternalId())) {
             throw new ProcessingException("SSO user cannot change or reset password");
         }
     }

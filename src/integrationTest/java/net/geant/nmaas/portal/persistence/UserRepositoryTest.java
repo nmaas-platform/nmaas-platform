@@ -158,12 +158,12 @@ public class UserRepositoryTest {
     }
 
     @Test
-    void shouldSaveUserWithSamlToken() {
+    void shouldSaveUserWithExternalId() {
         User testUser = new User("testUser", true, "test123",
                 domainRepository.findByName(DOMAIN).orElseThrow(), Role.ROLE_USER, true, false);
-        testUser.setSamlToken("test|1234|saml");
+        testUser.setExternalId("test|1234|external-id");
         User result = userRepository.save(testUser);
-        assertEquals(testUser.getSamlToken(), result.getSamlToken());
+        assertEquals(testUser.getExternalId(), result.getExternalId());
     }
 
     @Test

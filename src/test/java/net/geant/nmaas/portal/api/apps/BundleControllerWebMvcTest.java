@@ -133,7 +133,7 @@ class BundleControllerWebMvcTest {
         mvc.perform(post(BASE_URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(VALID_REQUEST))
-                .andExpect(status().isUnprocessableEntity())
+                .andExpect(status().isUnprocessableContent())
                 .andExpect(jsonPath("$.detail").value("Bundle must contain at least 2 applications"));
     }
 

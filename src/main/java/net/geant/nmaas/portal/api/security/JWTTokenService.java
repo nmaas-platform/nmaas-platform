@@ -3,7 +3,6 @@ package net.geant.nmaas.portal.api.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.NoArgsConstructor;
@@ -14,12 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.security.Key;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import javax.crypto.SecretKey;
 
 @Service("jwtTokenService")
 @NoArgsConstructor
@@ -59,10 +59,10 @@ public class JWTTokenService {
             log.trace("Role = {} {} {} {}", role.getRole().toString(), role.getAuthority(), role.getDomain().getCodename(), role.getUser().getId());
         });
         String result = Jwts.builder()
-                .setSubject(user.getUsername())
-                .setIssuer(jwtSettings.getIssuer())
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + jwtSettings.getTokenValidFor()))
+                .subject(user.getUsername())
+                .issuer(jwtSettings.getIssuer())
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + jwtSettings.getTokenValidFor()))
                 .claim("preferred_username", preferredUsername)
                 .claim("global_role", user.getRoles().stream()
                         .filter(
@@ -87,7 +87,7 @@ public class JWTTokenService {
                 )
                 .claim(LANGUAGE, user.getSelectedLanguage())
                 .claim(THEME, user.getSelectedThemeMode())
-                .signWith(getSignInKey(jwtSettings.getSigningKey()), SignatureAlgorithm.HS512)
+                .signWith(getSignInKey(jwtSettings.getSigningKey()), Jwts.SIG.HS512)
                 .compact();
         log.trace(result);
         return result;
@@ -99,14 +99,14 @@ public class JWTTokenService {
         }
 
         return Jwts.builder()
-                .setSubject(user.getUsername())
-                .setIssuer(jwtSettings.getIssuer())
-                .setId(UUID.randomUUID().toString())
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + jwtSettings.getRefreshTokenExpTime()))
+                .subject(user.getUsername())
+                .issuer(jwtSettings.getIssuer())
+                .id(UUID.randomUUID().toString())
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + jwtSettings.getRefreshTokenExpTime()))
                 .claim(SCOPES, Collections.singletonList(JWTSettings.Scopes.REFRESH_TOKEN))
                 .claim(LANGUAGE, user.getSelectedLanguage())
-                .signWith(getSignInKey(jwtSettings.getSigningKey()), SignatureAlgorithm.HS512)
+                .signWith(getSignInKey(jwtSettings.getSigningKey()), Jwts.SIG.HS512)
                 .compact();
     }
 
@@ -116,12 +116,12 @@ public class JWTTokenService {
         }
 
         return Jwts.builder()
-                .setSubject(email)
-                .setIssuer(jwtSettings.getIssuer())
-                .setId(UUID.randomUUID().toString())
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + jwtSettings.getResetTokenExpTime()))
-                .signWith(getSignInKey(jwtSettings.getResetSigningKey()), SignatureAlgorithm.HS384)
+                .subject(email)
+                .issuer(jwtSettings.getIssuer())
+                .id(UUID.randomUUID().toString())
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + jwtSettings.getResetTokenExpTime()))
+                .signWith(getSignInKey(jwtSettings.getResetSigningKey()), Jwts.SIG.HS384)
 
                 .compact();
     }
@@ -132,12 +132,12 @@ public class JWTTokenService {
         }
 
         return Jwts.builder()
-                .setSubject(email)
-                .setIssuer(jwtSettings.getIssuer())
-                .setId(UUID.randomUUID().toString())
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + jwtSettings.getRegistrationResetTokenExpTime()))
-                .signWith(SignatureAlgorithm.HS384, jwtSettings.getResetSigningKey())
+                .subject(email)
+                .issuer(jwtSettings.getIssuer())
+                .id(UUID.randomUUID().toString())
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + jwtSettings.getRegistrationResetTokenExpTime()))
+                .signWith(getSignInKey(jwtSettings.getResetSigningKey()), Jwts.SIG.HS384)
                 .compact();
     }
 
@@ -153,7 +153,7 @@ public class JWTTokenService {
 
     public Claims getClaims(String token) {
         return Jwts.parser()
-                .setSigningKey(jwtSettings.getSigningKey())
+                .verifyWith(getSignInKey(jwtSettings.getSigningKey()))
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
@@ -161,13 +161,13 @@ public class JWTTokenService {
 
     public Claims getResetClaims(String token) {
         return Jwts.parser()
-                .setSigningKey(jwtSettings.getResetSigningKey())
+                .verifyWith(getSignInKey(jwtSettings.getResetSigningKey()))
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
     }
 
-    private Key getSignInKey(String secretKey) {
+    private SecretKey getSignInKey(String secretKey) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }

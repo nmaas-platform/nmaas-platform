@@ -1,8 +1,5 @@
 package net.geant.nmaas.portal.api.security.config;
 
-import java.util.List;
-import java.util.Map;
-
 /**
  * Contains constant values related to security configuration, such as
  * authentication endpoints, CORS-exempted paths, and whitelist patterns.
@@ -26,11 +23,12 @@ public class SecurityConstants {
     static final String AUTH_SSO_LOGIN = API_VERSIONED_PATTERN + "/auth/sso/login";
     static final String AUTH_OIDC_LOGIN_PAGE = API_VERSIONED_PATTERN + "/oauth2/authorization/my-oidc";
     static final String AUTH_OIDC_LOGIN = API_VERSIONED_PATTERN + "/auth/oidc/login";
-    static final String AUTH_OIDC_SUCCESS = API_VERSIONED_PATTERN + "/oidc/success";
+    /**
+     * Self-authenticating endpoints (ID token and/or local credentials in the payload).
+     */
     static final String AUTH_OIDC_LINK = API_VERSIONED_PATTERN + "/oidc/link";
     static final String AUTH_OIDC_APPROVALS = API_VERSIONED_PATTERN + "/oidc/approvals";
     static final String AUTH_LOGOUT = API_VERSIONED_PATTERN + "/oidc/logout/*";
-    static final String AUTH_OIDC = API_VERSIONED_PATTERN + "/oidc/**";
     static final String AUTH_CODE = API_VERSIONED_PATTERN + "/login/oauth2/code";
 
     /**
@@ -54,6 +52,9 @@ public class SecurityConstants {
 
     /**
      * Paths whitelisted for any HTTP method without authentication.
+     * <p>
+     * Note: the OAuth2 success endpoint is deliberately absent - it must only be
+     * reachable with the authenticated OAuth2 session.
      */
     protected static final String[] AUTH_WHITELIST_ANY_METHOD = {
             AUTH_BASIC_LOGIN,
@@ -62,7 +63,6 @@ public class SecurityConstants {
             AUTH_SSO_LOGIN,
             AUTH_OIDC_LOGIN,
             AUTH_OIDC_LOGIN_PAGE,
-            AUTH_OIDC,
             AUTH_OIDC_APPROVALS,
             AUTH_LOGOUT,
             AUTH_CODE,
@@ -75,45 +75,6 @@ public class SecurityConstants {
             API_VERSIONED_PATTERN + "/mail",
             "/api-docs/**"
     };
-    /**
-     * Paths whitelisted for authentication for specific protected resources.
-     */
-    //TODO check that this function will work without commented strings
-    protected static final String[] AUTH_AUTHENTICATED_LIST = {
-            API_ANY
-    };
-    /**
-     * Map of HTTP methods to paths that should skip JWT authentication filters.
-     */
-    static final Map<String, List<String>> SKIPPED_PATHS = Map.of(
-            "GET", List.of(
-                    API_VERSIONED_PATTERN + "/configuration/**",
-                    API_VERSIONED_PATTERN + "/auth/sso",
-                    API_VERSIONED_PATTERN + "/monitor/all",
-                    API_VERSIONED_PATTERN + "/mail/type",
-                    API_VERSIONED_PATTERN + "/i18n/content/**",
-                    API_VERSIONED_PATTERN + "/i18n/all/enabled"
-            ),
-            "ANY", List.of(
-                    AUTH_BASIC_LOGIN,
-                    AUTH_BASIC_SIGNUP,
-                    AUTH_BASIC_TOKEN,
-                    AUTH_SSO_LOGIN,
-                    AUTH_OIDC_LOGIN,
-                    AUTH_OIDC_LOGIN_PAGE,
-                    AUTH_OIDC,
-                    AUTH_CODE,
-                    "/api-docs/**",
-                    "/actuator/**",
-                    "/favicon.ico",
-                    API_VERSIONED_PATTERN + "/info/**",
-                    API_VERSIONED_PATTERN + "/dcns/notifications/**/status",
-                    API_VERSIONED_PATTERN + "/content/**",
-                    API_VERSIONED_PATTERN + "/users/reset/**",
-                    API_VERSIONED_PATTERN + "/mail",
-                    API_VERSIONED_PATTERN + "/gitlab/webhooks/**"
-            )
-    );
 
     /**
      * Paths that are protected and require UUID-based token authentication.
