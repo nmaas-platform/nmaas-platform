@@ -17,6 +17,12 @@ import java.util.Optional;
 
 public interface AppInstanceRepository extends JpaRepository<AppInstance, Long> {
 
+    /**
+     * Case-insensitive substring match on the instance name or the application name.
+     * Expects the AppInstance alias to be "a" and the "search" query parameter to be bound.
+     */
+    String NAME_SEARCH_CONDITION = " AND (:search IS NULL OR :search = '' OR LOWER(a.name) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(a.application.name) LIKE LOWER(CONCAT('%', :search, '%')))";
+
     Optional<AppInstance> findByInternalId(Identifier internalId);
 
     List<AppInstance> findAllByOwner(User user);
@@ -93,7 +99,7 @@ public interface AppInstanceRepository extends JpaRepository<AppInstance, Long> 
                 FROM AppInstance a
                 JOIN AppDeployment l ON l.instanceId = a.id
                 WHERE a.domain.deleted = false
-                  AND (:search IS NULL OR :search = '' OR LOWER(a.name) LIKE LOWER(CONCAT('%', :search, '%')))
+""" + NAME_SEARCH_CONDITION + """
                   AND (
                        (:deployed = true
                                    AND l.state NOT IN (
@@ -123,7 +129,7 @@ public interface AppInstanceRepository extends JpaRepository<AppInstance, Long> 
             SELECT a
             FROM AppInstance a
             WHERE a.domain = :domain
-            AND (:search IS NULL OR LOWER(a.name) LIKE LOWER(CONCAT('%', :search, '%')))
+""" + NAME_SEARCH_CONDITION + """
             """)
     Page<AppInstance> findAllByDomainAndSearch(@Param("domain") Domain domain,
                                                @Param("search") String search,
@@ -134,7 +140,7 @@ public interface AppInstanceRepository extends JpaRepository<AppInstance, Long> 
             FROM AppInstance a
             WHERE a.domain = :domain
             AND a.domain.deleted = false
-            AND (:search IS NULL OR LOWER(a.name) LIKE LOWER(CONCAT('%', :search, '%')))
+""" + NAME_SEARCH_CONDITION + """
             AND (:remoteClusterId IS NULL OR a.remoteClusterId = :remoteClusterId)
             """)
     Page<AppInstance> findAllNotDeletedByDomainAndSearch(@Param("domain") Domain domain,
@@ -148,7 +154,7 @@ public interface AppInstanceRepository extends JpaRepository<AppInstance, Long> 
             JOIN AppDeployment l ON l.instanceId = a.id
             WHERE a.domain = :domain
             AND a.domain.deleted = false
-            AND (:search IS NULL OR LOWER(a.name) LIKE LOWER(CONCAT('%', :search, '%')))
+""" + NAME_SEARCH_CONDITION + """
             AND (
                        (:deployed = true
                              AND l.state NOT IN (
@@ -180,7 +186,7 @@ public interface AppInstanceRepository extends JpaRepository<AppInstance, Long> 
             FROM AppInstance a
             WHERE a.owner = :user
             AND a.domain.deleted = false
-            AND (:search IS NULL OR LOWER(a.name) LIKE LOWER(CONCAT('%', :search, '%')))
+""" + NAME_SEARCH_CONDITION + """
             AND (:remoteClusterId IS NULL OR a.remoteClusterId = :remoteClusterId)
             """)
     Page<AppInstance> findAllNotDeletedByOwnerAndSearch(@Param("user") User user,
@@ -193,7 +199,7 @@ public interface AppInstanceRepository extends JpaRepository<AppInstance, Long> 
             FROM AppInstance a
             WHERE a.owner = :user
             AND a.domain.deleted = false
-            AND (:search IS NULL OR LOWER(a.name) LIKE LOWER(CONCAT('%', :search, '%')))
+""" + NAME_SEARCH_CONDITION + """
             AND (
                        (:deployed = true  AND EXISTS (
                            SELECT 1
@@ -232,7 +238,7 @@ public interface AppInstanceRepository extends JpaRepository<AppInstance, Long> 
             WHERE a.owner = :user
             AND a.domain = :domain
             AND a.domain.deleted = false
-            AND (:search IS NULL OR LOWER(a.name) LIKE LOWER(CONCAT('%', :search, '%')))
+""" + NAME_SEARCH_CONDITION + """
             AND (
                        (:deployed = true  AND EXISTS (
                            SELECT 1
@@ -270,7 +276,7 @@ public interface AppInstanceRepository extends JpaRepository<AppInstance, Long> 
             SELECT a
             FROM AppInstance a
             WHERE a.owner = :user
-            AND (:search IS NULL OR LOWER(a.name) LIKE LOWER(CONCAT('%', :search, '%')))
+""" + NAME_SEARCH_CONDITION + """
             """)
     Page<AppInstance> findAllByOwnerAndSearch(@Param("user") User user, @Param("search") String search, Pageable pageable);
 
@@ -279,7 +285,7 @@ public interface AppInstanceRepository extends JpaRepository<AppInstance, Long> 
             FROM AppInstance a
             WHERE a.owner = :user
             AND a.domain = :domain
-            AND (:search IS NULL OR LOWER(a.name) LIKE LOWER(CONCAT('%', :search, '%')))
+""" + NAME_SEARCH_CONDITION + """
             """)
     Page<AppInstance> findAllByOwnerAndDomainAndSearch(@Param("user") User user,
                                                        @Param("domain") Domain domain,

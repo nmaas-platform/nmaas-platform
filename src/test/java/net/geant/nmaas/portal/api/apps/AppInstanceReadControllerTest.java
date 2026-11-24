@@ -63,6 +63,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class AppInstanceReadControllerTest {
@@ -546,5 +547,136 @@ class AppInstanceReadControllerTest {
         appInstance.setId(id);
         appInstance.setInternalId(new Identifier(internalId));
         return appInstance;
+    }
+
+    @Test
+    void shouldPassSearchToInstanceBaseServiceWhenMyInstancesRequestedByAdminWithStatus() {
+        Page<AppInstanceBase> appInstancePage = new PageImpl<>(List.of());
+        when(instanceBaseService.findAll(pageable, true, "prom", null)).thenReturn(appInstancePage);
+
+        Principal principal = mock(Principal.class);
+        when(principal.getName()).thenReturn(admin.getUsername());
+
+        Page<AppInstanceBase> result = appInstanceReadController.getMyAllInstances(principal, "deployed", "prom", null, pageable);
+
+        assertEquals(0, result.getTotalElements());
+        verify(instanceBaseService).findAll(pageable, true, "prom", null);
+    }
+
+    @Test
+    void shouldPassSearchToInstanceBaseServiceWhenMyInstancesRequestedByAdminWithoutStatus() {
+        Page<AppInstanceBase> appInstancePage = new PageImpl<>(List.of());
+        when(instanceBaseService.findAll(pageable, null)).thenReturn(appInstancePage);
+
+        Principal principal = mock(Principal.class);
+        when(principal.getName()).thenReturn(admin.getUsername());
+
+        appInstanceReadController.getMyAllInstances(principal, null, "prom", null, pageable);
+
+        verify(instanceBaseService).findAll(pageable, null);
+    }
+
+    @Test
+    void shouldPassSearchToInstanceBaseServiceWhenMyInstancesRequestedByRegularUserWithStatus() {
+        Page<AppInstanceBase> appInstancePage = new PageImpl<>(List.of());
+        when(instanceBaseService.findAllByOwner(owner, pageable, true, "prom", null)).thenReturn(appInstancePage);
+
+        Principal principal = mock(Principal.class);
+        when(principal.getName()).thenReturn(owner.getUsername());
+
+        appInstanceReadController.getMyAllInstances(principal, "deployed", "prom", null, pageable);
+
+        verify(instanceBaseService).findAllByOwner(owner, pageable, true, "prom", null);
+    }
+
+    @Test
+    void shouldPassSearchToInstanceBaseServiceWhenMyInstancesRequestedByRegularUserWithoutStatus() {
+        Page<AppInstanceBase> appInstancePage = new PageImpl<>(List.of());
+        when(instanceBaseService.findAllByOwner(owner, pageable, "prom", null)).thenReturn(appInstancePage);
+
+        Principal principal = mock(Principal.class);
+        when(principal.getName()).thenReturn(owner.getUsername());
+
+        appInstanceReadController.getMyAllInstances(principal, null, "prom", null, pageable);
+
+        verify(instanceBaseService).findAllByOwner(owner, pageable, "prom", null);
+    }
+
+    @Test
+    void shouldPassSearchToInstanceBaseServiceWhenDomainInstancesRequestedByAdminInGlobalDomainWithStatus() {
+        Page<AppInstanceBase> appInstancePage = new PageImpl<>(List.of());
+        when(instanceBaseService.findAll(pageable, true, "prom", null)).thenReturn(appInstancePage);
+
+        Principal principal = mock(Principal.class);
+        when(principal.getName()).thenReturn(admin.getUsername());
+
+        appInstanceReadController.getAllInstances(global.getId(), principal, pageable, "deployed", "prom", null);
+
+        verify(instanceBaseService).findAll(pageable, true, "prom", null);
+    }
+
+    @Test
+    void shouldPassSearchToInstanceBaseServiceWhenDomainInstancesRequestedInDomainWithStatus() {
+        Page<AppInstanceBase> appInstancePage = new PageImpl<>(List.of());
+        when(instanceBaseService.findAllByDomain(domain1, pageable, true, "prom", null)).thenReturn(appInstancePage);
+
+        Principal principal = mock(Principal.class);
+        when(principal.getName()).thenReturn(admin.getUsername());
+
+        appInstanceReadController.getAllInstances(domain1.getId(), principal, pageable, "deployed", "prom", null);
+
+        verify(instanceBaseService).findAllByDomain(domain1, pageable, true, "prom", null);
+    }
+
+    @Test
+    void shouldPassSearchToInstanceBaseServiceWhenMyDomainInstancesRequestedByAdminInGlobalDomain() {
+        Page<AppInstanceBase> appInstancePage = new PageImpl<>(List.of());
+        when(instanceBaseService.findAllByOwner(admin, pageable, true, "prom", null)).thenReturn(appInstancePage);
+
+        Principal principal = mock(Principal.class);
+        when(principal.getName()).thenReturn(admin.getUsername());
+
+        appInstanceReadController.getMyAllInstances(global.getId(), principal, pageable, "deployed", "prom", null);
+
+        verify(instanceBaseService).findAllByOwner(admin, pageable, true, "prom", null);
+    }
+
+    @Test
+    void shouldPassSearchToInstanceBaseServiceWhenMyDomainInstancesRequestedByUserInDomain() {
+        Page<AppInstanceBase> appInstancePage = new PageImpl<>(List.of());
+        when(instanceBaseService.findAllByOwner(owner, domain1, pageable, true, "prom", null)).thenReturn(appInstancePage);
+
+        Principal principal = mock(Principal.class);
+        when(principal.getName()).thenReturn(owner.getUsername());
+
+        appInstanceReadController.getMyAllInstances(domain1.getId(), principal, pageable, "deployed", "prom", null);
+
+        verify(instanceBaseService).findAllByOwner(owner, domain1, pageable, true, "prom", null);
+    }
+
+    @Test
+    void shouldPassSearchAndRemoteClusterIdTogetherToInstanceBaseService() {
+        Page<AppInstanceBase> appInstancePage = new PageImpl<>(List.of());
+        when(instanceBaseService.findAllByOwner(owner, pageable, true, "prom", 7L)).thenReturn(appInstancePage);
+
+        Principal principal = mock(Principal.class);
+        when(principal.getName()).thenReturn(owner.getUsername());
+
+        appInstanceReadController.getMyAllInstances(principal, "deployed", "prom", 7L, pageable);
+
+        verify(instanceBaseService).findAllByOwner(owner, pageable, true, "prom", 7L);
+    }
+
+    @Test
+    void shouldNotPassSearchWhenMyDomainInstancesRequestedWithoutStatus() {
+        Page<AppInstanceBase> appInstancePage = new PageImpl<>(List.of());
+        when(instanceBaseService.findAllByOwner(owner, domain1, pageable, null)).thenReturn(appInstancePage);
+
+        Principal principal = mock(Principal.class);
+        when(principal.getName()).thenReturn(owner.getUsername());
+
+        appInstanceReadController.getMyAllInstances(domain1.getId(), principal, pageable, null, "prom", null);
+
+        verify(instanceBaseService).findAllByOwner(owner, domain1, pageable, null);
     }
 }
