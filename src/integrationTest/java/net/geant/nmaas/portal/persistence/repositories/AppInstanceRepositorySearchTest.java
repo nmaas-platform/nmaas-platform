@@ -54,11 +54,7 @@ public class AppInstanceRepositorySearchTest {
 
     @BeforeEach
     void setup() {
-        appDeploymentRepository.deleteAll();
-        appInstanceRepository.deleteAll();
-        applicationRepository.deleteAll();
-        userRepository.deleteAll();
-        domainRepository.deleteAll();
+        cleanupTestData();
 
         prometheus = applicationRepository.save(new Application("Prometheus", "1.0.0"));
         grafana = applicationRepository.save(new Application("Grafana", "1.0.0"));
@@ -79,11 +75,23 @@ public class AppInstanceRepositorySearchTest {
 
     @AfterEach
     void cleanup() {
+        cleanupTestData();
+    }
+
+    /**
+     * Removes test data while preserving the seeded admin user and GLOBAL domain
+     * that other tests sharing this context (and the AuditorProvider) depend on.
+     */
+    private void cleanupTestData() {
         appDeploymentRepository.deleteAll();
         appInstanceRepository.deleteAll();
         applicationRepository.deleteAll();
-        userRepository.deleteAll();
-        domainRepository.deleteAll();
+        userRepository.findAll().stream()
+                .filter(user -> !user.getUsername().equalsIgnoreCase("admin"))
+                .forEach(userRepository::delete);
+        domainRepository.findAll().stream()
+                .filter(d -> !d.getCodename().equalsIgnoreCase("GLOBAL"))
+                .forEach(domainRepository::delete);
     }
 
     @Test

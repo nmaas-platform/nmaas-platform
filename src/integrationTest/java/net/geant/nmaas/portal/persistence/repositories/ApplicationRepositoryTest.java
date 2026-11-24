@@ -22,22 +22,22 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class ApplicationRepositoryTest {
 
     @Autowired
-    private ApplicationBaseRepository appRepo;
+    private ApplicationBaseRepository applicationBaseRepository;
 
     @Autowired
-    private TagRepository tagRepo;
+    private TagRepository tagRepository;
 
     @Autowired
-    private CommentRepository commentRepo;
+    private CommentRepository commentRepository;
 
     @BeforeEach
     void setup() {
-        tagRepo.deleteAll();
+        tagRepository.deleteAll();
     }
 
     @AfterEach
     void tearDown() {
-        appRepo.deleteAll();
+        applicationBaseRepository.deleteAll();
     }
 
     @Test
@@ -49,19 +49,19 @@ public class ApplicationRepositoryTest {
         app1.setTags(new HashSet<>());
         app1.getTags().add(new Tag("monitoring1"));
         app1.getTags().add(new Tag("network1"));
-        appRepo.save(app1);
+        applicationBaseRepository.save(app1);
 
-        app1 = appRepo.findByName("zabbix").get();
+        app1 = applicationBaseRepository.findByName("zabbix").get();
         assertNotNull(app1.getId());
 
         Comment comment1 = new Comment(app1, "comment1");
-        commentRepo.save(comment1);
+        commentRepository.save(comment1);
 
-        app1 = appRepo.findById(app1.getId()).get();
+        app1 = applicationBaseRepository.findById(app1.getId()).get();
         Comment subComment1 = new Comment(app1, comment1, "comment2");
-        commentRepo.save(subComment1);
+        commentRepository.save(subComment1);
 
-        assertEquals(2, commentRepo.count());
+        assertEquals(2, commentRepository.count());
     }
 
     @Test
@@ -69,18 +69,18 @@ public class ApplicationRepositoryTest {
     void testTags() {
         Tag monitoringTag = new Tag("monitoring");
         monitoringTag.setApplications(new HashSet<>());
-        tagRepo.save(monitoringTag);
-        monitoringTag = tagRepo.findByName("monitoring").get();
+        tagRepository.save(monitoringTag);
+        monitoringTag = tagRepository.findByName("monitoring").get();
 
         Tag networkTag = new Tag("network");
         networkTag.setApplications(new HashSet<>());
-        tagRepo.save(networkTag);
-        networkTag = tagRepo.findByName("network").get();
+        tagRepository.save(networkTag);
+        networkTag = tagRepository.findByName("network").get();
 
-        Tag managementTag = tagRepo.save(new Tag("management"));
+        Tag managementTag = tagRepository.save(new Tag("management"));
         managementTag.setApplications(new HashSet<>());
-        tagRepo.save(managementTag);
-        managementTag = tagRepo.findByName("management").get();
+        tagRepository.save(managementTag);
+        managementTag = tagRepository.findByName("management").get();
 
         ApplicationBase app1 = new ApplicationBase("zabbix");
         app1.setOwner("admin");
@@ -89,7 +89,7 @@ public class ApplicationRepositoryTest {
         monitoringTag.getApplications().add(app1);
         app1.getTags().add(networkTag);
         networkTag.getApplications().add(app1);
-        appRepo.saveAndFlush(app1);
+        applicationBaseRepository.saveAndFlush(app1);
 
         ApplicationBase app2 = new ApplicationBase("librenms");
         app2.setOwner("admin");
@@ -100,14 +100,14 @@ public class ApplicationRepositoryTest {
         managementTag.getApplications().add(app2);
         app2.getTags().add(networkTag);
         networkTag.getApplications().add(app2);
-        appRepo.saveAndFlush(app2);
+        applicationBaseRepository.saveAndFlush(app2);
 
-        assertEquals(2, appRepo.count());
-        assertEquals(3, tagRepo.count());
+        assertEquals(2, applicationBaseRepository.count());
+        assertEquals(3, tagRepository.count());
 
-        assertEquals(Optional.empty(), tagRepo.findByName("noexist"));
-        assertEquals(2, tagRepo.findByName("monitoring").get().getApplications().size());
-        assertEquals(1, tagRepo.findByName("management").get().getApplications().size());
+        assertEquals(Optional.empty(), tagRepository.findByName("noexist"));
+        assertEquals(2, tagRepository.findByName("monitoring").get().getApplications().size());
+        assertEquals(1, tagRepository.findByName("management").get().getApplications().size());
     }
 
 }
