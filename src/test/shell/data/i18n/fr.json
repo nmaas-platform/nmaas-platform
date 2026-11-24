@@ -387,6 +387,11 @@
       "HEADER": "No instances yet",
       "CONTENT": "Choose an application and deploy your first instance.\n Your instances will appear here once created.",
       "BUTTON": "Browse applications"
+    },
+    "NO_SEARCH_RESULTS": {
+      "HEADER": "Aucun résultat de recherche",
+      "CONTENT": "Aucune instance ne correspond à votre recherche.\nEssayez de modifier ou d'effacer la recherche.",
+      "BUTTON": "Effacer la recherche"
     }
   },
   "BUNDLES": {
