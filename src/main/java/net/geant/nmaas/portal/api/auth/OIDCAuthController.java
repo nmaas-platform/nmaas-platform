@@ -197,9 +197,14 @@ public class OIDCAuthController {
             throw new SignupException("Privacy policy was not accepted");
         }
         OidcUserClaims claims = oidcIdTokenValidator.validate(oidcApprovals.oidcToken());
+        boolean isNewUser = !userService.existsByEmail(claims.email());
         User user = oidcUserService.registerNewUser(claims, oidcApprovals.username(), oidcApprovals.isAupApprove(), oidcApprovals.isPnApprove());
-        log.info("New user [{}] registered via OIDC", user.getUsername());
-        this.sendMail(userService.findAllUsersWithAdminRole().getFirst(), Map.of("newUser", user.getUsername()));
+        if (isNewUser) {
+            log.info("New user [{}] registered via OIDC", user.getUsername());
+            this.sendMail(userService.findAllUsersWithAdminRole().getFirst(), Map.of("newUser", user.getUsername()));
+        } else {
+            log.info("AUP and Privacy Notice accepted by existing user [{}] via OIDC", user.getUsername());
+        }
 
         if (configurationManager.getConfiguration().isMaintenance()
                 && user.getRoles().stream().noneMatch(value -> value.getRole().equals(Role.ROLE_SYSTEM_ADMIN))) {
