@@ -6,7 +6,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.api.exceptions.AuthenticationException;
-import net.geant.nmaas.portal.api.exceptions.SignupException;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
 import net.geant.nmaas.api.dto.Pong;
 import net.geant.nmaas.portal.exceptions.UndergoingMaintenanceException;
@@ -28,7 +27,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
 import java.util.Date;
-import java.util.Set;
 
 import static java.lang.String.format;
 
@@ -101,10 +99,7 @@ public class BasicAuthController {
     }
 
     void checkUserApprovals(User user) {
-        if (!user.isTermsOfUseAccepted() || !user.isPrivacyPolicyAccepted()) {
-            log.info("Check during login: Terms of Use or Privacy Policy were not accepted by user [{}]", user.getUsername());
-            user.setNewRoles(Set.of(new UserRole(user, domains.getGlobalDomain().orElseThrow(SignupException::new), Role.ROLE_NOT_ACCEPTED)));
-        }
+        UserApprovalsHelper.assignNotAcceptedRoleIfMissing(user, domains);
     }
 
     private void validateConditionAndLogMessage(boolean loginCondition, String errorMessage) {

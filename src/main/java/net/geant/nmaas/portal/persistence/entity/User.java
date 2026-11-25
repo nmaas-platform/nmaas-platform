@@ -125,8 +125,17 @@ public class User implements Serializable {
         this.roles = roles;
     }
 
+    /**
+     * Appends the given roles, skipping the ones already held by this user
+     * (matched by {@link UserRole.Id}): a duplicate representation of the same
+     * role in the collection made the entity merge fail with
+     * {@code Multiple representations of the same entity}.
+     */
     public void setNewRoles(Set<UserRole> roles) {
-        this.roles.addAll(roles);
+        roles.stream()
+                .filter(newRole -> this.roles.stream()
+                        .noneMatch(existing -> existing.getId().equals(newRole.getId())))
+                .forEach(this.roles::add);
     }
 
 }

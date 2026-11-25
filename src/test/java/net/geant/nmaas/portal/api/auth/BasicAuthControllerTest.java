@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.any;
@@ -89,6 +90,26 @@ class BasicAuthControllerTest {
         user.setTermsOfUseAccepted(true);
         basicAuthController.checkUserApprovals(user);
         assertTrue(user.getRoles().stream().map(UserRole::getRole).anyMatch(r -> r.equals(Role.ROLE_NOT_ACCEPTED)));
+    }
+
+    /**
+     * Regression test for repeated logins of a user with pending approvals: the
+     * ROLE_NOT_ACCEPTED role must not be assigned twice, because two in-memory
+     * representations of the same UserRole id make the subsequent entity merge
+     * fail with "Multiple representations of the same entity".
+     */
+    @Test
+    void shouldNotDuplicateNotAcceptedRoleOnRepeatedLogin() {
+        when(domains.getGlobalDomain()).thenReturn(Optional.of(new Domain("name", "codename")));
+        User user = new User("testUser");
+        user.setPrivacyPolicyAccepted(false);
+        user.setTermsOfUseAccepted(true);
+        basicAuthController.checkUserApprovals(user);
+        basicAuthController.checkUserApprovals(user);
+        assertEquals(1, user.getRoles().stream()
+                .map(UserRole::getRole)
+                .filter(r -> r.equals(Role.ROLE_NOT_ACCEPTED))
+                .count());
     }
 
 }

@@ -19,7 +19,6 @@ import net.geant.nmaas.portal.exceptions.UndergoingMaintenanceException;
 import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.entity.Role;
 import net.geant.nmaas.portal.persistence.entity.User;
-import net.geant.nmaas.portal.persistence.entity.UserRole;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.OidcIdTokenValidator;
@@ -47,7 +46,6 @@ import org.springframework.web.servlet.view.RedirectView;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
 import static java.lang.String.format;
 
@@ -360,10 +358,7 @@ public class OIDCAuthController {
      * through {@code POST /users/terms/{username}}. Mirrors the basic login flow.
      */
     void checkUserApprovals(User user) {
-        if (!user.isTermsOfUseAccepted() || !user.isPrivacyPolicyAccepted()) {
-            log.info("Check during login: Terms of Use or Privacy Policy were not accepted by user [{}]", user.getUsername());
-            user.setNewRoles(Set.of(new UserRole(user, domains.getGlobalDomain().orElseThrow(SignupException::new), Role.ROLE_NOT_ACCEPTED)));
-        }
+        UserApprovalsHelper.assignNotAcceptedRoleIfMissing(user, domains);
     }
 
     private void validateConditionAndLogMessage(boolean loginCondition, String errorMessage) {
