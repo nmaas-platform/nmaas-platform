@@ -1,6 +1,5 @@
 package net.geant.nmaas.portal.persistence.entity;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -36,7 +35,12 @@ public class UserLoginRegister {
     @Column(name = "user_id")
     private Long userId;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    /**
+     * Read-only association, with the foreign key value provided by {@link #userId}.
+     * Deliberately mapped without cascade: persisting or merging a login history
+     * entry must not write user state.
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
     private User user;
 
