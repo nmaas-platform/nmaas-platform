@@ -9,7 +9,7 @@ import net.geant.nmaas.portal.service.impl.security.AclServiceImpl.PermissionChe
 
 public abstract class BasePermissionCheck implements PermissionCheck {
 
-    public BasePermissionCheck() {
+    protected BasePermissionCheck() {
         super();
     }
 

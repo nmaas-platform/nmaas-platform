@@ -149,12 +149,11 @@ public class UserRepositoryTest {
 
     @Test
     void shouldNotSaveUserWithWrongMailFormat() {
-        assertThrows(ConstraintViolationException.class, () -> {
-            User testUser = new User("testUser", true, "test123",
-                    domainRepository.findByName(DOMAIN).orElseThrow(), Role.ROLE_USER, true, false);
-            testUser.setEmail("emailemail.com");
-            userRepository.save(testUser);
-        });
+        User testUser = new User("testUser", true, "test123",
+                domainRepository.findByName(DOMAIN).orElseThrow(), Role.ROLE_USER, true, false);
+        testUser.setEmail("emailemail.com");
+        assertThrows(ConstraintViolationException.class, () ->
+                userRepository.save(testUser));
     }
 
     @Test
@@ -168,25 +167,23 @@ public class UserRepositoryTest {
 
     @Test
     void shouldNotSaveUserWithoutBothMailAndToken() {
-        assertThrows(ConstraintViolationException.class, () -> {
-            User testUser = new User("testUser", true, "test123",
-                    domainRepository.findByName(DOMAIN).orElseThrow(), Role.ROLE_USER, true, false);
-            userRepository.save(testUser);
-        });
+        User testUser = new User("testUser", true, "test123",
+                domainRepository.findByName(DOMAIN).orElseThrow(), Role.ROLE_USER, true, false);
+        assertThrows(ConstraintViolationException.class, () ->
+                userRepository.save(testUser));
     }
 
     @Test
     void shouldNotSaveUserWithNonUnique() {
-        assertThrows(DataIntegrityViolationException.class, () -> {
-            User testUser = new User("testUser", true, "test123",
-                    domainRepository.findByName(DOMAIN).orElseThrow(), Role.ROLE_USER, true, false);
-            testUser.setEmail("test@test.com");
-            userRepository.save(testUser);
-            User testUser2 = new User("testUser2", true, "test123",
-                    domainRepository.findByName(DOMAIN).orElseThrow(), Role.ROLE_USER, true, false);
-            testUser2.setEmail("test@test.com");
-            userRepository.save(testUser2);
-        });
+        User testUser = new User("testUser", true, "test123",
+                domainRepository.findByName(DOMAIN).orElseThrow(), Role.ROLE_USER, true, false);
+        testUser.setEmail("test@test.com");
+        userRepository.save(testUser);
+        User testUser2 = new User("testUser2", true, "test123",
+                domainRepository.findByName(DOMAIN).orElseThrow(), Role.ROLE_USER, true, false);
+        testUser2.setEmail("test@test.com");
+        assertThrows(DataIntegrityViolationException.class, () ->
+                userRepository.save(testUser2));
     }
 
 }

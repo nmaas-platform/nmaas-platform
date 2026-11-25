@@ -9,7 +9,6 @@ import net.geant.nmaas.portal.persistence.entity.Domain;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.net.UnknownHostException;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -32,7 +31,7 @@ class KubernetesClusterDeploymentManagerTest {
     }
 
     @Test
-    void shouldReturnEmptyStorageClassName() throws UnknownHostException {
+    void shouldReturnEmptyStorageClassName() {
         manager.setNamespaceConfigOption(NamespaceConfigOption.USE_DEFAULT_NAMESPACE);
         manager.setDefaultNamespace("testNamespace");
         manager.setDefaultStorageClass(null);

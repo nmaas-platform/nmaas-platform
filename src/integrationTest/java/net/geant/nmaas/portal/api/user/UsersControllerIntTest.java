@@ -204,12 +204,10 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
 
     @Test
     void shouldNotUpdateUserWithTakenEmail() {
-        assertThrows(ProcessingException.class, () -> {
-            String newEmail = user3.getEmail();
-            UserRequest userRequest = new UserRequest(null, userEntity.getUsername(), userEntity.getPassword());
-            userRequest.setEmail(newEmail);
-            userController.updateUser(userEntity.getId(), userRequest, principal);
-        });
+        UserRequest userRequest = new UserRequest(null, userEntity.getUsername(), userEntity.getPassword());
+        userRequest.setEmail(user3.getEmail());
+        assertThrows(ProcessingException.class, () ->
+                userController.updateUser(userEntity.getId(), userRequest, principal));
     }
 
     @Test
@@ -226,23 +224,19 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
     @Test
     void shouldNotUpdateOtherUserDataWithoutAdminRole() {
         when(principal.getName()).thenReturn(user3.getUsername());
-        assertThrows(ProcessingException.class, () -> {
-            String newEmail = "stub@nottakenmail.com";
-            UserRequest userRequest = new UserRequest(null, userEntity.getUsername(), userEntity.getPassword());
-            userRequest.setEmail(newEmail);
-            userController.updateUser(userEntity.getId(), userRequest, principal);
-        });
+        UserRequest userRequest = new UserRequest(null, userEntity.getUsername(), userEntity.getPassword());
+        userRequest.setEmail("stub@nottakenmail.com");
+        assertThrows(ProcessingException.class, () ->
+                userController.updateUser(userEntity.getId(), userRequest, principal));
     }
 
     @Test
     void shouldNotUpdateUserWithoutDomainAdminRoleInUserDomain() {
         when(principal.getName()).thenReturn("domAdmin");
-        assertThrows(ProcessingException.class, () -> {
-            String newEmail = "stub@nottakenmail.com";
-            UserRequest userRequest = new UserRequest(null, userEntity.getUsername(), userEntity.getPassword());
-            userRequest.setEmail(newEmail);
-            userController.updateUser(userEntity.getId(), userRequest, principal);
-        });
+        UserRequest userRequest = new UserRequest(null, userEntity.getUsername(), userEntity.getPassword());
+        userRequest.setEmail("stub@nottakenmail.com");
+        assertThrows(ProcessingException.class, () ->
+                userController.updateUser(userEntity.getId(), userRequest, principal));
     }
 
     @Test

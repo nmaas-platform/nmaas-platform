@@ -7,7 +7,7 @@ public abstract class AppBaseEvent extends ApplicationEvent {
 
     private Identifier relatedTo;
 
-    public AppBaseEvent(Object source, Identifier relatedTo) {
+    protected AppBaseEvent(Object source, Identifier relatedTo) {
         super(source);
         this.relatedTo = relatedTo;
     }

@@ -6,7 +6,7 @@ public abstract class DcnBaseEvent extends ApplicationEvent {
 
     private String relatedTo;
 
-    public DcnBaseEvent(Object source, String relatedTo) {
+    protected DcnBaseEvent(Object source, String relatedTo) {
         super(source);
         this.relatedTo = relatedTo;
     }

@@ -5,7 +5,6 @@ import net.geant.nmaas.portal.service.BulkCsvProcessor;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockMultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -20,7 +19,7 @@ class BulkCsvProcessorImplTest {
             Customer 3,jsh51,14.5.1,AOXNjGDP9dHASMEH2shSCMFp""";
 
     @Test
-    void shouldProcessApplicationSpec() throws IOException {
+    void shouldProcessApplicationSpec() {
         MockMultipartFile multipartFile = new MockMultipartFile("appSpec", "appSpec.csv", "text/csv", CSV_CONTENT.getBytes());
         assertThat(processor.isCSVFormat(multipartFile)).isTrue();
         List<CsvApplication> parsed = processor.processApplicationSpecs(multipartFile);

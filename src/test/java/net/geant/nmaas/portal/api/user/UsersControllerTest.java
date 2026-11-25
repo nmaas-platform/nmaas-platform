@@ -438,10 +438,9 @@ class UsersControllerTest {
 
     @Test
     void shouldNotConvertIncorrectStringWhenRemovingUserRole() {
-        assertThrows(MissingElementException.class, () -> {
-            String userRole = "ROLE_WRONG";
-            usersController.removeUserRole(DOMAIN.getId(), userList.getFirst().getId(), userRole, principal);
-        });
+        String userRole = "ROLE_WRONG";
+        assertThrows(MissingElementException.class, () ->
+                usersController.removeUserRole(DOMAIN.getId(), userList.getFirst().getId(), userRole, principal));
     }
 
     @Test

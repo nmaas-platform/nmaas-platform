@@ -10,7 +10,7 @@ public abstract class MonitorService implements Job {
 
     private final MonitorManager monitorManager;
 
-    public MonitorService(MonitorManager monitorManager) {
+    protected MonitorService(MonitorManager monitorManager) {
         this.monitorManager = monitorManager;
     }
 

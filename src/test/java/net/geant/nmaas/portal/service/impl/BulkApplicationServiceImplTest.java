@@ -233,7 +233,6 @@ class BulkApplicationServiceImplTest {
         when(bulkDeploymentRepository.findBulkIdByBulkEntryId(anyLong())).thenReturn(1L);
         when(bulkDeploymentRepository.findById(1L)).thenReturn(Optional.of(bulkDeployment));
 
-
         bulkDeploymentQueueService.handleQueue();
         BulkQueueDto details = bulkApplicationService.getQueueDetails(1L);
 

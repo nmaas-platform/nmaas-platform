@@ -24,7 +24,7 @@ public abstract class NmServiceRepositoryManager<T extends NmServiceInfo> {
     protected GitLabProjectRepository gitLabProjectRepository;
     protected NmServiceInfoRepository<T> repository;
 
-    public NmServiceRepositoryManager(GitLabProjectRepository gitLabProjectRepository, NmServiceInfoRepository<T> repository) {
+    protected NmServiceRepositoryManager(GitLabProjectRepository gitLabProjectRepository, NmServiceInfoRepository<T> repository) {
         this.gitLabProjectRepository = gitLabProjectRepository;
         this.repository = repository;
     }

@@ -99,7 +99,7 @@ public abstract class NmServiceInfo {
     @Fetch(FetchMode.SELECT)
     private Map<String, String> additionalParameters;
 
-    public NmServiceInfo(Identifier deploymentId, String deploymentName, String domain, Identifier descriptiveDeploymentId) {
+    protected NmServiceInfo(Identifier deploymentId, String deploymentName, String domain, Identifier descriptiveDeploymentId) {
         this.name = deploymentId.value();
         this.deploymentId = deploymentId;
         this.deploymentName = deploymentName;
@@ -107,7 +107,7 @@ public abstract class NmServiceInfo {
         this.descriptiveDeploymentId = descriptiveDeploymentId;
     }
 
-    public NmServiceInfo(Identifier deploymentId, String deploymentName, String domain, Identifier descriptiveDeploymentId, Map<String, String> additionalParameters) {
+    protected NmServiceInfo(Identifier deploymentId, String deploymentName, String domain, Identifier descriptiveDeploymentId, Map<String, String> additionalParameters) {
         this.name = deploymentId.value();
         this.deploymentId = deploymentId;
         this.deploymentName = deploymentName;

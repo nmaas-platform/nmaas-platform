@@ -72,10 +72,9 @@ public class DcnRepositoryManagerIntTest {
 
     @Test
     void shouldThrowExceptionOnMissingDeployment() {
-        assertThrows(InvalidDomainException.class, () -> {
-            appDeploymentRepository.deleteAll();
-            dcnRepositoryManager.loadNetwork(DOMAIN);
-        });
+        appDeploymentRepository.deleteAll();
+        assertThrows(InvalidDomainException.class, () ->
+                dcnRepositoryManager.loadNetwork(DOMAIN));
     }
 
     @Test

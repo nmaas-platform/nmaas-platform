@@ -39,7 +39,6 @@ import net.geant.nmaas.portal.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
-import org.quartz.SchedulerException;
 import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.ArrayList;
@@ -119,7 +118,7 @@ class DomainServiceTest {
     }
 
     @Test
-    void shouldCreateDomain() throws SchedulerException {
+    void shouldCreateDomain() {
         // Setup domain
         String name = "testdomain";
         String codename = "testdom";
@@ -209,20 +208,14 @@ class DomainServiceTest {
 
     @Test
     void shouldNotUpdateNonExistingDomain() {
-        assertThrows(ProcessingException.class, () -> {
-            String name = "testdomain";
-            String codename = "testdom";
-            this.domainService.updateDomain(new Domain(name, codename));
-        });
+        assertThrows(ProcessingException.class, () ->
+                this.domainService.updateDomain(new Domain("testdomain", "testdom")));
     }
 
     @Test
     void shouldNotUpdateGlobalDomain() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            String name = "GLOBAL";
-            String codename = "GLOBAL";
-            this.domainService.updateDomain(new Domain(1L, name, codename));
-        });
+        assertThrows(IllegalArgumentException.class, () ->
+                this.domainService.updateDomain(new Domain(1L, "GLOBAL", "GLOBAL")));
     }
 
     @Test

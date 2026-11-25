@@ -50,23 +50,21 @@ public class NmServiceVerificationTest {
 
     @Test
     void shouldVerifyDeploymentFailure() {
-        assertThrows(CouldNotVerifyServiceException.class, () -> {
-            when(orchestrator.checkService(any()))
-                    .thenReturn(false)
-                    .thenReturn(false)
-                    .thenReturn(false)
-                    .thenReturn(false)
-                    .thenReturn(false);
-            provider.verifyService(Identifier.newInstance("id"));
-        });
+        when(orchestrator.checkService(any()))
+                .thenReturn(false)
+                .thenReturn(false)
+                .thenReturn(false)
+                .thenReturn(false)
+                .thenReturn(false);
+        assertThrows(CouldNotVerifyServiceException.class, () ->
+                provider.verifyService(Identifier.newInstance("id")));
     }
 
     @Test
     void shouldThrowExceptionWhenUnexpectedErrorOccurs() {
-        assertThrows(CouldNotVerifyServiceException.class, () -> {
-            when(orchestrator.checkService(any())).thenThrow(new ContainerCheckFailedException(""));
-            provider.verifyService(Identifier.newInstance("id"));
-        });
+        when(orchestrator.checkService(any())).thenThrow(new ContainerCheckFailedException(""));
+        assertThrows(CouldNotVerifyServiceException.class, () ->
+                provider.verifyService(Identifier.newInstance("id")));
     }
 
 }
