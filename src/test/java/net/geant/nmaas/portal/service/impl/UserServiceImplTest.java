@@ -603,4 +603,24 @@ class UserServiceImplTest {
         assertEquals(Role.ROLE_USER, userService.getUserRoleInDomain(202L, 55L).orElseThrow());
     }
 
+    @Test
+    void removeNotAcceptedRoleByUsernameShouldRemoveRoleAndSaveUser() {
+        Domain global = new Domain("GLOBAL", "GLOBAL");
+        User user = new User("testUser", true, "pass", global, Role.ROLE_USER, true, true);
+        user.setNewRoles(Set.of(new UserRole(user, global, Role.ROLE_NOT_ACCEPTED)));
+        when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(user));
+
+        userService.removeNotAcceptedRoleByUsername("testUser");
+
+        assertTrue(user.getRoles().stream().noneMatch(userRole -> userRole.getRole() == Role.ROLE_NOT_ACCEPTED));
+        verify(userRepository).saveAndFlush(user);
+    }
+
+    @Test
+    void removeNotAcceptedRoleByUsernameShouldThrowWhenUserNotFound() {
+        when(userRepository.findByUsername("missing")).thenReturn(Optional.empty());
+
+        assertThrows(UsernameNotFoundException.class, () -> userService.removeNotAcceptedRoleByUsername("missing"));
+    }
+
 }

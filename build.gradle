@@ -132,6 +132,8 @@ dependencies {
     testImplementation('org.springframework.boot:spring-boot-starter-test')
     // @WebMvcTest slice support (Spring Boot 4 modularized test auto-configuration)
     testImplementation('org.springframework.boot:spring-boot-webmvc-test')
+    testImplementation('org.springframework.boot:spring-boot-data-jpa-test')
+    testImplementation('org.springframework.boot:spring-boot-jpa-test')
     testImplementation('org.yaml:snakeyaml:2.7')
 
     integrationTestImplementation('org.springframework.boot:spring-boot-starter-test')
