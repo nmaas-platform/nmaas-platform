@@ -1,6 +1,42 @@
 {
   "versions" : [
     {
+      "verNo" : "1.11.1",
+      "date" : "(2026/11/27)",
+      "topic" : [
+        {
+          "title" : "OIDC session hardening",
+          "tags" : "[Enhancement]",
+          "description" : "The /oidc/success endpoint now requires authentication and the session is properly terminated on logout"
+        },
+        {
+          "title" : "Acceptable use policy and privacy notice consent",
+          "tags" : "[Enhancement]",
+          "description" : "AUP and PN consent is now enforced in OIDC flows, with approvals also requested from existing users"
+        },
+        {
+          "title" : "Fixed triggering of webhooks not bound to a domain",
+          "tags" : "[Bugfix]",
+          "description" : "Global webhooks, with no domain set, for USER_ASSIGNMENT, APPLICATION_DEPLOYMENT and APPLICATION_REMOVAL events are triggered again"
+        },
+        {
+          "title" : "Fixed Helm upgrade command execution",
+          "tags" : "[Bugfix]",
+          "description" : "The Helm upgrade command executed during application version upgrades no longer passes release values and the reuse-values option"
+        },
+        {
+          "title" : "Migration to the latest Java 25 Docker images",
+          "tags" : "[Enhancement]",
+          "description" : "The Platform Docker images are now built from the latest Eclipse Temurin Java 25 images (25.0.5.1_2 with Alpine 3.24), mitigating critical CVEs found in the previously used image versions"
+        },
+        {
+          "title" : "Application instance search by application name",
+          "tags" : "[Enhancement]",
+          "description" : "Application instances can now be searched by application name"
+        }
+      ]
+    },
+    {
       "verNo" : "1.11.0",
       "date" : "(2026/11/13)",
       "topic" : [

@@ -16,7 +16,7 @@ repositories {
     }
 }
 
-version = '1.11.1-SNAPSHOT'
+version = '1.11.1'
 group = 'net.geant.nmaas'
 
 java {
