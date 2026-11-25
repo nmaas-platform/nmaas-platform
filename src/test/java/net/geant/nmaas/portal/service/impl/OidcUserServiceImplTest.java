@@ -24,6 +24,7 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -299,12 +300,155 @@ class OidcUserServiceImplTest {
     }
 
     @Test
-    void externalUserRequiresAupAndPnShouldReturnFalseWhenUserAlreadyExists() {
+    void externalUserRequiresAupAndPnShouldReturnTrueForUserWithoutAccount() {
+        when(userService.existsByEmail("test@example.com")).thenReturn(false);
+
+        assertTrue(oidcUserService.externalUserRequiresAupAndPn(oidcUser));
+    }
+
+    @Test
+    void externalUserRequiresAupAndPnShouldReturnTrueWhenLinkedUserHasPendingApprovals() {
+        User user = new User("testuser");
+        user.setEmail("test@example.com");
+        user.setExternalId("test-sub");
+
         when(userService.existsByEmail("test@example.com")).thenReturn(true);
+        when(userService.findByEmail("test@example.com")).thenReturn(user);
 
-        boolean result = oidcUserService.externalUserRequiresAupAndPn(oidcUser);
+        assertTrue(oidcUserService.externalUserRequiresAupAndPn(oidcUser));
+    }
 
-        assertEquals(false, result);
+    @Test
+    void externalUserRequiresAupAndPnShouldReturnTrueForLegacyLinkedUserWithPendingApprovals() {
+        User user = new User("testuser");
+        user.setEmail("test@example.com");
+        user.setExternalId("test@example.com");
+
+        when(userService.existsByEmail("test@example.com")).thenReturn(true);
+        when(userService.findByEmail("test@example.com")).thenReturn(user);
+
+        assertTrue(oidcUserService.externalUserRequiresAupAndPn(oidcUser));
+    }
+
+    @Test
+    void externalUserRequiresAupAndPnShouldReturnFalseWhenApprovalsAlreadyAccepted() {
+        User user = new User("testuser");
+        user.setEmail("test@example.com");
+        user.setExternalId("test-sub");
+        user.setTermsOfUseAccepted(true);
+        user.setPrivacyPolicyAccepted(true);
+
+        when(userService.existsByEmail("test@example.com")).thenReturn(true);
+        when(userService.findByEmail("test@example.com")).thenReturn(user);
+
+        assertFalse(oidcUserService.externalUserRequiresAupAndPn(oidcUser));
+    }
+
+    @Test
+    void externalUserRequiresAupAndPnShouldReturnFalseWhenAccountLinkedToDifferentIdentity() {
+        User user = new User("testuser");
+        user.setEmail("test@example.com");
+        user.setExternalId("different-identity");
+
+        when(userService.existsByEmail("test@example.com")).thenReturn(true);
+        when(userService.findByEmail("test@example.com")).thenReturn(user);
+
+        assertFalse(oidcUserService.externalUserRequiresAupAndPn(oidcUser));
+    }
+
+    @Test
+    void externalUserRequiresAupAndPnShouldReturnFalseWhenAccountHasNoLinkedIdentity() {
+        User user = new User("testuser");
+        user.setEmail("test@example.com");
+
+        when(userService.existsByEmail("test@example.com")).thenReturn(true);
+        when(userService.findByEmail("test@example.com")).thenReturn(user);
+
+        assertFalse(oidcUserService.externalUserRequiresAupAndPn(oidcUser));
+    }
+
+    @Test
+    void registerNewUserShouldRecordApprovalsWhenAccountAlreadyExists() {
+        User existingUser = new User("testuser");
+        existingUser.setEmail("test@example.com");
+        existingUser.setExternalId("uuid-123");
+
+        OidcUserClaims claims = new OidcUserClaims("uuid-123", "test@example.com", "testuser", "John", "Doe");
+        when(userService.existsByEmail("test@example.com")).thenReturn(true);
+        when(userService.findByEmail("test@example.com")).thenReturn(existingUser);
+
+        User result = oidcUserService.registerNewUser(claims, "testuser", true, true);
+
+        assertEquals(existingUser, result);
+        assertTrue(result.isTermsOfUseAccepted());
+        assertTrue(result.isPrivacyPolicyAccepted());
+        assertEquals("uuid-123", result.getExternalId());
+        verify(userService).update(existingUser);
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    void registerNewUserShouldMigrateLegacyExternalIdWhenRecordingApprovals() {
+        User existingUser = new User("testuser");
+        existingUser.setEmail("test@example.com");
+        existingUser.setExternalId("test@example.com");
+
+        OidcUserClaims claims = new OidcUserClaims("uuid-legacy", "test@example.com", null, null, null);
+        when(userService.existsByEmail("test@example.com")).thenReturn(true);
+        when(userService.findByEmail("test@example.com")).thenReturn(existingUser);
+
+        User result = oidcUserService.registerNewUser(claims, null, true, true);
+
+        assertEquals("uuid-legacy", result.getExternalId());
+        assertTrue(result.isTermsOfUseAccepted());
+        assertTrue(result.isPrivacyPolicyAccepted());
+        verify(userService).update(existingUser);
+    }
+
+    @Test
+    void registerNewUserShouldRejectExistingAccountLinkedToDifferentIdentity() {
+        User existingUser = new User("testuser");
+        existingUser.setEmail("test@example.com");
+        existingUser.setExternalId("other-sub");
+
+        OidcUserClaims claims = new OidcUserClaims("uuid-123", "test@example.com", "testuser", "John", "Doe");
+        when(userService.existsByEmail("test@example.com")).thenReturn(true);
+        when(userService.findByEmail("test@example.com")).thenReturn(existingUser);
+
+        SignupException ex = assertThrows(SignupException.class,
+                () -> oidcUserService.registerNewUser(claims, "testuser", true, true));
+        assertEquals("User already exists", ex.getMessage());
+        verify(userService, never()).update(existingUser);
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    void registerNewUserShouldRejectExistingAccountWithoutLinkedIdentity() {
+        User existingUser = new User("testuser");
+        existingUser.setEmail("test@example.com");
+
+        OidcUserClaims claims = new OidcUserClaims("uuid-123", "test@example.com", "testuser", "John", "Doe");
+        when(userService.existsByEmail("test@example.com")).thenReturn(true);
+        when(userService.findByEmail("test@example.com")).thenReturn(existingUser);
+
+        assertThrows(SignupException.class, () -> oidcUserService.registerNewUser(claims, "testuser", true, true));
+        verify(userService, never()).update(existingUser);
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    void registerNewUserShouldMapConcurrentLinkingFailureWhenRecordingApprovals() {
+        User existingUser = new User("testuser");
+        existingUser.setEmail("test@example.com");
+        existingUser.setExternalId("test@example.com");
+
+        OidcUserClaims claims = new OidcUserClaims("uuid-123", "test@example.com", null, null, null);
+        when(userService.existsByEmail("test@example.com")).thenReturn(true);
+        when(userService.findByEmail("test@example.com")).thenReturn(existingUser);
+        doThrow(new DataIntegrityViolationException("unique constraint")).when(userService).update(existingUser);
+
+        assertThrows(ExternalUserCanNotBeLinked.class,
+                () -> oidcUserService.registerNewUser(claims, null, true, true));
     }
 
     @Test
