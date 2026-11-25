@@ -41,8 +41,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *      client authentication) and fetches user info from the stub
  *   -> 302 to /api/v1/oidc/success
  * GET /api/v1/oidc/success
- *   -> the decision tree: linked user receives tokens, new user is routed to
- *      the first-login page, unlinked account is routed to linking, and an
+ *   -> the decision tree: linked user receives tokens, new user and linked
+ *      user with pending AUP/Privacy Notice approvals are routed to the
+ *      first-login page, unlinked account is routed to linking, and an
  *      account linked to a different identity is routed to the provider
  *      logout returning to the portal login page with an error code for the
  *      SPA to present
@@ -299,13 +300,13 @@ class OidcLoginFlowIntTest extends AbstractOidcFlowIntTest {
     }
 
     /**
-     * Signal for the SPA guard: a linked user with pending AUP/Privacy Notice
-     * approvals receives a JWT whose {@code global_role} claim carries
-     * {@code ROLE_NOT_ACCEPTED}; the portal must route such a user to the
-     * terms-acceptance screen instead of the application.
+     * A linked user with pending AUP/Privacy Notice approvals is routed to the
+     * first-login page on every login, not only during registration; the
+     * approvals endpoint must then record the acceptance on the existing
+     * account instead of rejecting it with a "user already exists" conflict.
      */
     @Test
-    void shouldIssueNotAcceptedRoleWhenLinkedUserHasPendingApprovals() throws Exception {
+    void shouldRouteUserWithPendingApprovalsToFirstLoginAndRecordAcceptance() throws Exception {
         String sub = "oidc-flow-pending-sub";
         String email = "oidc-flow-pending@example.com";
         seedUser("oidc-flow-pending", email, "FlowS3cret!", sub, false, false);
@@ -322,15 +323,31 @@ class OidcLoginFlowIntTest extends AbstractOidcFlowIntTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl(OIDC_SUCCESS_URL));
 
-        MvcResult result = mvc.perform(get(OIDC_SUCCESS_URL).session(session))
+        MvcResult success = mvc.perform(get(OIDC_SUCCESS_URL).session(session))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("**/login-success?token=**"))
+                .andExpect(redirectedUrlPattern("**/sso-first-login?oidc-token=**"))
+                .andReturn();
+        assertTrue(session.isInvalid(), "the OAuth2 session must be terminated after routing to the approvals page");
+
+        // the SPA would now complete the acceptance with the ID token from the redirect
+        String oidcToken = queryParameters(success.getResponse().getRedirectedUrl()).get("oidc-token");
+        MvcResult approvals = mvc.perform(post("/api/v1/oidc/approvals")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(
+                                new OidcApprovals(oidcToken, "oidc-flow-pending", true, true))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.token").isNotEmpty())
                 .andReturn();
 
-        String payload = jwtPayload(queryParameters(result.getResponse().getRedirectedUrl()).get("token"));
-        assertTrue(payload.contains("ROLE_NOT_ACCEPTED"),
-                "Token issued for a linked user with pending approvals must carry ROLE_NOT_ACCEPTED, payload was: " + payload);
-        assertTrue(session.isInvalid(), "the OAuth2 session must be terminated once tokens are issued");
+        User accepted = userRepository.findByEmail(email).orElseThrow();
+        assertTrue(accepted.isTermsOfUseAccepted(), "AUP acceptance must be recorded on the existing account");
+        assertTrue(accepted.isPrivacyPolicyAccepted(), "Privacy Notice acceptance must be recorded on the existing account");
+        assertEquals(sub, accepted.getExternalId(), "the account must stay linked with the validated token subject");
+
+        String payload = jwtPayload(
+                objectMapper.readTree(approvals.getResponse().getContentAsString(StandardCharsets.UTF_8)).get("token").asText());
+        assertFalse(payload.contains("ROLE_NOT_ACCEPTED"),
+                "Token issued after acceptance must not carry the pending-approval role, payload was: " + payload);
     }
 
     /**

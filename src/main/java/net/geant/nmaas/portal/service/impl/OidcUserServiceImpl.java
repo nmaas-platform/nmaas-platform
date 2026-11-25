@@ -106,6 +106,9 @@ public class OidcUserServiceImpl implements OidcUserService {
 
     @Override
     public User registerNewUser(OidcUserClaims claims, String requestedUsername, boolean isAupAccepted, boolean isPnAccepted) {
+        if (userService.existsByEmail(claims.email())) {
+            return acceptApprovalsForExistingUser(claims, isAupAccepted, isPnAccepted);
+        }
         String username = resolveUsername(claims, requestedUsername);
         assertExternalIdentityAvailable(claims.sub());
         try {
@@ -123,6 +126,23 @@ public class OidcUserServiceImpl implements OidcUserService {
             // a concurrent request registered the same user between the pre-checks and the insert
             throw new SignupException("User already exists");
         }
+    }
+    private User acceptApprovalsForExistingUser(OidcUserClaims claims, boolean isAupAccepted, boolean isPnAccepted) {
+        User user = userService.findByEmail(claims.email());
+        if (!identityMatches(user, claims.sub(), claims.email(), claims.preferredUsername())) {
+            log.warn("Rejected approvals attempt with external identity [{}] for account [{}] linked with a different identity",
+                    claims.sub(), user.getUsername());
+            throw new SignupException("User already exists");
+        }
+        user.setTermsOfUseAccepted(isAupAccepted);
+        user.setPrivacyPolicyAccepted(isPnAccepted);
+        user.setExternalId(claims.sub());
+        try {
+            userService.update(user);
+        } catch (DataIntegrityViolationException _) {
+            throw new ExternalUserCanNotBeLinked("External identity is already linked to another user");
+        }
+        return user;
     }
 
     private String resolveUsername(OidcUserClaims claims, String requestedUsername) {
@@ -214,10 +234,24 @@ public class OidcUserServiceImpl implements OidcUserService {
     @Override
     public boolean externalUserRequiresAupAndPn(OidcUser oidcUser) {
 
+        String oidcUserSub = oidcUser.getAttribute("sub");
         String oidcUserEmail = oidcUser.getAttribute("email");
+        String oidcUserPreferredUsername = oidcUser.getAttribute("preferred_username");
 
-        return !userService.existsByEmail(oidcUserEmail);
+        if (!userService.existsByEmail(oidcUserEmail)) {
+            return true;
+        }
 
+        User user = userService.findByEmail(oidcUserEmail);
+        return identityMatches(user, oidcUserSub, oidcUserEmail, oidcUserPreferredUsername)
+                && (!user.isTermsOfUseAccepted() || !user.isPrivacyPolicyAccepted());
+    }
+    private boolean identityMatches(User user, String sub, String email, String preferredUsername) {
+        String linkedExternalId = user.getExternalId();
+        return StringUtils.isNotBlank(linkedExternalId)
+                && (linkedExternalId.equals(sub)
+                || linkedExternalId.equals(email)
+                || linkedExternalId.equals(preferredUsername));
     }
 
     @Override
