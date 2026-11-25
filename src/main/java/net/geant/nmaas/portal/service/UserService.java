@@ -59,6 +59,8 @@ public interface UserService {
 
     void setPrivacyPolicyAcceptedFlagByUsername(String username, boolean privacyPolicyAcceptedFlag);
 
+    void removeNotAcceptedRoleByUsername(String username);
+
     void setUserLanguage(Long userId, final String defaultLanguage);
 
     void setUserTheme(Long userId, final String defaultTheme);

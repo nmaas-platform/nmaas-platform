@@ -283,6 +283,19 @@ public class UserServiceImpl implements UserService {
         userRepository.setPrivacyPolicyAcceptedFlag(user.getId(), privacyPolicyAcceptedFlag);
     }
 
+    /**
+     * Removes the ROLE_NOT_ACCEPTED role, assigned during login to users with
+     * pending AUP / Privacy Policy approvals, once the acceptance is recorded.
+     */
+    @Override
+    @Transactional
+    public void removeNotAcceptedRoleByUsername(String username) {
+        User user = userRepository.findByUsername(username).orElseThrow(()
+                -> new UsernameNotFoundException("User " + username + " not found."));
+        user.getRoles().removeIf(userRole -> userRole.getRole() == Role.ROLE_NOT_ACCEPTED);
+        userRepository.saveAndFlush(user);
+    }
+
     private void checkParam(Long id) {
         if (id == null)
             throw new IllegalArgumentException("id is null");

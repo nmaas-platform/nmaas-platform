@@ -355,6 +355,7 @@ public class UsersController {
         try {
             userService.setTermsOfUseAcceptedFlagByUsername(username, true);
             userService.setPrivacyPolicyAcceptedFlagByUsername(username, true);
+            userService.removeNotAcceptedRoleByUsername(username);
         } catch (UsernameNotFoundException err) {
             throw new ProcessingException(err.getMessage());
         }

@@ -501,4 +501,13 @@ class UsersControllerTest {
         assertEquals(input, output);
     }
 
+    @Test
+    void shouldAcceptTermsAndRemoveNotAcceptedRole() {
+        usersController.setAcceptance("tester");
+
+        verify(userService).setTermsOfUseAcceptedFlagByUsername("tester", true);
+        verify(userService).setPrivacyPolicyAcceptedFlagByUsername("tester", true);
+        verify(userService).removeNotAcceptedRoleByUsername("tester");
+    }
+
 }
