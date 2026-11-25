@@ -71,7 +71,7 @@ public class Domain implements Serializable {
     @ElementCollection(fetch = FetchType.LAZY)
     private List<ApplicationStatePerDomain> applicationStatePerDomain = new ArrayList<>();
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinTable(
             name = "domains_groups",
             joinColumns = {@JoinColumn(name = "domain_id")},

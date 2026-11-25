@@ -26,10 +26,6 @@ public class ApplicationStatePerDomain implements Serializable {
     @Setter(AccessLevel.PROTECTED)
     private ApplicationBase applicationBase;
 
-    /*
-    in future this can be replaced with custom state object
-    it should simplify managing domain related application state issues
-     */
     @EqualsAndHashCode.Exclude
     private boolean enabled;
 

@@ -48,18 +48,59 @@ public class WebhookEventRepositoryTests {
     @Test
     void shouldFindWebhookEventByDeploymentWithDomain() {
         WebhookEvent testEvent = new WebhookEvent(null, "wh1", "https://target.wh1", WebhookEventType.APPLICATION_DEPLOYMENT);
-        testEvent.setDomain(domainRepository.save(new Domain("D1", "d1")));
+        testEvent.setDomain(storeDomain("D1", "d1"));
         repository.save(testEvent);
-        WebhookEvent testEvent2 = new WebhookEvent(null, "wh1", "https://target.wh1", WebhookEventType.APPLICATION_DEPLOYMENT);
-        testEvent2.setDomain(domainRepository.save(new Domain("D2", "d2")));
+        WebhookEvent testEvent2 = new WebhookEvent(null, "wh2", "https://target.wh2", WebhookEventType.APPLICATION_DEPLOYMENT);
+        testEvent2.setDomain(storeDomain("D2", "d2"));
         repository.save(testEvent2);
-        WebhookEvent testEvent3 = new WebhookEvent(null, "wh1", "https://target.wh1", WebhookEventType.APPLICATION_DEPLOYMENT);
+        WebhookEvent testEvent3 = new WebhookEvent(null, "wh3", "https://target.wh3", WebhookEventType.APPLICATION_DEPLOYMENT);
         testEvent3.setDomain(null);
         repository.save(testEvent3);
 
         assertThat(repository.findIdByEventType(WebhookEventType.APPLICATION_DEPLOYMENT)).isNotEmpty();
         List<Long> ids = repository.findIdByEventTypeAndDomain(WebhookEventType.APPLICATION_DEPLOYMENT, "d1");
-        assertThat(ids).hasSize(1);
+        assertThat(ids).hasSize(2);
+    }
+
+    @Test
+    void shouldFindGlobalWebhookAndWebhookOfGivenDomainByCodename() {
+        repository.save(globalWebhook(WebhookEventType.APPLICATION_DEPLOYMENT));
+        repository.save(domainWebhook(WebhookEventType.APPLICATION_DEPLOYMENT, storeDomain("D1", "d1")));
+        Domain otherDomain = storeDomain("D2", "d2");
+        repository.save(domainWebhook(WebhookEventType.APPLICATION_DEPLOYMENT, otherDomain));
+
+        List<Long> ids = repository.findIdByEventTypeAndDomain(WebhookEventType.APPLICATION_DEPLOYMENT, "d2");
+
+        assertThat(ids).hasSize(2);
+    }
+
+    @Test
+    void shouldFindGlobalWebhookAndWebhookOfGivenDomainByDomainId() {
+        repository.save(globalWebhook(WebhookEventType.USER_ASSIGNMENT));
+        repository.save(domainWebhook(WebhookEventType.USER_ASSIGNMENT, storeDomain("D1", "d1")));
+        Domain otherDomain = storeDomain("D2", "d2");
+        repository.save(domainWebhook(WebhookEventType.USER_ASSIGNMENT, otherDomain));
+
+        List<Long> ids = repository.findIdByEventTypeAndDomain(WebhookEventType.USER_ASSIGNMENT, otherDomain.getId());
+
+        assertThat(ids).hasSize(2);
+    }
+
+    private WebhookEvent globalWebhook(WebhookEventType eventType) {
+        WebhookEvent webhook = new WebhookEvent(null, "global", "https://target.global", eventType);
+        webhook.setDomain(null);
+        return webhook;
+    }
+
+    private WebhookEvent domainWebhook(WebhookEventType eventType, Domain domain) {
+        WebhookEvent webhook = new WebhookEvent(null, "scoped", "https://target.scoped", eventType);
+        webhook.setDomain(domain);
+        return webhook;
+    }
+
+    private Domain storeDomain(String name, String codename) {
+        return domainRepository.findByCodename(codename)
+                .orElseGet(() -> domainRepository.save(new Domain(name, codename)));
     }
 
 }

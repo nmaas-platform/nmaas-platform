@@ -17,7 +17,7 @@ public interface WebhookEventRepository extends JpaRepository<WebhookEvent, Long
     @Query("select w.id from WebhookEvent w where w.eventType = :eventType")
     List<Long> findIdByEventType(WebhookEventType eventType);
 
-    @Query("select w.id from WebhookEvent w where w.eventType = :eventType and w.domain is null union select w.id from WebhookEvent w where w.eventType = :eventType and w.domain.codename = :domainCodename")
+    @Query("select w.id from WebhookEvent w where w.eventType = :eventType and fk(w.domain) is null union select w.id from WebhookEvent w where w.eventType = :eventType and w.domain.codename = :domainCodename")
     List<Long> findIdByEventTypeAndDomain(@Param("eventType") WebhookEventType eventType, @Param("domainCodename") String domainCodename);
 
     List<WebhookEvent> findByDomain_Id(Long domainId);
@@ -35,8 +35,8 @@ public interface WebhookEventRepository extends JpaRepository<WebhookEvent, Long
             from WebhookEvent w
             where w.eventType = :eventType
               and (
-                   w.domain is null
-                   or w.domain.id = :domainId
+                   fk(w.domain) is null
+                   or fk(w.domain) = :domainId
               )
             """)
     List<Long> findIdByEventTypeAndDomain(WebhookEventType eventType, Long domainId);
