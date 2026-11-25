@@ -40,6 +40,8 @@ public class DomainObjectPermissionCheck extends BasePermissionCheck {
         globalPermMatrix.put(Role.ROLE_GROUP_DOMAIN_ADMIN, new Permissions[]{Permissions.READ});
         globalPermMatrix.put(Role.ROLE_GROUP_MANAGER, new Permissions[]{Permissions.READ, Permissions.WRITE});
         globalPermMatrix.put(Role.ROLE_GUEST, new Permissions[]{});
+        globalPermMatrix.put(Role.ROLE_INCOMPLETE, new Permissions[]{});
+        globalPermMatrix.put(Role.ROLE_NOT_ACCEPTED, new Permissions[]{});
 
         permMatrix.put(Role.ROLE_SYSTEM_ADMIN, new Permissions[]{Permissions.CREATE, Permissions.DELETE, Permissions.OWNER, Permissions.READ, Permissions.WRITE});
         permMatrix.put(Role.ROLE_OPERATOR, new Permissions[]{Permissions.READ, Permissions.WRITE});
@@ -49,6 +51,8 @@ public class DomainObjectPermissionCheck extends BasePermissionCheck {
         permMatrix.put(Role.ROLE_USER, new Permissions[]{Permissions.READ});
         permMatrix.put(Role.ROLE_TOOL_MANAGER, new Permissions[]{Permissions.READ});
         permMatrix.put(Role.ROLE_GUEST, new Permissions[]{Permissions.READ});
+        permMatrix.put(Role.ROLE_INCOMPLETE, new Permissions[]{});
+        permMatrix.put(Role.ROLE_NOT_ACCEPTED, new Permissions[]{});
     }
 
     @Override

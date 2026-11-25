@@ -1,5 +1,8 @@
 package net.geant.nmaas.portal.service.impl.security;
 
+import net.geant.nmaas.portal.persistence.entity.Role;
+import net.geant.nmaas.portal.persistence.entity.User;
+import net.geant.nmaas.portal.persistence.entity.UserRole;
 import net.geant.nmaas.portal.persistence.entity.UsersHelper;
 import net.geant.nmaas.portal.service.AclService.Permissions;
 import net.geant.nmaas.portal.service.DomainService;
@@ -110,6 +113,31 @@ class DomainObjectPermissionCheckTest {
 		assertEquals(0, perms.size());
 
 		perms = dopch.evaluatePermissions(UsersHelper.GLOBAL_GUEST, UsersHelper.DOMAIN1.getId(), DomainObjectPermissionCheck.DOMAIN);
+		assertEquals(0, perms.size());
+	}
+
+	@Test
+	void testNotAcceptedRoleEvaluatePermissions() {
+		// a domain user with a pending AUP/PN approval holds ROLE_NOT_ACCEPTED
+		// in the global domain alongside their regular role (added in memory
+		// at login time); the permission matrix must yield no permissions for
+		// it without throwing a NullPointerException
+		User user = new User("not_accepted_user", true, "password", UsersHelper.DOMAIN1, Role.ROLE_USER);
+		user.getRoles().add(new UserRole(user, UsersHelper.GLOBAL, Role.ROLE_NOT_ACCEPTED));
+
+		Set<Permissions> perms = dopch.evaluatePermissions(user, UsersHelper.DOMAIN1.getId(), DomainObjectPermissionCheck.DOMAIN);
+		assertEquals(1, perms.size());
+		assertThat(perms, hasItems(Permissions.READ));
+
+		perms = dopch.evaluatePermissions(user, UsersHelper.DOMAIN2.getId(), DomainObjectPermissionCheck.DOMAIN);
+		assertEquals(0, perms.size());
+	}
+
+	@Test
+	void testIncompleteRoleEvaluatePermissions() {
+		User user = new User("incomplete_user", true, "password", UsersHelper.GLOBAL, Role.ROLE_INCOMPLETE);
+
+		Set<Permissions> perms = dopch.evaluatePermissions(user, UsersHelper.DOMAIN1.getId(), DomainObjectPermissionCheck.DOMAIN);
 		assertEquals(0, perms.size());
 	}
 
