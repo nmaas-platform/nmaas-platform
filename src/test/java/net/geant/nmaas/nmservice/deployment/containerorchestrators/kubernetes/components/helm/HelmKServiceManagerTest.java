@@ -328,27 +328,18 @@ class HelmKServiceManagerTest {
     @Test
     void shouldUpgradeService() {
         when(namespaceService.namespace("domain")).thenReturn("namespace");
-        Map<String, String> additionalParameters = new HashMap<>();
-        additionalParameters.put("key1", "value1");
-        additionalParameters.put("%RANDOM_STRING_8%", "value2");
         KubernetesNmServiceInfo service = repositoryManager.loadService(deploymentId);
-        service.setAdditionalParameters(additionalParameters);
         when(repositoryManager.loadService(deploymentId)).thenReturn(service);
 
         manager.upgradeService(deploymentId, new KubernetesTemplate());
 
         verify(helmCommandExecutor, times(1)).executeHelmRepoUpdateCommand();
-        ArgumentCaptor<Map<String, String>> argumentsArg = ArgumentCaptor.forClass(HashMap.class);
-        verify(helmCommandExecutor, times(1)).executeHelmUpgradeWithConfigCommand(
+        verify(helmCommandExecutor, times(1)).executeHelmUpgradeCommand(
                 eq("namespace"),
                 eq("descriptiveDeploymentId"),
                 any(KubernetesTemplate.class),
-                argumentsArg.capture(),
                 isNull()
         );
-        assertThat(argumentsArg.getValue())
-                .hasSize(1)
-                .containsEntry("key1", "value1");
     }
 
     @Test
@@ -364,11 +355,10 @@ class HelmKServiceManagerTest {
         verify(namespaceService, times(1)).namespace(remoteCluster, "domain");
         verify(namespaceService, never()).namespace("domain");
         verify(helmCommandExecutor, times(1)).executeHelmRepoUpdateCommand();
-        verify(helmCommandExecutor, times(1)).executeHelmUpgradeWithConfigCommand(
+        verify(helmCommandExecutor, times(1)).executeHelmUpgradeCommand(
                 eq("remote-namespace"),
                 eq("descriptiveDeploymentId"),
                 any(KubernetesTemplate.class),
-                any(Map.class),
                 eq("mock/path/to/kubeconfig")
         );
     }
@@ -385,11 +375,10 @@ class HelmKServiceManagerTest {
         manager.upgradeService(deploymentId, targetTemplate);
 
         verify(helmCommandExecutor, never()).executeHelmRepoUpdateCommand();
-        verify(helmCommandExecutor, times(1)).executeHelmUpgradeWithConfigCommand(
+        verify(helmCommandExecutor, times(1)).executeHelmUpgradeCommand(
                 eq("namespace"),
                 eq("descriptiveDeploymentId"),
                 any(KubernetesTemplate.class),
-                any(Map.class),
                 isNull()
         );
     }
@@ -407,7 +396,7 @@ class HelmKServiceManagerTest {
         manager.updateService(deploymentId);
 
         verify(helmCommandExecutor, never()).executeHelmRepoUpdateCommand();
-        verify(helmCommandExecutor, times(1)).executeHelmUpgradeWithConfigCommand(
+        verify(helmCommandExecutor, times(1)).executeHelmUpdateWithConfigCommand(
                 eq("namespace"),
                 eq("descriptiveDeploymentId"),
                 eq(service.getKubernetesTemplate()),
@@ -430,7 +419,7 @@ class HelmKServiceManagerTest {
         manager.updateService(deploymentId);
 
         ArgumentCaptor<Map<String, String>> argumentsArg = ArgumentCaptor.forClass(HashMap.class);
-        verify(helmCommandExecutor, times(1)).executeHelmUpgradeWithConfigCommand(
+        verify(helmCommandExecutor, times(1)).executeHelmUpdateWithConfigCommand(
                 eq("namespace"),
                 eq("descriptiveDeploymentId"),
                 eq(service.getKubernetesTemplate()),
@@ -457,7 +446,7 @@ class HelmKServiceManagerTest {
 
         verify(namespaceService, times(1)).namespace(remoteCluster, "domain");
         verify(namespaceService, never()).namespace("domain");
-        verify(helmCommandExecutor, times(1)).executeHelmUpgradeWithConfigCommand(
+        verify(helmCommandExecutor, times(1)).executeHelmUpdateWithConfigCommand(
                 eq("remote-namespace"),
                 eq("descriptiveDeploymentId"),
                 eq(service.getKubernetesTemplate()),
@@ -470,7 +459,7 @@ class HelmKServiceManagerTest {
     void shouldThrowExceptionWhenHelmUpgradeWithConfigCommandFails() {
         when(namespaceService.namespace("domain")).thenReturn("namespace");
         doThrow(new CommandExecutionException("helm upgrade failed")).when(helmCommandExecutor)
-                .executeHelmUpgradeWithConfigCommand(
+                .executeHelmUpdateWithConfigCommand(
                         eq("namespace"),
                         eq("descriptiveDeploymentId"),
                         any(KubernetesTemplate.class),
