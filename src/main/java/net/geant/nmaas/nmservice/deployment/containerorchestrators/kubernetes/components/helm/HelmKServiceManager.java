@@ -227,11 +227,10 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
             if (!helmRepoUpdateAsyncEnabled && !HelmChartUtils.isOciChart(targetVersion)) {
                 updateHelmRepo();
             }
-            helmCommandExecutor.executeHelmUpgradeWithConfigCommand(
+            helmCommandExecutor.executeHelmUpgradeCommand(
                     getTargetNamespace(serviceInfo),
                     serviceInfo.getDescriptiveDeploymentId().getValue(),
                     targetVersion,
-                    removeRedundantParameters(serviceInfo.getAdditionalParameters()),
                     serviceInfo.getRemoteCluster() != null ? serviceInfo.getRemoteCluster().getPathConfigFile() : null
             );
         } catch (CommandExecutionException cee) {
@@ -244,7 +243,7 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
     public void updateService(Identifier deploymentId) {
         try {
             final KubernetesNmServiceInfo serviceInfo = repositoryManager.loadService(deploymentId);
-            helmCommandExecutor.executeHelmUpgradeWithConfigCommand(
+            helmCommandExecutor.executeHelmUpdateWithConfigCommand(
                     getTargetNamespace(serviceInfo),
                     serviceInfo.getDescriptiveDeploymentId().getValue(),
                     serviceInfo.getKubernetesTemplate(),

@@ -134,7 +134,11 @@ public class HelmCommandExecutor {
         }
     }
 
-    void executeHelmUpgradeWithConfigCommand(String namespace, String releaseName, KubernetesTemplate template, Map<String, String> arguments, String kubeConfigPath) {
+    void executeHelmUpgradeCommand(String namespace, String releaseName, KubernetesTemplate template, String kubeConfigPath) {
+        executeUpgrade(namespace, releaseName, template, null, kubeConfigPath);
+    }
+
+    void executeHelmUpdateWithConfigCommand(String namespace, String releaseName, KubernetesTemplate template, Map<String, String> arguments, String kubeConfigPath) {
         executeUpgrade(namespace, releaseName, template, arguments, kubeConfigPath);
     }
 
