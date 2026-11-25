@@ -1486,6 +1486,7 @@
     "SUPPORTED_VARIABLES" : "Wspierane zmienne",
     "TOKEN" : "Token value",
     "AUTH" : "Authorization header",
+    "DOMAIN_REQUIRED": "Tylko w jednej domenie",
     "DOMAIN": "Domena",
     "DOMAIN_ACTION" : "Domain action",
     "DOMAIN_GROUP_ACTION" : "Domain group action",
