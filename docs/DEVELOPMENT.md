@@ -31,7 +31,7 @@ To run the nmaas Platform on a dedicated machine, perform the following steps:
 ### OpenAPI documentation of the nmaas Platform REST API
 
 nmaas Platform by default exposes two endpoints documenting the REST API:
-+ */api-docs/spec* - Open API specification of the API
++ */api-docs/spec* - OpenAPI specification of the API
 + */api-docs/ui.html* - Swagger UI
 
 These endpoints can be disabled in the properties file.

@@ -16,7 +16,7 @@ repositories {
     }
 }
 
-version = '1.11.1'
+version = '1.11.2-SNAPSHOT'
 group = 'net.geant.nmaas'
 
 java {
@@ -69,7 +69,7 @@ dependencies {
     integrationTestCompileOnly 'org.projectlombok:lombok'
     integrationTestAnnotationProcessor 'org.projectlombok:lombok'
 
-    implementation('org.springframework.boot:spring-boot-starter-web')
+    implementation('org.springframework.boot:spring-boot-starter-webmvc')
     implementation('org.springframework.boot:spring-boot-starter-mail')
     implementation('org.springframework.boot:spring-boot-starter-data-jpa')
     implementation('org.springframework.boot:spring-boot-starter-actuator')
