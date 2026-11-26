@@ -130,6 +130,7 @@ dependencies {
     // Tests
     testImplementation('org.mockito:mockito-core:5.24.0')
     testImplementation('org.springframework.boot:spring-boot-starter-test')
+    testImplementation('org.springframework.security:spring-security-test')
     // @WebMvcTest slice support (Spring Boot 4 modularized test auto-configuration)
     testImplementation('org.springframework.boot:spring-boot-webmvc-test')
     testImplementation('org.springframework.boot:spring-boot-data-jpa-test')

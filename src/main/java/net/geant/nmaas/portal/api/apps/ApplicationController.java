@@ -100,7 +100,7 @@ public class ApplicationController extends AppBaseController {
     }
 
     @GetMapping(value = "/{name}/version/{version}")
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER') || hasRole('ROLE_GROUP_MANAGER')")
     @Transactional
     public ApplicationCompleteDto getApplicationByNameAndVersion(@PathVariable String name, @PathVariable String version) {
         ApplicationBase base = applicationBaseService.findByName(name);
