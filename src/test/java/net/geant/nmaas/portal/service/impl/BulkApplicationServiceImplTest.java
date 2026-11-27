@@ -296,6 +296,87 @@ class BulkApplicationServiceImplTest {
     }
 
     @Test
+    void shouldHandleBulkDeploymentWithOmittedVersionUsingLatestActiveVersion() {
+        CsvApplication csvApplication = new CsvApplication("domain1", "testAppInstance", null, null);
+        Domain domain = new Domain(1L, "domain1", "domain1");
+        Domain global = new Domain(0L, "GLOBAL", "GLOBAL");
+        ApplicationBase applicationBase = new ApplicationBase(110L, TEST_APP_NAME);
+        when(applicationBaseService.exists(TEST_APP_NAME)).thenReturn(true);
+        when(applicationBaseService.findByName(TEST_APP_NAME)).thenReturn(applicationBase);
+        Application application = new Application(1L, TEST_APP_NAME, "latestActiveVersion");
+        application.setAppConfigurationSpec(new AppConfigurationSpec());
+        when(applicationService.findApplicationLatestActiveVersion(TEST_APP_NAME)).thenReturn(Optional.of(application));
+        when(domainService.findDomain(anyString())).thenReturn(Optional.of(domain));
+        when(domainService.getGlobalDomain()).thenReturn(Optional.of(global));
+        when(applicationInstanceService.isNameAvailableInDomain(anyString(), any())).thenReturn(true);
+        AppInstance appInstance = new AppInstance(application, domain, "testAppInstance", false);
+        appInstance.setId(100L);
+        when(applicationInstanceService.create(any(Domain.class), any(Application.class), anyString(), anyBoolean())).thenReturn(appInstance);
+        when(bulkDeploymentEntryRepository.save(any(BulkDeploymentEntry.class))).then(AdditionalAnswers.returnsFirstArg());
+        when(bulkDeploymentRepository.save(any(BulkDeployment.class))).thenReturn(new BulkDeployment());
+        User user = new User("Test");
+        user.setId(1L);
+        when(userService.findById(any())).thenReturn(Optional.of(user));
+
+        bulkApplicationService.handleBulkDeployment(TEST_APP_NAME, List.of(csvApplication), testUser(), 2);
+
+        // the latest ACTIVE version was used instead of the missing version lookup
+        verify(applicationService).findApplicationLatestActiveVersion(TEST_APP_NAME);
+        verify(applicationService, times(0)).findApplication(anyString(), anyString());
+        verify(appLifecycleManager).initApplicationDeployment(any());
+    }
+
+    @Test
+    void shouldFailBulkEntryWhenVersionOmittedAndNoActiveVersionExists() {
+        CsvApplication csvApplication = new CsvApplication("domain1", "testAppInstance", null, null);
+        ApplicationBase applicationBase = new ApplicationBase(110L, TEST_APP_NAME);
+        when(applicationBaseService.exists(TEST_APP_NAME)).thenReturn(true);
+        when(applicationBaseService.findByName(TEST_APP_NAME)).thenReturn(applicationBase);
+        when(applicationService.findApplicationLatestActiveVersion(TEST_APP_NAME)).thenReturn(Optional.empty());
+        when(domainService.findDomain(anyString())).thenReturn(Optional.of(new Domain(1L, "domain1", "domain1")));
+        when(bulkDeploymentRepository.save(any(BulkDeployment.class))).thenAnswer(invocation -> {
+            BulkDeployment saved = invocation.getArgument(0);
+            saved.setId(1L);
+            return saved;
+        });
+        User user = new User("Test");
+        user.setId(1L);
+        when(userService.findById(any())).thenReturn(Optional.of(user));
+
+        ArgumentCaptor<BulkDeployment> bulkCaptor = ArgumentCaptor.forClass(BulkDeployment.class);
+        bulkApplicationService.handleBulkDeployment(TEST_APP_NAME, List.of(csvApplication), testUser(), 2);
+
+        // no deployment was initialized and the entry was marked as FAILED
+        verify(appLifecycleManager, times(0)).initApplicationDeployment(any());
+        verify(bulkDeploymentRepository, times(2)).save(bulkCaptor.capture());
+        BulkDeployment savedBulk = bulkCaptor.getValue();
+        assertEquals(1, savedBulk.getEntries().size());
+        assertEquals(BulkDeploymentState.FAILED, savedBulk.getEntries().getFirst().getState());
+    }
+
+    @Test
+    void shouldHandleBulkDeploymentWithEmptyVersionUsingLatestActiveVersion() {
+        CsvApplication csvApplication = new CsvApplication("domain1", "testAppInstance", "", null);
+        when(applicationBaseService.exists(TEST_APP_NAME)).thenReturn(true);
+        when(applicationBaseService.findByName(TEST_APP_NAME)).thenReturn(new ApplicationBase(110L, TEST_APP_NAME));
+        when(applicationService.findApplicationLatestActiveVersion(TEST_APP_NAME)).thenReturn(Optional.empty());
+        when(bulkDeploymentRepository.save(any(BulkDeployment.class))).thenAnswer(invocation -> {
+            BulkDeployment saved = invocation.getArgument(0);
+            saved.setId(1L);
+            return saved;
+        });
+        User user = new User("Test");
+        user.setId(1L);
+        when(userService.findById(any())).thenReturn(Optional.of(user));
+
+        bulkApplicationService.handleBulkDeployment(TEST_APP_NAME, List.of(csvApplication), testUser(), 2);
+
+        // an empty (whitespace-only) version column is treated as omitted
+        verify(applicationService).findApplicationLatestActiveVersion(TEST_APP_NAME);
+        verify(applicationService, times(0)).findApplication(anyString(), anyString());
+    }
+
+    @Test
     void getBulkEntryShouldDelegateToRepository() {
         BulkDeploymentEntry entry = BulkDeploymentEntry.builder().id(12L).build();
         when(bulkDeploymentEntryRepository.findById(12L)).thenReturn(Optional.of(entry));

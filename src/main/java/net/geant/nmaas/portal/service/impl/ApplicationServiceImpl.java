@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.service.impl;
 
+import com.vdurmont.semver4j.Semver;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import jakarta.transaction.Transactional;
@@ -126,6 +127,16 @@ public class ApplicationServiceImpl implements ApplicationService {
         return applicationRepository.findByName(name).stream()
                 .max(Comparator.comparing(Application::getCreationDate))
                 .orElseThrow(() -> new MissingElementException("Application " + name + " cannot be found"));
+    }
+
+    @Override
+    public Optional<Application> findApplicationLatestActiveVersion(String name) {
+        if (!StringUtils.hasText(name)) {
+            throw new IllegalArgumentException("Application name cannot be null or empty");
+        }
+        return applicationRepository.findByName(name).stream()
+                .filter(app -> ApplicationState.ACTIVE.equals(app.getState()))
+                .max(Comparator.comparing(app -> new Semver(app.getVersion(), Semver.SemverType.LOOSE)));
     }
 
     @Override

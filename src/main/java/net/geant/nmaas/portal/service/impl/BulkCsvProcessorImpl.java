@@ -31,7 +31,7 @@ public class BulkCsvProcessorImpl implements BulkCsvProcessor {
     public static final String TYPE_CSV = "text/csv";
 
     private static final List<String> REQUIRED_DOMAIN_HEADER = List.of("domain", "username", "email");
-    private static final List<String> REQUIRED_APPLICATION_HEADER = List.of("domain", "instance", "version");
+    private static final List<String> REQUIRED_APPLICATION_HEADER = List.of("domain", "instance");
 
     @Override
     public List<CsvDomain> processDomainSpecs(MultipartFile file) {

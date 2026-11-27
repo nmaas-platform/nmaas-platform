@@ -26,6 +26,14 @@ public interface ApplicationService {
     Application findApplicationLatestVersion(String name);
 
     /**
+     * Retrieves the latest version of given application with the ACTIVE state.
+     *
+     * @param name Application name
+     * @return latest ACTIVE application version, or empty if none exists
+     */
+    Optional<Application> findApplicationLatestActiveVersion(String name);
+
+    /**
      * Retrieves all Helm chart versions of given application with corresponding active application version
      *
      * @param name Application name

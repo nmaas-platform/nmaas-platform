@@ -314,6 +314,54 @@ class ApplicationServiceImplTest {
     }
 
     @Test
+    void findLatestActiveVersionShouldOrderBySemverNotCreationDate() {
+        // 2.10.0 created before 2.9.0, so creation-date ordering would pick the wrong one
+        Application v2_9 = activeApplication("grafana", "2.9.0");
+        v2_9.setCreationDate(java.time.LocalDateTime.now().minusDays(1));
+        Application v2_10 = activeApplication("grafana", "2.10.0");
+        v2_10.setCreationDate(java.time.LocalDateTime.now().minusDays(2));
+        when(applicationRepository.findByName("grafana")).thenReturn(List.of(v2_9, v2_10));
+
+        Optional<Application> result = applicationService.findApplicationLatestActiveVersion("grafana");
+
+        assertTrue(result.isPresent());
+        assertEquals("2.10.0", result.get().getVersion());
+    }
+
+    @Test
+    void findLatestActiveVersionShouldIgnoreNonActiveVersions() {
+        Application disabled = activeApplication("grafana", "3.0.0");
+        disabled.setState(ApplicationState.DISABLED);
+        Application active = activeApplication("grafana", "2.0.0");
+        when(applicationRepository.findByName("grafana")).thenReturn(List.of(disabled, active));
+
+        Optional<Application> result = applicationService.findApplicationLatestActiveVersion("grafana");
+
+        assertTrue(result.isPresent());
+        assertEquals("2.0.0", result.get().getVersion());
+    }
+
+    @Test
+    void findLatestActiveVersionShouldReturnEmptyWhenNoActiveVersion() {
+        Application disabled = activeApplication("grafana", "3.0.0");
+        disabled.setState(ApplicationState.DISABLED);
+        when(applicationRepository.findByName("grafana")).thenReturn(List.of(disabled));
+
+        assertTrue(applicationService.findApplicationLatestActiveVersion("grafana").isEmpty());
+    }
+
+    @Test
+    void findLatestActiveVersionShouldThrowForBlankName() {
+        assertThrows(IllegalArgumentException.class, () -> applicationService.findApplicationLatestActiveVersion(" "));
+    }
+
+    private Application activeApplication(String name, String version) {
+        Application app = new Application(name, version);
+        app.setState(ApplicationState.ACTIVE);
+        return app;
+    }
+
+    @Test
     void findLatestVersionShouldThrowWhenMissing() {
         when(applicationRepository.findByName("missing")).thenReturn(List.of());
 
