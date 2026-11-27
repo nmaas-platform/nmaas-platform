@@ -31,4 +31,31 @@ class BulkCsvProcessorImplTest {
         assertThat(parsed.get(1).getParameters().get("param.juiceshop.properties.ctfKey")).contains("AOXNjGDP9dHASMEH2shSCMFp");
     }
 
+    @Test
+    void shouldProcessApplicationSpecWithoutVersionColumn() {
+        String csvContent = """
+                domain,instance,param.juiceshop.properties.ctfKey
+                Customer 1,jsh50,OAXNjGDP9dHASMEH2shSCMFp""";
+        MockMultipartFile multipartFile = new MockMultipartFile("appSpec", "appSpec.csv", "text/csv", csvContent.getBytes());
+
+        List<CsvApplication> parsed = processor.processApplicationSpecs(multipartFile);
+
+        assertThat(parsed).hasSize(1);
+        assertThat(parsed.getFirst().getDomainName()).isEqualTo("Customer 1");
+        assertThat(parsed.getFirst().getApplicationInstanceName()).isEqualTo("jsh50");
+        assertThat(parsed.getFirst().getApplicationVersion()).isNull();
+    }
+
+    @Test
+    void shouldProcessApplicationSpecWithEmptyVersionColumn() {
+        String csvContent = "domain,instance,version\nCustomer 1,jsh50,";
+        MockMultipartFile multipartFile = new MockMultipartFile("appSpec", "appSpec.csv", "text/csv", csvContent.getBytes());
+
+        List<CsvApplication> parsed = processor.processApplicationSpecs(multipartFile);
+
+        assertThat(parsed).hasSize(1);
+        // an empty cell binds as an empty string; treated the same as omitted by the bulk deployment
+        assertThat(parsed.getFirst().getApplicationVersion()).isEmpty();
+    }
+
 }

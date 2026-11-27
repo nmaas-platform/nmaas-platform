@@ -53,6 +53,7 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import tools.jackson.databind.json.JsonMapper;
 
 import java.io.ByteArrayInputStream;
@@ -257,6 +258,11 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
     }
 
     private Application findApplication(String appName, String version) {
+        if (!StringUtils.hasText(version)) {
+            // version omitted in the CSV file -> deploy the latest enabled (ACTIVE) version
+            return applicationService.findApplicationLatestActiveVersion(appName)
+                    .orElseThrow(() -> new MissingElementException("Application name=" + appName + " with ACTIVE state not found."));
+        }
         return applicationService.findApplication(appName, version)
                 .orElseThrow(() -> new MissingElementException("Application name=" + appName + " not found."));
     }
